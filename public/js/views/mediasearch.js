@@ -1,24 +1,56 @@
-window.WineView = Backbone.View.extend({
-
+window.SearchView = Backbone.View.extend({
+    defaults: {
+        target: ".table",
+        source: ["hello", "world"]
+    },
     initialize: function () {
         this.render();
     },
+    sourceFn: function (query, process) {
+	var words = query.toLowerCase().split(" ");
+	var table = $(this.options.target)[0];
+	var ele;
 
+	for (var r = 1; r < table.rows.length; r++){
+	    ele = table.rows[r].innerHTML.replace(/<[^>]+>/g,"");
+	    var displayStyle = 'none';
+	    for (var i = 0; i < words.length; i++) {
+		if (ele.toLowerCase().indexOf(words[i])>=0)
+		    displayStyle = '';
+		else {
+		    displayStyle = 'none';
+		    break;
+		}
+	    }
+	    table.rows[r].style.display = displayStyle;
+	}
+        return this.options.sourceDefault;
+    },
     render: function () {
-        $(this.el).html(this.template(this.model.toJSON()));
+        $(this.el).html(this.template());
+        this.$el.select('#media-search').typeahead({
+            source : function (query, process) {
+                now.search(query, function (err, results) {
+                    console.log (err, results);
+                    return process(results);
+                });
+            }});
+        $('.search-query', this.el).typeahead({target : this.options.target, 
+                                               sourceDefault: this.options.source,
+                                               source : this.sourceFn});
         return this;
     },
 
     events: {
         "change"        : "change",
         "click .save"   : "beforeSave",
-        "click .delete" : "deleteWine",
+        "click .delete" : "deleteMedia",
         "drop #picture" : "dropHandler"
     },
 
     change: function (event) {
         // Remove any existing alert message
-        utils.hideAlert();
+        utils.showAlert('Success!', 'Media saved successfully', 'alert-success');
 
         // Apply the change to the model
         var target = event.target;
@@ -42,18 +74,18 @@ window.WineView = Backbone.View.extend({
             utils.displayValidationErrors(check.messages);
             return false;
         }
-        this.saveWine();
+        this.saveMedia();
         return false;
     },
 
-    saveWine: function () {
+    saveMedia: function () {
         var self = this;
         console.log('before save');
         this.model.save(null, {
             success: function (model) {
                 self.render();
-                app.navigate('wines/' + model.id, false);
-                utils.showAlert('Success!', 'Wine saved successfully', 'alert-success');
+                app.navigate('media/' + model.id, false);
+                utils.showAlert('Success!', 'Media saved successfully', 'alert-success');
             },
             error: function () {
                 utils.showAlert('Error', 'An error occurred while trying to delete this item', 'alert-error');
@@ -61,10 +93,10 @@ window.WineView = Backbone.View.extend({
         });
     },
 
-    deleteWine: function () {
+    deleteMedia: function () {
         this.model.destroy({
             success: function () {
-                alert('Wine deleted successfully');
+                alert('Media deleted successfully');
                 window.history.back();
             }
         });

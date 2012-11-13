@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  div.home-hero
+    h1 Welcome to #{title}
+    h3= subtitle
+    br
+    div(style="opacity: .9;")
+      a(class="btn btn-large",href="#media")
+        img.pull-left(src="img/media.png", style="margin-right:6px;").
+        | Start Browsing
+        | Media Cellar
+      a(class="btn btn-large",href="#")
+        img.pull-left(src="img/github.png", style="margin-right:6px"). 
+        | View Project
+        | on GitHub
+  div.bs-docs-social
+      div.container
+        ul.bs-docs-social-buttons
+          li
+            iframe.github-btn(src="http://ghbtns.com/github-btn.html?user=inaes-tic&repo=mbcplayout&type=watch&count=true",allowtransparency="true",frameborder="0",scrolling="0",width="100px",height="20px")
+          li
+            iframe.github-btn(src="http://ghbtns.com/github-btn.html?user=inaes-tic&repo=mbcplayout&type=fork&count=true",allowtransparency="true",frameborder="0",scrolling="0",width="100px",height="20px")
+          li.follow-btn
+            a.twitter-follow-button(href="https://twitter.com/mbcplayout",data-link-color="#0069D6",data-show-count="true") Follow @mbcplayout
+          li.tweet-btn
+            a.twitter-share-button(href="https://twitter.com/share",data-url="http://localhost:3000",data-count="horizontal",data-via="mbcplayout") Tweet
+    

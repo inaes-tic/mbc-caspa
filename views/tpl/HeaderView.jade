@@ -1,0 +1,57 @@
+extends base
+
+block template
+  div(class="navbar navbar-inverse navbar-fixed-top",style="z-index: 10;")
+    div.navbar-inner
+      div.container
+        a(class="btn btn-navbar",data-toggle="collapse",data-target=".nav-collapse")
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.brand(href="#") Node Cellar
+        div(class="nav-collapse collapse")
+          ul.nav
+            li.add-menu
+              a(href="#media")
+                | Browse Medias
+            li.add-menu
+              a(href="#media/search")
+                i(class="icon-search icon-white")
+                | Search Medias
+            li.add-menu
+              a(href="#media/add")
+                i(class="icon-edit icon-white")
+                | Add Medias
+          ul(class="nav pull-right")
+            li.about-menu
+              a(href="#about") About
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown")
+                | Resources 
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href="http://documentcloud.github.com/backbone/",target="_blank")
+                    | Backbone.js
+                li
+                  a(href="http://twitter.github.com/bootstrap/",target="_blank")
+                    | Twitter Bootstrap
+                li
+                  a(href="http://nodejs.org/",target="_blank")
+                    | Node.js
+                li
+                  a(href="http://expressjs.com/mongodb",target="_blank")
+                    | Express
+                li
+                  a(href="http://www.mongodb.org/",target="_blank")
+                    | MongoDB
+                li.divider
+                li.nav-header
+                  | This App
+                li
+                  a(href="#",target="_blank")
+                    | GitHub Repository
+                li
+                  a(href="http://coenraets.org",target="_blank")
+                    | Author's Blog
+  

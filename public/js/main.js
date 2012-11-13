@@ -1,12 +1,12 @@
 var AppRouter = Backbone.Router.extend({
 
     routes: {
-        ""                  : "home",
-        "wines"	: "list",
-        "wines/page/:page"	: "list",
-        "wines/add"         : "addWine",
-        "wines/:id"         : "wineDetails",
-        "about"             : "about"
+        "media"	: "list",
+        "media/page/:page"	: "list",
+        "media/add"         : "addMedia",
+        "media/search"      : "searchMedia",
+        "media/:id"         : "mediaDetails",
+        "about"             : "about",
     },
 
     initialize: function () {
@@ -14,34 +14,40 @@ var AppRouter = Backbone.Router.extend({
         $('.header').html(this.headerView.el);
     },
 
-    home: function (id) {
-        if (!this.homeView) {
-            this.homeView = new HomeView();
-        }
-        $('#content').html(this.homeView.el);
-        this.headerView.selectMenuItem('home-menu');
-    },
-
-	list: function(page) {
+    list: function(page) {
         var p = page ? parseInt(page, 10) : 1;
-        var wineList = new WineCollection();
-        wineList.fetch({success: function(){
-            $("#content").html(new WineListView({model: wineList, page: p}).el);
+        var mediaList = new MediaCollection();
+        mediaList.fetch({success: function(){
+            $("#content").html(new MediaListView({model: mediaList, page: p}).el);
         }});
         this.headerView.selectMenuItem('home-menu');
     },
 
-    wineDetails: function (id) {
-        var wine = new Wine({_id: id});
-        wine.fetch({success: function(){
-            $("#content").html(new WineView({model: wine}).el);
+    mediaDetails: function (id) {
+        var media = new Media({_id: id});
+        media.fetch({success: function(){
+            $("#content").html(new MediaView({model: media}).el);
         }});
         this.headerView.selectMenuItem();
     },
 
-	addWine: function() {
-        var wine = new Wine();
-        $('#content').html(new WineView({model: wine}).el);
+    addMedia: function() {
+        var media = new Media();
+        $('#content').html(new MediaView({model: media}).el);
+        this.headerView.selectMenuItem('add-menu');
+	},
+
+    mediaSearch: function (id) {
+        var media = new Media({_id: id});
+        media.fetch({success: function(){
+            $("#content").html(new SearchView({model: media}).el);
+        }});
+        this.headerView.selectMenuItem();
+    },
+
+    searchMedia: function() {
+        var media = new Media();
+        $('#content').html(new SearchView({model: media}).el);
         this.headerView.selectMenuItem('add-menu');
 	},
 
@@ -55,7 +61,7 @@ var AppRouter = Backbone.Router.extend({
 
 });
 
-utils.loadTemplate(['HomeView', 'HeaderView', 'WineView', 'WineListItemView', 'AboutView'], function() {
+utils.loadTemplate(['HeaderView', 'MediaView', 'SearchView', 'MediaListItemView', 'MediaListView', 'AboutView'], function() {
     app = new AppRouter();
     Backbone.history.start();
 });

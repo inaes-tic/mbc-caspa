@@ -1,0 +1,47 @@
+block template
+  div.row-fluid
+    form(class="form-horizontal span12")
+      fieldset
+        legend Media Details
+        br
+        div.row
+          div.span8
+            div.control-group
+              label.control-label(for="mediaId") Id:
+              div.controls
+                input#mediaId(name="id",type="text",value="<%= _id === null ? '' : _id %>", disabled)
+            - var items = ["name", "grapes", "country", "region"]
+            each item in items
+              div.control-group
+                label.control-label(for=#{item}) #{item}:
+                div.controls
+                  input(id=#{item},name=#{item},type="text",value="<%= #{item} %>")
+  
+            div.control-group
+              label.control-label(for="Year") Year:
+              div.controls
+                select.input-small(id="year",name="year",value="<% year %>")
+                  - var years = [2012, 2011, 2010, 2009, 2008, 2007, 2006, 2004, 2003, 2002, 2001]
+                  each year in years
+                    option <%= year == #{year}?'selected':'' %>#{year}
+  
+            div.control-group
+              label.control-label(for="description") Notes:
+              div.controls
+                textarea#description(name="description",style="width: 90%;",rows="6")
+                  | <%= description %>
+          div.span4
+            div.well(style="width: 180px;text-align: center;width:50%;margin: 0px auto;")
+              p
+                img#picture(width="180",src="<%= picture === null ? 'pics/generic.jpg' : 'pics/' + picture %>")
+              p(style="color:#999;") To change the picture, drag a new picture from your file system onto the box above.
+
+      div.form-actions
+        a(href="#",class="btn btn-primary save") Save
+        a(href="#",class="btn delete") Delete
+
+  div(class="row-fluid status-bar")
+    div.span12
+      div(class="alert alert-success",style="display: none")
+        | <b>Success!</b> Media saved successfully
+  

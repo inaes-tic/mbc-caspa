@@ -1,12 +1,24 @@
 {
-    "name": "wine-cellar",
-    "description": "Wine Cellar Application",
+    "name": "mbc-playout",
+    "description": "Malbec BroadCast Playout {mlt edition}",
     "version": "0.0.1",
     "private": true,
+    "licence": "agplv3",
+    "author": {
+        "name": "Niv Sardi",
+        "email": "xaiki@debian.org"
+    },
+    "scripts": {
+        "start": "node app"
+    },
     "dependencies": {
         "express": "3.x",
         "mongodb": "1.1.8",
-        "socket.io": "0.9.10"
+        "socket.io": "0.9.10",
+        "jade": "*",
+        "now":  ">=0.0.1",
+        "less-middleware": "*",
+        "fluent-ffmpeg": "*"
     },
     "engines": {
         "node": "0.8.4",

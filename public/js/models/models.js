@@ -1,6 +1,6 @@
-window.Wine = Backbone.Model.extend({
+window.Media = Backbone.Model.extend({
 
-    urlRoot: "/wines",
+    urlRoot: "/media",
 
     idAttribute: "_id",
 
@@ -45,18 +45,18 @@ window.Wine = Backbone.Model.extend({
         _id: null,
         name: "",
         grapes: "",
-        country: "USA",
-        region: "California",
+        country: "Argentina",
+        region: "Rio Negro",
         year: "",
         description: "",
         picture: null
     }
 });
 
-window.WineCollection = Backbone.Collection.extend({
+window.MediaCollection = Backbone.Collection.extend({
 
-    model: Wine,
+    model: Media,
 
-    url: "/wines"
+    url: "/media"
 
 });

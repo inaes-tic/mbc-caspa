@@ -1,0 +1,25 @@
+<td>
+  <a href="#media/<%= _id %>" class="plain">
+    <img src="<%= 'sc/' + _id + '.jpg' %>" height="100" width="150" alt="">
+  </a>
+</td>
+<td>
+  <a href="#media/<%= _id %>" class="plain">
+    <h4><%= file %></h4>
+    <div class="progress">
+      <div class="bar" style="width: 60%;"> </div>
+    </div>
+    <%= _.flatten(audio) %> <%= _.flatten(video) %><br/>
+    <i class="icon-globe"></i> <%= region %>, <%= country %>
+  </a>
+</td>
+<td>
+  <a href="#media/<%= _id %>" class="plain">
+    <span class="label label-success">Success</span>
+  </a>
+</td>
+<td>
+  <a href="#media/<%= _id %>" class="plain">
+    <span class="label label-important">Error</span>
+  </a>
+</td>
