@@ -7,7 +7,7 @@ window.MediaListView = Backbone.View.extend({
     render: function () {
         var medias = this.model.models;
         var len = medias.length;
-        var mediaNames = _.map(medias, function (w) {return w.attributes.name;});
+        var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
 
         $(this.el).html(this.template());
 
