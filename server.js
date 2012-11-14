@@ -51,15 +51,6 @@ io.set('transports', [                     // enable all transports (optional if
   , 'jsonp-polling'
 ]);
 
-var Media = require (config.public_dir + '/models/Media.js')
-  , mediaList = new Media.Collection();
-
-(function(){
-    mediaList.add({ file: 'test1', _id: 'test1' });
-    mediaList.add({ file: 'test2', _id: 'test2' });
-})();
-
-
 io.sockets.on('connection', function (socket) {
   mediaList.bindServer(socket);
   socket.on('disconnect', function () {

@@ -20,7 +20,9 @@
         "less-middleware": "*",
         "fluent-ffmpeg": "*",
         "findit": "*",
-        "poolr": "*"
+        "poolr": "*",
+        "underscore": "*",
+        "backboneio": "*"
     },
     "engines": {
         "node": "0.8.4",

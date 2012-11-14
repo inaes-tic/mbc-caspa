@@ -5,10 +5,25 @@ var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
 
+var Media = require (__dirname + '/../public/models/Media.js')
+, mediaList = new Media.Collection();
+
+exports.mediaList = mediaList;
+
+mediaList.bind('change', function (model) {console.log("model changed")});
+(function(){
+    mediaList.add({ file: 'test1', _id: 'test1' });
+    mediaList.add({ file: 'test2', _id: 'test2' });
+    mediaList.add({ file: 'test3', _id: 'test3' });
+    mediaList.add({ file: 'test4', _id: 'test4' });
+    mediaList.add({ file: 'test5', _id: 'test5' });
+    mediaList.add({ file: 'test6', _id: 'test6' });
+    mediaList.add({ file: 'test7', _id: 'test7' });
+    mediaList.add({ file: 'test8', _id: 'test8' });
+})();
+
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 db = new Db('mediadb', server, {safe: true});
-
-var medias = {};
 
 db.open(function(err, db) {
     if(!err) {
@@ -28,33 +43,26 @@ db.open(function(err, db) {
 exports.findById = function(req, res) {
     var id = req.params.id;
     console.log('Retrieving media: ' + id);
-    if (medias.hasOwnProperty(id))
-        res.send (medias[id]);
+    if (mediaList.get(id))
+        res.send (mediaList.get(id));
 };
 
 exports.findAll = function(req, res) {
     console.log('Retrieving all medias');
-    res.send(_.values(medias));
+    res.send(mediaList.models);
 };
 
 function _addMedia (media, err) {
-    if (medias.hasOwnProperty(media._id)) {
-        err = "Id already in hash";
-        return false
-    }
     console.log ("adding media " + media._id + " : " + media.file);
-     medias[media._id] = media;
+    mediaList.add(media);
 };
 
 exports.addMedia = function(req, res) {
     var media = req.body;
     var err;
     console.log('Adding media: ' + JSON.stringify(media));
-    if (_addMedia (media, err)) {
-        res.send(JSON.stringify(media));
-    } else {
-        res.send({'error': err});
-    }
+    mediaList.add(media)
+    res.send(JSON.stringify(media));
     return;
 }
 
@@ -81,7 +89,7 @@ exports.updateMedia = function(req, res) {
 exports.deleteMedia = function(req, res) {
     var id = req.params.id;
     console.log('Deleting media: ' + id);
-    delete medias[id];
+    mediaList.get(id).remove();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -115,7 +123,7 @@ var populateDB = function() {
             var media = {_id : require('crypto')
                          .createHash('md5').update(data).digest('hex'),
                          file : file};
-            if (medias.hasOwnProperty(media._id))
+            if (mediaList.get(media._id))
                 return console.log("id already in hash");
 
             var proc = new ffmpeg({source: file})

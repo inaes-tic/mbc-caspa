@@ -20,7 +20,7 @@ var AppRouter = Backbone.Router.extend({
         var p = page ? parseInt(page, 10) : 1;
         mediaList.fetch({success: function(collection, resp){
             collection.bindClient();
-            $("#content").html(new MediaListView({model: mediaList, page: p}).el);
+            new MediaListView({model: mediaList, page: p});
         }});
         this.headerView.selectMenuItem('home-menu');
     },
