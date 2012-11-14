@@ -27,24 +27,6 @@ app.configure(function () {
     app.use(express.static(config.public_dir));
 });
 
-var server = http.createServer(app);
-io = io.listen(server);
-
-
-io.configure(function () {
-    io.set('authorization', function (handshakeData, callback) {
-        if (handshakeData.xdomain) {
-            callback('Cross-domain connections are not allowed');
-        } else {
-            callback(null, true);
-        }
-    });
-});
-
-server.listen(app.get('port'), function () {
-    console.log("Express server listening on port " + app.get('port'));
-});
-
 app.get('/', routes.index);
 // app.get('/tpl/:id', routes.tpl);
 app.get('/media', media.findAll);
@@ -53,18 +35,36 @@ app.post('/media', media.addMedia);
 app.put('/media/:id', media.updateMedia);
 app.delete('/media/:id', media.deleteMedia);
 
+io = io.listen(app.listen(app.get('port'), function(){
+  console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
+}));
+
+io.enable('browser client minification');  // send minified client
+io.enable('browser client etag');          // apply etag caching logic based on version number
+io.enable('browser client gzip');          // gzip the file
+io.set('log level', 1);                    // reduce logging
+io.set('transports', [                     // enable all transports (optional if you want flashsocket)
+    'websocket'
+  , 'flashsocket'
+  , 'htmlfile'
+  , 'xhr-polling'
+  , 'jsonp-polling'
+]);
+
+var Media = require (config.public_dir + '/models/Media.js')
+  , mediaList = new Media.Collection();
+
+(function(){
+    mediaList.add({ file: 'test1', _id: 'test1' });
+    mediaList.add({ file: 'test2', _id: 'test2' });
+})();
+
+
 io.sockets.on('connection', function (socket) {
-
-    socket.on('message', function (message) {
-        console.log("Got message: " + message);
-        ip = socket.handshake.address.address;
-        url = message;
-        io.sockets.emit('pageview', { 'connections': Object.keys(io.connected).length, 'ip': '***.***.***.' + ip.substring(ip.lastIndexOf('.') + 1), 'url': url, 'xdomain': socket.handshake.xdomain, 'timestamp': new Date()});
-    });
-
-    socket.on('disconnect', function () {
-        console.log("Socket disconnected");
-        io.sockets.emit('pageview', { 'connections': Object.keys(io.connected).length});
-    });
-
+  mediaList.bindServer(socket);
+  socket.on('disconnect', function () {
+    mediaList.unbindServer(socket);
+  });
 });
+
+

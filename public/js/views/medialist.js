@@ -12,10 +12,19 @@ window.MediaListView = Backbone.View.extend({
         $(this.el).html(this.template());
 
         for (var i = 0; i < len; i++) {
-            $('.table', this.el).append(new MediaListItemView({model: medias[i]}).render().el);
+            var item = new MediaListItemView({model: medias[i]}).render().el;
+            item.setAttribute ("id", medias[i].get('_id'));
+            $('.table', this.el).append(item);
         }
 
-        $('.tbody', this.el).sortable();
+        $('.tbody', this.el).sortable({
+            update: function (e, ui) {
+                _($(this).sortable('toArray')).each(function (order, index) {
+                    var media = mediaList.get(order);
+                    media.save({"order": index}, {notify: "others"});
+                });
+            }
+        });
         $('#search', this.el).html(new SearchView({source : mediaNames,
                                                    target : '.table'}).render().el);
 //        $(this.el).append(new Paginator({model: this.model, page: this.options.page}).render().el);

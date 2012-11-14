@@ -1,3 +1,4 @@
+var mediaList = new Media.Collection();
 var AppRouter = Backbone.Router.extend({
 
     routes: {
@@ -10,14 +11,15 @@ var AppRouter = Backbone.Router.extend({
     },
 
     initialize: function () {
+        window.socket = io.connect('http://127.0.0.1:3000');
         this.headerView = new HeaderView();
         $('.header').html(this.headerView.el);
     },
 
     list: function(page) {
         var p = page ? parseInt(page, 10) : 1;
-        var mediaList = new MediaCollection();
-        mediaList.fetch({success: function(){
+        mediaList.fetch({success: function(collection, resp){
+            collection.bindClient();
             $("#content").html(new MediaListView({model: mediaList, page: p}).el);
         }});
         this.headerView.selectMenuItem('home-menu');
