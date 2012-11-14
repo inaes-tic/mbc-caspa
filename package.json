@@ -18,7 +18,9 @@
         "jade": "*",
         "now":  ">=0.0.1",
         "less-middleware": "*",
-        "fluent-ffmpeg": "*"
+        "fluent-ffmpeg": "*",
+        "findit": "*",
+        "poolr": "*"
     },
     "engines": {
         "node": "0.8.4",
