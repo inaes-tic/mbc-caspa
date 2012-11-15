@@ -27,8 +27,8 @@ window.SearchView = Backbone.View.extend({
         return this.options.sourceDefault;
     },
     render: function () {
-        $(this.el).html(this.template());
-        this.$el.select('#media-search').typeahead({
+        $(this.el).html(template.mediasearch());
+        $(this.el, '#media-search').typeahead({
             source : function (query, process) {
                 now.search(query, function (err, results) {
                     console.log (err, results);

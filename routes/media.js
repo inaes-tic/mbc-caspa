@@ -5,7 +5,7 @@ var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
 
-var Media = require (__dirname + '/../public/models/Media.js')
+var Media = require (__dirname + '/../models/Media.js')
 , mediaList = new Media.Collection();
 
 exports.mediaList = mediaList;
@@ -102,7 +102,7 @@ var populateDB = function() {
     //This sets up the file finder
     var finder = require('findit').find('/home/xaiki/Videos');
 
-    var myPool = require('poolr').createPool(4);
+    var myPool = require('poolr').createPool(1);
     var fs = require ('fs');
 
 

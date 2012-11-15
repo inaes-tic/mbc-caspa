@@ -1,0 +1,29 @@
+- if(!picture)
+  - var picture= 'generic.jpg'
+- if(!file)
+  - var file= 'Error'
+- if (!file)
+  -var title= file
+td
+  a.plain(href='#media/' + _id)
+    img(src='pics/' + picture, height="100",width="150",alt="")
+td
+  a.plain(href='#media/' + _id)
+    legend=file
+    .progress
+      .bar(style="width: 60%;")
+    .video
+    .audio
+td
+  a.plain(href='#media/' + _id)
+    span.label.label-success Success
+td
+  a.plain(href='#media/' + _id)
+    span.label.label-important Error
+
+h3.title= title
+.button.complete
+  .status
+  .check &#10003;
+  .text Complete
+.button.delete Delete

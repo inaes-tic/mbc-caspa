@@ -1,0 +1,18 @@
+.row-fluid
+  .span12
+    .form-search
+      .input-append
+        input.input-xlarge.search-query#media-search(
+          type="text",
+          data-provide="typeahead",
+          data-items="4",
+          placeholder="Search Medias")
+        button.btn(type="submit")
+          i.icon-search
+
+.row-fluid.status-bar
+    .span12
+        .alert.alert-success(style="display: none")
+            b Success!
+            | Media saved successfully
+

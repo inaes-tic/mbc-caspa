@@ -7,10 +7,10 @@ window.MediaListItemView = Backbone.View.extend({
         this.model.bind("destroy", this.remove, this);
     },
     events: {
-        "click" : "onClick"
+//        "click" : "onClick"
     },
     render: function () {
-        $(this.el).html(this.template(this.model.toJSON()));
+        $(this.el).html(template.item(this.model.toJSON()));
         return this;
     },
     onClick: function () {
@@ -33,14 +33,14 @@ window.MediaListItemView = Backbone.View.extend({
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
-        $(this.el).html(this.template());
+        $(this.el).html(template.medialist(this.model.toJSON()));
         $('.tbody', this.el).sortable({
             update: function (e, ui) {
                 _($(this).sortable('toArray')).each(function (order, index) {
                     var media = mediaList.get(order);
                     console.log("update", order, media);
                     if (media.get('pos') != index) {
-                        media.save({pos:index});
+                        media.save({pos:index, notify:"others"});
                     }
                 });
                 // delay save() until we have all the pos set correctly

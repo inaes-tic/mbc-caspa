@@ -5,7 +5,7 @@ window.HeaderView = Backbone.View.extend({
     },
 
     render: function () {
-        $(this.el).html(this.template());
+        $(this.el).html(template.header(this.model.toJSON()));
         return this;
     },
 

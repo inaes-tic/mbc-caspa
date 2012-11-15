@@ -1,28 +1,26 @@
-extends base
-
-block template
-  div(class="navbar navbar-inverse navbar-fixed-top",style="z-index: 10;")
+block header
+  .navbar.navbar-inverse.navbar-fixed-top(style="z-index: 10;")
     div.navbar-inner
       div.container
-        a(class="btn btn-navbar",data-toggle="collapse",data-target=".nav-collapse")
+        a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")
           span.icon-bar
           span.icon-bar
           span.icon-bar
-        a.brand(href="#") Node Cellar
-        div(class="nav-collapse collapse")
+        a.brand(href="#") #{title}
+        .nav-collapse.collapse
           ul.nav
             li.add-menu
               a(href="#media")
                 | Browse Medias
             li.add-menu
               a(href="#media/search")
-                i(class="icon-search icon-white")
+                i.icon-search.icon-white
                 | Search Medias
             li.add-menu
               a(href="#media/add")
-                i(class="icon-edit icon-white")
+                i.icon-edit.icon-white
                 | Add Medias
-          ul(class="nav pull-right")
+          ul.nav.pull-right
             li.about-menu
               a(href="#about") About
             li.dropdown
@@ -54,4 +52,3 @@ block template
                 li
                   a(href="http://coenraets.org",target="_blank")
                     | Author's Blog
-  

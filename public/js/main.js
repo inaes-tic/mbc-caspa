@@ -11,8 +11,9 @@ var AppRouter = Backbone.Router.extend({
     },
 
     initialize: function () {
+        var appModel = new App.Model();
         window.socket = io.connect('http://127.0.0.1:3000');
-        this.headerView = new HeaderView();
+        this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
     },
 
@@ -26,21 +27,22 @@ var AppRouter = Backbone.Router.extend({
     },
 
     mediaDetails: function (id) {
-        var media = new Media({_id: id});
+        var media = new Media.Model({_id: id});
         media.fetch({success: function(){
+            console.log("here");
             $("#content").html(new MediaView({model: media}).el);
         }});
         this.headerView.selectMenuItem();
     },
 
     addMedia: function() {
-        var media = new Media();
+        var media = new Media.Model();
         $('#content').html(new MediaView({model: media}).el);
         this.headerView.selectMenuItem('add-menu');
 	},
 
     mediaSearch: function (id) {
-        var media = new Media({_id: id});
+        var media = new Media.Model({_id: id});
         media.fetch({success: function(){
             $("#content").html(new SearchView({model: media}).el);
         }});
@@ -48,7 +50,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     searchMedia: function() {
-        var media = new Media();
+        var media = new Media.Model();
         $('#content').html(new SearchView({model: media}).el);
         this.headerView.selectMenuItem('add-menu');
 	},
@@ -63,7 +65,5 @@ var AppRouter = Backbone.Router.extend({
 
 });
 
-utils.loadTemplate(['HeaderView', 'MediaView', 'SearchView', 'MediaListItemView', 'MediaListView', 'AboutView'], function() {
     app = new AppRouter();
     Backbone.history.start();
-});

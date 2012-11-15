@@ -1,11 +1,12 @@
 window.MediaView = Backbone.View.extend({
 
     initialize: function () {
+        console.log ("rendering media");
         this.render();
     },
 
     render: function () {
-        $(this.el).html(this.template(this.model.toJSON()));
+        $(this.el).html(template.mediaview(this.model.toJSON()));
         return this;
     },
 

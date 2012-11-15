@@ -66,33 +66,11 @@ Media.Model = BackboneIO.Model.extend({
 Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
     url: "/media",
-    initialize: function () {
-        this.on("add", function(media) {
-            var pos = media.get('pos');
-            if (!this.length) {
-                pos= 0;
-            } else {
-                pos = this.last().get('pos') + 1;
-            }
-            media.set('pos', pos);
-        });
-    },
-    nextPos: function () {
-        if (!this.length) return 0;
-        return this.last().get('order') + 1;
-    },
     comparator: function(media) {
         console.log("compare", media, media.get('pos'));
-      return media.get('pos');
+        return media.get('pos');
     },
 
-});
-
-Media.CollectionWrapper = BackboneIO.Model.extend({
-    model: Media.Collection,
-    toJSON: function() {
-        return this.model.toJSON();
-    }
 });
 
 if(server) module.exports = Media;
