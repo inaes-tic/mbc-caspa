@@ -67,7 +67,7 @@ Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
     url: "/media",
     comparator: function(media) {
-        console.log("compare", media, media.get('pos'));
+//        console.log("compare", media, media.get('pos'));
         return media.get('pos');
     },
 

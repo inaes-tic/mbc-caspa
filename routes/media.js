@@ -10,17 +10,12 @@ var Media = require (__dirname + '/../models/Media.js')
 
 exports.mediaList = mediaList;
 
-mediaList.bind('change', function (model) {console.log("model changed")});
-(function(){
-    mediaList.add({ file: 'test1', _id: 'test1' });
-    mediaList.add({ file: 'test2', _id: 'test2' });
-    mediaList.add({ file: 'test3', _id: 'test3' });
-    mediaList.add({ file: 'test4', _id: 'test4' });
-    mediaList.add({ file: 'test5', _id: 'test5' });
-    mediaList.add({ file: 'test6', _id: 'test6' });
-    mediaList.add({ file: 'test7', _id: 'test7' });
-    mediaList.add({ file: 'test8', _id: 'test8' });
-})();
+function createCallback (model) {
+    console.log("model added");
+}
+
+mediaList.bind('change', function (model) {console.log("model changed")})
+mediaList.bind('add', createCallback);
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 db = new Db('mediadb', server, {safe: true});
@@ -96,7 +91,21 @@ exports.deleteMedia = function(req, res) {
 // Populate database with sample data -- Only used once: the first time the application is started.
 // You'd typically not find this code in a real-life app, since the database would already exist.
 var populateDB = function() {
+
+(function(){
+    mediaList.add({ file: 'test1', _id: 'test1' });
+    return;
+    mediaList.add({ file: 'test2', _id: 'test2' });
+    mediaList.add({ file: 'test3', _id: 'test3' });
+    mediaList.add({ file: 'test4', _id: 'test4' });
+    mediaList.add({ file: 'test5', _id: 'test5' });
+    mediaList.add({ file: 'test6', _id: 'test6' });
+    mediaList.add({ file: 'test7', _id: 'test7' });
+    mediaList.add({ file: 'test8', _id: 'test8' });
+})();
+
 // FIXME: TODO
+    return;
     var ffmpeg  = require('fluent-ffmpeg');
     var Metalib = ffmpeg.Metadata;
     //This sets up the file finder
