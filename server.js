@@ -1,7 +1,6 @@
 var express = require('express'),
     routes = require('./routes'),
     media = require('./routes/media'),
-    tpl  = require('./routes/tpl'),
     path = require('path'),
     http = require('http'),
     io = require('socket.io');
