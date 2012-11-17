@@ -136,20 +136,19 @@ var populateDB = function() {
                 return console.log("id already in hash");
 
             var proc = new ffmpeg({source: file})
-            .withSize('150x100')
-            .takeScreenshots({
-                count: 1,
-                timemarks : [ '10%'],
-                filename : media._id}, './public/sc/', function (err, fn) {
-                    if (err) return console.log(err);
-                    console.log ("sc ok");
-                    metaObject.get(function(metadata, err) {
-                        if (err) return console.log(err);
-                        metadata._id  = media._id;
-                        metadata.file = media.file;
-                        _addMedia (metadata);
+                .withSize('150x100')
+                .onCodecData(function(metadata) {
+                    console.log(codecinfo);
+                    metadata._id  = media._id;
+                    metadata.file = media.file;
+                    _addMedia (metadata);
+                })
+                .takeScreenshots({
+                    count: 1,
+                    timemarks : [ '10%'],
+                    filename : media._id}, './public/sc/', function (err, fn) {
+                        console.log ("sc ok");
                     });
-                });
         });
         return "ok";
     }
