@@ -27,8 +27,8 @@ exports.index = function(req, res){
 var lib_dir = path.join(__dirname, '..', 'public/lib')
 
 var vendorJs = new folio.Glossary([
-  path.join(lib_dir, 'jquery-1.8.2.min.js'),
-  path.join(lib_dir, 'jquery-ui-1.9.1.custom.min.js'),
+  require.resolve('jquery-browser/lib/jquery.js'),
+  require.resolve('jqueryui-browser/ui/jquery-ui.js'),
   require.resolve('underscore/underscore.js'),
   require.resolve('backbone/backbone.js'),
   require.resolve('backboneio/backboneio.js'),
