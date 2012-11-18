@@ -1,7 +1,7 @@
 - if(!picture)
   - var picture= 'generic.jpg'
 - if(!file)
-  - var file= 'Error'
+  - var file= i18n.gettext('Error')
 - if (!file)
   -var title= file
 td
@@ -16,14 +16,14 @@ td
     .audio
 td
   a.plain(href='#media/' + _id)
-    span.label.label-success Success
+    span.label.label-success= i18n.gettext('Success')
 td
   a.plain(href='#media/' + _id)
-    span.label.label-important Error
+    span.label.label-important= i18n.gettext('Error')
 
 h3.title= title
 .button.complete
   .status
   .check &#10003;
-  .text Complete
-.button.delete Delete
+  .text= i18n.gettext('Complete')
+.button.delete= i18n.gettext('Delete')

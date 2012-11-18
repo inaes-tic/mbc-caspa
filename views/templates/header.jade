@@ -11,44 +11,41 @@ block header
           ul.nav
             li.add-menu
               a(href="#media")
-                | Browse Medias
+                i.icon-search.icon-white
+                span=i18n.gettext('Browse Medias')
             li.add-menu
               a(href="#media/search")
                 i.icon-search.icon-white
-                | Search Medias
+                span= i18n.gettext('Search Medias')
             li.add-menu
               a(href="#media/add")
                 i.icon-edit.icon-white
-                | Add Medias
+                span= i18n.gettext('Add Medias')
           ul.nav.pull-right
             li.about-menu
-              a(href="#about") About
+              a(href="#about")= i18n.gettext('About')
             li.dropdown
-              a.dropdown-toggle(href="#",data-toggle="dropdown")
-                | Resources 
+              a.dropdown-toggle(href="#",data-toggle="dropdown")= i18n.gettext('Resources')
                 b.caret
               ul.dropdown-menu
                 li
                   a(href="http://documentcloud.github.com/backbone/",target="_blank")
-                    | Backbone.js
+                    span= i18n.gettext('Backbone.js')
                 li
                   a(href="http://twitter.github.com/bootstrap/",target="_blank")
-                    | Twitter Bootstrap
+                    span= i18n.gettext('Twitter Bootstrap')
                 li
                   a(href="http://nodejs.org/",target="_blank")
-                    | Node.js
+                    span= i18n.gettext('Node.js')
                 li
                   a(href="http://expressjs.com/mongodb",target="_blank")
-                    | Express
+                    span= i18n.gettext('Express')
                 li
                   a(href="http://www.mongodb.org/",target="_blank")
-                    | MongoDB
+                    span= i18n.gettext('MongoDB')
                 li.divider
                 li.nav-header
-                  | This App
+                  span= i18n.gettext('This App')
                 li
                   a(href="#",target="_blank")
-                    | GitHub Repository
-                li
-                  a(href="http://coenraets.org",target="_blank")
-                    | Author's Blog
+                  span= i18n.gettext('GitHub Repository')

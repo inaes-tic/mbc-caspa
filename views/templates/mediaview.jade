@@ -1,30 +1,31 @@
 - if (!_id)
-  - var id= ''
+  - var id= i18n.gettext('id is generated when media is found')
 - if (!description)
-  - var description= 'Notes about this media'
+  - var description= i18n.gettext('Notes about this media')
 - if(!picture)
   - var picture= 'pics/generic.jpg'
 
 .row-fluid
   form.form-horizontal.span12
     fieldset
-      legend Media Details
+      legend= i18n.gettext('Media Details')
       br
       .row
           .span4
             .control-group
-              label.control-label(for="medianame") name:
+              label.control-label(for="mediaName")= i18n.gettext('Name') + ': '
               .controls
-                  input#medianame(name="name",type="text",value=name)
+                  input#mediaName(name="Name",type="text",value=name)
             - var items = ["id", "audio", "video"]
             each item in items
+              - var Item = item.charAt(0).toUpperCase() + item.slice(1)
               .control-group
-                label.control-label(for='media' + item) #{item} :
+                label.control-label(for='media' + Item)= item + ': '
                 .controls
-                    input(id= 'media' + item, name=item,type="text",value=item,disabled)
+                    input(id= 'media' + Item, name=Item,type="text",value=item,disabled)
                     span.help-inline
             .control-group
-              label.control-label(for="description") Notes:
+              label.control-label(for="description")= i18n.gettext('Notes') + ': '
               .controls
                   textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description)
 
@@ -34,15 +35,14 @@
                 img#picture(width="100%",src=picture)
                 .progress.progress-stripped
                   .bar(style="width: 0%;")
-              p(style="color:#999;")
-                | To add media, drag a new file from your file system onto this box.
+              p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
 
     .form-actions
-      a.btn.btn-primary.save(href="#") Save
-      a.btn.delete(href="#") Delete
+      a.btn.btn-primary.save(href="#")= i18n.gettext('Save')
+      a.btn.delete(href="#")= i18n.gettext('Delete')
 
 .row-fluid.status-bar
   .span12
     .alert.alert-success(style="display: none")
-      b Success!
-      | Media saved successfully
+      b= i18n.gettext('Success!')
+      span= i18n.gettext('Media saved successfully')

@@ -1,19 +1,20 @@
 block footer
    p.pull-right
-     a(href="#") Back Home
-   p Built as a sample application with 
-     a(href="http://documentcloud.github.com/backbone/") Backbone.js
-     a(href="http://twitter.github.com/bootstrap/") Twitter Bootstrap          
-     a(href="http://nodejs.org/") Node.js
-     a(href="http://expressjs.com/") Express
-     and 
-     a(href="http://www.mongodb.org/")MongoDB
-     by
+     a(href="#") ⟲
+   p= gettext('Built as a sample application with ')
+     a(href="http://documentcloud.github.com/backbone/")= 'Backbone.js '
+     a(href="http://twitter.github.com/bootstrap/")= 'Twitter Bootstrap '
+     a(href="http://nodejs.org/")= 'Node.js '
+     a(href="http://expressjs.com/")= 'Express '
+     span=gettext('and ')
+     a(href="http://www.mongodb.org/")= 'MongoDB '
+     span=gettext('based on work by ')
      a(href="http://coenraets.org",target="_blank") Christophe Coenraets
-   p The source code for this application is available in 
-     a(href="#")this repository
-     on GitHub.
+   p= gettext('The source code for this application is available in ')
+     a(href="#")= gettext('this repository')
+     span=gettext(' on GitHub.')
    p(class="pull-right")
      a(href="#")↑
-   p
+   p= gettext('This project is under the ')
      a(href="http://www.gnu.org/licenses/agpl-3.0.html") AGPL-3.0
+     span= gettext(' Licence.')
