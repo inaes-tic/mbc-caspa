@@ -1,9 +1,8 @@
 var express = require('express'),
-    routes = require('./routes'),
-    media = require('./routes/media'),
-    path = require('path'),
-    http = require('http'),
-    io = require('socket.io');
+    path    = require('path'),
+    http    = require('http'),
+    io      = require('socket.io'),
+    i18n    = require('i18n-abide');
 
 var dirs = {
     pub    : path.join(__dirname, 'public'),
@@ -45,9 +44,8 @@ app.configure('production', function(){
   app.set('io.loglevel', 1);
 });
 
-app.get('/', routes.index);
-app.get('/js/templates.js', routes.templatejs);
-app.get('/js/vendor.js', routes.vendorjs);
+require('./routes')(app);
+var media = require('./routes/media');
 
 // app.get('/tpl/:id', routes.tpl);
 app.get('/media', media.findAll);
