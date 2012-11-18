@@ -32,6 +32,7 @@ var vendorJs = new folio.Glossary([
   require.resolve('underscore/underscore.js'),
   require.resolve('backbone/backbone.js'),
   require.resolve('backboneio/backboneio.js'),
+  path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
   path.join(lib_dir, 'bootstrap.min.js'),
   path.join(lib_dir, 'andika.js'),
   path.join(lib_dir, 'arvo.js'),

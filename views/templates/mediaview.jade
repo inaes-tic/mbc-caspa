@@ -1,43 +1,45 @@
 - if (!_id)
   - var id= ''
 - if (!description)
-  - var description= 'lorem ipsum'
+  - var description= 'Notes about this media'
 - if(!picture)
-  - var picture= 'generic.jpg'
+  - var picture= 'pics/generic.jpg'
 
 .row-fluid
   form.form-horizontal.span12
     fieldset
       legend Media Details
-        br
-        .row
-          .span8
+      br
+      .row
+          .span4
             .control-group
-              label.control-label(for="mediaId") Id:
-                .controls
-                  input#mediaId(name="id",type="text",value=id,disabled)
-            - var items = ["name", "audio", "viedo"]
+              label.control-label(for="medianame") name:
+              .controls
+                  input#medianame(name="name",type="text",value=name)
+            - var items = ["id", "audio", "video"]
             each item in items
               .control-group
                 label.control-label(for='media' + item) #{item} :
-                  .controls
-                    input(id= 'media' + item, name=item,type="text",value=item)
+                .controls
+                    input(id= 'media' + item, name=item,type="text",value=item,disabled)
                     span.help-inline
             .control-group
               label.control-label(for="description") Notes:
-                .controls
-                  textarea#description(name="description",style="width: 90%;",rows="6")
-                    | #{description}
-          .span4
-            .well(style="width: 180px;text-align: center;width:50%;margin: 0px auto;")
-              p
-                img#picture(width="180",src='pics/' + picture)
-              p(style="color:#999;")
-                | To change the picture, drag a new picture from your file system onto the box above.
+              .controls
+                  textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description)
 
-.form-actions
-  a.btn.btn-primary.save(href="#") Save
-  a.btn.delete(href="#") Delete
+          .span8
+            .well.droparea.image-droparea(style="text-align: center;width:50%;margin: 0px auto;")
+              p
+                img#picture(width="100%",src=picture)
+                .progress.progress-stripped
+                  .bar(style="width: 0%;")
+              p(style="color:#999;")
+                | To add media, drag a new file from your file system onto this box.
+
+    .form-actions
+      a.btn.btn-primary.save(href="#") Save
+      a.btn.delete(href="#") Delete
 
 .row-fluid.status-bar
   .span12
