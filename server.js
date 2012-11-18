@@ -15,6 +15,12 @@ var dirs = {
 var app = express();
 
 app.configure(function () {
+    app.use(i18n.abide({
+        supported_languages: ['en-US', 'es', 'db-LB', 'it-CH'],
+        default_lang: 'es',
+        debug_lang: 'it-CH',
+        locale_directory: 'locale'
+    }));
     app.set('port', process.env.PORT || 3000);
     app.set('views', dirs.views);
     app.set('view engine', 'jade');

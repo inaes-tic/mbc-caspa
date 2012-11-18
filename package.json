@@ -26,7 +26,9 @@
         "underscore": "*",
         "backboneio": "*",
         "jquery-browser": "1.8.x",
-        "jqueryui-browser": "1.9.x"
+        "jqueryui-browser": "1.9.x",
+        "i18n-abide" : "0.0.7",
+        "jed" : "0.5.x"
     },
     "engines": {
         "node": "0.8.4",

@@ -2,3 +2,5 @@
 /.idea
 Procfile
 .gitignore
+*.mo
+public/css/main.css

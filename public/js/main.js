@@ -65,5 +65,22 @@ var AppRouter = Backbone.Router.extend({
 
 });
 
+var lang = $('html')[0].lang;
+var i18n;
+$.ajax({
+    type: 'GET',
+    url: '/po/' + lang,
+    dataType: 'json',
+    success: function(data) {
+        i18n = new Jed ({
+            locale_data : data,
+            'domain' : 'messages'
+        });
+    },
+    data: {},
+    async: false
+});
+
+
     app = new AppRouter();
     Backbone.history.start();

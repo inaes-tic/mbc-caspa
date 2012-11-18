@@ -1,7 +1,8 @@
 module.exports = function(app) {
     var path = require('path')
     , folio = require('folio')
-    , jade = require('jade');
+    , jade = require('jade')
+    , po2json = require('po2json');
 
     var self = require (__dirname + '/../models/App.js')
     , appModel = new self.Model();
@@ -14,6 +15,17 @@ module.exports = function(app) {
         res.render('index', appModel.toJSON());
     });
 
+    app.get('/po/:id', function (req, res) {
+        var lang = req.params.id;
+
+        var jsondata = '';
+        try {
+            jsondata = po2json.parseSync('locale/' + lang + '/LC_MESSAGES/messages.po');
+            res.send (jsondata);
+        } catch (e) {
+            console.log (e);
+        }
+    });
 
     /**
      * Vendor Javascript Package
@@ -33,6 +45,7 @@ module.exports = function(app) {
         require.resolve('underscore/underscore.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('backboneio/backboneio.js'),
+        require.resolve('jed'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
         path.join(lib_dir, 'bootstrap.min.js'),
         path.join(lib_dir, 'andika.js'),

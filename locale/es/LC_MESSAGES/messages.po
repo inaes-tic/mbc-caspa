@@ -1,0 +1,205 @@
+# Spanish translations for PACKAGE package.
+# Copyright (C) 2012 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-11-18 14:01-0300\n"
+"PO-Revision-Date: 2012-11-18 11:06-0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: views/index.jade:5 views/index.jade:8
+msgid "Welcome to "
+msgstr "Bienvenido a "
+
+#: views/index.jade:3 views/index.jade:10
+msgid ""
+"Start Browsing\n"
+"Media Cellar"
+msgstr ""
+"Explorar la\n"
+"Cueva de Medios"
+
+#: views/index.jade:4 views/index.jade:13
+msgid ""
+"View Project\n"
+"on Github"
+msgstr ""
+"Ver el Proyecto\n"
+"en Github"
+
+#: views/index.jade:22
+msgid "Follow @mbcplayout"
+msgstr "Seguir @mbcplayout"
+
+#: views/index.jade:24
+msgid "Tweet"
+msgstr "Tweetealo"
+
+#: views/index.jade:22
+msgid "Follow"
+msgstr "Seguí"
+
+#: views/footer.jade:4
+msgid "Built as a sample application with "
+msgstr "Construido como applicación de demontración con "
+
+#: views/footer.jade:9
+msgid "and "
+msgstr "y "
+
+#: views/footer.jade:11
+msgid "based on work by "
+msgstr "basado en un trabajo de "
+
+#: views/footer.jade:13
+msgid "The source code for this application is available in "
+msgstr "El codigo fuente de esta applicacion se encuentra en "
+
+#: views/footer.jade:14
+msgid "this repository"
+msgstr "este repositorio"
+
+#: views/footer.jade:15
+msgid " on GitHub."
+msgstr " en GitHub."
+
+#: views/footer.jade:18
+msgid "This project is under the "
+msgstr "Este proyecto esta bajo la Licencia"
+
+#: views/footer.jade:20
+msgid " Licence."
+msgstr "."
+
+#: views/templates/header.jade:15
+msgid "Browse Medias"
+msgstr "Explorar"
+
+#: views/templates/header.jade:19 views/templates/mediasearch.jade:9
+msgid "Search Medias"
+msgstr "Buscar"
+
+#: views/templates/header.jade:23
+msgid "Add Medias"
+msgstr "Agregar"
+
+#: views/templates/header.jade:26
+msgid "About"
+msgstr "Acerca de"
+
+#: views/templates/header.jade:28
+msgid "Resources"
+msgstr "Punteros"
+
+#: views/templates/header.jade:33
+msgid "Backbone.js"
+msgstr ""
+
+#: views/templates/header.jade:36
+msgid "Twitter Bootstrap"
+msgstr ""
+
+#: views/templates/header.jade:39
+msgid "Node.js"
+msgstr ""
+
+#: views/templates/header.jade:42
+msgid "Express"
+msgstr ""
+
+#: views/templates/header.jade:45
+msgid "MongoDB"
+msgstr ""
+
+#: views/templates/header.jade:48
+msgid "This App"
+msgstr "Esta App"
+
+#: views/templates/header.jade:51
+#, fuzzy
+msgid "GitHub Repository"
+msgstr "Repositorio GitHub"
+
+#: views/templates/medialist.jade:5
+msgid "Thumbnail"
+msgstr "Pantallazo"
+
+#: views/templates/medialist.jade:6
+msgid "Media info"
+msgstr "Información del Medio"
+
+#: views/templates/medialist.jade:7
+msgid "Status"
+msgstr "Estatus"
+
+#: views/templates/medialist.jade:8
+msgid "Availability"
+msgstr "Availabilidad"
+
+#: views/templates/mediasearch.jade:16
+msgid ""
+"Success!\n"
+"Media saved successfully"
+msgstr "Media guardado con exito"
+
+#: views/templates/item.jade:4 views/templates/item.jade:22
+msgid "Error"
+msgstr "Error"
+
+#: views/templates/item.jade:19
+msgid "Success"
+msgstr ""
+
+#: views/templates/item.jade:28
+msgid "Complete"
+msgstr "Completo"
+
+#: views/templates/item.jade:29 views/templates/mediaview.jade:42
+msgid "Delete"
+msgstr "Suprimir"
+
+#: views/templates/mediaview.jade:2
+msgid "id is generated when media is found"
+msgstr "el id se genera cuando se encuentra el media"
+
+#: views/templates/mediaview.jade:4
+msgid "Notes about this media"
+msgstr "Notas sobre este media"
+
+#: views/templates/mediaview.jade:11
+msgid "Media Details"
+msgstr "Detalles del Media"
+
+#: views/templates/mediaview.jade:16
+msgid "Name"
+msgstr "Nombre"
+
+#: views/templates/mediaview.jade:28
+msgid "Notes"
+msgstr "Notas"
+
+#: views/templates/mediaview.jade:38
+msgid "To add media, drag a new file from your file system onto this box."
+msgstr "Para agregar un nuevo media, arastra un archivo de tu computadora a esta caja."
+
+#: views/templates/mediaview.jade:41
+msgid "Save"
+msgstr "Guardar"
+
+#: views/templates/mediaview.jade:47
+msgid "Success!"
+msgstr "¡Exito!"
+
+#: views/templates/mediaview.jade:48
+msgid "Media saved successfully"
+msgstr "Media guardado con exito"
