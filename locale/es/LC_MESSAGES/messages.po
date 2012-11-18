@@ -150,7 +150,9 @@ msgstr "Availabilidad"
 msgid ""
 "Success!\n"
 "Media saved successfully"
-msgstr "Media guardado con exito"
+msgstr ""
+"Exito!\n"
+"Media guardado con exito"
 
 #: views/templates/item.jade:4 views/templates/item.jade:22
 msgid "Error"
@@ -158,7 +160,7 @@ msgstr "Error"
 
 #: views/templates/item.jade:19
 msgid "Success"
-msgstr ""
+msgstr "Exito"
 
 #: views/templates/item.jade:28
 msgid "Complete"
