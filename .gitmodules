@@ -1,3 +1,3 @@
-[submodule "public/lib/sparkmd5"]
-	path = public/lib/sparkmd5
+[submodule "vendor/sparkmd5"]
+	path = vendor/sparkmd5
 	url = git://github.com/satazor/SparkMD5.git

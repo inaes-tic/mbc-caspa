@@ -9,7 +9,8 @@ var dirs = {
     pub    : path.join(__dirname, 'public'),
     views  : path.join(__dirname, 'views'),
     styles : path.join(__dirname, 'styles'),
-    models : path.join(__dirname, 'models')
+    models : path.join(__dirname, 'models'),
+    vendor : path.join(__dirname, 'vendor')
 };
 
 var app = express();
@@ -31,6 +32,7 @@ app.configure(function () {
     ));
     app.use(express.static(dirs.pub));
     app.use('/models', express.static(dirs.models));
+    app.use('/lib',    express.static(dirs.vendor));
 });
 
 app.configure('development', function(){

@@ -24,7 +24,7 @@ exports.index = function(req, res){
  * backbone.iobind
  */
 
-var lib_dir = path.join(__dirname, '..', 'public/lib')
+var lib_dir = path.join(__dirname, '..', 'vendor')
 
 var vendorJs = new folio.Glossary([
   require.resolve('jquery-browser/lib/jquery.js'),
