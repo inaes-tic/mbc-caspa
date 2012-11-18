@@ -107,7 +107,6 @@ var populateDB = function() {
 // FIXME: TODO
     return;
     var ffmpeg  = require('fluent-ffmpeg');
-    var Metalib = ffmpeg.Metadata;
     //This sets up the file finder
     var finder = require('findit').find('/home/xaiki/Videos');
 
