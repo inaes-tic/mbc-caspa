@@ -23,7 +23,7 @@ var AppRouter = Backbone.Router.extend({
             collection.bindClient();
             new MediaListView({model: mediaList, page: p});
         }});
-        this.headerView.selectMenuItem('home-menu');
+        this.headerView.selectMenuItem('list-menu');
     },
 
     mediaDetails: function (id) {
@@ -31,7 +31,7 @@ var AppRouter = Backbone.Router.extend({
             collection.bindClient();
             new MediaView({model: mediaList.get(id)});
         }});
-        this.headerView.selectMenuItem();
+        this.headerView.selectMenuItem('list-menu');
     },
 
     addMedia: function() {
