@@ -25,7 +25,6 @@ var AppRouter = Backbone.Router.extend({
         }});
         this.headerView.selectMenuItem('list-menu');
     },
-
     mediaDetails: function (id) {
         mediaList.fetch({success: function(collection, resp){
             collection.bindClient();
@@ -38,7 +37,7 @@ var AppRouter = Backbone.Router.extend({
         var media = new Media.Model();
         new MediaView({model: media});
         this.headerView.selectMenuItem('add-menu');
-	},
+    },
 
     mediaSearch: function (id) {
         var media = new Media.Model({_id: id});
