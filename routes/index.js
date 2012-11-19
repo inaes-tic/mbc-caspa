@@ -57,22 +57,63 @@ module.exports = function(app) {
     app.get('/js/vendor.js', folio.serve(vendorJs));
 
     /**
+     * Views Javascript Package
+     */
+
+    var views = ['paginator',
+                 'header',
+                 'home',
+                 'medialist',
+                 'mediadetails',
+                 'mediasearch',
+                 'about'];
+
+    var viewsJs = new folio.Glossary(
+        views.map (function (e) {
+            return path.join(__dirname, '..', 'public/js/views/', e + '.js');
+        })
+    );
+
+    app.get('/js/views.js', folio.serve(viewsJs));
+
+    /**
+     * Models Javascript Package
+     */
+
+    var models = ['App', 'Media'];
+
+    var modelsJs = new folio.Glossary(
+        models.map (function (e) {
+            return path.join(__dirname, '..', 'models', e + '.js');
+        })
+    );
+
+    app.get('/js/models.js', folio.serve(modelsJs));
+
+
+    /**
      * Template Javascript Package
      *
      * We are going to use pre-compiled
      * jade on the client-side.
      */
 
+    var templates = ['form',
+                     'item',
+                     'playbar',
+                     'header',
+                     'medialist',
+                     'mediaview',
+                     'mediasearch'];
+
     var templateJs = new folio.Glossary([
         require.resolve('jade/runtime.js'),
-        path.join(__dirname, '..', 'views/templates/js/header.js'),
-        path.join(__dirname, '..', 'views/templates/form.jade'),
-        path.join(__dirname, '..', 'views/templates/item.jade'),
-        path.join(__dirname, '..', 'views/templates/header.jade'),
-        path.join(__dirname, '..', 'views/templates/medialist.jade'),
-        path.join(__dirname, '..', 'views/templates/mediaview.jade'),
-        path.join(__dirname, '..', 'views/templates/mediasearch.jade')
-    ], {
+        path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
+            templates.map (function (e) {
+                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
+            })
+        ),
+        {
         compilers: {
             jade: function (name, source) {
                 return 'template[\'' + name + '\'] = ' +
@@ -80,7 +121,7 @@ module.exports = function(app) {
                         client: true,
                         compileDebug: false
                     }) + ';';
-    }
+            }
         }
     });
 
