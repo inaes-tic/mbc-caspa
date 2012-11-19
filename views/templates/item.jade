@@ -1,12 +1,14 @@
-- if(!picture)
-  - var picture= 'generic.jpg'
+- if(_id)
+  - var picture= 'sc/' + _id + '.jpg'
+- else
+  - var picture= 'pics/generic.jpg'
 - if(!file)
   - var file= i18n.gettext('Error')
 - if (!file)
   -var title= file
 td
   a.plain(href='#media/' + _id)
-    img(src='pics/' + picture, height="100",width="150",alt="")
+    img(src=picture, height="100",width="150",alt="")
 td
   a.plain(href='#media/' + _id)
     legend=file
