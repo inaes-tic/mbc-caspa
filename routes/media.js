@@ -93,20 +93,17 @@ exports.deleteMedia = function(req, res) {
 var populateDB = function() {
 
 (function(){
-    for (var i = 0; i < 3; i++)
+    for (var i = 0; i < 3; i++) 
         mediaList.add({ file: 'test' + i, _id: 'test' + i });
 
 })();
 
 // FIXME: TODO
-    return;
-    var ffmpeg  = require('fluent-ffmpeg');
-    //This sets up the file finder
-    var finder = require('findit').find('/home/xaiki/Videos');
-
-    var myPool = require('poolr').createPool(1);
-    var fs = require ('fs');
-
+    var ffmpeg  = require('fluent-ffmpeg')
+    , walk      = require('walk')
+    , fs        = require ('fs')
+    , spawn     = require('child_process').spawn
+    , bs        = 10*1024*1024;
 
     /* Ok, this a bit messy, it goes like this:
        + we get the file;
@@ -116,44 +113,66 @@ var populateDB = function() {
        + pass it on to media analysis;
        + when all is done and good, we _addMedia, to get it into the medias objects;
     */
-    function parse_file (file) {
-        console.log('File: ' + file);
-        // make sure you set the correct path to your video file
 
-        var metaObject = new Metalib(file);
-        fs.readFile(file, function (err, data) {
-            var media = {_id : require('crypto')
-                         .createHash('md5').update(data).digest('hex'),
-                         file : file};
-            if (mediaList.get(media._id))
-                return console.log("id already in hash");
+    function parse_file (file, stat, next) {
+        if (! file.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
+            next();
+            return;
+        }
+        var spawn = require('child_process').spawn,
+        md5sum    = spawn('md5sum', [file]),
+        md5       = "";
+        md5sum.stdout.on('data', function (data) {
+            md5 = data.toString().split(' ')[0];
+            next();
+
+            if (mediaList.get(md5))
+                return;
+
+            if (fs.existsSync('./public/sc/' + md5)) {
+                console.log ('skeeping screenshot of: ' + md5);
+                // extract it from DB
+            } else {
+                console.log (stat.name + ': ' + md5);
+            }
 
             var proc = new ffmpeg({source: file})
                 .withSize('150x100')
                 .onCodecData(function(metadata) {
-                    console.log(codecinfo);
-                    metadata._id  = media._id;
-                    metadata.file = media.file;
+                    console.log(metadata);
+                    metadata._id  = md5;
+                    metadata.file = file;
                     _addMedia (metadata);
                 })
+                .withFps(1)
+                .addOption('-ss', '5')
+                .onProgress(function(progress) {
+                    console.log(progress);
+                })
+                .saveToFile('./public/sc/' + md5 + '.jpg', function(retcode, error) {
+                    console.log('file: ' + md5 + ' has been converted succesfully');
+                });
+/*
                 .takeScreenshots({
                     count: 1,
                     timemarks : [ '10%'],
-                    filename : media._id}, './public/sc/', function (err, fn) {
-                        console.log ("sc ok");
+                    filename : md5}, './public/sc/', function (err, fn) {
+                        console.log (md5 + ": sc ok");
                     });
+*/
         });
-        return "ok";
     }
 
-    //This listens for files found
-    finder.on('file', function (file) {
-        myPool.addTask(parse_file, file, function(err, res) {
-            if (err) return console.log(err);
-        });
-    });
+    exports.parse_file = parse_file;
 
-    console.log ("all done");
+    //This listens for files found
+    walk.walk('/home/xaiki/Downloads/', { followLinks: false })
+    .on('file', function (root, stat, next) {
+        parse_file(root + '/' +  stat.name, stat, next);
+    })
+    .on('end', function () {
+        console.log ("all done");
+    });
 
     return;
 
