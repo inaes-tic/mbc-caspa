@@ -93,15 +93,9 @@ exports.deleteMedia = function(req, res) {
 var populateDB = function() {
 
 (function(){
-    mediaList.add({ file: 'test1', _id: 'test1' });
-    return;
-    mediaList.add({ file: 'test2', _id: 'test2' });
-    mediaList.add({ file: 'test3', _id: 'test3' });
-    mediaList.add({ file: 'test4', _id: 'test4' });
-    mediaList.add({ file: 'test5', _id: 'test5' });
-    mediaList.add({ file: 'test6', _id: 'test6' });
-    mediaList.add({ file: 'test7', _id: 'test7' });
-    mediaList.add({ file: 'test8', _id: 'test8' });
+    for (var i = 0; i < 3; i++)
+        mediaList.add({ file: 'test' + i, _id: 'test' + i });
+
 })();
 
 // FIXME: TODO
