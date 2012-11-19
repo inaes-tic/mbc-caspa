@@ -1,17 +1,10 @@
-.row-fluid
-  .span12
+block content
     .form-search
       .input-append
-        input.input-xlarge.search-query#media-search(
+        input.input-block-level.search-query#media-search(
           type="text",
           data-provide="typeahead",
           data-items="4",
           placeholder=i18n.gettext('Search Medias'))
         button.btn(type="submit")
           i.icon-search
-
-.row-fluid.status-bar
-    .span12
-        .alert.alert-success(style="display: none")
-            b= i18n.gettext('Success!\nMedia saved successfully')
-
