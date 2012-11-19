@@ -107,10 +107,10 @@ var populateDB = function() {
 
     /* Ok, this a bit messy, it goes like this:
        + we get the file;
-       + check it exists;
-       + open it, calculate md5;
-       + give that to the screenshooter;
-       + pass it on to media analysis;
+       + spawn a binary to calculate md5;
+       + give that to the ffmpeg process that will:
+         . extract codec data;
+         . take a screenshot at 5s from start;
        + when all is done and good, we _addMedia, to get it into the medias objects;
     */
 
