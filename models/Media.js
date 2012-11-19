@@ -20,11 +20,8 @@ var BackboneIO = root.BackboneIO;
 if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
 
 Media.Model = BackboneIO.Model.extend({
-
     urlRoot: "/media",
-
     idAttribute: "_id",
-
     initialize: function () {
         this.validators = {};
 
