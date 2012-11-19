@@ -9,13 +9,29 @@
 td
   a.plain(href='#media/' + _id)
     img(src=picture, height="100",width="150",alt="")
+    br
+    - if (duration)
+      span.label.label-inverse.format
+        i.icon-time.icon-white
+        span= ' ' + duration
+    -if (format)
+      span.label.label-inverse.format
+        i.icon-file.icon-white
+        span= ' ' + format
+    -if (duration || format)
+      br
+    span.label.label-inverse.video
+      i.icon-film.icon-white
+      span= ' ' + video
+    span.label.label-inverse.audio
+      i.icon-volume-down.icon-white
+      span= ' ' + audio
 td
   a.plain(href='#media/' + _id)
     legend=file
     .progress
       .bar(style="width: 60%;")
-    .video
-    .audio
+
 td
   a.plain(href='#media/' + _id)
     span.label.label-success= i18n.gettext('Success')
