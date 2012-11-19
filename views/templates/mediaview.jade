@@ -1,9 +1,13 @@
-- if (!_id)
-  - var id= i18n.gettext('id is generated when media is found')
+- if (_id)
+  - var picture= 'sc/' + _id + '.jpg'
 - if (!description)
   - var description= i18n.gettext('Notes about this media')
-- if(!picture)
+- if (!picture)
   - var picture= 'pics/generic.jpg'
+- if (!file)
+  - var file= ''
+- if (!name)
+  - var name= file
 
 .row-fluid
   form.form-horizontal.span12
@@ -11,31 +15,34 @@
       legend= i18n.gettext('Media Details')
       br
       .row
-          .span4
+          .span12
             .control-group
               label.control-label(for="mediaName")= i18n.gettext('Name') + ': '
               .controls
-                  input#mediaName(name="Name",type="text",value=name)
-            - var items = ["id", "audio", "video"]
-            each item in items
-              - var Item = item.charAt(0).toUpperCase() + item.slice(1)
+                  input.input-block-level#mediaName(name="Name",type="text",value=name)
+      .row
+          .span6
+            - var items = {'id': _id, 'audio': audio, 'video':video}
+            each v, k in items
+              - var Item = k.charAt(0).toUpperCase() + k.slice(1)
               .control-group
-                label.control-label(for='media' + Item)= item + ': '
+                label.control-label(for='media' + Item)= k + ': '
                 .controls
-                    input(id= 'media' + Item, name=Item,type="text",value=item,disabled)
+                    input.input-xxlarge(id= 'media' + Item, name=Item, type="text",value=v,disabled)
                     span.help-inline
             .control-group
               label.control-label(for="description")= i18n.gettext('Notes') + ': '
               .controls
                   textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description)
 
-          .span8
+          .span6
             .well.droparea.image-droparea(style="text-align: center;width:50%;margin: 0px auto;")
               p
                 img#picture(width="100%",src=picture)
-                .progress.progress-stripped
-                  .bar(style="width: 0%;")
-              p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
+              - if (! _id)
+                  .progress.progress-stripped
+                    .bar(style="width: 0%;")
+                  p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
 
     .form-actions
       a.btn.btn-primary.save(href="#")= i18n.gettext('Save')

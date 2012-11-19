@@ -27,17 +27,16 @@ var AppRouter = Backbone.Router.extend({
     },
 
     mediaDetails: function (id) {
-        var media = new Media.Model({_id: id});
-        media.fetch({success: function(){
-            console.log("here");
-            $("#content").html(new MediaView({model: media}).el);
+        mediaList.fetch({success: function(collection, resp){
+            collection.bindClient();
+            new MediaView({model: mediaList.get(id)});
         }});
         this.headerView.selectMenuItem();
     },
 
     addMedia: function() {
         var media = new Media.Model();
-        $('#content').html(new MediaView({model: media}).el);
+        new MediaView({model: media});
         this.headerView.selectMenuItem('add-menu');
 	},
 
