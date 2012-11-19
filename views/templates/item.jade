@@ -5,32 +5,37 @@
 - if(!file)
   - var file= i18n.gettext('Error')
 - if (!file)
-  -var title= file
+  - var title= file
+- if (!duration)
+  - var duration= false
+- if (!format)
+  - var format= false
+
 td
   a.plain(href='#media/' + _id)
     img(src=picture, height="100",width="150",alt="")
-    br
-    - if (duration)
-      span.label.label-inverse.format
-        i.icon-time.icon-white
-        span= ' ' + duration
-    -if (format)
-      span.label.label-inverse.format
-        i.icon-file.icon-white
-        span= ' ' + format
-    -if (duration || format)
-      br
-    span.label.label-inverse.video
-      i.icon-film.icon-white
-      span= ' ' + video
-    span.label.label-inverse.audio
-      i.icon-volume-down.icon-white
-      span= ' ' + audio
 td
   a.plain(href='#media/' + _id)
     h5=file
     .progress
       .bar(style="width: 60%;")
+    - if (duration)
+      span.label.label-inverse.format
+        i.icon-time.icon-white
+        span= ' ' + duration
+      span=' '
+    -if (format)
+      span.label.label-inverse.format
+        i.icon-file.icon-white
+        span= ' ' + format
+      span=' '
+    span.label.label-inverse.video
+      i.icon-film.icon-white
+      span= ' ' + video
+    span=' '
+    span.label.label-inverse.audio
+      i.icon-volume-up.icon-white
+      span= ' ' + audio
 
 td
   a.plain(href='#media/' + _id)
@@ -38,10 +43,3 @@ td
 td
   a.plain(href='#media/' + _id)
     span.label.label-important= i18n.gettext('Error')
-
-h3.title= title
-.button.complete
-  .status
-  .check &#10003;
-  .text= i18n.gettext('Complete')
-.button.delete= i18n.gettext('Delete')
