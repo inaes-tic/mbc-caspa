@@ -63,6 +63,7 @@ module.exports = function(app) {
     var views = ['paginator',
                  'header',
                  'home',
+                 'playbar',
                  'medialist',
                  'mediadetails',
                  'mediasearch',
@@ -104,7 +105,8 @@ module.exports = function(app) {
                      'header',
                      'medialist',
                      'mediaview',
-                     'mediasearch'];
+                     'mediasearch',
+                    ];
 
     var templateJs = new folio.Glossary([
         require.resolve('jade/runtime.js'),
