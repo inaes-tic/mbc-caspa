@@ -13,13 +13,16 @@ But we release the changes as AGPL v3.
 # requirements #
 
 + npm
+
 ```shell
    apt-get install npm  
 ```
 + node > 0.6.4
+
 ```shell
    apt-get install nodejs
 ```
+
 # Installing #
 
 cloning this module and runing make should install all required submodules,

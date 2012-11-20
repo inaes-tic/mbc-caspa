@@ -17,13 +17,16 @@ AGPL v3.
 # requerimientos #
 
 + npm
+
 ```shell
    apt-get install npm  
 ```
 + node > 0.6.4
+
 ```shell
    apt-get install nodejs
 ```
+
 # Instalación #
 
 ```shell
