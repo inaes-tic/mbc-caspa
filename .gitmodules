@@ -1,3 +1,9 @@
 [submodule "vendor/sparkmd5"]
 	path = vendor/sparkmd5
 	url = git://github.com/satazor/SparkMD5.git
+[submodule "node_modules/fluent-ffmpeg"]
+	path = node_modules/fluent-ffmpeg
+	url = inaes-tic:node-fluent-ffmpeg
+[submodule "node_modules/i18n-abide"]
+	path = node_modules/i18n-abide
+	url = inaes-tic:i18n-abide
