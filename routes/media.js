@@ -121,7 +121,8 @@ var populateDB = function() {
         }
         var spawn = require('child_process').spawn,
         md5sum    = spawn('md5sum', [file]),
-        md5       = "";
+        md5       = "",
+        exists    = fs.existsSync || require('path').existsSync;
         md5sum.stdout.on('data', function (data) {
             md5 = data.toString().split(' ')[0];
             next();
@@ -129,7 +130,7 @@ var populateDB = function() {
             if (mediaList.get(md5))
                 return;
 
-            if (fs.existsSync('./public/sc/' + md5)) {
+            if (exists('./public/sc/' + md5)) {
                 console.log ('skeeping screenshot of: ' + md5);
                 // extract it from DB
             } else {
