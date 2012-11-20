@@ -1,10 +1,34 @@
 # MBC Playout {mlt edition} #
 
-"Media Cellar" is a sample CRUD application built with with Backbone.js, Twitter Bootstrap, Node.js, Express, Now.js, FFMPEG, MLT and MongoDB.
+"Media Cellar" es una applicación simple construida bajo el modelo
+[[CRUD|http://es.wikipedia.org/wiki/CRUD]] con Backbone.js, Twitter
+Bootstrap, Node.js, Express, Now.js, FFMPEG, MLT y MongoDB.
 
-The application allows you to browse through a list of medias stored on your hard drive. you can as well as add, update, and delete medias.
+La applicación permite navegar una lista de medios almacenada en su disco
+rigido, y organizarlo como playlist para que se consuma por el servidor de
+playout Melted.
 
-it's heavily based on [Node Cellar](http://nodecellar.coenraets.org) by @coenraets
+El codigo esta basado en el trabajo de [Node Cellar](http://nodecellar.coenraets.org) por @coenraets
 
-But we release the changes as AGPL v3.
+# Licencia #
 
+AGPL v3.
+
+# requerimientos #
+
++ npm
+```shell
+   apt-get install npm  
+```
++ node > 0.6.4
+```shell
+   apt-get install nodejs
+```
+# Instalación #
+
+```shell
+   git clone http://github.com/inaes-tic/mbc-playout
+   cd mbc-playout
+   make
+```
+tendria que levantar la app en http://localhost:3000
