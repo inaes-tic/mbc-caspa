@@ -10,12 +10,15 @@ var Media = require (__dirname + '/../models/Media.js')
 
 exports.mediaList = mediaList;
 
-function createCallback (model) {
-    console.log("model added");
-}
-
-mediaList.bind('change', function (model) {console.log("model changed")})
-mediaList.bind('add', createCallback);
+_({'change':'change', 'add':'create'}).each(function (b, e) {
+    mediaList.bind(e, function (model, col) {
+        console.log("model " + e + "->" + b, model);
+        _.each(col.sockets, function (socket) {
+            socket.emit(col.url  + ':' + b, model.toJSON());
+            socket.broadcast.emit(col.url  + ':' + b, model.toJSON());
+        });
+    });
+});
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 db = new Db('mediadb', server, {safe: true});
