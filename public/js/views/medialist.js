@@ -51,15 +51,14 @@ window.MediaListView = Backbone.View.extend({
         mediaList.bind('add',   this.addOne, this);
         mediaList.bind('reset', this.addAll, this);
         mediaList.bind('all',   this.render, this);
+        mediaList.bind('update',this.update, this);
 
         mediaList.fetch({success: function(collection, resp){
             collection.bindClient();
         }});
     },
-    renderMe: function(){
-        mediaList.fetch();
-        console.log("renderMe ",  _.flatten(mediaList.pluck('file')) ,  _.flatten(mediaList.pluck('pos')));
-        this.render();
+    update: function(){
+        mediaList.sort()
     },
     addOne: function (media) {
         var item = new MediaListItemView({model: media}).render().el;
