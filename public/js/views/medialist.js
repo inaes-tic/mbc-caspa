@@ -52,7 +52,9 @@ window.MediaListView = Backbone.View.extend({
         mediaList.bind('reset', this.addAll, this);
         mediaList.bind('all',   this.render, this);
 
-        mediaList.fetch();
+        mediaList.fetch({success: function(collection, resp){
+            collection.bindClient();
+        }});
     },
     renderMe: function(){
         mediaList.fetch();

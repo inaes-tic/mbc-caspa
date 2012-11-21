@@ -12,17 +12,13 @@ var AppRouter = Backbone.Router.extend({
 
     initialize: function () {
         var appModel = new App.Model();
-        window.socket = io.connect('http://127.0.0.1:3000');
+        window.socket = io.connect('http://localhost');
         this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
     },
 
     list: function(page) {
-        var p = page ? parseInt(page, 10) : 1;
-        mediaList.fetch({success: function(collection, resp){
-            collection.bindClient();
-            new MediaListView({model: mediaList, page: p});
-        }});
+        new MediaListView({model: mediaList});
         this.headerView.selectMenuItem('list-menu');
     },
     mediaDetails: function (id) {
