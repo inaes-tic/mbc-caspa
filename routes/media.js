@@ -52,7 +52,16 @@ exports.findAll = function(req, res) {
 
 function _addMedia (media, err) {
     console.log ("adding media " + media._id + " : " + media.file);
-    mediaList.add(media);
+    db.collection('medias', function(err, collection) {
+        collection.update({'_id': media._id}, media, {upsert: true}, function(err, result) {
+            if (err) {
+                console.error(err, 'An error has occurred');
+            } else {
+                mediaList.add(media);
+            }
+        });
+    });
+
 };
 
 exports.addMedia = function(req, res) {
