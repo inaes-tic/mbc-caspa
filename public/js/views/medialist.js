@@ -48,7 +48,7 @@ window.MediaListView = Backbone.View.extend({
             }
         });
 //        mediaList.bind('change', this.renderMe, this);
-        mediaList.bind('add',   this.addOne, this);
+        mediaList.bind('add',   this.addOneAnim, this);
         mediaList.bind('reset', this.addAll, this);
         mediaList.bind('all',   this.render, this);
         mediaList.bind('update',this.update, this);
@@ -64,6 +64,9 @@ window.MediaListView = Backbone.View.extend({
         var item = new MediaListItemView({model: media}).render().el;
         item.setAttribute ("id", media.get('_id'));
         this.$('#media-view').append(item);
+    },
+    addOneAnim: function (media) {
+        this.addOne(media);
 
         // ooh, shiny animation!
         this.$('#' + media.id).css('opacity', 0);
