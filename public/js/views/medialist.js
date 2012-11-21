@@ -64,10 +64,13 @@ window.MediaListView = Backbone.View.extend({
     addOne: function (media) {
         var item = new MediaListItemView({model: media}).render().el;
         item.setAttribute ("id", media.get('_id'));
-
-        console.log('adding', media, item);
-
         this.$('#media-view').append(item);
+
+        // ooh, shiny animation!
+        this.$('#' + media.id).css('opacity', 0);
+        this.$('#' + media.id).animate({
+            'opacity': 1,
+        }, 2000);
     },
     addAll: function() {
         this.$('#media-view').empty();
