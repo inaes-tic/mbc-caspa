@@ -70,6 +70,7 @@ window.MediaListView = Backbone.View.extend({
         this.$('#media-view').append(item);
     },
     addAll: function() {
+        this.$('#media-view').empty();
         mediaList.each(this.addOne);
     },
     render: function () {
