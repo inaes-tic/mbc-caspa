@@ -20,7 +20,7 @@ var BackboneIO = root.BackboneIO;
 if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
 
 Media.Model = BackboneIO.Model.extend({
-    urlRoot: "/media",
+    urlRoot: "media",
     idAttribute: "_id",
     initialize: function () {
         this.validators = {};
@@ -62,7 +62,7 @@ Media.Model = BackboneIO.Model.extend({
 
 Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
-    url: "/media",
+    url: 'media',
     comparator: function(media) {
 //        console.log("compare", media, media.get('pos'));
         return media.get('pos');
