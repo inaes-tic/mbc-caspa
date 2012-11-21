@@ -30,7 +30,16 @@ db.open(function(err, db) {
             if (err) {
                 console.log("The 'medias' collection doesn't exist. Creating it with sample data...");
                 populateDB();
+            } else {
+                collection.find().toArray(function(err, items) {
+                    console.log('re-adding', items);
+                    _(items).each (function (item) {
+                        console.log('re-adding', item);
+                        mediaList.add (item);
+                    });
+                });
             }
+            setTimeout(scrape_files, 100);
         });
     } else {
         console.log("Could not connect:", err);
@@ -103,16 +112,23 @@ exports.deleteMedia = function(req, res) {
 // Populate database with sample data -- Only used once: the first time the application is started.
 // You'd typically not find this code in a real-life app, since the database would already exist.
 var populateDB = function() {
+    /*
     setInterval(function () {_addMedia ({ file: 'test' + Date.now(), _id: Date.now()})},
                 4*1000);
 
     return;
-// FIXME: TODO
+    */
+}
+
+function scrape_files () {
     var ffmpeg  = require('fluent-ffmpeg')
     , walk      = require('walk')
     , fs        = require ('fs')
     , spawn     = require('child_process').spawn
-    , bs        = 10*1024*1024;
+    , bs        = 10*1024*1024
+    , observe   = process.env.HOME + "/Downloads";
+
+    console.log ('launched obeserver on path: ' + observe);
 
     /* Ok, this a bit messy, it goes like this:
        + we get the file;
@@ -173,21 +189,12 @@ var populateDB = function() {
         });
     }
 
-    exports.parse_file = parse_file;
-
     //This listens for files found
-    walk.walk('/home/xaiki/Downloads/', { followLinks: false })
+    walk.walk(observe, { followLinks: false })
     .on('file', function (root, stat, next) {
         parse_file(root + '/' +  stat.name, stat, next);
     })
     .on('end', function () {
         console.log ("all done");
     });
-
-    return;
-
-    db.collection('medias', function(err, collection) {
-        collection.insert(medias, {safe:true}, function(err, result) {});
-    });
-
-};
+}
