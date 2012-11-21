@@ -43,11 +43,13 @@ app.configure(function () {
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   app.set('io.loglevel', 100);
+  app.set('minify', false);
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
   app.set('io.loglevel', 1);
+  app.set('minify', true);
 });
 
 require('./routes')(app);

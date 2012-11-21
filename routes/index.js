@@ -50,7 +50,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'bootstrap.min.js'),
         path.join(lib_dir, 'andika.js'),
         path.join(lib_dir, 'arvo.js'),
-    ]);
+    ], {minify:app.get('minify')});
 
     // serve using express
 
@@ -73,6 +73,7 @@ module.exports = function(app) {
         views.map (function (e) {
             return path.join(__dirname, '..', 'public/js/views/', e + '.js');
         })
+        ,{minify:app.get('minify')}
     );
 
     app.get('/js/views.js', folio.serve(viewsJs));

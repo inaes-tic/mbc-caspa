@@ -1,5 +1,7 @@
-var mongo = require('mongodb');
-var _ = require('underscore'); 
+var mongo = require('mongodb')
+     ,  _ = require('underscore')
+     , fs = require ('fs')
+     , fp = require('functionpool');
 
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -7,6 +9,54 @@ var Server = mongo.Server,
 
 var Media = require (__dirname + '/../models/Media.js')
 , mediaList = new Media.Collection();
+
+
+var sc_pool = new fp.Pool({size: 2}, function (media, done) {
+    var ffmpeg  = require('fluent-ffmpeg');
+
+    console.log ('starting sc', media.file);
+
+    var proc = new ffmpeg({source: media.file})
+        .withSize('150x100')
+        .onCodecData(function(metadata) {
+            console.log(metadata);
+            metadata._id  = media._id;
+            metadata.file = media.file;
+            _addMedia (metadata);
+        })
+        .withFps(1)
+        .addOption('-ss', '5')
+        .onProgress(function(progress) {
+            console.log(progress);
+        })
+        .saveToFile('./public/sc/' + media._id + '.jpg', function(retcode, error) {
+            console.log('sc ok: ' + media._id);
+            done(media);
+        });
+});
+
+var parse_pool = new fp.Pool({size: 2}, function (file, stat, done) {
+    var spawn = require('child_process').spawn,
+    md5sum    = spawn('md5sum', [file]),
+    md5       = "",
+    exists    = fs.existsSync || require('path').existsSync;
+    md5sum.stdout.on('data', function (data) {
+        md5 = data.toString().split(' ')[0];
+
+        if (mediaList.get(md5))
+            return done(new Error('md5 already in hash'));
+
+        if (exists('./public/sc/' + md5)) {
+            console.log ('skeeping screenshot of: ' + md5);
+            // extract it from DB
+        } else {
+            console.log (stat.name + ': ' + md5);
+        }
+
+        sc_pool.task({file: file, _id: md5});
+        done();
+    });
+});
 
 exports.mediaList = mediaList;
 
@@ -20,6 +70,26 @@ _({'change':'change', 'add':'create'}).each(function (b, e) {
     });
 });
 
+function check_media (media, cb, arg) {
+    var exists = fs.exists || require('path').exists;
+    if (!arg)
+        arg = media;
+
+    exists (media.file, function (e) {
+        if (!e)
+            return;
+        exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
+            if (!e)
+                sc_pool.task (media, function (err, res) {
+                    if (!err)
+                        check_media(media);
+                });
+            if (cb)
+                cb(arg);
+        });
+    });
+}
+
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 db = new Db('mediadb', server, {safe: true});
 
@@ -32,10 +102,10 @@ db.open(function(err, db) {
                 populateDB();
             } else {
                 collection.find().toArray(function(err, items) {
-                    console.log('re-adding', items);
                     _(items).each (function (item) {
-                        console.log('re-adding', item);
-                        mediaList.add (item);
+                        check_media (item, function (item) {
+                            mediaList.add(item);
+                        });
                     });
                 });
             }
@@ -121,9 +191,7 @@ var populateDB = function() {
 }
 
 function scrape_files () {
-    var ffmpeg  = require('fluent-ffmpeg')
-    , walk      = require('walk')
-    , fs        = require ('fs')
+  var walk      = require('walk')
     , spawn     = require('child_process').spawn
     , bs        = 10*1024*1024
     , observe   = process.env.HOME + "/Downloads";
@@ -139,60 +207,18 @@ function scrape_files () {
        + when all is done and good, we _addMedia, to get it into the medias objects;
     */
 
-    function parse_file (file, stat, next) {
-        if (! file.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
-            next();
-            return;
-        }
-        var spawn = require('child_process').spawn,
-        md5sum    = spawn('md5sum', [file]),
-        md5       = "",
-        exists    = fs.existsSync || require('path').existsSync;
-        md5sum.stdout.on('data', function (data) {
-            md5 = data.toString().split(' ')[0];
-            next();
-
-            if (mediaList.get(md5))
-                return;
-
-            if (exists('./public/sc/' + md5)) {
-                console.log ('skeeping screenshot of: ' + md5);
-                // extract it from DB
-            } else {
-                console.log (stat.name + ': ' + md5);
-            }
-
-            var proc = new ffmpeg({source: file})
-                .withSize('150x100')
-                .onCodecData(function(metadata) {
-                    console.log(metadata);
-                    metadata._id  = md5;
-                    metadata.file = file;
-                    _addMedia (metadata);
-                })
-                .withFps(1)
-                .addOption('-ss', '5')
-                .onProgress(function(progress) {
-                    console.log(progress);
-                })
-                .saveToFile('./public/sc/' + md5 + '.jpg', function(retcode, error) {
-                    console.log('file: ' + md5 + ' has been converted succesfully');
-                });
-/*
-                .takeScreenshots({
-                    count: 1,
-                    timemarks : [ '10%'],
-                    filename : md5}, './public/sc/', function (err, fn) {
-                        console.log (md5 + ": sc ok");
-                    });
-*/
-        });
-    }
-
     //This listens for files found
     walk.walk(observe, { followLinks: false })
     .on('file', function (root, stat, next) {
-        parse_file(root + '/' +  stat.name, stat, next);
+        next();
+        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
+            return new Error('file not a vid');
+        }
+
+        parse_pool.task(root + '/' +  stat.name, stat, function (err, res) {
+            console.log ('parsed: ' + stat.name);
+        });
+
     })
     .on('end', function () {
         console.log ("all done");

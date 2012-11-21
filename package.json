@@ -28,7 +28,8 @@
         "i18n-abide" : "0.0.7",
         "po2json" : "*",
         "jed" : "0.5.x",
-        "walk": "2.2.x"
+        "walk": "2.2.x",
+        "functionpool": ">=0.1.1"
     },
     "engines": {
         "node": "0.8.4",

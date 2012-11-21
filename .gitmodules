@@ -7,3 +7,6 @@
 [submodule "node_modules/i18n-abide"]
 	path = node_modules/i18n-abide
 	url = inaes-tic:i18n-abide
+[submodule "node_modules/backboneio"]
+	path = node_modules/backboneio
+	url = inaes-tic:backboneio
