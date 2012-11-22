@@ -1,4 +1,4 @@
-# MBC Playout {mlt edition} #
+OB# MBC Playout {mlt edition} #
 
 "Media Cellar" es una applicación simple construida bajo el modelo
 [[CRUD|http://es.wikipedia.org/wiki/CRUD]] con Backbone.js, Twitter
@@ -16,6 +16,12 @@ AGPL v3.
 
 # requerimientos #
 
++ gettext
+
+```shell
+   apt-get install gettext 
+```
+
 + npm
 
 ```shell
@@ -25,6 +31,12 @@ AGPL v3.
 
 ```shell
    apt-get install nodejs
+```
+
++ alltoogethernow
+
+```shell
+   sudo apt-get install gettext npm nodejs
 ```
 
 # Instalación #
