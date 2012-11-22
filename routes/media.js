@@ -10,11 +10,16 @@ var Server = mongo.Server,
 var Media = require (__dirname + '/../models/Media.js')
 , mediaList = new Media.Collection();
 
-
-var sc_pool = new fp.Pool({size: 2}, function (media, done) {
-    var ffmpeg  = require('fluent-ffmpeg');
-
+var sc_pool = new fp.Pool({size: 1}, function (media, done) {
+    var ffmpeg  = require('fluent-ffmpeg')
+    , exists    = fs.existsSync || require('path').existsSync
+    , dest      = './public/sc/' + media._id + '.jpg';
     console.log ('starting sc', media.file);
+
+    if (exists('./public/sc/' + media._id)) {
+        console.log ('skipping screenshot of: ' + md5 + '(file already there).');
+        return done(media);
+    }
 
     var proc = new ffmpeg({source: media.file})
         .withSize('150x100')
