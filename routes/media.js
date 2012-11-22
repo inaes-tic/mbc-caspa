@@ -64,8 +64,47 @@ var parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     });
 });
 
-exports.mediaList = mediaList;
+function scrape_files () {
+  var walk      = require('walk')
+    , spawn     = require('child_process').spawn
+    , bs        = 10*1024*1024
+    , observe   = process.env.HOME + "/Downloads";
 
+    console.log ('launched obeserver on path: ' + observe);
+
+    /* Ok, this a bit messy, it goes like this:
+       + we get the file;
+       + spawn a binary to calculate md5;
+       + give that to the ffmpeg process that will:
+         . extract codec data;
+         . take a screenshot at 5s from start;
+       + when all is done and good, we _addMedia, to get it into the medias objects;
+    */
+
+    //This listens for files found
+    walk.walk(observe, { followLinks: false })
+    .on('file', function (root, stat, next) {
+        var file = root + '/' +  stat.name;
+        next();
+        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
+            return new Error('file not a vid');
+        }
+
+        parse_pool.task(file, stat, function (res, err) {
+            if (err)
+                return (console.error('error:', err));
+            console.log ('parsed: ' + stat.name);
+            sc_pool.task(res);
+        });
+
+    })
+    .on('end', function () {
+        console.log ("all done");
+    });
+}
+
+exports.mediaList = mediaList;
+/*
 _({'change':'change', 'add':'create'}).each(function (b, e) {
     mediaList.bind(e, function (model, col) {
         console.log("model " + e + "->" + b, model);
@@ -75,6 +114,7 @@ _({'change':'change', 'add':'create'}).each(function (b, e) {
         });
     });
 });
+*/
 
 function check_media (media, cb, arg) {
     var exists = fs.exists || require('path').exists;
@@ -194,39 +234,4 @@ var populateDB = function() {
 
     return;
     */
-}
-
-function scrape_files () {
-  var walk      = require('walk')
-    , spawn     = require('child_process').spawn
-    , bs        = 10*1024*1024
-    , observe   = process.env.HOME + "/Downloads";
-
-    console.log ('launched obeserver on path: ' + observe);
-
-    /* Ok, this a bit messy, it goes like this:
-       + we get the file;
-       + spawn a binary to calculate md5;
-       + give that to the ffmpeg process that will:
-         . extract codec data;
-         . take a screenshot at 5s from start;
-       + when all is done and good, we _addMedia, to get it into the medias objects;
-    */
-
-    //This listens for files found
-    walk.walk(observe, { followLinks: false })
-    .on('file', function (root, stat, next) {
-        next();
-        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
-            return new Error('file not a vid');
-        }
-
-        parse_pool.task(root + '/' +  stat.name, stat, function (err, res) {
-            console.log ('parsed: ' + stat.name);
-        });
-
-    })
-    .on('end', function () {
-        console.log ("all done");
-    });
 }
