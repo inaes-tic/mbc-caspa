@@ -34,7 +34,10 @@ var sc_pool = new fp.Pool({size: 1}, function (media, done) {
         .onProgress(function(progress) {
             console.log(progress);
         })
-        .saveToFile('./public/sc/' + media._id + '.jpg', function(retcode, error) {
+        .saveToFile(dest, function(retcode, error) {
+            if (! exists (dest) || error)
+                return done (new Error('File not created' + error));
+
             console.log('sc ok: ' + media._id);
             done(media);
         });
