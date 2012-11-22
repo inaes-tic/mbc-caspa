@@ -105,17 +105,15 @@ function scrape_files () {
 }
 
 exports.mediaList = mediaList;
-/*
-_({'change':'change', 'add':'create'}).each(function (b, e) {
+
+_({'add':'create'}).each(function (b, e) {
     mediaList.bind(e, function (model, col) {
         console.log("model " + e + "->" + b, model);
         _.each(col.sockets, function (socket) {
-            socket.emit(col.url  + ':' + b, model.toJSON());
             socket.broadcast.emit(col.url  + ':' + b, model.toJSON());
         });
     });
 });
-*/
 
 function check_media (media, cb, arg) {
     var exists = fs.exists || require('path').exists;
