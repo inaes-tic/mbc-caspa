@@ -171,6 +171,14 @@ exports.findById = function(req, res) {
         res.send (mediaList.get(id));
 };
 
+exports.playById = function (req, res) {
+    var id = req.params.id;
+    var media = mediaList.get(id);
+    if (media) {
+        res.sendfile (media.get('file'));
+    }
+}
+
 exports.findAll = function(req, res) {
     console.log('Retrieving all medias');
     res.send(mediaList.models);

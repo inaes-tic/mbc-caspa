@@ -58,9 +58,11 @@ var media = require('./routes/media');
 // app.get('/tpl/:id', routes.tpl);
 app.get('/media', media.findAll);
 app.get('/media/:id', media.findById);
+app.get('/media/play/:id', media.playById);
 app.post('/media', media.addMedia);
 app.put('/media/:id', media.updateMedia);
 app.delete('/media/:id', media.deleteMedia);
+
 
 io = io.listen(app.listen(app.get('port'), function(){
   console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
