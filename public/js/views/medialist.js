@@ -33,6 +33,7 @@ window.MediaListItemView = Backbone.View.extend({
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
+        var self = this;
         $(this.el).html(template.medialist(this.model.toJSON()));
         $('.tbody', this.el).sortable({
             update: function (e, ui) {
@@ -42,7 +43,7 @@ window.MediaListView = Backbone.View.extend({
                     if (media.get('_id') == dragged_id) {
                         var move = {id: dragged_id, from: media.get('pos'), to: index}
                         window.socket.emit('medias:swapped', move);
-                        mediaList.swap(move, false);
+                        mediaList.swap(move);
                         return;
                     }
                 });
@@ -52,10 +53,9 @@ window.MediaListView = Backbone.View.extend({
             revert : true
         });
 
-
-        window.socket.on('medias:swapped', function (swapped) {
-            console.log ('got medias:swapped from server', swapped);
-            mediaList.swap(swapped, true);
+        window.socket.on('medias:swapped', function (move) {
+            self.swap(move);
+            mediaList.swap(move);
         });
 
 //        mediaList.bind('change', this.renderMe, this);
@@ -67,6 +67,14 @@ window.MediaListView = Backbone.View.extend({
         mediaList.fetch({success: function(collection, resp){
             collection.bindClient();
         }});
+    },
+    swap: function (move) {
+        var col = this.model;
+        if (move.from < move.to) {
+            $('#' + move.id).insertAfter($('#' + col.models[move.to].get('_id')));
+        } else {
+            $('#' + move.id).insertBefore($('#' + col.models[move.to].get('_id')));
+        }
     },
     update: function(){
         mediaList.sort()

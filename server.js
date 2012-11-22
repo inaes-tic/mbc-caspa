@@ -86,7 +86,7 @@ io.sockets.on('connection', function (socket) {
   });
     socket.on('medias:swapped', function (move) {
         socket.broadcast.emit ('medias:swapped', move);
-        media.mediaList.swap(move, false);
+        media.mediaList.swap(move);
 
     });
 

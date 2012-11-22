@@ -27,6 +27,7 @@ var sc_pool = new fp.Pool({size: 1}, function (media, done) {
             console.log(metadata);
             metadata._id  = media._id;
             metadata.file = media.file;
+            metadata.stat = media.stat;
             _addMedia (metadata);
         })
         .withFps(1)

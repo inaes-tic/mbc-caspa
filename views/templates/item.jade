@@ -2,10 +2,11 @@
   - var picture= 'sc/' + _id + '.jpg'
 - else
   - var picture= 'pics/generic.jpg'
-- if(!file)
-  - var file= i18n.gettext('Error')
-- if (!file)
-  - var title= file
+- if(!stat.name)
+  - var stat = {}
+  - stat.name= file
+- if (!name)
+  - var name= stat.name
 - if (!duration)
   - var duration= false
 - if (!format)
@@ -16,7 +17,7 @@ td
     img(src=picture, height="100",width="150",alt="")
 td
   a.plain(href='#media/' + _id)
-    h5=file
+    h5=stat.name
     .progress
       .bar(style="width: 60%;")
     - if (duration)

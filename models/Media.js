@@ -67,14 +67,7 @@ Media.Collection = BackboneIO.Collection.extend({
             media.save({pos: this.size() - 1});
         });
     },
-    swap: function (move, html) {
-        if (html) {
-            console.log (move);
-            console.log ($('#' + move.id));
-            console.log ($('#' + this.models[move.to].get('_id')));
-            $('#' + move.id).insertBefore($('#' + this.models[move.to].get('_id')));
-        }
-
+    swap: function (move) {
         var media = this.models[move.from].set({pos: move.to});
 
         if (move.from < move.to) {
