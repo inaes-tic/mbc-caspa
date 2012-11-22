@@ -45,24 +45,22 @@ var sc_pool = new fp.Pool({size: 1}, function (media, done) {
 
 var parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     var spawn = require('child_process').spawn,
-    md5sum    = spawn('md5sum', [file]),
-    md5       = "",
-    exists    = fs.existsSync || require('path').existsSync;
-    md5sum.stdout.on('data', function (data) {
-        md5 = data.toString().split(' ')[0];
+    md5sum    = spawn('md5sum', [file]);
 
-        if (mediaList.get(md5))
-            return done(new Error('md5 already in hash'));
+    db.collection('medias', function(err, collection) {
+        collection.findOne({'file': file}, function(err, item) {
+            if (!err && item) {
+                if (stat === item.stat) return (done(item));
+                else item.stat = stat;
+            } else {
+                item = {file: file, stat: stat};
+            }
 
-        if (exists('./public/sc/' + md5)) {
-            console.log ('skeeping screenshot of: ' + md5);
-            // extract it from DB
-        } else {
-            console.log (stat.name + ': ' + md5);
-        }
-
-        sc_pool.task({file: file, _id: md5});
-        done();
+            md5sum.stdout.on('data', function (data) {
+                item._id = data.toString().split(' ')[0];
+                done(item);
+            });
+        });
     });
 });
 
