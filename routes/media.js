@@ -39,7 +39,7 @@ var sc_pool = new fp.Pool({size: 1}, function (media, done) {
                 return done (new Error('File not created' + error));
 
             console.log('sc ok: ' + media._id);
-            done(media);
+            return done(media);
         });
 });
 
