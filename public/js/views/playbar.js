@@ -1,5 +1,4 @@
 window.PlayBarView = Backbone.View.extend({
-    model : App.Model,
     initialize: function () {
         this.render();
         this.last_pressed = "";
@@ -20,21 +19,28 @@ window.PlayBarView = Backbone.View.extend({
         // Remove any existing alert message
         utils.showAlert('Success!', 'button changed ?', 'alert-success');
     },
+    set_state: function (state) {
+        var state_name = this.model.get('state_name');
+        if (! state_name.indexOf(state))
+            return console.log ("error: invalid state:" + state);
+        this.model.save({state: state_name.indexOf(state)});
+    },
     btn_toggle: function (source) {
         $(source).addClass('disabled');
         $(this.last_pressed).removeClass('disabled');
         this.last_pressed = source;
     },
     back: function () {
-        this.btn_toggle('#bck');
+
     },
     pause: function () {
         this.btn_toggle('#pause');
+        this.set_state ('PAUSED');
     },
     play: function () {
         this.btn_toggle('#play');
+        this.set_state ('PLAYING');
     },
     forward: function () {
-        this.btn_toggle('#fwd');
     },
 });

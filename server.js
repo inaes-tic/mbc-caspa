@@ -52,7 +52,7 @@ app.configure('production', function(){
   app.set('minify', true);
 });
 
-require('./routes')(app);
+var appModel = require('./routes')(app);
 var media = require('./routes/media');
 
 // app.get('/tpl/:id', routes.tpl);
@@ -80,10 +80,13 @@ io.set('transports', [                     // enable all transports (optional if
 
 
 io.sockets.on('connection', function (socket) {
-  media.mediaList.bindServer(socket);
-  socket.on('disconnect', function () {
-    media.mediaList.unbindServer(socket);
-  });
+    media.mediaList.bindServer(socket);
+    appModel.bindServer(socket);
+
+    socket.on('disconnect', function () {
+        media.mediaList.unbindServer(socket);
+        appModel.unbindServer(socket);
+    });
     socket.on('medias:swapped', function (move) {
         socket.broadcast.emit ('medias:swapped', move);
         media.mediaList.swap(move);

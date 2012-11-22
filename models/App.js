@@ -20,6 +20,7 @@ var BackboneIO = root.BackboneIO;
 if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
 
 App.Model = BackboneIO.Model.extend({
+    urlRoot: 'app',
     defaults: {
         title: 'MBC Playout {mlt edition}', 
         subtitle: 'A simple Playout server built with magic and love',

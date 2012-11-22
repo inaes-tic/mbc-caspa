@@ -7,6 +7,13 @@ module.exports = function(app) {
     var self = require (__dirname + '/../models/App.js')
     , appModel = new self.Model();
 
+    appModel.bind('change', function (model) {
+        console.log("model " + 'change' + "->" + 'change', model);
+        _.each(model.sockets, function (socket) {
+            socket.broadcast.emit(model.url  + ':' + 'change', model.toJSON());
+        });
+    });
+
     /*
      * GET home page.
      */
@@ -130,4 +137,6 @@ module.exports = function(app) {
 
     // serve using express
     app.get('/js/templates.js', folio.serve(templateJs));
+
+    return appModel;
 }

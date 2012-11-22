@@ -103,7 +103,7 @@ window.MediaListView = Backbone.View.extend({
 
         $('#search', this.el).html(new SearchView({source : mediaNames,
                                                    target : '.table'}).render().el);
-        $('#playbar', this.el).html(new PlayBarView({model : App.Model}).render().el);
+        $('#playbar', this.el).html(new PlayBarView({model : appModel}).render().el);
 //        $(this.el).append(new Paginator({model: this.model, page: this.options.page}).render().el);
 
         return this;

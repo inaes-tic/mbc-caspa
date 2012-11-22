@@ -104,17 +104,6 @@ function scrape_files () {
     });
 }
 
-exports.mediaList = mediaList;
-
-_({'add':'create'}).each(function (b, e) {
-    mediaList.bind(e, function (model, col) {
-        console.log("model " + e + "->" + b, model);
-        _.each(col.sockets, function (socket) {
-            socket.broadcast.emit(col.url  + ':' + b, model.toJSON());
-        });
-    });
-});
-
 function check_media (media, cb, arg) {
     var exists = fs.exists || require('path').exists;
     if (!arg)
@@ -135,6 +124,18 @@ function check_media (media, cb, arg) {
         });
     });
 }
+
+exports.mediaList = mediaList;
+
+_({'add':'create'}).each(function (b, e) {
+    mediaList.bind(e, function (model, col) {
+        console.log("model " + e + "->" + b, model);
+        _.each(col.sockets, function (socket) {
+            socket.broadcast.emit(col.url  + ':' + b, model.toJSON());
+        });
+    });
+});
+
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 db = new Db('mediadb', server, {safe: true});
