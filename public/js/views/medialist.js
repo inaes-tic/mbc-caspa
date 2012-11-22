@@ -43,7 +43,10 @@ window.MediaListView = Backbone.View.extend({
                         media.save({pos:index, notify:"others"});
                     }
                 });
-            }
+            },
+            forceHelperSize : true,
+            forcePlaceholderSize : true,
+            revert : true
         });
 //        mediaList.bind('change', this.renderMe, this);
         mediaList.bind('add',   this.addOneAnim, this);
