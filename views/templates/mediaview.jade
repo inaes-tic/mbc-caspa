@@ -7,7 +7,7 @@
 - if (!file)
   - var file= ''
 - if (!name)
-  - var name= file
+  - var name= stat.name
 - if (audio_details)
   - var audio= audio_details
 - if (video_details)
@@ -45,7 +45,8 @@
         .span6
             .well.droparea.image-droparea(style="text-align: center;width:50%;margin: 0px auto;")
               p
-                img#picture(width="150%",src=picture)
+                video(poster=picture, controls, tabindex="0", width="100%")
+                  source(src='media/play/' + _id)
               - if (! _id)
                   .progress.progress-stripped
                     .bar(style="width: 0%;")
