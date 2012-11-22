@@ -56,13 +56,17 @@ Media.Model = BackboneIO.Model.extend({
         name: "",
         audio: "None",
         video: "None",
-        pos: 0
     }
 });
 
 Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
     url: 'media',
+    initialize: function() {
+        this.bind('add', function (media) {
+            media.save({pos: this.size() - 1});
+        });
+    },
     comparator: function(media) {
 //        console.log("compare", media, media.get('pos'));
         return media.get('pos');
