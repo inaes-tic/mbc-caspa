@@ -36,11 +36,14 @@ window.MediaListView = Backbone.View.extend({
         $(this.el).html(template.medialist(this.model.toJSON()));
         $('.tbody', this.el).sortable({
             update: function (e, ui) {
+                var dragged_id = ui.item[0].id;
                 _($(this).sortable('toArray')).each(function (order, index) {
                     var media = mediaList.get(order);
-                    console.log("update", order, media);
-                    if (media.get('pos') != index) {
-                        media.save({pos:index, notify:"others"});
+                    if (media.get('_id') == dragged_id) {
+                        var move = {id: dragged_id, from: media.get('pos'), to: index}
+                        window.socket.emit('medias:swapped', move);
+                        mediaList.swap(move, false);
+                        return;
                     }
                 });
             },
@@ -48,6 +51,13 @@ window.MediaListView = Backbone.View.extend({
             forcePlaceholderSize : true,
             revert : true
         });
+
+
+        window.socket.on('medias:swapped', function (swapped) {
+            console.log ('got medias:swapped from server', swapped);
+            mediaList.swap(swapped, true);
+        });
+
 //        mediaList.bind('change', this.renderMe, this);
         mediaList.bind('add',   this.addOneAnim, this);
         mediaList.bind('reset', this.addAll, this);

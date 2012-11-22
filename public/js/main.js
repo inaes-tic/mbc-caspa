@@ -13,6 +13,9 @@ var AppRouter = Backbone.Router.extend({
     initialize: function () {
         var appModel = new App.Model();
         window.socket = io.connect('http://localhost');
+        window.socket.on('medias:swapped', function (swapped) {
+            console.log ('got medias:swapped from server', swapped);
+        });
         this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
     },

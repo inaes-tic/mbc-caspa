@@ -67,6 +67,30 @@ Media.Collection = BackboneIO.Collection.extend({
             media.save({pos: this.size() - 1});
         });
     },
+    swap: function (move, html) {
+        if (html) {
+            console.log (move);
+            console.log ($('#' + move.id));
+            console.log ($('#' + this.models[move.to].get('_id')));
+            $('#' + move.id).insertBefore($('#' + this.models[move.to].get('_id')));
+        }
+
+        var media = this.models[move.from].set({pos: move.to});
+
+        if (move.from < move.to) {
+            for (var i = move.from; i < move.to; i++) {
+                this.models[i] = this.models[i+1];
+                this.models[i].set({pos: i});
+            }
+        } else {
+            for (var i = move.from; i > move.to; i--) {
+                this.models[i] = this.models[i-1];
+                this.models[i].set({pos: i});
+            }
+        }
+
+        this.models[move.to] = media;
+    },
     comparator: function(media) {
 //        console.log("compare", media, media.get('pos'));
         return media.get('pos');

@@ -78,11 +78,18 @@ io.set('transports', [                     // enable all transports (optional if
   , 'jsonp-polling'
 ]);
 
+
 io.sockets.on('connection', function (socket) {
   media.mediaList.bindServer(socket);
   socket.on('disconnect', function () {
     media.mediaList.unbindServer(socket);
   });
+    socket.on('medias:swapped', function (move) {
+        socket.broadcast.emit ('medias:swapped', move);
+        media.mediaList.swap(move, false);
+
+    });
+
 });
 
 
