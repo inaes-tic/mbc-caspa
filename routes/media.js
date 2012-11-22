@@ -43,7 +43,7 @@ var sc_pool = new fp.Pool({size: 1}, function (media, done) {
         });
 });
 
-var parse_pool = new fp.Pool({size: 2}, function (file, stat, done) {
+var parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     var spawn = require('child_process').spawn,
     md5sum    = spawn('md5sum', [file]),
     md5       = "",
