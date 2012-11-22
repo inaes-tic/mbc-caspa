@@ -43,8 +43,6 @@ window.MediaListView = Backbone.View.extend({
                         media.save({pos:index, notify:"others"});
                     }
                 });
-                // delay save() until we have all the pos set correctly
-                //                mediaList.reset(mediaList.models)
             }
         });
 //        mediaList.bind('change', this.renderMe, this);
