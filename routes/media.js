@@ -124,11 +124,12 @@ function check_media (media, cb, arg) {
     exists (media.file, function (e) {
         if (!e)
             return;
+        cb(arg)
         exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
             if (!e)
                 sc_pool.task (media, function (err, res) {
-                    if (!err)
-                        check_media(media);
+                    if (err)
+                        console.error (new Error("couldn't sc"));
                 });
             if (cb)
                 cb(arg);
