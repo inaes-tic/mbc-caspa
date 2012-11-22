@@ -35,7 +35,7 @@
 
                 label.control-label(for='media' + Item)= i18n.gettext(k) + ': '
                 .controls
-                    input.input-xxlarge(id= 'media' + Item, name=Item, type="text",value=v,disabled)
+                    input.input-xlarge(id= 'media' + Item, name=Item, type="text",value=v,disabled)
                     span.help-inline
           .control-group
               label.control-label(for="description")= i18n.gettext('Notes') + ': '
@@ -43,7 +43,7 @@
                   textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description)
 
         .span6
-            .well.droparea.image-droparea(style="text-align: center;width:50%;margin: 0px auto;")
+            .well.well-large.droparea.image-droparea
               p
                 video(poster=picture, controls, tabindex="0", width="100%")
                   source(src='media/play/' + _id)
