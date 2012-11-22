@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-20 13:40-0300\n"
+"POT-Creation-Date: 2012-11-22 14:38-0300\n"
 "PO-Revision-Date: 2012-11-18 11:06-0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -86,6 +86,7 @@ msgid "Browse Medias"
 msgstr ""
 
 #: views/templates/header.jade:19 views/templates/mediasearch.jade:9
+#: views/templates/mediasearch.jade:8
 msgid "Search Medias"
 msgstr ""
 
@@ -129,19 +130,19 @@ msgstr ""
 msgid "GitHub Repository"
 msgstr ""
 
-#: views/templates/medialist.jade:5
+#: views/templates/medialist.jade:5 views/templates/medialist.jade:11
 msgid "Thumbnail"
 msgstr ""
 
-#: views/templates/medialist.jade:6
+#: views/templates/medialist.jade:6 views/templates/medialist.jade:12
 msgid "Media info"
 msgstr ""
 
-#: views/templates/medialist.jade:7
+#: views/templates/medialist.jade:7 views/templates/medialist.jade:13
 msgid "Status"
 msgstr ""
 
-#: views/templates/medialist.jade:8
+#: views/templates/medialist.jade:8 views/templates/medialist.jade:14
 msgid "Availability"
 msgstr ""
 
@@ -152,10 +153,11 @@ msgid ""
 msgstr ""
 
 #: views/templates/item.jade:4 views/templates/item.jade:22
+#: views/templates/item.jade:46
 msgid "Error"
 msgstr ""
 
-#: views/templates/item.jade:19
+#: views/templates/item.jade:19 views/templates/item.jade:43
 msgid "Success"
 msgstr ""
 
@@ -164,6 +166,7 @@ msgid "Complete"
 msgstr ""
 
 #: views/templates/item.jade:29 views/templates/mediaview.jade:42
+#: views/templates/mediaview.jade:56
 msgid "Delete"
 msgstr ""
 
@@ -175,30 +178,54 @@ msgstr ""
 msgid "Notes about this media"
 msgstr ""
 
-#: views/templates/mediaview.jade:11
+#: views/templates/mediaview.jade:11 views/templates/mediaview.jade:21
 msgid "Media Details"
 msgstr ""
 
-#: views/templates/mediaview.jade:16
+#: views/templates/mediaview.jade:16 views/templates/mediaview.jade:26
 msgid "Name"
 msgstr ""
 
-#: views/templates/mediaview.jade:28
+#: views/templates/mediaview.jade:28 views/templates/mediaview.jade:41
 msgid "Notes"
 msgstr ""
 
-#: views/templates/mediaview.jade:38
+#: views/templates/mediaview.jade:38 views/templates/mediaview.jade:52
 msgid "To add media, drag a new file from your file system onto this box."
 msgstr ""
 
-#: views/templates/mediaview.jade:41
+#: views/templates/mediaview.jade:41 views/templates/mediaview.jade:55
 msgid "Save"
 msgstr ""
 
-#: views/templates/mediaview.jade:47
+#: views/templates/mediaview.jade:47 views/templates/mediaview.jade:61
 msgid "Success!"
 msgstr ""
 
-#: views/templates/mediaview.jade:48
+#: views/templates/mediaview.jade:48 views/templates/mediaview.jade:62
 msgid "Media saved successfully"
+msgstr ""
+
+#: views/templates/mediaview.jade:16
+msgid "Duration"
+msgstr ""
+
+#: views/templates/mediaview.jade:17
+msgid "Format"
+msgstr ""
+
+#: views/templates/playbar.jade:5
+msgid "back"
+msgstr ""
+
+#: views/templates/playbar.jade:8
+msgid "pause"
+msgstr ""
+
+#: views/templates/playbar.jade:11
+msgid "play"
+msgstr ""
+
+#: views/templates/playbar.jade:14
+msgid "forward"
 msgstr ""
