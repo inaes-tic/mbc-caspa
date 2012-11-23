@@ -28,6 +28,7 @@ var Melted = {
         });
         this.server.on("data", this.bind(this, this.appendResponse));
         this.server.addListener("end", this.bind(this, this.parseResponse));
+        return this;
     },
     parseResponse: function() {
         var str = this.response.toString();
