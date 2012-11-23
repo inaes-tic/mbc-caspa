@@ -103,7 +103,7 @@ module.exports = exports = {
         if (!this.server) {
             this.connect();
         }
-                    this.response = "";
+        this.response = "";
         console.log("Command: " + command);
         this.server.write(command + "\n");
     },
