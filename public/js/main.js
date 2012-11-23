@@ -45,14 +45,14 @@ var AppRouter = Backbone.Router.extend({
         media.fetch({success: function(){
             $("#content").html(new SearchView({model: media}).el);
         }});
-        this.headerView.selectMenuItem();
+        this.headerView.selectMenuItem('search-menu');
     },
 
     searchMedia: function() {
         var media = new Media.Model();
         $('#content').html(new SearchView({model: media}).el);
-        this.headerView.selectMenuItem('add-menu');
-	},
+        this.headerView.selectMenuItem('search-menu');
+    },
 
     about: function () {
         if (!this.aboutView) {
