@@ -5,7 +5,7 @@ window.AboutView = Backbone.View.extend({
     },
 
     render:function () {
-        $(this.el).html(this.template());
+        $(this.el).html(template.about(this.model.toJSON()));
         return this;
     }
 
