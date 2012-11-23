@@ -16,7 +16,7 @@ var Melted = {
         console.log("Response: " + this.response);
         return this.response;
     },
-    initServer: function() {
+    connect: function() {
         this.server = new net.createConnection(5250);
         this.server.setEncoding('ascii');
         this.server.addListener("connect", function() {
@@ -100,7 +100,7 @@ var Melted = {
         var split = command.split(" ");
         this.command = split[0];
         if (!this.server) {
-            this.initServer();
+            this.connect();
         }
                     this.response = "";
         console.log("Command: " + command);
