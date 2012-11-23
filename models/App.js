@@ -25,7 +25,10 @@ App.Model = BackboneIO.Model.extend({
         title: 'MBC Playout {mlt edition}', 
         subtitle: 'A simple Playout server built with magic and love',
         state: 0,
-        state_name: ['UNKNOWN', 'SYNCING', 'LOADING', 'PREROLL', 'PAUSED', 'PLAYING', 'REMOVED']
+        state_name: ['UNKNOWN', 'SYNCING', 'LOADING', 'PREROLL', 'PAUSED', 'PLAYING', 'REMOVED'],
+        config: {
+            scrape_path: "/home/xaiki/Downloads",
+        }
     }
 });
 

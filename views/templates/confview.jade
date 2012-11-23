@@ -1,0 +1,32 @@
+.row
+  .span3.bs-docs-sidebar
+    ul.nav.nav-list.bs-docs-sidenav.affix
+      - var items = {Overview: 'overview', Main: 'config-main', Secondary: 'config-sec'}
+      each v, k in items
+        li
+          a(href='#' + v,data-toggle="tab")
+            i.icon-cheveron-right
+            span= i18n.gettext(k)
+      li
+        .form-actions
+          a.btn.btn-primary.save(href="#")= i18n.gettext('Save')
+          a.btn.delete(href="#")= i18n.gettext('Cancel')
+
+  .span9
+    section#overview
+      .page-header
+        h1= i18n.gettext('Configure MBC Playout')
+    section#config-main
+     .page-header
+       h1= i18n.gettext('Main configuration')
+         small= i18n.gettext('the finest of the fine tuning')
+     h2= i18n.gettext('Scrapper')
+       form.form-horizontal
+         .control-group
+           label.control-label(for='scrape_path')= i18n.gettext('Scrape Path') + ':'
+           .controls
+             input#scrape_path(type='text', placeholder=i18n.gettext('Scrape Path'), value=config.scrape_path)
+    section#config-sec
+     .page-header
+       h1= i18n.gettext('Clearly secondary')
+         small= i18n.gettext('guru only')

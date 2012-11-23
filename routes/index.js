@@ -74,6 +74,7 @@ module.exports = function(app) {
                  'medialist',
                  'mediadetails',
                  'mediasearch',
+                 'conf',
                  'about'];
 
     var viewsJs = new folio.Glossary(
@@ -114,6 +115,7 @@ module.exports = function(app) {
                      'medialist',
                      'mediaview',
                      'mediasearch',
+                     'confview',
                     ];
 
     var templateJs = new folio.Glossary([

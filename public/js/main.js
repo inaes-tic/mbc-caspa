@@ -1,5 +1,6 @@
 var mediaList = new Media.Collection();
 var appModel = new App.Model();
+
 var AppRouter = Backbone.Router.extend({
 
     routes: {
@@ -8,6 +9,7 @@ var AppRouter = Backbone.Router.extend({
         "media/add"         : "addMedia",
         "media/search"      : "searchMedia",
         "media/:id"         : "mediaDetails",
+        "admin"             : "conf",
         "about"             : "about",
     },
 
@@ -60,8 +62,11 @@ var AppRouter = Backbone.Router.extend({
         }
         $('#content').html(this.aboutView.el);
         this.headerView.selectMenuItem('about-menu');
-    }
-
+    },
+    conf: function () {
+        new ConfView({model: appModel});
+        this.headerView.selectMenuItem('conf-menu');
+    },
 });
 
 var lang = $('html')[0].lang;
