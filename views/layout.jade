@@ -18,13 +18,10 @@ html(lang='#{lang}', dir='#{lang_dir}')
         "js/main.js"
       );
     div.header
-    div.container(id="top")
-      div.row-fluid
-        div.span12(id="content")
-          div
-            block content
+    div.container#content
+      block content
 
-      footer.footer
-        div.container(id="bottom")
-          include footer
+    footer.footer
+      div.container(id="bottom")
+        include footer
   
