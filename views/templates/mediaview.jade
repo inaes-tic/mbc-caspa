@@ -6,12 +6,19 @@
   - var picture= 'pics/generic.jpg'
 - if (!file)
   - var file= ''
+- if (!stat)
+  - var stat = {}
+  - stat.name = file
 - if (!name)
   - var name= stat.name
-- if (audio_details)
-  - var audio= audio_details
-- if (video_details)
-  - var video= video_details
+- if (!audio_details)
+  - var audio_details = 'None'
+- if (!video_details)
+  - var video_details = 'None'
+- if (!duration)
+  - var duration = 'None'
+- if (!format)
+  - var format = 'None'
 
 - var duration_name= i18n.gettext('Duration')
 - var format_name= i18n.gettext('Format')
@@ -29,25 +36,31 @@
       .row
         .span6
           .control-group
-            - var items = {md5: _id, 'File Name': file, Duration: duration, Format: format, Audio: audio, Video:video}
+            - var items = {md5: _id, 'File Name': file, Duration: duration, Format: format, Audio: audio_details, Video:video_details}
             each v, k in items
               - var Item = k.charAt(0).toUpperCase() + k.slice(1)
 
                 label.control-label(for='media' + Item)= i18n.gettext(k) + ': '
                 .controls
-                    input.input-xlarge(id= 'media' + Item, name=Item, type="text",value=v,disabled)
+                  .contain
+                    span.label.label-inverse.format= v
+
                     span.help-inline
+                  br
           .control-group
               label.control-label(for="description")= i18n.gettext('Notes') + ': '
               .controls
                   textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description)
 
         .span6
-            .well.well-large.droparea.image-droparea
-              p
-                video(poster=picture, controls, tabindex="0", width="100%")
-                  source(src='media/play/' + _id)
+            .well.droparea.image-droparea
+              - if (_id)
+                p
+                  video(poster=picture, controls, tabindex="0", width="100%", height="100%")
+                    source(src='media/play/' + _id)
               - if (! _id)
+                p
+                  img(src=picture)
                   .progress.progress-stripped
                     .bar(style="width: 0%;")
                   p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
