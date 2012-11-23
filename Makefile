@@ -11,11 +11,13 @@ submodules: sparkmd5 i18n-abide fluent-ffmpeg
 
 sparkmd5: vendor/sparkmd5/spark-md5.js
 
+bootstrap: vendor/bootstrap/js/bootstrap-typeahead.js
+
 i18n-abide: node_modules node_modules/i18n-abide/package.json node_modules/i18n-abide/node_modules
 
 fluent-ffmpeg: node_modules node_modules/fluent-ffmpeg/package.json node_modules/fluent-ffmpeg/node_modules
 
-vendor/sparkmd5/spark-md5.js node_modules/i18n-abide/package.json node_modules/fluent-ffmpeg/package.json:
+vendor/bootstrap/js/bootstrap-typeahead.js vendor/sparkmd5/spark-md5.js node_modules/i18n-abide/package.json node_modules/fluent-ffmpeg/package.json:
 	git submodule update --init
 
 node_modules:
@@ -32,4 +34,4 @@ update: submodules npm mos
 serve:
 	node server.js
 
-.PHONY: npm submodules serve sparkmd5 i18n-abide fluent-ffmpeg
+.PHONY: npm submodules serve sparkmd5 i18n-abide fluent-ffmpeg bootstrap
