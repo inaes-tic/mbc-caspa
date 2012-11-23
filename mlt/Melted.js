@@ -1,6 +1,6 @@
 var net = require('net');
 
-var Melted = {
+module.exports = exports = {
     server: false,
     response: false,
     command: false,
