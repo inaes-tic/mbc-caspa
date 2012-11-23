@@ -190,7 +190,7 @@ function _addMedia (media, err) {
     db.collection('medias', function(err, collection) {
         collection.update({'_id': media._id}, media, {upsert: true}, function(err, result) {
             if (err) {
-                console.error(err, 'An error has occurred');
+                console.error(err, 'An error has occurred, trying to insert');
             } else {
                 if (mlt.addFile(media.file))
                     mediaList.add(media);
