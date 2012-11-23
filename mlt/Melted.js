@@ -4,11 +4,11 @@ var Melted = {
     server: false,
     response: false,
     command: false,
-    addModel: function(model) {
+    addFile: function(file) {
         this.sendCommand("uls");
         if (this.response.toLowerCase().indexOf("u0") == -1) {
             this.sendCommand("uadd sdl");
-            this.sendCommand("load u0 " + model.file);
+            this.sendCommand("load u0 " + file);
             this.sendCommand("play u0");
         } else {
             this.sendCommand("apnd u0");
