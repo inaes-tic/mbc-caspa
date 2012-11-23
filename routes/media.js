@@ -1,7 +1,8 @@
 var mongo = require('mongodb')
      ,  _ = require('underscore')
      , fs = require ('fs')
-     , fp = require('functionpool');
+     , fp = require('functionpool')
+     ,mlt = require('../mlt/Melted').connect();
 
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -191,7 +192,9 @@ function _addMedia (media, err) {
             if (err) {
                 console.error(err, 'An error has occurred');
             } else {
-                mediaList.add(media);
+                if (mlt.addFile(media.file))
+                    mediaList.add(media);
+                console.error(err, 'An error has occurred, trying to add to melted');
             }
         });
     });
