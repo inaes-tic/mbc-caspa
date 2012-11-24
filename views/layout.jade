@@ -17,11 +17,17 @@ html(lang='#{lang}', dir='#{lang_dir}')
         "js/views.js",
         "js/main.js"
       );
-    div.header
-    div.container#content
+    .header
+    .row-fluid.status-bar
+      .span12
+        .alert(style="display: none")
+          b.status
+            span.data
+
+    .container#content
       block content
 
     footer.footer
-      div.container(id="bottom")
+      .container(id="bottom")
         include footer
   

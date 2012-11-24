@@ -28,8 +28,11 @@ App.Model = BackboneIO.Model.extend({
         state_name: ['UNKNOWN', 'SYNCING', 'LOADING', 'PREROLL', 'PAUSED', 'PLAYING', 'REMOVED'],
         config: {
             scrape_path: "/home/xaiki/Downloads",
-        }
-    }
+        },
+        error: {
+            melted: [],
+        },
+    },
 });
 
 if(server) module.exports = App;
