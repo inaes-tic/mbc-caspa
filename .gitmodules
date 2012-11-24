@@ -4,9 +4,6 @@
 [submodule "node_modules/fluent-ffmpeg"]
 	path = node_modules/fluent-ffmpeg
 	url = git://github.com/inaes-tic/node-fluent-ffmpeg
-[submodule "node_modules/i18n-abide"]
-	path = node_modules/i18n-abide
-	url = git://github.com/inaes-tic/i18n-abide
 [submodule "node_modules/backboneio"]
 	path = node_modules/backboneio
 	url = git://github.com/inaes-tic/backboneio
