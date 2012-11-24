@@ -1,17 +1,23 @@
-var mongo = require('mongodb')
-  ,     _ = require('underscore')
-  ,   mlt = require('../mlt/Melted').connect()
+var     _ = require('underscore')
+  , melted= require('../mlt/Melted')
   , utils = require('../utils');
 ;
 
-var Server = mongo.Server,
-    Db = mongo.Db,
-    BSON = mongo.BSONPure;
+var mlt = new melted({reconnect: true});
 
 var Media = require (__dirname + '/../models/Media.js')
 , mediaList = new Media.Collection();
 
 exports.mediaList = mediaList;
+
+utils.openDB(function (item) {
+    mediaList.add(item);
+});
+
+setTimeout(function () {
+    utils.scrape_files (process.env.HOME + "/Downloads", _addMedia);
+}, 300);
+
 
 _({'add':'create'}).each(function (b, e) {
     mediaList.bind(e, function (model, col) {
@@ -20,34 +26,6 @@ _({'add':'create'}).each(function (b, e) {
             socket.broadcast.emit(col.url  + ':' + b, model.toJSON());
         });
     });
-});
-
-
-var server = new Server('localhost', 27017, {auto_reconnect: true});
-db = new Db('mediadb', server, {safe: true});
-
-db.open(function(err, db) {
-    if(!err) {
-        console.log("Connected to 'mediadb' database");
-        db.collection('medias', {safe:true}, function(err, collection) {
-            if (err) {
-                console.log("The 'medias' collection doesn't exist. Creating it with sample data...");
-                populateDB();
-            } else {
-                collection.find().toArray(function(err, items) {
-                    _(items).each (function (item) {
-                        utils.check_media (item, function (item) {
-                            mediaList.add(item);
-                        });
-                    });
-                });
-            }
-            setTimeout(utils.scrape_files, 100);
-        });
-    } else {
-        console.log("Could not connect:", err);
-        abort();
-    }
 });
 
 exports.findById = function(req, res) {
@@ -72,7 +50,7 @@ exports.findAll = function(req, res) {
 
 function _addMedia (media, err) {
     console.log ("adding media " + media._id + " : " + media.file);
-    db.collection('medias', function(err, collection) {
+    utils.db.collection('medias', function(err, collection) {
         collection.update({'_id': media._id}, media, {upsert: true}, function(err, result) {
             if (err) {
                 console.error(err, 'An error has occurred, trying to insert');
@@ -102,7 +80,7 @@ exports.updateMedia = function(req, res) {
     delete media._id;
     console.log('Updating media: ' + id);
     console.log(JSON.stringify(media));
-    db.collection('medias', function(err, collection) {
+    utils.db.collection('medias', function(err, collection) {
         collection.update({'_id':new BSON.ObjectID(id)}, media, {safe:true}, function(err, result) {
             if (err) {
                 console.log('Error updating media: ' + err);
@@ -121,14 +99,3 @@ exports.deleteMedia = function(req, res) {
     mediaList.get(id).remove();
 }
 
-/*--------------------------------------------------------------------------------------------------------------------*/
-// Populate database with sample data -- Only used once: the first time the application is started.
-// You'd typically not find this code in a real-life app, since the database would already exist.
-var populateDB = function() {
-    /*
-    setInterval(function () {_addMedia ({ file: 'test' + Date.now(), _id: Date.now()})},
-                4*1000);
-
-    return;
-    */
-}

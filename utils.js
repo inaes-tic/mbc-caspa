@@ -1,8 +1,54 @@
-var fp    = require('functionpool')
+var     _ = require('underscore')
+,   fp    = require('functionpool')
 ,   fs    = require ('fs')
-, ffmpeg  = require('fluent-ffmpeg');
+, ffmpeg  = require('fluent-ffmpeg')
+,  mongo  = require('mongodb');
 
-exports.sc_pool = new fp.Pool({size: 1}, function (media, done) {
+var   Db = mongo.Db,
+    BSON = mongo.BSONPure;
+
+var server = new mongo.Server('localhost', 27017, {auto_reconnect: true});
+
+exports.db = db = new Db('mediadb', server, {safe: true});
+
+exports.openDB = function (callback) {
+    db.open(function(err, db) {
+        if(!err) {
+            console.log("Connected to 'mediadb' database");
+            db.collection('medias', {safe:true}, function(err, collection) {
+                if (err) {
+                    console.log("The 'medias' collection doesn't exist. Creating it with sample data...");
+                populateDB();
+                } else {
+                    collection.find().toArray(function(err, items) {
+                        _(items).each (function (item) {
+                            exports.check_media (item, function (item) {
+                                callback(item);
+                            });
+                        });
+                    });
+                }
+            });
+        } else {
+            console.log("Could not connect:", err);
+            abort();
+        }
+    });
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+// Populate database with sample data -- Only used once: the first time the application is started.
+// You'd typically not find this code in a real-life app, since the database would already exist.
+var populateDB = function() {
+    /*
+    setInterval(function () {_addMedia ({ file: 'test' + Date.now(), _id: Date.now()})},
+                4*1000);
+
+    return;
+    */
+}
+
+exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     var exists  = fs.existsSync || require('path').existsSync
     , dest      = './public/sc/' + media._id + '.jpg';
     console.log ('starting sc', media.file);
@@ -19,7 +65,8 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, done) {
             metadata._id  = media._id;
             metadata.file = media.file;
             metadata.stat = media.stat;
-            _addMedia (metadata);
+            if (callback)
+                callback (metadata);
         })
         .withFps(1)
         .addOption('-ss', '5')
@@ -56,11 +103,11 @@ exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     });
 });
 
-exports.scrape_files = function () {
+exports.scrape_files = function (path, callback) {
   var walk      = require('walk')
     , spawn     = require('child_process').spawn
     , bs        = 10*1024*1024
-    , observe   = process.env.HOME + "/Downloads";
+    , observe   = path;
 
     console.log ('launched obeserver on path: ' + observe);
 
@@ -86,7 +133,7 @@ exports.scrape_files = function () {
             if (err)
                 return (console.error('error:', err));
             console.log ('parsed: ' + stat.name);
-            exports.sc_pool.task(res);
+            exports.sc_pool.task(res, callback);
         });
 
     })
@@ -106,7 +153,7 @@ exports.check_media = function (media, cb, arg) {
         cb(arg)
         exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
             if (!e)
-                exports.sc_pool.task (media, function (err, res) {
+                exports.sc_pool.task (media, null, function (err, res) {
                     if (err)
                         console.error (new Error("couldn't sc"));
                 });
