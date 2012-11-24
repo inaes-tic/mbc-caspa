@@ -1,0 +1,32 @@
+{
+    "name": "melted-node",
+    "description": "a library to interface with the Melted playout server",
+    "version": "0.0.1",
+    "author": "Juan Martin Runge <jmrunge@gmail.com>",
+    "contributors": [ "Niv Sardi <xaiki@inaes.gob.ar>", "hatcsh"],
+    "scripts": {
+        "test": "vows"
+    },
+    "main": "Melted",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/inaes-tic/node-melted"
+    },
+    "keywords": [
+        "client",
+        "video",
+        "playout"
+    ],
+    "dependencies" : {
+        "q" : "0.8.x"
+    },
+    "devDependencies": {
+        "vows"    :  "0.5.x"
+    },
+    "bundledDependencies": [
+    ],
+    "license": "agplv3",
+    "engines": {
+        "node": ">=0.6"
+    }
+}
