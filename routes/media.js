@@ -1,8 +1,8 @@
 var mongo = require('mongodb')
-     ,  _ = require('underscore')
-     , fs = require ('fs')
-     , fp = require('functionpool')
-     ,mlt = require('../mlt/Melted').connect();
+  ,     _ = require('underscore')
+  ,   mlt = require('../mlt/Melted').connect()
+  , utils = require('../utils');
+;
 
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -10,121 +10,6 @@ var Server = mongo.Server,
 
 var Media = require (__dirname + '/../models/Media.js')
 , mediaList = new Media.Collection();
-
-var sc_pool = new fp.Pool({size: 1}, function (media, done) {
-    var ffmpeg  = require('fluent-ffmpeg')
-    , exists    = fs.existsSync || require('path').existsSync
-    , dest      = './public/sc/' + media._id + '.jpg';
-    console.log ('starting sc', media.file);
-
-    if (exists('./public/sc/' + media._id)) {
-        console.log ('skipping screenshot of: ' + md5 + '(file already there).');
-        return done(media);
-    }
-
-    var proc = new ffmpeg({source: media.file})
-        .withSize('150x100')
-        .onCodecData(function(metadata) {
-            console.log(metadata);
-            metadata._id  = media._id;
-            metadata.file = media.file;
-            metadata.stat = media.stat;
-            _addMedia (metadata);
-        })
-        .withFps(1)
-        .addOption('-ss', '5')
-        .onProgress(function(progress) {
-            console.log(progress);
-        })
-        .saveToFile(dest, function(retcode, error) {
-            if (! exists (dest) || error)
-                return done (new Error('File not created' + error));
-
-            console.log('sc ok: ' + media._id);
-            return done(media);
-        });
-});
-
-var parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
-    var spawn = require('child_process').spawn,
-    md5sum    = spawn('md5sum', [file]);
-
-    db.collection('medias', function(err, collection) {
-        collection.findOne({'file': file}, function(err, item) {
-            if (!err && item) {
-                if (stat === item.stat) return (done(item));
-                else item.stat = stat;
-            } else {
-                item = {file: file, stat: stat};
-            }
-
-            md5sum.stdout.on('data', function (data) {
-                item._id = data.toString().split(' ')[0];
-                done(item);
-            });
-        });
-    });
-});
-
-function scrape_files () {
-  var walk      = require('walk')
-    , spawn     = require('child_process').spawn
-    , bs        = 10*1024*1024
-    , observe   = process.env.HOME + "/Downloads";
-
-    console.log ('launched obeserver on path: ' + observe);
-
-    /* Ok, this a bit messy, it goes like this:
-       + we get the file;
-       + spawn a binary to calculate md5;
-       + give that to the ffmpeg process that will:
-         . extract codec data;
-         . take a screenshot at 5s from start;
-       + when all is done and good, we _addMedia, to get it into the medias objects;
-    */
-
-    //This listens for files found
-    walk.walk(observe, { followLinks: false })
-    .on('file', function (root, stat, next) {
-        var file = root + '/' +  stat.name;
-        next();
-        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
-            return new Error('file not a vid');
-        }
-
-        parse_pool.task(file, stat, function (res, err) {
-            if (err)
-                return (console.error('error:', err));
-            console.log ('parsed: ' + stat.name);
-            sc_pool.task(res);
-        });
-
-    })
-    .on('end', function () {
-        console.log ("all done");
-    });
-}
-
-function check_media (media, cb, arg) {
-    var exists = fs.exists || require('path').exists;
-    if (!arg)
-        arg = media;
-
-    exists (media.file, function (e) {
-        if (!e)
-            return;
-        cb(arg)
-        exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
-            if (!e)
-                sc_pool.task (media, function (err, res) {
-                    if (err)
-                        console.error (new Error("couldn't sc"));
-                });
-            if (cb)
-                cb(arg);
-        });
-    });
-}
 
 exports.mediaList = mediaList;
 
@@ -151,13 +36,13 @@ db.open(function(err, db) {
             } else {
                 collection.find().toArray(function(err, items) {
                     _(items).each (function (item) {
-                        check_media (item, function (item) {
+                        utils.check_media (item, function (item) {
                             mediaList.add(item);
                         });
                     });
                 });
             }
-            setTimeout(scrape_files, 100);
+            setTimeout(utils.scrape_files, 100);
         });
     } else {
         console.log("Could not connect:", err);
