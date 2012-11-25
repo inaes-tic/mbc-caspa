@@ -52,6 +52,10 @@ module.exports = function(app) {
         require.resolve('underscore/underscore.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('backboneio/backboneio.js'),
+/*        require.resolve('blueimp-file-upload/js/jquery.fileupload.js'),
+        require.resolve('blueimp-file-upload/js/jquery.fileupload-fp.js'),
+        require.resolve('blueimp-file-upload/js/jquery.fileupload-ui.js'),*/
+        require.resolve('resumable.js/resumable.js'),
         require.resolve('jed'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
         path.join(lib_dir, 'bootstrap.min.js'),
@@ -74,7 +78,9 @@ module.exports = function(app) {
                  'medialist',
                  'mediadetails',
                  'mediasearch',
+                 'programlist',
                  'conf',
+                 'upload-resumable',
                  'about'];
 
     var viewsJs = new folio.Glossary(
@@ -90,7 +96,7 @@ module.exports = function(app) {
      * Models Javascript Package
      */
 
-    var models = ['Default', 'App', 'Media'];
+    var models = ['Default', 'App', 'Media', 'Program'];
 
     var modelsJs = new folio.Glossary(
         models.map (function (e) {
@@ -116,6 +122,7 @@ module.exports = function(app) {
                      'mediaview',
                      'mediasearch',
                      'confview',
+                     'upload',
                     ];
 
     var templateJs = new folio.Glossary([

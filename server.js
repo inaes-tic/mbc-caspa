@@ -6,10 +6,11 @@ var express = require('express'),
 
 var dirs = {
     pub    : path.join(__dirname, 'public'),
-    views  : path.join(__dirname, 'views'),
+    views  : path.join(__dirname, 'views') ,
     styles : path.join(__dirname, 'styles'),
     models : path.join(__dirname, 'models'),
-    vendor : path.join(__dirname, 'vendor')
+    vendor : path.join(__dirname, 'vendor'),
+    uploads: path.join(__dirname, 'public/uploads/')
 };
 
 var app = express();
@@ -25,7 +26,16 @@ app.configure(function () {
     app.set('views', dirs.views);
     app.set('view engine', 'jade');
     app.use(express.logger('dev'));
-    app.use(express.bodyParser())
+/*    app.use('/uploads', upload({
+        tmpDir:    dirs.uploads + '/incoming',
+        uploadDir: dirs.upolads,
+        uploadUrl: '/uploads/',
+        safeFileTypes: /\.(webm|mkv|mov|mp4|avi|ogg)$/i,
+    }));*/
+    app.use(express.bodyParser({
+            uploadDir: dirs.uploads,
+            maxFieldsSize: 10 * 1024 * 1024
+    })); /* */
     app.use(express.methodOverride());
     app.use(express.cookieParser('your secret here'));
     app.use(express.session());
@@ -53,16 +63,9 @@ app.configure('production', function(){
 });
 
 var appModel = require('./routes')(app);
-var media = require('./routes/media');
+var media    = require('./routes/media')(app);
 
-// app.get('/tpl/:id', routes.tpl);
-app.get('/media', media.findAll);
-app.get('/media/:id', media.findById);
-app.get('/media/play/:id', media.playById);
-app.post('/media', media.addMedia);
-app.put('/media/:id', media.updateMedia);
-app.delete('/media/:id', media.deleteMedia);
-
+console.log ('hohohoh', media, media.mediaList);
 
 io = io.listen(app.listen(app.get('port'), function(){
   console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
@@ -80,7 +83,6 @@ io.set('transports', [                     // enable all transports (optional if
   , 'jsonp-polling'
 ]);
 
-
 io.sockets.on('connection', function (socket) {
     media.mediaList.bindServer(socket);
     appModel.bindServer(socket);
@@ -94,7 +96,6 @@ io.sockets.on('connection', function (socket) {
         media.mediaList.move(move.from, move.to);
 
     });
-
 });
 
 

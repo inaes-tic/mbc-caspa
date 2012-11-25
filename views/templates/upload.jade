@@ -1,0 +1,32 @@
+block content
+  .alert.alert-block
+    button.close(type='button', data-dismiss='alert') ×
+    h4= i18n.gettext('Oops!')
+    p= i18n.gettext('It looks like your browser is not supported !');
+  .well.droparea
+            .progress
+                a.pause(href='#', style="display: none;")
+                  i.icon-pause
+                a.resume(href='#')
+                  i.icon-play
+                .bar#main-progress(style="width: 0%;")
+
+            p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
+            p(style="color:#999;")
+              small
+                span= i18n.gettext('(or select them ')
+                a.browse= i18n.gettext('from your computer')
+                 span= i18n.gettext('.)')
+
+                .span5.fileupload-progress.fade
+                    .progress.progress-success.progress-striped.active(role="progressbar",aria-valuemin="0",aria-valuemax="100")
+                        .bar(style="width:0%;")
+                    .progress-extended &nbsp;
+        .fileupload-loading
+        br
+        table.table.table-striped(role="presentation")
+          tbody.files(data-toggle="modal-gallery", data-target="#modal-gallery")
+
+    .files-waiting
+      ul.pending
+

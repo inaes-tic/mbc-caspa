@@ -9,6 +9,7 @@ window.ProgramBlockView = Backbone.View.extend({
 //        "click" : "onClick"
     },
     render: function () {
+        console.log(this.model);
         $(this.el).html(template.item(this.model.media.toJSON()));
         return this;
     },
@@ -32,16 +33,16 @@ window.ProgramBlockListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
         var self = this;
-        $(this.el).html(template.medialist(this.model.toJSON()));
+        $(this.el).html(template.medialist(this.collection.toJSON()));
         $('.tbody', this.el).sortable({
             update: function (e, ui) {
                 var dragged_id = ui.item[0].id;
                 _($(this).sortable('toArray')).each(function (order, index) {
-                    var media = mediaList.get(order);
+                    var media = self.collection.get(order);
                     if (media.get('_id') == dragged_id) {
                         var move = {id: dragged_id, from: media.get('pos'), to: index}
                         window.socket.emit('medias:moved', move);
-                        mediaList.move(move.from, move.to);
+                        self.collection.move(move.from, move.to);
                         return;
                     }
                 });
@@ -53,24 +54,26 @@ window.ProgramBlockListView = Backbone.View.extend({
 
         window.socket.on('medias:moved', function (move) {
             self.moveDOM(move.id, move.from, move.to);
-            mediaList.move(move.from, move.to);
+            self.collection.move(move.from, move.to);
         });
 
 //        mediaList.bind('change', this.renderMe, this);
-        mediaList.bind('add',   this.addOneAnim, this);
-        mediaList.bind('reset', this.addAll, this);
-        mediaList.bind('all',   this.render, this);
-        mediaList.bind('update',this.update, this);
+        self.collection.on('add',   this.addOneAnim, this);
+        self.collection.on('reset', this.addAll, this);
+        self.collection.on('all',   this.render, this);
+        self.collection.on('update',this.update, this);
 
-        mediaList.fetch({success: function(collection, resp){
+        self.collection.fetch({success: function(collection, resp){
             collection.bindClient();
         }});
+        this.render();
     },
     update: function(){
-        mediaList.sort()
+        this.collection.sort()
     },
     addOne: function (media) {
-        var item = new MediaListItemView({model: media}).render().el;
+        console.log (media);
+        var item = new ProgramBlockView({model: media}).render().el;
         item.setAttribute ("id", media.get('_id'));
         this.$('#media-view').append(item);
     },
@@ -84,11 +87,12 @@ window.ProgramBlockListView = Backbone.View.extend({
         }, 2000);
     },
     addAll: function() {
+        console.log ('addAll');
         this.$('#media-view').empty();
-        mediaList.each(this.addOne);
+        this.collection.each(this.addOne);
     },
     render: function () {
-        var medias = this.model.models;
+        var medias = this.collection.models;
         var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
 
         $('#search', this.el).html(new SearchView({source : mediaNames,

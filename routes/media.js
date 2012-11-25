@@ -3,7 +3,7 @@ module.exports = function (app) {
     var     _ = require('underscore')
     , melted= require('../mlt/Melted')
     , utils = require('../utils')
-    ,resumable = require('../node_modules/resumable.js/resumable');
+    ,resumable = require('resumable.js')(__dirname + '/../public/uploads');
 
     //var mlt = new melted({reconnect: true});
 
@@ -15,7 +15,7 @@ module.exports = function (app) {
     setInterval (function () { 
         var mediaNames = _.map(mediaList.models, function (w) {return w.attributes.file;});
         console.log ('hello, mediaList: ', mediaList.models.length, mediaNames);},
-                 1000);
+                 5000);
 
     utils.openDB(function (item) {
         mediaList.add(item);
@@ -113,5 +113,44 @@ module.exports = function (app) {
     app.post('/media',         exports.addMedia);
     app.put('/media/:id',      exports.updateMedia);
     app.delete('/media/:id',   exports.deleteMedia);
+
+    // Handle uploads through Resumable.js
+    app.post('/media/upload', function(req, res){
+
+	// console.log(req);
+
+        resumable.post(req, function(status, filename, original_filename, identifier){
+            console.log('POST', status, original_filename, identifier);
+
+            res.send(status, {
+                // NOTE: Uncomment this funciton to enable cross-domain request.
+                //'Access-Control-Allow-Origin': '*'
+            });
+        });
+    });
+
+    // Handle cross-domain requests
+    // NOTE: Uncomment this funciton to enable cross-domain request.
+    /*
+      app.options('/upload', function(req, res){
+      console.log('OPTIONS');
+      res.send(true, {
+      'Access-Control-Allow-Origin': '*'
+      }, 200);
+      });
+    */
+
+    // Handle status checks on chunks through Resumable.js
+    app.get('/media/upload', function(req, res){
+        resumable.get(req, function(status, filename, original_filename, identifier){
+            console.log('GET', status);
+            res.send(status, (status == 'found' ? 200 : 404));
+        });
+    });
+
+    app.get('/media/download/:identifier', function(req, res){
+	resumable.write(req.params.identifier, res);
+    });
+
     return exports;
 };

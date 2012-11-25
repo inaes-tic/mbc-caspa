@@ -5,10 +5,10 @@ var AppRouter = Backbone.Router.extend({
 
     routes: {
         "media"	: "list",
-        "media/page/:page"	: "list",
-        "media/add"         : "addMedia",
+        "media/add"         : "upload",
         "media/search"      : "searchMedia",
         "media/:id"         : "mediaDetails",
+        "program/:id"       : "listProgram",
         "admin"             : "conf",
         "about"             : "about",
     },
@@ -35,12 +35,32 @@ var AppRouter = Backbone.Router.extend({
         new MediaListView({collection: mediaList});
         this.headerView.selectMenuItem('list-menu');
     },
+
+    listProgram: function (id) {
+        var prog = new Program.Block.Collection ();
+        mediaList.bind("all", function(eventName) {
+            console.log ("proxy: " + eventName);
+            prog.trigger(eventName);
+        });
+
+        _(mediaList.models).each (function (model) {
+            prog.add(new Program.Block({media: model.toJSON()}));
+        });
+        console.log (prog);
+        new ProgramBlockListView ({collection: prog});
+    },
+
     mediaDetails: function (id) {
         mediaList.fetch({success: function(collection, resp){
             collection.bindClient();
             new MediaView({model: mediaList.get(id)});
         }});
         this.headerView.selectMenuItem('list-menu');
+    },
+
+    upload: function () {
+        new UploadView ({model: appModel});
+        this.headerView.selectMenuItem('add-menu');
     },
 
     addMedia: function() {

@@ -31,17 +31,24 @@ window.MediaListItemView = Backbone.View.extend({
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
+        console.log ("init...");
+        var medias = this.collection.models;
+        var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
+        $('#search', this.el).html(new SearchView({source : mediaNames,
+                                                   target : '.table'}).render().el);
+        $('#playbar', this.el).html(new PlayBarView({model : appModel}).render().el);
+
         var self = this;
         $(this.el).html(template.medialist(this.collection.toJSON()));
         $('.tbody', this.el).sortable({
             update: function (e, ui) {
                 var dragged_id = ui.item[0].id;
                 _($(this).sortable('toArray')).each(function (order, index) {
-                    var media = mediaList.get(order);
+                    var media = self.collection.get(order);
                     if (media.get('_id') == dragged_id) {
                         var move = {id: dragged_id, from: media.get('pos'), to: index}
                         window.socket.emit('medias:moved', move);
-                        mediaList.move(move.from, move.to);
+                        self.collection.move(move.from, move.to);
                         return;
                     }
                 });
@@ -53,22 +60,23 @@ window.MediaListView = Backbone.View.extend({
 
         window.socket.on('medias:moved', function (move) {
             self.moveDOM(move.id, move.from, move.to);
-            mediaList.move(move.from, move.to);
+            self.collection.move(move.from, move.to);
         });
 
 //        mediaList.bind('change', this.renderMe, this);
-        mediaList.bind('add',   this.addOneAnim, this);
-        mediaList.bind('reset', this.addAll, this);
-        mediaList.bind('all',   this.render, this);
-        mediaList.bind('update',this.update, this);
+        self.collection.bind('add',   this.addOneAnim, this);
+        self.collection.bind('reset', this.addAll, this);
+        self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
+        self.collection.bind('update',this.update, this);
 
         this.addAll();
 //        this.render();
     },
     update: function(){
-        mediaList.sort()
+        this.collection.sort()
     },
     addOne: function (media) {
+        console.log ("adding: ", media.get('file'));
         var item = new MediaListItemView({model: media}).render().el;
         item.setAttribute ("id", media.get('_id'));
         this.$('#media-view').append(item);
@@ -83,16 +91,14 @@ window.MediaListView = Backbone.View.extend({
         }, 2000);
     },
     addAll: function() {
+        console.log('addALL');
         this.$('#media-view').empty();
-        mediaList.each(this.addOne);
+        this.collection.each(this.addOne);
+        console.log('addALL -- end');
     },
     render: function () {
-        var medias = this.collection.models;
-        var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
+        console.log ("render...");
 
-        $('#search', this.el).html(new SearchView({source : mediaNames,
-                                                   target : '.table'}).render().el);
-        $('#playbar', this.el).html(new PlayBarView({model : appModel}).render().el);
 //        $(this.el).append(new Paginator({model: this.model, page: this.options.page}).render().el);
 
         return this;
