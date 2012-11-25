@@ -15,8 +15,8 @@ var AppRouter = Backbone.Router.extend({
 
     initialize: function () {
         window.socket = io.connect('http://localhost');
-        window.socket.on('medias:swapped', function (swapped) {
-            console.log ('got medias:swapped from server', swapped);
+        window.socket.on('medias:moved', function (move) {
+            console.log ('got medias:moved from server', move);
         });
 
         appModel.bindClient();

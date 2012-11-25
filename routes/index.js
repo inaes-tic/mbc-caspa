@@ -90,7 +90,7 @@ module.exports = function(app) {
      * Models Javascript Package
      */
 
-    var models = ['App', 'Media'];
+    var models = ['Default', 'App', 'Media'];
 
     var modelsJs = new folio.Glossary(
         models.map (function (e) {

@@ -42,8 +42,8 @@ window.MediaListView = Backbone.View.extend({
                     var media = mediaList.get(order);
                     if (media.get('_id') == dragged_id) {
                         var move = {id: dragged_id, from: media.get('pos'), to: index}
-                        window.socket.emit('medias:swapped', move);
-                        mediaList.swap(move);
+                        window.socket.emit('medias:moved', move);
+                        mediaList.move(move.from, move.to);
                         return;
                     }
                 });
@@ -53,9 +53,9 @@ window.MediaListView = Backbone.View.extend({
             revert : true
         });
 
-        window.socket.on('medias:swapped', function (move) {
-            self.swap(move);
-            mediaList.swap(move);
+        window.socket.on('medias:moved', function (move) {
+            self.moveDOM(move.id, move.from, move.to);
+            mediaList.move(move.from, move.to);
         });
 
 //        mediaList.bind('change', this.renderMe, this);
@@ -67,14 +67,6 @@ window.MediaListView = Backbone.View.extend({
         mediaList.fetch({success: function(collection, resp){
             collection.bindClient();
         }});
-    },
-    swap: function (move) {
-        var col = this.model;
-        if (move.from < move.to) {
-            $('#' + move.id).insertAfter($('#' + col.models[move.to].get('_id')));
-        } else {
-            $('#' + move.id).insertBefore($('#' + col.models[move.to].get('_id')));
-        }
     },
     update: function(){
         mediaList.sort()

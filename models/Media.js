@@ -1,23 +1,11 @@
-// Save a reference to the global object (`window` in the browser, `global`
-// on the server).
-var root = this;
-
-// The top-level namespace. All public Backbone classes and modules will
-// be attached to this. Exported for both CommonJS and the browser.
 var Media, server = false;
 if (typeof exports !== 'undefined') {
-    Media = exports;
+    BackboneIO = require(__dirname + '/Default');
+    Media = exports.Media = {};
     server = true;
 } else {
     Media = root.Media = {};
 }
-
-// Require Underscore, Backbone & BackboneIO, if we're on the server, and it's not already present.
-var _ = root._;
-if (!_ && (typeof require !== 'undefined')) _ = require('underscore');
-
-var BackboneIO = root.BackboneIO;
-if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
 
 Media.Model = BackboneIO.Model.extend({
     urlRoot: "media",
@@ -29,7 +17,9 @@ Media.Model = BackboneIO.Model.extend({
             return value.length > 0 ? {isValid: true} : {isValid: false, message: "You must enter a name"};
         };
     },
-
+    index2Pos: function (index) {
+        return index;
+    },
     validateItem: function (key) {
         return (this.validators[key]) ? this.validators[key](this.get(key)) : {isValid: true};
     },
@@ -59,36 +49,10 @@ Media.Model = BackboneIO.Model.extend({
     }
 });
 
+/* all methods are overriden in Default.js */
 Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
     url: 'media',
-    initialize: function() {
-        this.bind('add', function (media) {
-            media.save({pos: this.size() - 1});
-        });
-    },
-    swap: function (move) {
-        var media = this.models[move.from].set({pos: move.to});
-
-        if (move.from < move.to) {
-            for (var i = move.from; i < move.to; i++) {
-                this.models[i] = this.models[i+1];
-                this.models[i].set({pos: i});
-            }
-        } else {
-            for (var i = move.from; i > move.to; i--) {
-                this.models[i] = this.models[i-1];
-                this.models[i].set({pos: i});
-            }
-        }
-
-        this.models[move.to] = media;
-    },
-    comparator: function(media) {
-//        console.log("compare", media, media.get('pos'));
-        return media.get('pos');
-    },
-
 });
 
 if(server) module.exports = Media;

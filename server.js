@@ -89,9 +89,9 @@ io.sockets.on('connection', function (socket) {
         media.mediaList.unbindServer(socket);
         appModel.unbindServer(socket);
     });
-    socket.on('medias:swapped', function (move) {
-        socket.broadcast.emit ('medias:swapped', move);
-        media.mediaList.swap(move);
+    socket.on('medias:moved', function (move) {
+        socket.broadcast.emit ('medias:moved', move);
+        media.mediaList.move(move.from, move.to);
 
     });
 
