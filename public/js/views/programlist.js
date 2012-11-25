@@ -1,5 +1,6 @@
-window.MediaListItemView = Backbone.View.extend({
-    tagName: "tr",
+
+window.ProgramBlockView = Backbone.View.extend({
+    tagName: "li",
     initialize: function () {
         this.model.bind("change", this.render, this);
         this.model.bind("destroy", this.remove, this);
@@ -8,7 +9,7 @@ window.MediaListItemView = Backbone.View.extend({
 //        "click" : "onClick"
     },
     render: function () {
-        $(this.el).html(template.item(this.model.toJSON()));
+        $(this.el).html(template.item(this.model.media.toJSON()));
         return this;
     },
     onClick: function () {
@@ -25,14 +26,13 @@ window.MediaListItemView = Backbone.View.extend({
    clear: function() {
      this.model.destroy();
    }
-
 });
 
-window.MediaListView = Backbone.View.extend({
+window.ProgramBlockListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
         var self = this;
-        $(this.el).html(template.medialist(this.collection.toJSON()));
+        $(this.el).html(template.medialist(this.model.toJSON()));
         $('.tbody', this.el).sortable({
             update: function (e, ui) {
                 var dragged_id = ui.item[0].id;
@@ -88,7 +88,7 @@ window.MediaListView = Backbone.View.extend({
         mediaList.each(this.addOne);
     },
     render: function () {
-        var medias = this.collection.models;
+        var medias = this.model.models;
         var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
 
         $('#search', this.el).html(new SearchView({source : mediaNames,

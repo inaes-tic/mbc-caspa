@@ -24,8 +24,8 @@ var AppRouter = Backbone.Router.extend({
         $('.header').html(this.headerView.el);
     },
 
-    list: function(page) {
-        new MediaListView({model: mediaList});
+    list: function() {
+        new MediaListView({collection: mediaList});
         this.headerView.selectMenuItem('list-menu');
     },
     mediaDetails: function (id) {

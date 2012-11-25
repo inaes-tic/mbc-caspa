@@ -1,4 +1,6 @@
+
 window.MediaListItemView = Backbone.View.extend({
+
     tagName: "tr",
     initialize: function () {
         this.model.bind("change", this.render, this);
@@ -32,7 +34,7 @@ window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
         var self = this;
-        $(this.el).html(template.medialist(this.collection.toJSON()));
+        $(this.el).html(template.medialist(this.model.toJSON()));
         $('.tbody', this.el).sortable({
             update: function (e, ui) {
                 var dragged_id = ui.item[0].id;
@@ -88,7 +90,7 @@ window.MediaListView = Backbone.View.extend({
         mediaList.each(this.addOne);
     },
     render: function () {
-        var medias = this.collection.models;
+        var medias = this.model.models;
         var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
 
         $('#search', this.el).html(new SearchView({source : mediaNames,
