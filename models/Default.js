@@ -14,10 +14,16 @@ var _ = root._;
 if (!_ && (typeof require !== 'undefined')) _ = require('underscore');
 
 var BackboneIO = root.BackboneIO;
+var Backbone   = root.Backbone;
 if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
 
-BackboneIO.Model.prototype.get_id = function (index) {
+BackboneIO.Model.prototype.get_id = function () {
     return this.get(this.idAttribute || 'id');
+};
+
+BackboneIO.Model.prototype.set_id = function (id) {
+    var idAttr = this.idAttribute || 'id';
+    return this.set(idAttr, id);
 };
 
 BackboneIO.Model.prototype.index2Pos = function (index) {
@@ -33,11 +39,17 @@ BackboneIO.Model.prototype.set_index = function (index) {
     return this;
 };
 
+BackboneIO.Collection.prototype._onAdd = function (model) {
+    model.set_index(this.size() - 1);
+    model.save();
+}
+
 BackboneIO.Collection.prototype.initialize = function () {
-    this.bind('add', function (model) {
-        model.set_index(this.size() - 1);
-        model.save();
-    });
+    if (!Backbone && server) {
+        Backbone = require('backbone');
+    }
+    Backbone.Collection.prototype.initialize.call(this);
+    this.bind('add', this._onAdd);
 };
 
 BackboneIO.Collection.prototype.move = function (from, to) {
@@ -70,11 +82,12 @@ if (server) {
 root.BackboneIO = BackboneIO;
 
 Backbone.View.prototype.moveDOM = BackboneIO.View.prototype.moveDOM = function (id, from, to) {
-    var dest = $('#' +this.model.models[to].get_id());
+    var jumper = $('#' + id) || conosole.trace ('ho noes');
+    var dest = $('#' +this.collection.models[to].get_id()) || console.trace('hoho');
     if (from < to) {
-        $('#' + id).insertAfter(dest);
+        jumper.insertAfter(dest);
     } else {
-        $('#' + id).insertBefore(dest);
+        jumper.insertBefore(dest);
     }
     return dest;
 };
