@@ -77,17 +77,17 @@ BackboneIO.Collection.prototype.comparator = function (model) {
 
 if (server) {
     module.exports = BackboneIO
-    return;
-}
-root.BackboneIO = BackboneIO;
+} else {
+    root.BackboneIO = BackboneIO;
 
-Backbone.View.prototype.moveDOM = BackboneIO.View.prototype.moveDOM = function (id, from, to) {
+    Backbone.View.prototype.moveDOM = BackboneIO.View.prototype.moveDOM = function (id, from, to) {
     var jumper = $('#' + id) || conosole.trace ('ho noes');
-    var dest = $('#' +this.collection.models[to].get_id()) || console.trace('hoho');
-    if (from < to) {
-        jumper.insertAfter(dest);
-    } else {
-        jumper.insertBefore(dest);
-    }
-    return dest;
-};
+        var dest = $('#' +this.collection.models[to].get_id()) || console.trace('hoho');
+        if (from < to) {
+            jumper.insertAfter(dest);
+        } else {
+            jumper.insertBefore(dest);
+        }
+        return dest;
+    };
+}

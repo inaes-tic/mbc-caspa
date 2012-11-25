@@ -1,8 +1,9 @@
 module.exports = function (app) {
+    var exports = {};
     var     _ = require('underscore')
     , melted= require('../mlt/Melted')
     , utils = require('../utils')
-    ,resumable = require('resumable.js');
+    ,resumable = require('../node_modules/resumable.js/resumable');
 
     //var mlt = new melted({reconnect: true});
 
@@ -104,5 +105,13 @@ module.exports = function (app) {
         console.log('Deleting media: ' + id);
         mediaList.get(id).remove();
     }
+
+    // app.get('/tpl/:id', routes.tpl);
+    app.get('/media',          exports.findAll);
+    app.get('/media/:id',      exports.findById);
+    app.get('/media/play/:id', exports.playById);
+    app.post('/media',         exports.addMedia);
+    app.put('/media/:id',      exports.updateMedia);
+    app.delete('/media/:id',   exports.deleteMedia);
     return exports;
 };
