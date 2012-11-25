@@ -3,7 +3,7 @@ var     _ = require('underscore')
   , utils = require('../utils');
 ;
 
-var mlt = new melted({reconnect: true});
+//var mlt = new melted({reconnect: true});
 
 var Media = require (__dirname + '/../models/Media.js')
 , mediaList = new Media.Collection();
@@ -55,9 +55,9 @@ function _addMedia (media, err) {
             if (err) {
                 console.error(err, 'An error has occurred, trying to insert');
             } else {
-                if (mlt.addFile(media.file))
+//                if (mlt.addFile(media.file))
                     mediaList.add(media);
-                console.error(err, 'An error has occurred, trying to add to melted');
+//                console.error(err, 'An error has occurred, trying to add to melted');
             }
         });
     });
