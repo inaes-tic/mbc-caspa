@@ -19,7 +19,14 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        appModel.bindClient();
+        appModel.fetch({success: function(model, resp){
+            model.bindClient();
+        }});
+
+        mediaList.fetch({success: function(collection, resp){
+            collection.bindClient();
+        }});
+
         this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
     },

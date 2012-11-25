@@ -62,9 +62,8 @@ window.MediaListView = Backbone.View.extend({
         mediaList.bind('all',   this.render, this);
         mediaList.bind('update',this.update, this);
 
-        mediaList.fetch({success: function(collection, resp){
-            collection.bindClient();
-        }});
+        this.addAll();
+//        this.render();
     },
     update: function(){
         mediaList.sort()
