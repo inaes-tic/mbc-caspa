@@ -12,16 +12,16 @@ exports.mediaList = mediaList;
 
 utils.openDB(function (item) {
     mediaList.add(item);
+}, function () {
+    console.log ("deferring scraper launch");
+    setTimeout(function () {
+        utils.scrape_files (process.env.HOME + "/Downloads/Gardel", _addMedia);
+    }, 300);
 });
-
-setTimeout(function () {
-    utils.scrape_files (process.env.HOME + "/Downloads", _addMedia);
-}, 300);
-
 
 _({'add':'create'}).each(function (b, e) {
     mediaList.bind(e, function (model, col) {
-        console.log("model " + e + "->" + b, model);
+        console.log("model " + e + "->" + b);
         _.each(col.sockets, function (socket) {
             socket.broadcast.emit(col.url  + ':' + b, model.toJSON());
         });
