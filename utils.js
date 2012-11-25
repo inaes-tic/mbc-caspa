@@ -153,15 +153,14 @@ exports.check_media = function (media, cb, arg) {
     exists (media.file, function (e) {
         if (!e)
             return;
-        cb(arg)
+        if (cb)
+            cb(arg)
         exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
             if (!e)
                 exports.sc_pool.task (media, null, function (err, res) {
                     if (err)
                         console.error (new Error("couldn't sc"));
                 });
-            if (cb)
-                cb(arg);
         });
     });
 }
