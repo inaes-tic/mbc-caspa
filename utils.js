@@ -11,14 +11,15 @@ var server = new mongo.Server('localhost', 27017, {auto_reconnect: true});
 
 exports.db = db = new Db('mediadb', server, {safe: true});
 
-exports.openDB = function (callback) {
+exports.openDB = function (callback, populateCallback) {
     db.open(function(err, db) {
         if(!err) {
             console.log("Connected to 'mediadb' database");
             db.collection('medias', {safe:true}, function(err, collection) {
                 if (err) {
                     console.log("The 'medias' collection doesn't exist. Creating it with sample data...");
-                populateDB();
+                    if (populateCallback)
+                        populateCallback()
                 } else {
                     collection.find().toArray(function(err, items) {
                         _(items).each (function (item) {
@@ -61,12 +62,14 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     var proc = new ffmpeg({source: media.file})
         .withSize('150x100')
         .onCodecData(function(metadata) {
+            if (!callback)
+                return;
+
             console.log(metadata);
             metadata._id  = media._id;
             metadata.file = media.file;
             metadata.stat = media.stat;
-            if (callback)
-                callback (metadata);
+            callback (metadata);
         })
         .withFps(1)
         .addOption('-ss', '5')
@@ -133,7 +136,7 @@ exports.scrape_files = function (path, callback) {
             if (err)
                 return (console.error('error:', err));
             console.log ('parsed: ' + stat.name);
-            exports.sc_pool.task(res, callback);
+            exports.sc_pool.task(res, callback, function (err, res) {return res});
         });
 
     })
