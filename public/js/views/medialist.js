@@ -40,23 +40,41 @@ window.MediaListView = Backbone.View.extend({
 
         var self = this;
         $(this.el).html(template.medialist(this.collection.toJSON()));
-        $('.tbody', this.el).sortable({
-            update: function (e, ui) {
-                var dragged_id = ui.item[0].id;
-                _($(this).sortable('toArray')).each(function (order, index) {
-                    var media = self.collection.get(order);
-                    if (media.get('_id') == dragged_id) {
-                        var move = {id: dragged_id, from: media.get('pos'), to: index}
-                        window.socket.emit('medias:moved', move);
-                        self.collection.move(move.from, move.to);
-                        return;
-                    }
-                });
-            },
-            forceHelperSize : true,
-            forcePlaceholderSize : true,
-            revert : true
-        });
+        if (! this.options.dragSource) {
+            $('.tbody', this.el).addClass('recieve-drag').sortable({
+                connectWith: '.connected-sortable',
+                helper: 'clone',
+                forceHelperSize : true,
+                forcePlaceholderSize : true,
+                revert : true,
+                /**
+                 * This is not ready. what we need to do is disable the add
+                   event we get, but still handle re-order in the model,
+                   without triggering a reset. all this while listening (and
+                   queuing) other add events, (that may come from other
+                   sources
+                **/
+                /*
+                  receive: function( event, ui ) {
+                  self.collection.add(mediaList.get(ui.draggable[0].id));
+                  console.log ("DROP", event, ui, ui.draggable[0].id);
+                  }});
+                */
+
+                update: function (e, ui) {
+                    var dragged_id = ui.item[0].id;
+                    _($(this).sortable('toArray')).each(function (order, index) {
+                        var media = self.collection.get(order);
+                        if (media.get('_id') == dragged_id) {
+                            var move = {id: dragged_id, from: media.get('pos'), to: index}
+                            window.socket.emit('medias:moved', move);
+                            self.collection.move(move.from, move.to);
+                            return;
+                        }
+                    });
+                },
+            });
+        }
 
         window.socket.on('medias:moved', function (move) {
             self.moveDOM(move.id, move.from, move.to);
@@ -80,6 +98,16 @@ window.MediaListView = Backbone.View.extend({
         console.log ("adding: ", media.get('file'));
         var item = new MediaListItemView({model: media}).render().el;
         item.setAttribute ("id", media.get('_id'));
+
+        if (this.options.dragSource) {
+            console.log (item, 'draggable');
+            item.setAttribute ("class", item.getAttribute("class") + 'ui-sortable-helper');
+            $(item).draggable({//revert: true,
+                               helper: 'clone',
+                               cursorAt: { top: -5, left: -5 },
+                               connectToSortable: ".recieve-drag",
+                              });
+        }
         this.$('#media-view', this.el).append(item);
     },
     addOneAnim: function (media) {
