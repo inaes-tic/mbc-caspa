@@ -26,15 +26,6 @@ module.exports = function (app) {
         }, 300);
     });
 
-    _({'add':'create'}).each(function (b, e) {
-        mediaList.bind(e, function (model, col) {
-            console.log("model " + e + "->" + b);
-            _.each(col.sockets, function (socket) {
-                socket.broadcast.emit(col.url  + ':' + b, model.toJSON());
-            });
-        });
-    });
-
     exports.findById = function(req, res) {
         var id = req.params.id;
         console.log('Retrieving media: ' + id);
