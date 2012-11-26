@@ -58,7 +58,7 @@ window.UploadView = Backbone.View.extend({
               var barEl =  $('.file-'+file.uniqueIdentifier+' .bar')[0];
               var fileEl = $('.file-'+file.uniqueIdentifier+' .progress');
               fileEl.removeClass('progress-striped active');
-              barEl.textContent('(completed)');
+              barEl.textContent = '(completed)';
             });
           r.on('fileError', function(file, message){
               // Reflect that the file upload has resulted in error
