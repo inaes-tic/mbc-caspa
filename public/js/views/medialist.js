@@ -93,7 +93,10 @@ window.MediaListView = Backbone.View.extend({
     },
     addAll: function() {
         console.log('addALL');
-        this.$('#media-view', this.el).empty();
+        if (this.collection.length > 0) {
+            console.log (this.el, 'empty', this.collection.models);
+            this.$('#media-view', this.el).empty();
+        }
         this.collection.each(this.addOne);
         console.log('addALL -- end');
     },
