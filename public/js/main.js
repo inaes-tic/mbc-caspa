@@ -72,6 +72,11 @@ var AppRouter = Backbone.Router.extend({
     searchMedia: function() {
         var media = new Media.Model();
         $('#content').html(new SearchView({model: media}).el);
+        new MediaListView({collection: mediaList,
+                           dragSource: true,
+                           el: $("#left-pane")});
+        new MediaListView({collection: new Media.Collection([], {connectable: true}),
+                           el: $("#right-pane")});
         this.headerView.selectMenuItem('search-menu');
     },
 

@@ -1,5 +1,5 @@
 block content
-    .form-search
+  .form-search
       .input-append
         input.input-block-level.search-query#media-search(
           type="text",
@@ -8,3 +8,8 @@ block content
           placeholder=i18n.gettext('Search Medias'))
         button.btn(type="submit")
           i.icon-search
+  .row
+    .span6
+      #left-pane(style='overflow-x:scroll;')
+    .span6
+      #right-pane(style='overflow-x:scroll;')
