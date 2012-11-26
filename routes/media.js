@@ -113,6 +113,12 @@ module.exports = function (app) {
         resumable.post(req, function(status, filename, original_filename, identifier){
             console.log('POST', status, original_filename, identifier);
 
+            if (status == 'done') {
+                setTimeout(function () {
+                    utils.merge (original_filename, _addMedia);
+                }, 100);
+            }
+
             res.send(status, {
                 // NOTE: Uncomment this funciton to enable cross-domain request.
                 //'Access-Control-Allow-Origin': '*'
