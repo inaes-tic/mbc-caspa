@@ -4,6 +4,9 @@ var     _ = require('underscore')
 , ffmpeg  = require('fluent-ffmpeg')
 ,  mongo  = require('mongodb');
 
+var _exists     = fs.exists     || require('path').exists;
+var _existsSync = fs.existsSync || require('path').existsSync;
+
 var   Db = mongo.Db,
     BSON = mongo.BSONPure;
 
@@ -50,11 +53,10 @@ var populateDB = function() {
 }
 
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
-    var exists  = fs.existsSync || require('path').existsSync
-    , dest      = './public/sc/' + media._id + '.jpg';
+    var dest = './public/sc/' + media._id + '.jpg';
     console.log ('starting sc', media.file);
 
-    if (exists('./public/sc/' + media._id)) {
+    if (_existsSync('./public/sc/' + media._id)) {
         console.log ('skipping screenshot of: ' + md5 + '(file already there).');
         return done(media);
     }
@@ -77,7 +79,7 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
             console.log(progress);
         })
         .saveToFile(dest, function(retcode, error) {
-            if (! exists (dest) || error)
+            if (! _existsSync (dest) || error)
                 return done (new Error('File not created' + error));
 
             console.log('sc ok: ' + media._id);
@@ -146,16 +148,15 @@ exports.scrape_files = function (path, callback) {
 }
 
 exports.check_media = function (media, cb, arg) {
-    var exists = fs.exists || require('path').exists;
     if (!arg)
         arg = media;
 
-    exists (media.file, function (e) {
+    _exists (media.file, function (e) {
         if (!e)
             return;
         if (cb)
             cb(arg)
-        exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
+        _exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
             if (!e)
                 exports.sc_pool.task (media, null, function (err, res) {
                     if (err)
