@@ -66,7 +66,7 @@ module.exports = function (app) {
         var media = req.body;
         var err;
         console.log('Adding media: ' + JSON.stringify(media));
-        mediaList.add(media)
+        _addMedia(media)
         res.send(JSON.stringify(media));
         return;
     }
