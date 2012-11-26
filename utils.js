@@ -40,6 +40,49 @@ exports.openDB = function (callback, populateCallback) {
     });
 }
 
+exports.merge = function (original_filename, callback) {
+    var i = 1;
+    var path = require ('path');
+    var source_base = path.join (__dirname, '/public/uploads/incoming', '/resumable-' + original_filename + '.');
+
+    dest = path.join (__dirname, '/public/uploads/', original_filename);
+    if (_existsSync (dest))
+        return;
+
+    for (; _existsSync (source_base + i); i++)  {
+        console.log ('--->', source_base + i);
+
+        var writter = fs.createWriteStream(dest, {'flags': 'a'});
+        writter.write (fs.readFileSync (source_base +i));
+    };
+
+    var id = setInterval (function () {
+        console.log ('about to call merge_finish');
+        exports.merge_finish(dest, id, callback)
+    }, 200);
+
+    return dest;
+}
+
+/* all this hack, is because sometimes merge_finish was called before dest could be found
+   this hopes to fix it */
+
+exports.merge_finish = function (dest, id, callback) {
+    if (! _existsSync (dest))
+        return;
+
+    clearInterval (id);
+
+    var stat = fs.statSync (dest);
+    console.log ('all good, pasing it to parse', exports.parse_pool);
+    exports.parse_pool.task(dest, stat, function (res, err) {
+        if (err)
+            return (console.error('error:', err));
+        console.log ('parsed: ' + stat.name);
+        exports.sc_pool.task(res, callback, function (err, res) {return res});
+    });
+}
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 // Populate database with sample data -- Only used once: the first time the application is started.
 // You'd typically not find this code in a real-life app, since the database would already exist.
