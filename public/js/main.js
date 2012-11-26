@@ -69,14 +69,6 @@ var AppRouter = Backbone.Router.extend({
         this.headerView.selectMenuItem('add-menu');
     },
 
-    mediaSearch: function (id) {
-        var media = new Media.Model({_id: id});
-        media.fetch({success: function(){
-            $("#content").html(new SearchView({model: media}).el);
-        }});
-        this.headerView.selectMenuItem('search-menu');
-    },
-
     searchMedia: function() {
         var media = new Media.Model();
         $('#content').html(new SearchView({model: media}).el);
