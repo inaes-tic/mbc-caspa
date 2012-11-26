@@ -34,13 +34,13 @@ BackboneIO.Model.prototype.get_index = function () {
     return this.get('pos');
 };
 
-BackboneIO.Model.prototype.set_index = function (index) {
-    this.set({pos: this.index2Pos(index)});
+BackboneIO.Model.prototype.set_index = function (index, opts) {
+    this.set({pos: this.index2Pos(index)}, opts);
     return this;
 };
 
 BackboneIO.Collection.prototype._onAdd = function (model) {
-    model.set_index(this.size() - 1);
+    model.set_index(this.size() - 1, {silent:true});
     model.save();
 }
 
