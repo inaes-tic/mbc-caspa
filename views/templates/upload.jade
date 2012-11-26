@@ -5,11 +5,15 @@ block content
     p= i18n.gettext('It looks like your browser is not supported !');
   .well.droparea
             .progress
-                a.pause(href='#', style="display: none;")
-                  i.icon-pause
-                a.resume(href='#')
-                  i.icon-play
                 .bar#main-progress(style="width: 0%;")
+            .btn.btn-inverse.pause
+                  i.icon-pause.icon-white
+                  span= ' '
+                  span= i18n.gettext('Pause')
+            .btn.btn-inverse.resume(style='display:none;')
+                  i.icon-play.icon-white
+                  span= ' '
+                  span= i18n.gettext('Resume')
 
             p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
             p(style="color:#999;")
