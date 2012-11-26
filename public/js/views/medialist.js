@@ -63,6 +63,7 @@ window.MediaListView = Backbone.View.extend({
             self.collection.move(move.from, move.to);
         });
 
+        _.bindAll(this, 'addOne', 'addOneAnim', 'addAll');
 //        mediaList.bind('change', this.renderMe, this);
         self.collection.bind('add',   this.addOneAnim, this);
         self.collection.bind('reset', this.addAll, this);
@@ -79,20 +80,20 @@ window.MediaListView = Backbone.View.extend({
         console.log ("adding: ", media.get('file'));
         var item = new MediaListItemView({model: media}).render().el;
         item.setAttribute ("id", media.get('_id'));
-        this.$('#media-view').append(item);
+        this.$('#media-view', this.el).append(item);
     },
     addOneAnim: function (media) {
         this.addOne(media);
 
         // ooh, shiny animation!
-        this.$('#' + media.id).css('opacity', 0);
-        this.$('#' + media.id).animate({
+        this.$('#' + media.id, this.el).css('opacity', 0);
+        this.$('#' + media.id, this.el).animate({
             'opacity': 1,
         }, 2000);
     },
     addAll: function() {
         console.log('addALL');
-        this.$('#media-view').empty();
+        this.$('#media-view', this.el).empty();
         this.collection.each(this.addOne);
         console.log('addALL -- end');
     },
