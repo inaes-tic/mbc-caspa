@@ -18,7 +18,7 @@ module.exports = function (app) {
                  5000);
 
     utils.openDB(function (item) {
-        mediaList.add(item);
+        _addMedia(item);
     }, function () {
         console.log ("deferring scraper launch");
         setTimeout(function () {
