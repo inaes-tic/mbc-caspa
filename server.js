@@ -33,7 +33,7 @@ app.configure(function () {
         safeFileTypes: /\.(webm|mkv|mov|mp4|avi|ogg)$/i,
     }));*/
     app.use(express.bodyParser({
-            uploadDir: dirs.uploads,
+            uploadDir: dirs.uploads + '/incoming',
             maxFieldsSize: 10 * 1024 * 1024
     })); /* */
     app.use(express.methodOverride());
