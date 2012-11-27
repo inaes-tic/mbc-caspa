@@ -41,10 +41,10 @@ window.MediaListView = Backbone.View.extend({
         var self = this;
         $(this.el).html(template.medialist(this.collection.toJSON()));
         if (! this.options.dragSource) {
-            $('#drop-table', self.el).show().sortable({
+            $('.delete-drop', self.el).sortable({
                 connectWith: '.connected-sortable',
-                update: function (e, ui) {
-                    ui.item[0].remove();
+                update : function (e, ui) {
+                    ui.item.remove();
                 }
             }).hide();
             $('.tbody', this.el).addClass('recieve-drag').sortable({
@@ -54,13 +54,20 @@ window.MediaListView = Backbone.View.extend({
                 forcePlaceholderSize : true,
                 revert : true,
                 start: function (e, ui) {
-                    console.log ('start', self.el);
+                    /**
+                     * HUGE HACK: we only get this set when the helper
+                     * comes from a draggable, this allows us to make a
+                     * difference, to show or not the 'delete' div based on
+                     * weather we come from our sortable (i.e. this), or
+                     * from somewhere else (i.e. the other pane)
+                     */
+
+                    if (ui.helper[0].className.match('ui-draggable-dragging'))
+                        return;
                     $('.delete-drop').show()
-                    $('#drop-table', self.el).show().sortable("enable");
                 },
                 stop: function (e, ui) {
                     $('.delete-drop').hide()
-                    $('#drop-table', self.el).hide().sortable("disable");
                 },
                 /**
                  * This is not ready. what we need to do is disable the add
