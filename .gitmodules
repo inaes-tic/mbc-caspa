@@ -13,3 +13,6 @@
 [submodule "node_modules/i18n-abide"]
 	path = node_modules/i18n-abide
 	url = git://github.com/inaes-tic/i18n-abide
+[submodule "node_modules/resumable.js"]
+	path = node_modules/resumable.js
+	url = git://github.com/inaes-tic/resumable.js
