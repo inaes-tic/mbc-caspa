@@ -1,6 +1,6 @@
 var express = require('express'),
     path    = require('path'),
-    http    = require('http'),
+    exec    = require('child_process').exec,
     io      = require('socket.io'),
     i18n    = require('i18n-abide');
 
@@ -12,6 +12,16 @@ var dirs = {
     vendor : path.join(__dirname, 'vendor'),
     uploads: path.join(__dirname, 'public/uploads/')
 };
+
+/* make sure at runtime that we atempt to get the dirs we need */
+for (d in dirs) {
+    /* HACK: but I'm not going to waist time writing mkdir -p */
+    exec ('mkdir -p ' + dirs[d], function (error, stdout, stderr) {
+        if (error !== null) {
+            console.log('exec error: ' + error);
+        }
+    });
+}
 
 var app = express();
 
