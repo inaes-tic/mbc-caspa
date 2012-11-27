@@ -149,10 +149,10 @@ function Melted(opts) {
             break;
         case "uls":
             split = str.split("\r\n");
-                            JSONresponse = {};
+            JSONresponse = {};
             len = (split.length - 2);
             for (i = 1; i < len; i++) {
-                JSONresponse.clips = {
+                JSONresponse.units = {
                     "unit": split[i]
                 };
             }
@@ -175,7 +175,7 @@ function Melted(opts) {
     function addPendingData (data) {
         if (data.match(/[^\s]/)) {
             self.pending.push(data);
-            console.warn('melted warn: got ' + self.pending.lenght + ' data pending.');
+            console.warn('melted warn: got ' + self.pending.length + ' data pending.');
             console.warn('melted warn: "' + data + '"');
         }
     };
