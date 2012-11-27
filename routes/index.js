@@ -52,11 +52,8 @@ module.exports = function(app) {
         require.resolve('underscore/underscore.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('backboneio/backboneio.js'),
-/*        require.resolve('blueimp-file-upload/js/jquery.fileupload.js'),
-        require.resolve('blueimp-file-upload/js/jquery.fileupload-fp.js'),
-        require.resolve('blueimp-file-upload/js/jquery.fileupload-ui.js'),*/
-        require.resolve('resumable.js/resumable.js'),
         require.resolve('jed'),
+        require.resolve('resumable.js/resumable.js'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
         path.join(lib_dir, 'bootstrap.min.js'),
         path.join(lib_dir, 'andika.js'),
