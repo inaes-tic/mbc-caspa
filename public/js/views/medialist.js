@@ -28,16 +28,53 @@ window.MediaListItemView = Backbone.View.extend({
 
 });
 
+var leadingZero = function(num){
+    return (num < 10) ? "0"+num : num;
+}
+
+var toMili = function (time) {
+    var t = time.match(/(\d{2}):(\d{2}):(\d{2})\.(\d*)/);
+    t.shift();
+    var n, m = parseInt(t.pop());
+    var f = [24, 60, 60, 100];
+    var F = 1;
+
+    while (n = parseInt(t.pop())) {
+        F = F * f.pop();
+        m += n * F;
+    }
+
+    return m;
+};
+var prettyTime =  function (m) {
+    var t = [];
+    var f = [24, 60, 60, 100];
+
+    while (F = f.pop()) {
+        t.push(m - Math.floor(m/F)*F);
+        m = Math.floor(m/F)
+    }
+
+    var mili = t.shift();
+    t.reverse();
+    t = _.map (t, function (e) {return leadingZero(e);});
+    console.log (t);
+    var s = t.join(':');
+    return s +  '.' + mili.toString();
+};
+
+
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
         console.log ("init...");
+/*
         var medias = this.collection.models;
         var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
         $('#search', this.el).html(new SearchView({source : mediaNames,
                                                    target : '.table'}).render().el);
         $('#playbar', this.el).html(new PlayBarView({model : appModel}).render().el);
-
+*/
         var self = this;
         $(this.el).html(template.medialist(this.collection.toJSON()));
         if (! this.options.dragSource) {
@@ -103,15 +140,22 @@ window.MediaListView = Backbone.View.extend({
             self.collection.move(move.from, move.to);
         });
 
-        _.bindAll(this, 'addOne', 'addOneAnim', 'addAll');
+        _.bindAll(this, 'addOne', 'addOneAnim', 'addAll', 'updateTotalTime');
 //        mediaList.bind('change', this.renderMe, this);
         self.collection.bind('add',   this.addOneAnim, this);
         self.collection.bind('reset', this.addAll, this);
         self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
+        self.collection.bind('all',   this.updateTotalTime, this);
         self.collection.bind('update',this.update, this);
 
         this.addAll();
 //        this.render();
+    },
+    updateTotalTime: function () {
+        console.log ('update time');
+        var totalTime = _.reduce(this.collection.pluck('duration'), function (m, n) {
+            return m + toMili(n);}, 0);
+        $('.total-time', this.el)[0].textContent = prettyTime(totalTime);
     },
     update: function(){
         this.collection.sort()

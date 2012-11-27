@@ -98,36 +98,33 @@ var populateDB = function() {
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     var dest = './public/sc/' + media._id + '.jpg';
     console.log ('starting sc', media.file);
-
+/*
     if (_existsSync('./public/sc/' + media._id)) {
         console.log ('skipping screenshot of: ' + md5 + '(file already there).');
         return done(media);
     }
-
+*/
     var proc = new ffmpeg({source: media.file})
         .withSize('150x100')
         .onCodecData(function(metadata) {
+            console.log ('got metadata for ' + media._id, callback);
             if (!callback)
                 return;
 
-            console.log(metadata);
             metadata._id  = media._id;
             metadata.file = media.file;
             metadata.stat = media.stat;
             callback (metadata);
         })
-        .withFps(1)
-        .addOption('-ss', '5')
-        .onProgress(function(progress) {
-            console.log(progress);
-        })
-        .saveToFile(dest, function(retcode, error) {
-            if (! _existsSync (dest) || error)
-                return done (new Error('File not created' + error));
-
-            console.log('sc ok: ' + media._id);
-            return done(media);
-        });
+        .takeScreenshots({
+            count: 1,
+            timemarks : [ '10%'],
+            filename : media._id}, './public/sc/', function (err, fn) {
+                if (! _existsSync (dest) || err)
+                    return done (new Error('File not created' + err));
+                console.log('sc ok: ' + media._id);
+                return done(media);
+            });
 });
 
 exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
@@ -201,9 +198,10 @@ exports.check_media = function (media, cb, arg) {
             cb(arg)
         _exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
             if (!e)
-                exports.sc_pool.task (media, null, function (err, res) {
-                    if (err)
+                exports.sc_pool.task (media, null, function (res, err) {
+                    if (err) {
                         console.error (new Error("couldn't sc"));
+                    }
                 });
         });
     });
