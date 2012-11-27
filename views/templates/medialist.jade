@@ -8,20 +8,35 @@ block content
       #search.span6
   br
   table.table.table-dark.table-bordered.table-striped.table-hover.table-condensed#table
-    thead
-      tr
-        th= i18n.gettext('Thumbnail')
-        th= i18n.gettext('Media info')
-        th= i18n.gettext('Status')
-        th= i18n.gettext('Availability')
-    tbody.tbody#media-view(class='tbody' + connectable?' connected-sortable':'')
-      tr
-        td
-        td
-          .alert.alert-block
-            button.close(type='button', data-dismiss='alert') ×
-            h4= i18n.gettext('Oops!')
-            p= i18n.gettext('It looks like you have no media to show here, maybe go to the ')
-              a(href='/conf/')= i18n.gettext('Configuration')
-        td
-        td
+        thead
+          tr
+            th= i18n.gettext('Thumbnail')
+            th= i18n.gettext('Media info')
+            th= i18n.gettext('Status')
+            th= i18n.gettext('Availability')
+        tbody.tbody#media-view(class='tbody' + connectable?' connected-sortable':'')
+          tr
+            td
+            td
+              .alert.alert-block
+                button.close(type='button', data-dismiss='alert') ×
+                h4= i18n.gettext('Oops!')
+                p= i18n.gettext('It looks like you have no media to show here, maybe go to the ')
+                  a(href='/conf/')= i18n.gettext('Configuration')
+            td
+            td
+  .delete-drop.connected-sortable(style='display:none;')
+        table#drop-table
+          tbody.tbody#media-view(class='tbody' + connectable?' connected-sortable':'')
+              td
+              td
+                .alert.alert-block
+                  h4= i18n.gettext('Drag to Delete')
+                    a(href='/conf/')= i18n.gettext('Configuration')
+              td
+              td
+
+
+
+
+

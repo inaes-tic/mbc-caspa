@@ -41,12 +41,27 @@ window.MediaListView = Backbone.View.extend({
         var self = this;
         $(this.el).html(template.medialist(this.collection.toJSON()));
         if (! this.options.dragSource) {
+            $('#drop-table', self.el).show().sortable({
+                connectWith: '.connected-sortable',
+                update: function (e, ui) {
+                    ui.item[0].remove();
+                }
+            }).hide();
             $('.tbody', this.el).addClass('recieve-drag').sortable({
                 connectWith: '.connected-sortable',
                 helper: 'clone',
                 forceHelperSize : true,
                 forcePlaceholderSize : true,
                 revert : true,
+                start: function (e, ui) {
+                    console.log ('start', self.el);
+                    $('.delete-drop').show()
+                    $('#drop-table', self.el).show().sortable("enable");
+                },
+                stop: function (e, ui) {
+                    $('.delete-drop').hide()
+                    $('#drop-table', self.el).hide().sortable("disable");
+                },
                 /**
                  * This is not ready. what we need to do is disable the add
                    event we get, but still handle re-order in the model,
@@ -65,7 +80,7 @@ window.MediaListView = Backbone.View.extend({
                     var dragged_id = ui.item[0].id;
                     _($(this).sortable('toArray')).each(function (order, index) {
                         var media = self.collection.get(order);
-                        if (media.get('_id') == dragged_id) {
+                        if (media && media.get('_id') == dragged_id) {
                             var move = {id: dragged_id, from: media.get('pos'), to: index}
                             window.socket.emit('medias:moved', move);
                             self.collection.move(move.from, move.to);

@@ -136,3 +136,36 @@ legend {
 .resumable-error {display:none; font-size:14px; font-style:italic;}
 .resumable-drop {padding:15px; font-size:13px; text-align:center; color:#666; font-weight:bold;background-color:#eee; border:2px dashed #aaa; border-radius:10px; margin-top:40px; z-index:9999; display:none;}
 .resumable-dragover {padding:30px; color:#555; background-color:#ddd; border:1px solid #999;}
+
+.delete-drop {
+    width: 100%;
+    height: 20%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+    background-color: #700;
+//    z-index: 10;
+}
+
+.delete-drop :hover {
+   background-color: #a00;
+}
+
+.delete-message {
+    width:300px;
+    height:100px;
+    text-align: center;
+    position:absolute;
+    left:50%;
+    top:50%;
+    margin:-50px 0 0 -150px;
+    opacity: 1;
+}
+
+#drop-table {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
