@@ -21,10 +21,18 @@ Media.Model = BackboneIO.Model.extend({
         return index;
     },
     validate: function (attrs) {
-        if (! attrs.file || ! attrs.file.length)
+        if (! attrs.file || ! attrs.file.length) {
+            console.log ('NO file');
             return new Error("file must be defined");
-        if (! attrs.stat || ! attrs.stat.length)
+        }
+        if (! attrs.stat       ||
+            ! attrs.stat.name  ||
+            ! attrs.stat.mtime ||
+            ! attrs.stat.size  ||
+              attrs.stat.size <= 4000) {
+            console.log ('NO or BAD stat');
             return new Error("stat must be defined");
+        }
     },
     defaults: {
         _id: null,
