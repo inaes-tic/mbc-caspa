@@ -10,26 +10,17 @@ if (typeof exports !== 'undefined') {
 Media.Model = BackboneIO.Model.extend({
     urlRoot: "media",
     idAttribute: "_id",
-    initialize: function () {
-        this.validators = {};
-
-        this.validators.file = function (value) {
-            return value.length > 0 ? {isValid: true} : {isValid: false, message: "You must enter a name"};
-        };
-    },
-    index2Pos: function (index) {
-        return index;
-    },
     validate: function (attrs) {
-        if (! attrs.file || ! attrs.file.length) {
+        console.log ("checking", attrs);
+        if (attrs.file && ! attrs.file.length) {
             console.log ('NO file');
             return new Error("file must be defined");
         }
-        if (! attrs.stat       ||
-            ! attrs.stat.name  ||
-            ! attrs.stat.mtime ||
-            ! attrs.stat.size  ||
-              attrs.stat.size <= 4000) {
+        if (attrs.stat       &&
+            (! attrs.stat.name  ||
+             ! attrs.stat.mtime ||
+             ! attrs.stat.size  ||
+             attrs.stat.size <= 4000)) {
             console.log ('NO or BAD stat');
             return new Error("stat must be defined");
         }
@@ -47,6 +38,19 @@ Media.Model = BackboneIO.Model.extend({
 Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
     url: 'media',
+});
+
+Media.Block = Media.Model.extend({
+    urlRoot: "program",
+    set_index: function (index, opts) {
+        this.set (this.idAttribute, this.get(this.idAttribute).split(':')[0] + ':' + index);
+        return Media.Model.set_index (index, opts);
+    }
+});
+
+Media.Program = Media.Collection.extend ({
+    model: Media.Block,
+    url:   'program',
 });
 
 if(server) module.exports = Media;

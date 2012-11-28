@@ -58,11 +58,21 @@ var prettyTime =  function (m) {
     var mili = t.shift();
     t.reverse();
     t = _.map (t, function (e) {return leadingZero(e);});
-    console.log (t);
     var s = t.join(':');
     return s +  '.' + mili.toString();
 };
 
+var findAndDo = function (what, where, how, work) {
+    console.log (where);
+    _(where).each(function (order, index) {
+        console.log ("inside", order, 'index', index, where);
+        var item = how(order);
+        if (item && item.get(item.idAttribute) == what) {
+            console.log ('found');
+            return work (item, what, index);
+        }
+    });
+};
 
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
@@ -78,61 +88,7 @@ window.MediaListView = Backbone.View.extend({
         var self = this;
         $(this.el).html(template.medialist(this.collection.toJSON()));
         if (! this.options.dragSource) {
-            $('.delete-drop', self.el).sortable({
-                connectWith: '.connected-sortable',
-                update : function (e, ui) {
-                    ui.item.remove();
-                }
-            }).hide();
-            $('.tbody', this.el).addClass('recieve-drag').sortable({
-                connectWith: '.connected-sortable',
-                helper: 'clone',
-                forceHelperSize : true,
-                forcePlaceholderSize : true,
-                revert : true,
-                start: function (e, ui) {
-                    /**
-                     * HUGE HACK: we only get this set when the helper
-                     * comes from a draggable, this allows us to make a
-                     * difference, to show or not the 'delete' div based on
-                     * weather we come from our sortable (i.e. this), or
-                     * from somewhere else (i.e. the other pane)
-                     */
-
-                    if (ui.helper[0].className.match('ui-draggable-dragging'))
-                        return;
-                    $('.delete-drop').show()
-                },
-                stop: function (e, ui) {
-                    $('.delete-drop').hide()
-                },
-                /**
-                 * This is not ready. what we need to do is disable the add
-                   event we get, but still handle re-order in the model,
-                   without triggering a reset. all this while listening (and
-                   queuing) other add events, (that may come from other
-                   sources
-                **/
-                /*
-                  receive: function( event, ui ) {
-                  self.collection.add(mediaList.get(ui.draggable[0].id));
-                  console.log ("DROP", event, ui, ui.draggable[0].id);
-                  }});
-                */
-
-                update: function (e, ui) {
-                    var dragged_id = ui.item[0].id;
-                    _($(this).sortable('toArray')).each(function (order, index) {
-                        var media = self.collection.get(order);
-                        if (media && media.get('_id') == dragged_id) {
-                            var move = {id: dragged_id, from: media.get('pos'), to: index}
-                            window.socket.emit('medias:moved', move);
-                            self.collection.move(move.from, move.to);
-                            return;
-                        }
-                    });
-                },
-            });
+            self.prepareSortable();
         }
 
         window.socket.on('medias:moved', function (move) {
@@ -140,7 +96,7 @@ window.MediaListView = Backbone.View.extend({
             self.collection.move(move.from, move.to);
         });
 
-        _.bindAll(this, 'addOne', 'addOneAnim', 'addAll', 'updateTotalTime');
+        _.bindAll(this, 'addOne', 'addOneAnim', 'addAll', 'updateTotalTime', 'prepareSortable');
 //        mediaList.bind('change', this.renderMe, this);
         self.collection.bind('add',   this.addOneAnim, this);
         self.collection.bind('reset', this.addAll, this);
@@ -151,11 +107,78 @@ window.MediaListView = Backbone.View.extend({
         this.addAll();
 //        this.render();
     },
+    prepareSortable: function () {
+        var self = this;
+        $('.delete-drop', self.el).sortable({
+            connectWith: '.connected-sortable',
+            update : function (e, ui) {
+                ui.item.remove();
+            }
+        }).hide();
+        $('.tbody', this.el).addClass('recieve-drag').sortable({
+            connectWith: '.connected-sortable',
+            helper: 'clone',
+            forceHelperSize : true,
+            forcePlaceholderSize : true,
+            revert : true,
+            start: function (e, ui) {
+                /**
+                 * HUGE HACK: we only get this set when the helper
+                 * comes from a draggable, this allows us to make a
+                 * difference, to show or not the 'delete' div based on
+                 * weather we come from our sortable (i.e. this), or
+                 * from somewhere else (i.e. the other pane)
+                 */
+                console.log ('start');
+                if (ui.helper[0].className.match('ui-draggable-dragging'))
+                    return;
+                $('.delete-drop').show()
+            },
+            stop: function (e, ui) {
+                console.log ('stop');
+                $('.delete-drop').hide()
+            },
+            /**
+             * This is not ready. what we need to do is disable the add
+             * event we get, but still handle re-order in the model, without
+             * triggering a reset. all this while listening (and queuing)
+             * other add events, (that may come from other sources
+             **/
+            receive: function( event, ui ) {
+                console.log($(this), $(this).children());
+                findAndDo (ui.item[0].id, $(this).children(),
+                           function (order) { console.log ("order", order); return mediaList.get(order)},
+                           function (media, id, index) {
+                               self.collection.add (media);
+                               self.collection.move (media.get_index(), index);
+                           });
+                console.log ('models', self.collection.models);
+                /*
+                  item.set_index (
+                  , {silent: true});
+                  self.collection.add(
+                */
+            },
+            update: function (e, ui) {
+                findAndDo (ui.item[0].id, $(this).sortable('toArray'),
+                           function (order) { return self.collection.get(order)},
+                           function (media, dragged_id, index) {
+                               var move = {id: dragged_id, from: media.get('pos'), to: index}
+                               console.log (move);
+                               window.socket.emit('medias:moved', move);
+                               self.collection.move(move.from, move.to);
+                               self.updateTotalTime();
+                               return;
+                           });
+            },
+        });
+    },
     updateTotalTime: function () {
-        console.log ('update time');
+        console.log ('update time', this.collection.pluck('duration'));
         var totalTime = _.reduce(this.collection.pluck('duration'), function (m, n) {
-            return m + toMili(n);}, 0);
+            console.log (n); return m + toMili(n);}, 0);
         $('.total-time', this.el)[0].textContent = prettyTime(totalTime);
+        console.log ('Total Time: ', prettyTime(totalTime));
     },
     update: function(){
         this.collection.sort()
@@ -186,7 +209,7 @@ window.MediaListView = Backbone.View.extend({
         }, 2000);
     },
     addAll: function() {
-        console.log('addALL');
+        console.log('addALL', this.el);
         if (this.collection.length > 0) {
             console.log (this.el, 'empty', this.collection.models);
             this.$('#media-view', this.el).empty();

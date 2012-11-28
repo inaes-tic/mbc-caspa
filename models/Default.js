@@ -45,29 +45,35 @@ BackboneIO.Collection.prototype._onAdd = function (model) {
 }
 
 BackboneIO.Collection.prototype.initialize = function () {
-    if (!Backbone && server) {
-        Backbone = require('backbone');
+    if (!Backbone) {
+        if (server) {
+            Backbone = require('backbone');
+        } else {
+            console.error ('Backbone not initialized');
+            abort();
+        }
     }
     Backbone.Collection.prototype.initialize.call(this);
     this.bind('add', this._onAdd);
 };
 
 BackboneIO.Collection.prototype.move = function (from, to) {
-    var model = this.models[from].set_index(to);
+    var model = this.models[from].set_index(to, {silent: true});
 
     if (from < to) {
         for (var i = from; i < to; i++) {
             this.models[i] = this.models[i+1];
-            this.models[i].set_index(i);
+            this.models[i].set_index(i, {silent: true});
         }
     } else {
         for (var i = from; i > to; i--) {
             this.models[i] = this.models[i-1];
-            this.models[i].set_index(i);
+            this.models[i].set_index(i, {silent: true});
         }
     }
 
     this.models[to] = model;
+    this.trigger('change:reorder');
     return model;
 };
 

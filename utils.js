@@ -125,6 +125,7 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
                 console.log('sc ok: ' + media._id);
                 return done(media);
             });
+    console.log ('sc...', proc);
 });
 
 exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
