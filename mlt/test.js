@@ -1,32 +1,41 @@
 var vows = require('vows'),
-    assert = require('assert');
+    assert = require('assert'),
+	Q = require("q");
 
 var Melted = require('./Melted');
 
 vows.describe('Melted').addBatch({
-    'connects': {
+    'init': {
         topic: new(Melted),
         'is connected': function (mlt) {
-            assert.equal (mlt.connected, true);
+			var result = mlt.connect();
+			Q.when(result, function() {
+	            assert.equal (mlt.connected, true);
+			});
         },
         'has no pending messages': function (mlt) {
-            assert.deepEqual (mlt.pending, []);
+            assert.equal (mlt.pending.length, 0);
         },
         'has no errors': function (mlt) {
-            assert.deepEqual (mlt.errors, []);
+            assert.equal (mlt.errors.length, 0);
         }
     },
     'commands': {
         topic: new(Melted),
         'bad': function (mlt) {
-            mlt.sendCommand("no_such_command in my town");
-            assert.deepEqual (mlt.errors, []);
+            mlt.sendCommand("no_such_command in my town", "200 OK");
+			setTimeout(function() {
+	            assert.equal (mlt.errors.length, 1);
+			}, 500);
         },
         'good': function (mlt) {
-            mlt.sendCommand("uload u0 logo.jpg");
-            mlt.sendCommand("play u0");
+            mlt.sendCommand("load u0 /home/jmrunge/Downloads/Gardel/Mancha-De-Rolando-Antes.mp4", "200 OK");
+            mlt.sendCommand("play u0", "200 OK");
+			setTimeout(function() {
+	            assert.equal (mlt.errors.length, 1);
+			}, 500);
         }
-    },
+    }/*,
     'can add': {
         topic: new(Melted),
         'add non exist fails': function (mlt) {
@@ -40,6 +49,6 @@ vows.describe('Melted').addBatch({
         'add valid file works': function (mlt) {
             mlt.addFile('./logo.jpg');
         }
-    }
+    }*/
 }).export(module); // Export the Suite
 
