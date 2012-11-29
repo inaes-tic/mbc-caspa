@@ -34,7 +34,14 @@ vows.describe('Melted').addBatch({
 			setTimeout(function() {
 	            assert.equal (mlt.errors.length, 1);
 			}, 500);
-        }
+        },
+		/*'queue' : function(mlt) {
+			setTimeout(function() {
+		        mlt.sendCommand("uls", "200 OK");
+		        mlt.sendCommand("list u0", "200 OK");
+				assert.equal (mlt.errors.length, 1);
+			}, 50);
+		}*/
     }/*,
     'can add': {
         topic: new(Melted),
