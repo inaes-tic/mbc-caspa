@@ -113,7 +113,7 @@ window.MediaListView = Backbone.View.extend({
             connectWith: '.connected-sortable',
             update : function (e, ui) {
                 ui.item.remove();
-            }
+            },
         }).hide();
         $('.tbody', this.el).addClass('recieve-drag').sortable({
             connectWith: '.connected-sortable',
@@ -137,6 +137,19 @@ window.MediaListView = Backbone.View.extend({
             stop: function (e, ui) {
                 console.log ('stop');
                 $('.delete-drop').hide()
+                var item = self.collection.create(mediaList.get(self.nextDrop));
+                $(ui.item).addClass("handleMe");
+                console.log ("HERE DOC", $(ui.item), item);
+
+                _($(this).children()).each (function (order, index) {
+                    if (order.classList.contains("handleMe")) {
+                        $(order).remove();
+                        self.collection.add (item.attributes, {at: index});
+                    } else if (order.id == 'kill-me') { /* placeholder */
+                        $(order).remove();
+                    }
+                });
+                console.log(self.collection.models);
             },
             /**
              * This is not ready. what we need to do is disable the add
@@ -145,19 +158,8 @@ window.MediaListView = Backbone.View.extend({
              * other add events, (that may come from other sources
              **/
             receive: function( event, ui ) {
-                console.log($(this), $(this).children());
-                findAndDo (ui.item[0].id, $(this).children(),
-                           function (order) { console.log ("order", order); return mediaList.get(order)},
-                           function (media, id, index) {
-                               self.collection.add (media);
-                               self.collection.move (media.get_index(), index);
-                           });
-                console.log ('models', self.collection.models);
-                /*
-                  item.set_index (
-                  , {silent: true});
-                  self.collection.add(
-                */
+                console.log ('receive', $(ui), ui.sender[0].getAttribute('id'), this.lastDrop);
+                self.nextDrop =  ui.sender[0].getAttribute('id');
             },
             update: function (e, ui) {
                 findAndDo (ui.item[0].id, $(this).sortable('toArray'),
