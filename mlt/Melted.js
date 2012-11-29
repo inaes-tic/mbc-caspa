@@ -10,8 +10,7 @@ function Melted(opts) {
 	this.connected  = false;
 	this.connecting = false;
 	this.commands   = [];
-	this.maxIndex   = 0;
-	this.currentIndex = 0;
+	this.processing = false;
 
 	Melted.prototype.connect = function() {
         console.log("MELTED: [connect] Invoked");
@@ -23,15 +22,76 @@ function Melted(opts) {
 		self.server = new net.createConnection(5250);
         self.server.setEncoding('ascii');
 
+        /*
+          Event: 'connect'#
+          Emitted when a socket connection is successfully established. See connect().
+        */
 		self.server.on("connect", function() {
 			deferred.resolve(expect("100 VTR Ready"));
             console.log("MELTED: [connect] Connected to Melted Server" );
         });
 
+        /*
+          Event: 'data'#
+          Buffer object
+          Emitted when data is received. The argument data will be a Buffer
+          or String. Encoding of data is set by socket.setEncoding(). (See
+          the Readable Stream section for more information.)
+
+          Note that the data will be lost if there is no listener when a
+          Socket emits a 'data' event.
+        */
 		self.server.addListener('data', addPendingData);
 
+        /*
+          Event: 'end'#
+          Emitted when the other end of the socket sends a FIN packet.
+
+          By default (allowHalfOpen == false) the socket will destroy its
+          file descriptor once it has written out its pending write queue.
+          However, by setting allowHalfOpen == true the socket will not
+          automatically end() its side allowing the user to write arbitrary
+          amounts of data, with the caveat that the user is required to
+          end() their side now.
+        */
+        self.server.on('end', function () {
+            if (self.pending.length)
+                console.error ("MELTED: [connect] Got 'end' but still data pending");
+            self.connected = false;
+        });
+
+        /*
+          Event: 'timeout'#
+          Emitted if the socket times out from inactivity. Self is only to
+          notify that the socket has been idle. The user must manually close
+          the connection.
+        */
+
+        /*
+          Event: 'drain'#
+          Emitted when the write buffer becomes empty. Can be used to
+          throttle uploads.
+        */
+
+        /*
+          Event: 'error'#
+          Error object
+          Emitted when an error occurs. The 'close' event will be called
+          directly following self event.
+        */
 		self.server.on('error', function(err) {
             console.log("MELTED: [connect] Could not connect to Melted Server: " + err);
+        });
+
+        /*
+          Event: 'close'#
+          had_error Boolean true if the socket had a transmission error
+          Emitted once the socket is fully closed. The argument had_error is
+          a boolean which says if the socket was closed due to a
+          transmission error.
+        */
+        self.server.on('close', function (had_error) {
+            self.connected = false;
         });
 
 		return deferred.promise;
@@ -46,7 +106,7 @@ function Melted(opts) {
 			if (!self.connecting) {
 				self.connect();
 			}
-		} else {
+		} else if (!self.processing) {
 			processQueue();
 		}
 	};
@@ -60,35 +120,36 @@ function Melted(opts) {
     };
 
 	function processQueue() {
-		console.log("MELTED: [processQueue] Invoked for index: " + self.currentIndex);
-		if (self.currentIndex < (self.maxIndex + 1)) {
+		console.log("MELTED: [processQueue] Invoked");
 
-			var command = self.commands[self.currentIndex];
+		if (!self.processing)
+			self.processing = true;
 
+		var command = self.commands.shift();
+
+		if (command !== undefined) {
+			console.log("MELTED: [processQueue] Processing command: " + command[0]);
 			var result = _sendCommand(command[0], command[1]);
 
 			Q.when(result, function() {
-				processNextItemInQueue();
+				processQueue();
 			}, function(error) {
 				console.error(error);
 				self.errors.push(error);
-				processNextItemInQueue();
+				processQueue();
 			});
+		} else {
+			console.log("MELTED: [processQueue] Nothing else to process");
+			self.processing = false;
 		}
 	}
 
-	function processNextItemInQueue() {
-		self.currentIndex++;
-		processQueue();
-	}
-
 	function addCommandToQueue(command, expected) {
-		console.log("MELTED: [addCommandToQueue] Invoked for command: " + command + ", expected: " + expected + ", at index: " + self.maxIndex);
+		console.log("MELTED: [addCommandToQueue] Invoked for command: " + command + ", expected: " + expected); //+ ", at index: " + self.maxIndex);
 		var com = [];
 		com[0] = command;
 		com[1] = expected;
-		self.commands[self.maxIndex] = com;
-		self.maxIndex++;
+		self.commands.push(com);
 	}
 
 	function _sendCommand(command, expected) {
@@ -119,15 +180,15 @@ function Melted(opts) {
 			} else {
 		        if (resp !== expected) {
 		            err = new Error ("MELTED: [expect] Expected '" + expected + "' but got '" + resp + "' !");
-		            self.errors.push(err);
-		            console.warn(err);
 					deferred.reject(err);
 		        } else {
+					//TODO: Corregir este hack
 					if (!self.connected) {
 						self.connected = true;
 						self.connecting = false;
 						processQueue();
 					}
+					//TODO: devolver algo mejor que esto!
 					deferred.resolve("OK");
 				}
 			}
@@ -139,6 +200,5 @@ function Melted(opts) {
 
 exports = module.exports = function(args) {
     var mlt = new Melted(args);
-	//var result = mlt.connect();
     return mlt;
 }
