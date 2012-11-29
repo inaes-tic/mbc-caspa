@@ -55,5 +55,9 @@ Media.Program = Media.Collection.extend ({
     url:   'program',
 });
 
+Media.State = Media.Program.extend ({
+
+});
+
 if(server) module.exports = Media;
 else root.Media = Media;
