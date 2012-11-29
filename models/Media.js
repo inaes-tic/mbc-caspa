@@ -43,8 +43,10 @@ Media.Collection = BackboneIO.Collection.extend({
 Media.Block = Media.Model.extend({
     urlRoot: "program",
     set_index: function (index, opts) {
-        this.set (this.idAttribute, this.get(this.idAttribute).split(':')[0] + ':' + index);
-        return Media.Model.set_index (index, opts);
+        var new_id = this.get(this.idAttribute).split(':')[0] + ':' + index;
+        this.set ({_id : new_id});
+        this.set({pos: this.index2Pos(index)}, opts);
+        return this
     }
 });
 
