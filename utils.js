@@ -1,7 +1,7 @@
 var     _ = require('underscore')
 ,   fp    = require('functionpool')
+, ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs')
-, ffmpeg  = require('fluent-ffmpeg')
 ,  mongo  = require('mongodb');
 
 var _exists     = fs.exists     || require('path').exists;
@@ -98,36 +98,34 @@ var populateDB = function() {
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     var dest = './public/sc/' + media._id + '.jpg';
     console.log ('starting sc', media.file);
-
+/*
     if (_existsSync('./public/sc/' + media._id)) {
         console.log ('skipping screenshot of: ' + md5 + '(file already there).');
         return done(media);
     }
+*/
+    var f = new ffmpeg();
+    f.run (media.file, dest, {
+            size: '150x100',
+            onCodecData: function(metadata) {
+                console.log ('here');
+                if (!callback)
+                    return;
 
-    var proc = new ffmpeg({source: media.file})
-        .withSize('150x100')
-        .onCodecData(function(metadata) {
-            if (!callback)
-                return;
+                console.log(metadata);
+                metadata._id  = media._id;
+                metadata.file = media.file;
+                metadata.stat = media.stat;
+                callback (metadata);
+            }
+    }, function(retcode, fds) {
+        console.log ('here0');
+        if (! _existsSync (dest) || retcode)
+            return done (new Error('File not created' + fds.err));
 
-            console.log(metadata);
-            metadata._id  = media._id;
-            metadata.file = media.file;
-            metadata.stat = media.stat;
-            callback (metadata);
-        })
-        .withFps(1)
-        .addOption('-ss', '5')
-        .onProgress(function(progress) {
-            console.log(progress);
-        })
-        .saveToFile(dest, function(retcode, error) {
-            if (! _existsSync (dest) || error)
-                return done (new Error('File not created' + error));
-
-            console.log('sc ok: ' + media._id);
-            return done(media);
-        });
+        console.log('sc ok: ' + media._id);
+        return done(media);
+    });
 });
 
 exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
