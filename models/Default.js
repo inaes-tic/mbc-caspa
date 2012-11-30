@@ -62,6 +62,11 @@ BackboneIO.Collection.prototype.index_add = function (model, opts) {
     return this.models[index];
 }
 
+BackboneIO.Collection.prototype.create = function (model, opts) {
+    var index = (opts && opts.at) ? opts.at : this.size();
+    this._set_index (model, opts);
+    return Backbone.Collection.prototype.create.call (this, model, opts);
+}
 
 BackboneIO.Collection.prototype.move = function (from, to) {
     var model = this.models[from].set_index(to, {silent: true});
