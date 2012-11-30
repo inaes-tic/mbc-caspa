@@ -96,7 +96,13 @@ window.MediaListView = Backbone.View.extend({
             self.collection.move(move.from, move.to);
         });
 
-        _.bindAll(this, 'addOne', 'addOneAnim', 'addAll', 'updateTotalTime', 'prepareSortable');
+        _.bindAll(this,
+                  'renderModel',
+                  'addOne',
+                  'addOneAnim',
+                  'addAll',
+                  'updateTotalTime',
+                  'prepareSortable');
 //        mediaList.bind('change', this.renderMe, this);
         self.collection.bind('add',   this.addOneAnim, this);
         self.collection.bind('reset', this.addAll, this);
@@ -185,8 +191,7 @@ window.MediaListView = Backbone.View.extend({
     update: function(){
         this.collection.sort()
     },
-    addOne: function (media) {
-        console.log ("adding: ", media.get('file'));
+    renderModel: function (media) {
         var item = new MediaListItemView({model: media}).render().el;
         item.setAttribute ("id", media.get('_id'));
 
@@ -199,6 +204,11 @@ window.MediaListView = Backbone.View.extend({
                                connectToSortable: ".recieve-drag",
                               });
         }
+        return item;
+    },
+    addOne: function (media) {
+        console.log ("adding: ", media.get('file'));
+        var item = this.renderModel (media);
         this.$('#media-view', this.el).append(item);
     },
     addOneAnim: function (media) {
