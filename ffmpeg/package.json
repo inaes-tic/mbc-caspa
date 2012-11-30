@@ -1,0 +1,31 @@
+{
+    "name": "ffmhack",
+    "description": "a library to interface with FFMPEG",
+    "version": "0.0.1",
+    "author": "Niv Sardi <xaiki@inaes.gob.ar>",
+    "contributors": [ "Juan Martin Runge <jmrunge@gmail.com>" ],
+    "scripts": {
+        "test": "./node_modules/.bin/mocha --reporter list --timeout 3000 mocha.js"
+    },
+    "main": "ffmpeg.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/inaes-tic/ffmhack"
+    },
+    "keywords": [
+        "client",
+        "video",
+        "playout"
+    ],
+    "dependencies" : {
+    },
+    "devDependencies": {
+        "mocha"    :  "1.7.x"
+    },
+    "bundledDependencies": [
+    ],
+    "license": "agplv3",
+    "engines": {
+        "node": ">=0.6"
+    }
+}
