@@ -99,7 +99,7 @@ if (server) {
 
     Backbone.View.prototype.moveDOM = BackboneIO.View.prototype.moveDOM = function (id, from, to) {
     var jumper = $('#' + id) || conosole.trace ('ho noes');
-        var dest = $('#' +this.collection.models[to].get_id()) || console.trace('hoho');
+        var dest = $('#' +this.collection.models[to].get_id());
         if (from < to) {
             jumper.insertAfter(dest);
         } else {
