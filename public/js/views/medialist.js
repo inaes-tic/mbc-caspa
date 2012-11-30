@@ -108,6 +108,7 @@ window.MediaListView = Backbone.View.extend({
         $('.delete-drop', self.el).sortable({
             connectWith: '.connected-sortable',
             update : function (e, ui) {
+                self.collection.remove (self.collection.get(ui.item[0].id));
                 ui.item.remove();
             },
         }).hide();
@@ -212,11 +213,14 @@ window.MediaListView = Backbone.View.extend({
     },
     addAll: function() {
         console.log('addALL', this.el);
-        if (this.collection.length > 0) {
-            console.log (this.el, 'empty', this.collection.models);
-            this.$('#media-view', this.el).empty();
+        if (this.collection.length == 0) {
+            this.$('#media-view', this.el).append(this.$('#empty-alert', this.el).clone());
+            return
         }
+        console.log (this.el, 'empty', this.collection.models);
+        this.$('#media-view', this.el).empty();
         this.collection.each(this.addOne);
+        this.updateTotalTime();
         console.log('addALL -- end');
     },
     checkEmpty: function () {
