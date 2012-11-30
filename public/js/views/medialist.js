@@ -135,19 +135,33 @@ window.MediaListView = Backbone.View.extend({
             stop: function (e, ui) {
                 console.log ('stop');
                 $('.delete-drop').hide()
-                var item = self.collection.create(mediaList.get(self.nextDrop));
+                if (! self.nextDrop) /* we are dropping internally */
+                    return;
+
+                var drop = mediaList.get(self.nextDrop);
                 $(ui.item).addClass("handleMe");
-                console.log ("HERE DOC", $(ui.item), item);
 
                 _($(this).children()).each (function (order, index) {
                     if (order.classList.contains("handleMe")) {
-                        $(order).remove();
-                        self.collection.add (item.attributes, {at: index});
-                    } else if (order.id == 'kill-me') { /* placeholder */
-                        $(order).remove();
+                        if (self.collection.indexed_id)
+                            self.collection.indexed_id (drop, index);
+                        var item = self.collection.index_add (drop.attributes, {at: index, silent: true});
+                        $(order).animate({
+                            'opacity': 0,
+                        }, 500, function () {
+                            $(order).replaceWith(self.renderModel (item));
+                        });
+                    } else if (order.id == 'empty-alert') { /* placeholder */
+                        $(order).animate({
+                            'opacity': 0,
+                        }, 500, function () {
+                            $(order).remove();
+                        });
                     }
                 });
-                console.log(self.collection.models);
+                self.nextDrop = false;
+                console.log('col is now', self.collection.models);
+                self.collection.trigger ('change');
             },
             /**
              * This is not ready. what we need to do is disable the add
