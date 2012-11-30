@@ -46,23 +46,22 @@ BackboneIO.Model.prototype.set_index = function (index, opts) {
     return this;
 };
 
-BackboneIO.Collection.prototype._onAdd = function (model) {
-    model.set_index(this.size() - 1, {silent:true});
-    model.save();
+BackboneIO.Collection.prototype._set_index = function (model, index) {
+    if (model.attributes) {
+        model.set_index(index)
+    } else {
+        model.pos = index;
+    }
+},
+
+BackboneIO.Collection.prototype.index_add = function (model, opts) {
+    var index = (opts && opts.at) ? opts.at : this.size();
+    this._set_index (model, index);
+    opts.at = index;
+    this.add (model, opts);
+    return this.models[index];
 }
 
-BackboneIO.Collection.prototype.initialize = function () {
-    if (!Backbone) {
-        if (server) {
-            Backbone = require('backbone');
-        } else {
-            console.error ('Backbone not initialized');
-            abort();
-        }
-    }
-    Backbone.Collection.prototype.initialize.call(this);
-    this.bind('add', this._onAdd);
-};
 
 BackboneIO.Collection.prototype.move = function (from, to) {
     var model = this.models[from].set_index(to, {silent: true});

@@ -53,6 +53,12 @@ Media.Block = Media.Model.extend({
 Media.Program = Media.Collection.extend ({
     model: Media.Block,
     url:   'program',
+    indexed_id: function (model, index) {
+        console.log ('hack hack hack', model, index);
+        var new_id = model.get(model.idAttribute).split(':')[0] + ':' + index;
+        model.set ({_id : new_id}, {silent: true});
+        return new_id;
+    }
 });
 
 Media.State = Media.Program.extend ({
