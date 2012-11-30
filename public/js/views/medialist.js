@@ -62,18 +62,6 @@ var prettyTime =  function (m) {
     return s +  '.' + mili.toString();
 };
 
-var findAndDo = function (what, where, how, work) {
-    console.log (where);
-    _(where).each(function (order, index) {
-        console.log ("inside", order, 'index', index, where);
-        var item = how(order);
-        if (item && item.get(item.idAttribute) == what) {
-            console.log ('found');
-            return work (item, what, index);
-        }
-    });
-};
-
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
@@ -168,16 +156,18 @@ window.MediaListView = Backbone.View.extend({
                 self.nextDrop =  ui.sender[0].getAttribute('id');
             },
             update: function (e, ui) {
-                findAndDo (ui.item[0].id, $(this).sortable('toArray'),
-                           function (order) { return self.collection.get(order)},
-                           function (media, dragged_id, index) {
-                               var move = {id: dragged_id, from: media.get('pos'), to: index}
-                               console.log (move);
-                               window.socket.emit('medias:moved', move);
-                               self.collection.move(move.from, move.to);
-                               self.updateTotalTime();
-                               return;
-                           });
+                var dragged_id = ui.item[0].id;
+                _($(this).children()).each(function (order, index) {
+                    var media = self.collection.get(order);
+                    if (media && media.get(media.idAttribute) == dragged_id) {
+                        var move = {id: dragged_id, from: media.get('pos'), to: index}
+                        console.log (move);
+                        window.socket.emit('medias:moved', move);
+                        self.collection.move(move.from, move.to);
+                        self.updateTotalTime();
+                        return;
+                    }
+                });
             },
         });
     },
