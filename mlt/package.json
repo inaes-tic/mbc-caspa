@@ -5,7 +5,7 @@
     "author": "Juan Martin Runge <jmrunge@gmail.com>",
     "contributors": [ "Niv Sardi <xaiki@inaes.gob.ar>", "hatcsh"],
     "scripts": {
-        "test": "vows"
+        "test": "./node_modules/.bin/mocha --reporter list --timeout 3000 mocha.js"
     },
     "main": "Melted",
     "repository": {
@@ -21,7 +21,7 @@
         "q" : "0.8.x"
     },
     "devDependencies": {
-        "vows"    :  "0.5.x"
+        "mocha"    :  "1.7.x"
     },
     "bundledDependencies": [
     ],
