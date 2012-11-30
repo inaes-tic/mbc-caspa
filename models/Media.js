@@ -17,8 +17,7 @@ Media.Model = BackboneIO.Model.extend({
             return new Error("file must be defined");
         }
         if (attrs.stat       &&
-            (! attrs.stat.name  ||
-             ! attrs.stat.mtime ||
+            (! attrs.stat.mtime ||
              ! attrs.stat.size  ||
              attrs.stat.size <= 4000)) {
             console.log ('NO or BAD stat');
