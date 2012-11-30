@@ -1,5 +1,4 @@
-var assert = require("assert"),
-	Q = require("q");
+var assert = require("assert");
 
 var Melted = require('./Melted');
 var mlt = new Melted();
@@ -7,7 +6,7 @@ var mlt = new Melted();
 describe('connects', function(){
 	before(function(done) {
 		var result = mlt.connect();
-		Q.when(result, function() {
+		result.then(function() {
 			done();
 		});
 	})
