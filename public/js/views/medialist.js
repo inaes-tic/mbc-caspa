@@ -196,8 +196,6 @@ window.MediaListView = Backbone.View.extend({
         item.setAttribute ("id", media.get('_id'));
 
         if (this.options.dragSource) {
-            console.log (item, 'draggable');
-            item.setAttribute ("class", item.getAttribute("class") + 'ui-sortable-helper');
             $(item).draggable({//revert: true,
                                helper: 'clone',
                                cursorAt: { top: -5, left: -5 },
