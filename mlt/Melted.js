@@ -201,7 +201,7 @@ function Melted(opts) {
 		var deferred = Q.defer();
 
 		self.server.write(command + "\n");
-		
+
 		var aux = command.split("\ ");
 
 		deferred.resolve(expect(expected, aux[0]));
@@ -223,23 +223,26 @@ function Melted(opts) {
 			if (resp.length == 0) {
 			    console.log("MELTED: [expect] Received empty string, retrying");
 			    deferred.resolve(expect(expected, command, prefix));
+			} else if (resp == "402 Argument missing") {
+			    var pfx = prefix.replace(/\r\n/g, "");
+			    if ((pfx.substring(0, 1) == "2") || (pfx == "100 VTR Ready"))
+			    deferred.resolve(prefix);
+			else
+			    deferred.reject(prefix);
 			} else {
-		        if (resp !== expected) {
-		            if ((command == "list") && (prefix !== undefined)) {
-		                deferred.resolve(prefix + data);
-		            } else if ((command == "uls") && (resp.substring(0, expected.length) == expected)) {
-		                deferred.resolve(data);
-		            } else {
+			    if (prefix == undefined) {
+			        if (resp.substring(0, expected.length) == expected) {
+			            console.log("RESPONSE AS EXPECTED");
+				    deferred.resolve(expect(expected, command, data));
+				} else {
 		                console.error("MELTED: [expect] Expected '" + expected + "' but got '" + resp + "' !");
-					    deferred.reject(resp);
-				    }
-		        } else {
-		            if ((command == "list")) {
-		                deferred.resolve(expect(expected, command, resp));
-		            } else {
-					    deferred.resolve(resp);
-					}
-				}
+					    deferred.resolve(expect(expected, command, data));
+			    }
+			    //HACK
+			    self.server.write("get\n");
+			} else {
+			    deferred.resolve(expect(expected, command, prefix + data));
+			}
 			}
         });
 		return deferred.promise;
