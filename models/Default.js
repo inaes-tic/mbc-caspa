@@ -15,7 +15,14 @@ if (!_ && (typeof require !== 'undefined')) _ = require('underscore');
 
 var BackboneIO = root.BackboneIO;
 var Backbone   = root.Backbone;
-if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
+if (!BackboneIO && server) BackboneIO = require('backboneio');
+if (!Backbone   && server) Backbone   = require('backbone');
+
+if (! Backbone || ! BackboneIO) {
+    console.error ("Couldn't load required modules");
+    abort();
+}
+
 
 BackboneIO.Model.prototype.get_id = function () {
     return this.get(this.idAttribute || 'id');
