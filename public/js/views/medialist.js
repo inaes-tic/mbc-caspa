@@ -101,6 +101,7 @@ window.MediaListView = Backbone.View.extend({
         self.collection.bind('update',this.update, this);
 
         this.addAll();
+        this.updateTotalTime();
 //        this.render();
     },
     prepareSortable: function () {
@@ -220,7 +221,6 @@ window.MediaListView = Backbone.View.extend({
         console.log (this.el, 'empty', this.collection.models);
         this.$('#media-view', this.el).empty();
         this.collection.each(this.addOne);
-        this.updateTotalTime();
         console.log('addALL -- end');
     },
     checkEmpty: function () {
