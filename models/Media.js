@@ -42,8 +42,8 @@ Media.Collection = BackboneIO.Collection.extend({
 Media.Block = Media.Model.extend({
     urlRoot: "program",
     set_index: function (index, opts) {
-        var new_id = this.get(this.idAttribute).split(':')[0] + ':' + index;
-        this.set ({_id : new_id});
+        var new_id = this.get(this.idAttribute).split('-')[0] + '-' + index;
+        this.set ({_id : new_id}, {silent: true});
         this.set({pos: this.index2Pos(index)}, opts);
         return this
     }
@@ -54,7 +54,7 @@ Media.Program = Media.Collection.extend ({
     url:   'program',
     indexed_id: function (model, index) {
         console.log ('hack hack hack', model, index);
-        var new_id = model.get(model.idAttribute).split(':')[0] + ':' + index;
+        var new_id = model.get(model.idAttribute).split('-')[0] + '-' + index;
         model.set ({_id : new_id}, {silent: true});
         return new_id;
     }
