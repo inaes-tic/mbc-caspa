@@ -1,4 +1,9 @@
 var mediaList = new Media.Collection();
+var mediaDB   = new Media.List({collection: mediaList,
+                                name: 'Media Database'});
+var editList  = new Media.List({collection: new Media.Block([], {connectable: true}),
+                                name: 'Unnamed Edit List'});
+
 var appModel = new App.Model();
 
 var AppRouter = Backbone.Router.extend({
@@ -7,6 +12,7 @@ var AppRouter = Backbone.Router.extend({
         "media"	: "list",
         "media/add"         : "upload",
         "media/search"      : "searchMedia",
+        "media/edit"        : "editMedia",
         "media/:id"         : "mediaDetails",
         "program/:id"       : "listProgram",
         "admin"             : "conf",
@@ -32,7 +38,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     list: function() {
-        new MediaListView({collection: mediaList});
+        new MediaListView({model: mediaDB});
         this.headerView.selectMenuItem('list-menu');
     },
 
@@ -69,14 +75,18 @@ var AppRouter = Backbone.Router.extend({
         this.headerView.selectMenuItem('add-menu');
     },
 
+    editMedia: function() {
+        new EditView ();
+        new MediaListView({model: mediaDB,
+                           dragSource: true,
+                           el: $("#left-pane")});
+        new MediaListView({model: editList,
+                           el: $("#right-pane")});
+        this.headerView.selectMenuItem('search-menu');
+    },
     searchMedia: function() {
         var media = new Media.Model();
         $('#content').html(new SearchView({model: media}).el);
-        new MediaListView({collection: mediaList,
-                           dragSource: true,
-                           el: $("#left-pane")});
-        new MediaListView({collection: new Media.Program([], {connectable: true}),
-                           el: $("#right-pane")});
         this.headerView.selectMenuItem('search-menu');
     },
 

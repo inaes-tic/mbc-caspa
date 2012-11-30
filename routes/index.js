@@ -75,6 +75,7 @@ module.exports = function(app) {
                  'medialist',
                  'mediadetails',
                  'mediasearch',
+                 'mediaedit',
                  'programlist',
                  'conf',
                  'upload-resumable',
@@ -118,6 +119,7 @@ module.exports = function(app) {
                      'medialist',
                      'mediaview',
                      'mediasearch',
+                     'mediaedit',
                      'confview',
                      'upload',
                     ];

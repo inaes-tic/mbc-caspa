@@ -39,7 +39,7 @@ Media.Collection = BackboneIO.Collection.extend({
     url: 'media',
 });
 
-Media.Block = Media.Model.extend({
+Media.Piece = Media.Model.extend({
     urlRoot: "program",
     set_index: function (index, opts) {
         var new_id = this.get(this.idAttribute).split('-')[0] + '-' + index;
@@ -49,8 +49,8 @@ Media.Block = Media.Model.extend({
     }
 });
 
-Media.Program = Media.Collection.extend ({
-    model: Media.Block,
+Media.Block = Media.Collection.extend ({
+    model: Media.Piece,
     url:   'program',
     indexed_id: function (model, index) {
         var new_id = model.get(model.idAttribute).split('-')[0] + '-' + index;
@@ -59,8 +59,8 @@ Media.Program = Media.Collection.extend ({
     }
 });
 
-Media.State = Media.Program.extend ({
-
+Media.List = Media.Model.extend ({
+    urlRoot: 'list',
 });
 
 if(server) module.exports = Media;

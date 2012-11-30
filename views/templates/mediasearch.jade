@@ -1,15 +1,11 @@
 block content
   .form-search
-      .input-append
-        input.input-block-level.search-query#media-search(
+
+    .input-prepend
+        button.btn(type="submit")
+          i.icon-search
+        input.span5.search-query#media-search(
           type="text",
           data-provide="typeahead",
           data-items="4",
-          placeholder=i18n.gettext('Search Medias'))
-        button.btn(type="submit")
-          i.icon-search
-  .row
-    .span6
-      #left-pane(style='overflow-x:scroll;')
-    .span6
-      #right-pane(style='overflow-x:scroll;')
+          placeholder= i18n.gettext('Search Medias'))

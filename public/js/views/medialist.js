@@ -74,10 +74,17 @@ window.MediaListView = Backbone.View.extend({
         $('#playbar', this.el).html(new PlayBarView({model : appModel}).render().el);
 */
         var self = this;
-        $(this.el).html(template.medialist(this.collection.toJSON()));
+        self.collection = this.model.get('collection');
+
+        $(this.el).html(template.medialist(this.model.toJSON()));
         if (! this.options.dragSource) {
             self.prepareSortable();
         }
+
+        new SearchView({el: $('#media-search', this.el),
+                        collection: self.collection,
+                        field  : 'file',
+                        target : $('#table', this.el)});
 
         window.socket.on('medias:moved', function (move) {
             self.moveDOM(move.id, move.from, move.to);
