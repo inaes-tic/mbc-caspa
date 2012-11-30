@@ -89,11 +89,13 @@ window.MediaListView = Backbone.View.extend({
                   'addOne',
                   'addOneAnim',
                   'addAll',
+                  'checkEmpty',
                   'updateTotalTime',
                   'prepareSortable');
 //        mediaList.bind('change', this.renderMe, this);
         self.collection.bind('add',   this.addOneAnim, this);
         self.collection.bind('reset', this.addAll, this);
+        self.collection.bind('remove',this.checkEmpty, this);
         self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
         self.collection.bind('all',   this.updateTotalTime, this);
         self.collection.bind('update',this.update, this);
@@ -216,6 +218,12 @@ window.MediaListView = Backbone.View.extend({
         }
         this.collection.each(this.addOne);
         console.log('addALL -- end');
+    },
+    checkEmpty: function () {
+        if (this.collection.length == 0) {
+            this.$('#media-view', this.el).append(this.$('#empty-alert', this.el).clone());
+            return
+        }
     },
     render: function () {
         console.log ("render...");
