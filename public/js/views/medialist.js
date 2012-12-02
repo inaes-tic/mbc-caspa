@@ -74,13 +74,7 @@ window.MediaListView = Backbone.View.extend({
     },
     initialize: function () {
         console.log ("init...");
-/*
-        var medias = this.collection.models;
-        var mediaNames = _.map(medias, function (w) {return w.attributes.file;});
-        $('#search', this.el).html(new SearchView({source : mediaNames,
-                                                   target : '.table'}).render().el);
-        $('#playbar', this.el).html(new PlayBarView({model : appModel}).render().el);
-*/
+
         var self = this;
         self.collection = this.get_collection();
 
@@ -88,6 +82,11 @@ window.MediaListView = Backbone.View.extend({
         if (! this.options.dragSource) {
             self.prepareSortable();
         }
+
+        new SearchView({el: $('#media-search', this.el),
+                        collection: self.collection,
+                        field  : 'file',
+                        target : $('#table', this.el)});
 
         window.socket.on(self.collection.url + ':moved', function (move) {
             self.moveDOM(move.id, move.from, move.to);
