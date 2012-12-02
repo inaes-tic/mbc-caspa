@@ -15,19 +15,56 @@ if (!_ && (typeof require !== 'undefined')) _ = require('underscore');
 
 var BackboneIO = root.BackboneIO;
 var Backbone   = root.Backbone;
-if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
+if (!BackboneIO && server) BackboneIO = require('backboneio');
+if (!Backbone   && server) Backbone   = require('backbone');
+
+if (! Backbone || ! BackboneIO) {
+    console.error ("Couldn't load required modules");
+    abort();
+}
+
+BackboneIO.Model.prototype.initialize = function () {
+    if (server) {
+        return this.set({_NEW: false})
+    }
+
+    if (this.attributes.hasOwnProperty('_NEW'))
+        return this.get('_NEW');
+
+    return this.set({_NEW: true});
+},
+
+BackboneIO.Model.prototype.isNew = function () {
+    return this.get('_NEW');
+},
+
+BackboneIO.Model.prototype.view = function (args) {
+    if (server) {
+        console.error ("asking for view on server ?");
+        return false;
+    }
+
+    if (! this.options.view) {
+        console.error ("you didn't configure this model properly");
+        return false;
+    }
+
+    return new this.options.view (args);
+}
 
 BackboneIO.Model.prototype.get_id = function () {
-    return this.get(this.idAttribute || 'id');
+    return this.get(this.idAttribute || console.error ('could not get idAttribute'));
 };
 
-BackboneIO.Model.prototype.set_id = function (id) {
-    var idAttr = this.idAttribute || 'id';
-    return this.set(idAttr, id);
+BackboneIO.Model.prototype.set_id = function (id, opts) {
+    var idAttr = this.idAttribute || console.error ('could not get idAttribute');
+    var attrs = {}
+    attrs[idAttr] = id;
+    return this.set(attrs, opts);
 };
 
 BackboneIO.Model.prototype.index2Pos = function (index) {
-    return index;
+    return index || 0;
 };
 
 BackboneIO.Model.prototype.get_index = function () {
@@ -39,35 +76,59 @@ BackboneIO.Model.prototype.set_index = function (index, opts) {
     return this;
 };
 
-BackboneIO.Collection.prototype._onAdd = function (model) {
-    model.set_index(this.size() - 1, {silent:true});
-    model.save();
+BackboneIO.Collection.prototype._set_index = function (model, index) {
+    if (model.attributes) {
+        model.set_index(index)
+    } else {
+        model.pos = index;
+    }
+},
+
+BackboneIO.Collection.prototype.set_index = function (model, index) {
+    return this._set_index(model, index);
 }
 
-BackboneIO.Collection.prototype.initialize = function () {
-    if (!Backbone && server) {
-        Backbone = require('backbone');
+BackboneIO.Collection.prototype._get_id = function (model) {
+    if (model.attributes) {
+        return model.get_id();
+    } else {
+        return model[this.model.idAttribute || '_id'];
     }
-    Backbone.Collection.prototype.initialize.call(this);
-    this.bind('add', this._onAdd);
-};
+},
+
+BackboneIO.Collection.prototype._set_id = function (model, id) {
+    if (model.attributes) {
+        model.set_id(id)
+    } else {
+        model[this.model.idAttribute || '_id'] = id;
+    }
+},
+
+BackboneIO.Collection.prototype.index_add = function (model, opts) {
+    var index = (opts && opts.at) ? opts.at : this.size();
+    this._set_index (model, index);
+    opts.at = index;
+    this.add (model, opts);
+    return this.models[index];
+}
 
 BackboneIO.Collection.prototype.move = function (from, to) {
-    var model = this.models[from].set_index(to);
+    var model = this.models[from].set_index(to, {silent: true});
 
     if (from < to) {
         for (var i = from; i < to; i++) {
             this.models[i] = this.models[i+1];
-            this.models[i].set_index(i);
+            this.models[i].set_index(i, {silent: true});
         }
     } else {
         for (var i = from; i > to; i--) {
             this.models[i] = this.models[i-1];
-            this.models[i].set_index(i);
+            this.models[i].set_index(i, {silent: true});
         }
     }
 
     this.models[to] = model;
+    this.trigger('change:reorder');
     return model;
 };
 
@@ -82,7 +143,7 @@ if (server) {
 
     Backbone.View.prototype.moveDOM = BackboneIO.View.prototype.moveDOM = function (id, from, to) {
     var jumper = $('#' + id) || conosole.trace ('ho noes');
-        var dest = $('#' +this.collection.models[to].get_id()) || console.trace('hoho');
+        var dest = $('#' +this.collection.models[to].get_id());
         if (from < to) {
             jumper.insertAfter(dest);
         } else {

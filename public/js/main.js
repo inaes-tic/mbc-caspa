@@ -1,4 +1,21 @@
 var mediaList = new Media.Collection();
+var mediaDB   = new Media.List({collection: mediaList,
+                                fixed: true,
+                                name: 'Media Database'});
+var editList;
+
+var Universe  = new Media.Universe();
+
+Universe.bind ('add', function (arg) {
+    console.log('something happened in the universe',Universe, 'ADD', arg);
+    console.trace ();
+});
+
+Universe.bind ('create', function (arg) {
+    console.log('something happened in the universe',Universe, 'CREATE', arg);
+    console.trace ();
+});
+
 var appModel = new App.Model();
 
 var AppRouter = Backbone.Router.extend({
@@ -7,8 +24,10 @@ var AppRouter = Backbone.Router.extend({
         "media"	: "list",
         "media/add"         : "upload",
         "media/search"      : "searchMedia",
+        "media/edit"        : "editMedia",
         "media/:id"         : "mediaDetails",
         "program/:id"       : "listProgram",
+        "universe"          : "listUniverse",
         "admin"             : "conf",
         "about"             : "about",
     },
@@ -27,27 +46,21 @@ var AppRouter = Backbone.Router.extend({
             collection.bindClient();
         }});
 
+        Universe.fetch({success: function(collection, resp){
+            collection.bindClient();
+        }});
+
         this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
     },
 
     list: function() {
-        new MediaListView({collection: mediaList});
+        new MediaListView({model: mediaDB});
         this.headerView.selectMenuItem('list-menu');
     },
 
-    listProgram: function (id) {
-        var prog = new Program.Block.Collection ();
-        mediaList.bind("all", function(eventName) {
-            console.log ("proxy: " + eventName);
-            prog.trigger(eventName);
-        });
-
-        _(mediaList.models).each (function (model) {
-            prog.add(new Program.Block({media: model.toJSON()}));
-        });
-        console.log (prog);
-        new ProgramBlockListView ({collection: prog});
+    listUniverse: function () {
+        new UniverseListView({collection: Universe});
     },
 
     mediaDetails: function (id) {
@@ -69,14 +82,18 @@ var AppRouter = Backbone.Router.extend({
         this.headerView.selectMenuItem('add-menu');
     },
 
+    editMedia: function() {
+        new EditView ({el: $("#content")});
+        this.headerView.selectMenuItem('edit-menu');
+    },
     searchMedia: function() {
         var media = new Media.Model();
         $('#content').html(new SearchView({model: media}).el);
-        new MediaListView({collection: mediaList,
-                           dragSource: true,
-                           el: $("#left-pane")});
-        new MediaListView({collection: new Media.Collection([], {connectable: true}),
-                           el: $("#right-pane")});
+        this.headerView.selectMenuItem('search-menu');
+    },
+    searchMedia: function() {
+        var media = new Media.Model();
+        $('#content').html(new SearchView({model: media}).el);
         this.headerView.selectMenuItem('search-menu');
     },
 

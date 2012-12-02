@@ -1,5 +1,5 @@
 - if(_id)
-  - var picture= 'sc/' + _id + '.jpg'
+  - var picture= 'sc/' + _id.split('-')[0] + '.jpg'
 - else
   - var picture= 'pics/generic.jpg'
 - if(!stat.name)
@@ -7,40 +7,39 @@
   - stat.name= file
 - if (!name)
   - var name= stat.name
-- if (!duration)
-  - var duration= false
-- if (!format)
-  - var format= false
+- if (!durationraw)
+  - var durationraw= false
+- if (!video.container)
+  - video.container= false
 
 td
-  a.plain(href='#media/' + _id)
+  a.plain(href='#media/' + _id.split('-')[0])
     img(src=picture, height="100",width="150",alt="")
+    br
+    span.label.label-inverse.format
+        i.icon-time.icon-white
+        span= ' ' + durationraw
 td
-  a.plain(href='#media/' + _id)
+  a.plain(href='#media/' + _id.split('-')[0])
     h5=stat.name
     .progress
       .bar(style="width: 60%;")
-    - if (duration)
-      span.label.label-inverse.format
-        i.icon-time.icon-white
-        span= ' ' + duration
-      span=' '
-    -if (format)
+    -if (video.container)
       span.label.label-inverse.format
         i.icon-file.icon-white
-        span= ' ' + format
+        span= ' ' + video.container
       span=' '
     span.label.label-inverse.video
       i.icon-film.icon-white
-      span= ' ' + video
+      span= ' ' + video.codec
     span=' '
     span.label.label-inverse.audio
       i.icon-volume-up.icon-white
-      span= ' ' + audio
+      span= ' ' + audio.codec
 
 td
-  a.plain(href='#media/' + _id)
+  a.plain(href='#media/' + _id.split('-')[0])
     span.label.label-success= i18n.gettext('Success')
 td
-  a.plain(href='#media/' + _id)
+  a.plain(href='#media/' + _id.split('-')[0])
     span.label.label-important= i18n.gettext('Error')

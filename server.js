@@ -1,8 +1,10 @@
 var express = require('express'),
     path    = require('path'),
-    http    = require('http'),
+    exec    = require('child_process').exec,
     io      = require('socket.io'),
-    i18n    = require('i18n-abide');
+    i18n    = require('i18n-abide'),
+    _       = require('underscore'),
+    exec    = require('child_process').exec;
 
 var dirs = {
     pub    : path.join(__dirname, 'public'),
@@ -10,8 +12,18 @@ var dirs = {
     styles : path.join(__dirname, 'styles'),
     models : path.join(__dirname, 'models'),
     vendor : path.join(__dirname, 'vendor'),
-    uploads: path.join(__dirname, 'public/uploads/')
+    uploads: path.join(__dirname, 'public/uploads/incoming')
 };
+
+/* make sure at runtime that we atempt to get the dirs we need */
+for (d in dirs) {
+    /* HACK: but I'm not going to waist time writing mkdir -p */
+    exec ('mkdir -p ' + dirs[d], function (error, stdout, stderr) {
+        if (error !== null) {
+            console.log('exec error: ' + error);
+        }
+    });
+}
 
 var app = express();
 
@@ -33,7 +45,7 @@ app.configure(function () {
         safeFileTypes: /\.(webm|mkv|mov|mp4|avi|ogg)$/i,
     }));*/
     app.use(express.bodyParser({
-            uploadDir: dirs.uploads + '/incoming',
+            uploadDir: dirs.uploads,
             maxFieldsSize: 10 * 1024 * 1024
     })); /* */
     app.use(express.methodOverride());
@@ -85,14 +97,16 @@ io.set('transports', [                     // enable all transports (optional if
 
 io.sockets.on('connection', function (socket) {
     media.mediaList.bindServer(socket);
+    media.Universe.bindServer(socket);
     appModel.bindServer(socket);
 
     socket.on('disconnect', function () {
         media.mediaList.unbindServer(socket);
+        media.Universe.unbindServer(socket);
         appModel.unbindServer(socket);
     });
-    socket.on('medias:moved', function (move) {
-        socket.broadcast.emit ('medias:moved', move);
+    socket.on(media.mediaList.url + ':moved', function (move) {
+        socket.broadcast.emit (media.mediaList.url + ':moved', move);
         media.mediaList.move(move.from, move.to);
 
     });
