@@ -66,6 +66,11 @@ var prettyTime =  function (m) {
 
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
+    events: {
+        "click    .editable-list-name"  : "editListName",
+        "keyup    .editable-list-name"  : "showListNameEnter",
+        "focusout .editable-list-name"  : "showListName",
+    },
     get_collection: function () {
         return this.model.get('collection');
     },
@@ -103,7 +108,11 @@ window.MediaListView = Backbone.View.extend({
                   'addAll',
                   'checkEmpty',
                   'updateTotalTime',
-                  'prepareSortable');
+                  'prepareSortable',
+                  'editListName',
+                  'showListName'
+                 );
+
 //        mediaList.bind('change', this.renderMe, this);
         self.collection.bind('add',   this.addOneAnim, this);
         self.collection.bind('reset', this.addAll, this);
