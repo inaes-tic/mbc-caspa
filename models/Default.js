@@ -60,7 +60,6 @@ BackboneIO.Model.prototype.set_id = function (id, opts) {
     var idAttr = this.idAttribute || console.error ('could not get idAttribute');
     var attrs = {}
     attrs[idAttr] = id;
-//    return this.set(idAttr, id, opts);
     return this.set(attrs, opts);
 };
 
