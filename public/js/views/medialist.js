@@ -231,19 +231,11 @@ window.MediaListView = Backbone.View.extend({
                 _($(this).children()).each(function (order, index) {
                     var media = self.collection.get(order);
                     if (media && media.get(media.idAttribute) == dragged_id) {
-<<<<<<< HEAD
-                        var move = {id: dragged_id, from: media.get('pos'), to: index}
-                        console.log (move);
-                        window.socket.emit('medias:moved', move);
-                        self.collection.move(move.from, move.to);
-                        self.updateTotalTime();
-=======
                         var move = {id: dragged_id, from: media.get_index(), to: index}
                         console.log ("moving", self.collection.url + ':moved', move, media);
                         window.socket.emit(self.collection.url + ':moved', move);
                         self.collection.move(move.from, move.to);
                         self.collection.trigger('change');
->>>>>>> move sortable code to it's own function
                         return;
                     }
                 });
@@ -289,11 +281,9 @@ window.MediaListView = Backbone.View.extend({
     },
     addAll: function() {
         console.log('addALL', this.el);
-        if (this.collection.length == 0) {
-            this.$('#media-view', this.el).append(this.$('#empty-alert', this.el).clone());
+        if (this.checkEmpty())
             return
-        }
-        console.log (this.el, 'empty', this.collection.models);
+
         this.$('#media-view', this.el).empty();
         this.collection.each(this.addOne);
         console.log('addALL -- end');
@@ -301,8 +291,9 @@ window.MediaListView = Backbone.View.extend({
     checkEmpty: function () {
         if (this.collection.length == 0) {
             this.$('#media-view', this.el).append(this.$('#empty-alert', this.el).clone());
-            return
+            return true;
         }
+        return false;
     },
     render: function () {
         console.log ("render...");
