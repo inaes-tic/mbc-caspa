@@ -88,6 +88,9 @@ window.MediaListView = Backbone.View.extend({
                         field  : 'file',
                         target : $('#table', this.el)});
 
+        if (this.model && ! this.model.get('fixed'))
+            $('.editable-list-name', this.el).tooltip();
+
         window.socket.on(self.collection.url + ':moved', function (move) {
             self.moveDOM(move.id, move.from, move.to);
             self.collection.move(move.from, move.to);
