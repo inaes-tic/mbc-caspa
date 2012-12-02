@@ -1,7 +1,7 @@
 module.exports = function (app) {
     var exports = {};
     var     _ = require('underscore')
-    , melted= require('../mlt/Melted')
+    , melted= require('melted-node')
     , utils = require('../utils')
     ,resumable = require('resumable.js')(__dirname + '/../public/uploads/incoming');
 
