@@ -80,7 +80,7 @@ window.MediaListView = Backbone.View.extend({
 
         $(this.el).html(this.get_templateHTML());
         if (! this.options.dragSource) {
-            self.prepareSortable();
+            self.prepareSortable($('.tbody', this.el));
         }
 
         new SearchView({el: $('#media-search', this.el),
@@ -113,17 +113,56 @@ window.MediaListView = Backbone.View.extend({
         this.updateTotalTime();
 //        this.render();
     },
-    prepareSortable: function () {
+    editListName: function () {
+        if (this.model && this.model.get('fixed'))
+            return;
+        if (this.editting)
+            return;
+
+        var h1 = $('.editable-list-name .fixed', this.el);
+        var input = $('.editable-list-name .edit input',  this.el)[0]
+        h1.hide();
+        input.value = h1[0].textContent;
+        input.focus();
+        input.select();
+
+        $('.editable-list-name .edit',  this.el).show();
+        this.editting = true;
+    },
+    showListNameEnter: function (event) {
+        if (event.which != 13) {
+            return;
+        }
+        event.preventDefault();
+        this.showListName();
+    },
+    showListName: function () {
+        var h1 = $('.editable-list-name .fixed h1', this.el);
+        var input = $('.editable-list-name .edit input',  this.el)[0]
+
+        console.log ('about to save', this.model, input.value);
+
+        this.model.set({name: input.value})
+
+        h1[0].textContent = input.value;
+        $('.editable-list-name .fixed', this.el).show();
+        $('.editable-list-name .edit',  this.el).hide();
+
+        this.editting = false;
+    },
+    prepareSortable: function (sort, connectedClass) {
         var self = this;
-        $('.delete-drop', self.el).sortable({
-            connectWith: '.connected-sortable',
+        var coClass = connectedClass || '.connected-sortable';
+        $('.delete-drop').sortable({
+            connectWith: coClass,
             update : function (e, ui) {
                 self.collection.remove (self.collection.get(ui.item[0].id));
                 ui.item.remove();
+                console.log (self.collection.pluck('file'));
             },
         }).hide();
-        $('.tbody', this.el).addClass('recieve-drag').sortable({
-            connectWith: '.connected-sortable',
+        sort.addClass('recieve-drag').sortable({
+            connectWith: coClass,
             helper: 'clone',
             forceHelperSize : true,
             forcePlaceholderSize : true,
@@ -154,7 +193,9 @@ window.MediaListView = Backbone.View.extend({
                     if (order.classList.contains("handleMe")) {
                         if (self.collection.indexed_id)
                             self.collection.indexed_id (drop, index);
-                        var item = self.collection.index_add (drop.attributes, {at: index, silent: true});
+                        var item = self.collection.create (drop.attributes, {at: index, silent: true});
+                        self.collection.add (item, {silent: true});
+
                         $(order).animate({
                             'opacity': 0,
                         }, 500, function () {
@@ -187,11 +228,19 @@ window.MediaListView = Backbone.View.extend({
                 _($(this).children()).each(function (order, index) {
                     var media = self.collection.get(order);
                     if (media && media.get(media.idAttribute) == dragged_id) {
+<<<<<<< HEAD
                         var move = {id: dragged_id, from: media.get('pos'), to: index}
                         console.log (move);
                         window.socket.emit('medias:moved', move);
                         self.collection.move(move.from, move.to);
                         self.updateTotalTime();
+=======
+                        var move = {id: dragged_id, from: media.get_index(), to: index}
+                        console.log ("moving", self.collection.url + ':moved', move, media);
+                        window.socket.emit(self.collection.url + ':moved', move);
+                        self.collection.move(move.from, move.to);
+                        self.collection.trigger('change');
+>>>>>>> move sortable code to it's own function
                         return;
                     }
                 });
