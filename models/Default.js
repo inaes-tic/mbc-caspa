@@ -25,7 +25,6 @@ if (! Backbone || ! BackboneIO) {
 
 BackboneIO.Model.prototype.initialize = function () {
     if (server) {
-        console.log ('SEEN ON SERVER');
         return this.set({_NEW: false})
     }
 
