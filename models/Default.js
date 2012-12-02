@@ -23,7 +23,6 @@ if (! Backbone || ! BackboneIO) {
     abort();
 }
 
-
 BackboneIO.Model.prototype.get_id = function () {
     return this.get(this.idAttribute || 'id');
 };
