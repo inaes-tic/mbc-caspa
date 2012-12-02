@@ -61,7 +61,7 @@ var prettyTime =  function (m) {
     t.reverse();
     t = _.map (t, function (e) {return leadingZero(e);});
     var s = t.join(':');
-    return s +  '.' + mili.toString();
+    return s +  '.' + leadingZero(mili);
 };
 
 window.MediaListView = Backbone.View.extend({
