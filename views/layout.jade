@@ -26,6 +26,10 @@ html(lang='#{lang}', dir='#{lang_dir}')
 
     .container#content
       block content
+    .delete-drop.connected-sortable(style='display:none;')
+      .message
+        h1 DROP ME
+
 
     footer.footer
       .container(id="bottom")
