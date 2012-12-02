@@ -11,14 +11,14 @@
   - stat.name = file
 - if (!name)
   - var name= stat.name
-- if (!audio_details)
-  - var audio_details = 'None'
+- if (!audio.codec)
+  - audio.codec = i18n.gettext('None')
 - if (!video_details)
-  - var video_details = 'None'
-- if (!duration)
-  - var duration = 'None'
-- if (!format)
-  - var format = 'None'
+  - audio.codec = i18n.gettext('None')
+- if (!durationraw)
+  - var durationraw = i18n.gettext('None')
+- if (!video.container)
+  - video.container = i18n.gettext('None')
 
 - var duration_name= i18n.gettext('Duration')
 - var format_name= i18n.gettext('Format')
@@ -36,7 +36,7 @@
       .row
         .span6
           .control-group
-            - var items = {md5: _id, 'File Name': file, Duration: duration, Format: format, Audio: audio_details, Video:video_details}
+            - var items = {md5: _id, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
             each v, k in items
               - var Item = k.charAt(0).toUpperCase() + k.slice(1)
 
