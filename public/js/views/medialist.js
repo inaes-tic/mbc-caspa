@@ -66,6 +66,12 @@ var prettyTime =  function (m) {
 
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
+    get_collection: function () {
+        return this.model.get('collection');
+    },
+    get_templateHTML: function () {
+        return template.medialist(this.model.toJSON());
+    },
     initialize: function () {
         console.log ("init...");
 /*
@@ -76,19 +82,14 @@ window.MediaListView = Backbone.View.extend({
         $('#playbar', this.el).html(new PlayBarView({model : appModel}).render().el);
 */
         var self = this;
-        self.collection = this.model.get('collection');
+        self.collection = this.get_collection();
 
-        $(this.el).html(template.medialist(this.model.toJSON()));
+        $(this.el).html(this.get_templateHTML());
         if (! this.options.dragSource) {
             self.prepareSortable();
         }
 
-        new SearchView({el: $('#media-search', this.el),
-                        collection: self.collection,
-                        field  : 'file',
-                        target : $('#table', this.el)});
-
-        window.socket.on('medias:moved', function (move) {
+        window.socket.on(self.collection.url + ':moved', function (move) {
             self.moveDOM(move.id, move.from, move.to);
             self.collection.move(move.from, move.to);
         });
