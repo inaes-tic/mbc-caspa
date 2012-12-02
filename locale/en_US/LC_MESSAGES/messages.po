@@ -7,225 +7,310 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-02 15:37-0300\n"
-"PO-Revision-Date: 2012-11-18 11:06-0300\n"
+"POT-Creation-Date: 2012-12-02 20:38-0300\n"
+"PO-Revision-Date: 2012-12-02 20:38-0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: views/index.jade:5 views/index.jade:8
+#: views/footer.jade:4
+msgid "Built as a sample application with "
+msgstr "Built as a sample application with "
+
+#: views/footer.jade:9
+msgid "and "
+msgstr "and "
+
+#: views/footer.jade:11
+msgid "based on work by "
+msgstr "based on work by "
+
+#: views/footer.jade:13
+msgid "The source code for this application is available in "
+msgstr "The source code for this application is available in "
+
+#: views/footer.jade:14
+msgid "this repository"
+msgstr "this repository"
+
+#: views/footer.jade:15
+msgid " on GitHub."
+msgstr " on GitHub."
+
+#: views/footer.jade:18
+msgid "This project is under the "
+msgstr "This project is under the "
+
+#: views/footer.jade:20
+msgid " Licence."
+msgstr " Licence."
+
+#: views/index.jade:5
 msgid "Welcome to "
 msgstr "Welcome to "
 
-#: views/index.jade:3 views/index.jade:10
-msgid ""
-"Start Browsing\n"
-"Media Cellar"
-msgstr ""
-"Start Browsing\n"
-"Media Cellar"
+#: views/index.jade:10
+msgid "Start Browsing\\nMedia Cellar"
+msgstr "Start Browsing\\nMedia Cellar"
 
-#: views/index.jade:4 views/index.jade:13
-msgid ""
-"View Project\n"
-"on Github"
-msgstr ""
-"View Project\n"
-"on Github"
-
-#: views/index.jade:22
-msgid "Follow @mbcplayout"
-msgstr "Follow @mbcplayout"
-
-#: views/index.jade:24
-msgid "Tweet"
-msgstr "Tweet"
+#: views/index.jade:13
+msgid "View Project\\non Github"
+msgstr "View Project\\non Github"
 
 #: views/index.jade:22
 msgid "Follow"
 msgstr "Follow"
 
-#: views/footer.jade:4
-msgid "Built as a sample application with "
-msgstr ""
+#: views/index.jade:24
+msgid "Tweet"
+msgstr "Tweet"
 
-#: views/footer.jade:9
-msgid "and "
-msgstr ""
-
-#: views/footer.jade:11
-msgid "based on work by "
-msgstr ""
-
-#: views/footer.jade:13
-msgid "The source code for this application is available in "
-msgstr ""
-
-#: views/footer.jade:14
-msgid "this repository"
-msgstr ""
-
-#: views/footer.jade:15
-msgid " on GitHub."
-msgstr ""
-
-#: views/footer.jade:18
-msgid "This project is under the "
-msgstr ""
-
-#: views/footer.jade:20
-msgid " Licence."
-msgstr ""
-
-#: views/templates/header.jade:15
-msgid "Browse Medias"
-msgstr ""
-
-#: views/templates/header.jade:19 views/templates/mediasearch.jade:9
-#: views/templates/mediasearch.jade:8
-msgid "Search Medias"
-msgstr ""
-
-#: views/templates/header.jade:23
-msgid "Add Medias"
-msgstr ""
-
-#: views/templates/header.jade:26
-msgid "About"
-msgstr ""
-
-#: views/templates/header.jade:28
-msgid "Resources"
-msgstr ""
-
-#: views/templates/header.jade:33
-msgid "Backbone.js"
-msgstr ""
-
-#: views/templates/header.jade:36
-msgid "Twitter Bootstrap"
-msgstr ""
-
-#: views/templates/header.jade:39
-msgid "Node.js"
-msgstr ""
-
-#: views/templates/header.jade:42
-msgid "Express"
-msgstr ""
-
-#: views/templates/header.jade:45
-msgid "MongoDB"
-msgstr ""
-
-#: views/templates/header.jade:48
-msgid "This App"
-msgstr ""
-
-#: views/templates/header.jade:51
-msgid "GitHub Repository"
-msgstr ""
-
-#: views/templates/medialist.jade:5 views/templates/medialist.jade:11
-msgid "Thumbnail"
-msgstr ""
-
-#: views/templates/medialist.jade:6 views/templates/medialist.jade:12
-msgid "Media info"
-msgstr ""
-
-#: views/templates/medialist.jade:7 views/templates/medialist.jade:13
-msgid "Status"
-msgstr ""
-
-#: views/templates/medialist.jade:8 views/templates/medialist.jade:14
-msgid "Availability"
-msgstr ""
-
-#: views/templates/mediasearch.jade:16
-msgid ""
-"Success!\n"
-"Media saved successfully"
-msgstr ""
-
-#: views/templates/item.jade:4 views/templates/item.jade:22
-#: views/templates/item.jade:46
-msgid "Error"
-msgstr ""
-
-#: views/templates/item.jade:19 views/templates/item.jade:43
-msgid "Success"
-msgstr ""
-
-#: views/templates/item.jade:28
-msgid "Complete"
-msgstr ""
-
-#: views/templates/item.jade:29 views/templates/mediaview.jade:42
-#: views/templates/mediaview.jade:56
-msgid "Delete"
-msgstr ""
-
-#: views/templates/mediaview.jade:2
-msgid "id is generated when media is found"
-msgstr ""
-
-#: views/templates/mediaview.jade:4
-msgid "Notes about this media"
-msgstr ""
-
-#: views/templates/mediaview.jade:11 views/templates/mediaview.jade:21
-msgid "Media Details"
-msgstr ""
-
-#: views/templates/mediaview.jade:16 views/templates/mediaview.jade:26
-msgid "Name"
-msgstr ""
-
-#: views/templates/mediaview.jade:28 views/templates/mediaview.jade:41
-msgid "Notes"
-msgstr ""
-
-#: views/templates/mediaview.jade:38 views/templates/mediaview.jade:52
-msgid "To add media, drag a new file from your file system onto this box."
-msgstr ""
-
-#: views/templates/mediaview.jade:41 views/templates/mediaview.jade:55
+#: views/templates/confview.jade:12 views/templates/mediaview.jade:69
+#: views/templates/mediaedit.jade:17
 msgid "Save"
-msgstr ""
+msgstr "Save"
 
-#: views/templates/mediaview.jade:47 views/templates/mediaview.jade:61
-msgid "Success!"
-msgstr ""
+#: views/templates/confview.jade:13
+msgid "Cancel"
+msgstr "Cancel"
 
-#: views/templates/mediaview.jade:48 views/templates/mediaview.jade:62
-msgid "Media saved successfully"
-msgstr ""
+#: views/templates/confview.jade:18
+msgid "Configure MBC Playout"
+msgstr "Configure MBC Playout"
 
-#: views/templates/mediaview.jade:16
-msgid "Duration"
-msgstr ""
+#: views/templates/confview.jade:21
+msgid "Main configuration"
+msgstr "Main configuration"
 
-#: views/templates/mediaview.jade:17
-msgid "Format"
-msgstr ""
+#: views/templates/confview.jade:22
+msgid "the finest of the fine tuning"
+msgstr "the finest of the fine tuning"
+
+#: views/templates/confview.jade:23
+msgid "Scrapper"
+msgstr "Scrapper"
+
+#: views/templates/confview.jade:26
+msgid "Scrape Path"
+msgstr "Scrape Path"
+
+#: views/templates/confview.jade:31
+msgid "Clearly secondary"
+msgstr "Clearly secondary"
+
+#: views/templates/confview.jade:32
+msgid "guru only"
+msgstr "guru only"
 
 #: views/templates/playbar.jade:5
 msgid "back"
-msgstr ""
+msgstr "back"
 
 #: views/templates/playbar.jade:8
 msgid "pause"
-msgstr ""
+msgstr "pause"
 
 #: views/templates/playbar.jade:11
 msgid "play"
-msgstr ""
+msgstr "play"
 
 #: views/templates/playbar.jade:14
 msgid "forward"
+msgstr "forward"
+
+#: views/templates/upload.jade:4 views/templates/mediaedit.jade:20
+msgid "Oops!"
+msgstr "Oops!"
+
+#: views/templates/upload.jade:5
+msgid "It looks like your browser is not supported !"
+msgstr "It looks like your browser is not supported !"
+
+#: views/templates/upload.jade:12
+msgid "Pause"
+msgstr "Pause"
+
+#: views/templates/upload.jade:16
+msgid "Resume"
+msgstr "Resume"
+
+#: views/templates/upload.jade:18 views/templates/mediaview.jade:66
+msgid "To add media, drag a new file from your file system onto this box."
+msgstr "To add media, drag a new file from your file system onto this box."
+
+#: views/templates/upload.jade:21
+msgid "(or select them "
+msgstr "(or select them "
+
+#: views/templates/upload.jade:22
+msgid "from your computer"
+msgstr "from your computer"
+
+#: views/templates/upload.jade:23
+msgid ".)"
+msgstr ".)"
+
+#: views/templates/header.jade:15
+msgid "Browse Medias"
+msgstr "Browse Medias"
+
+#: views/templates/header.jade:19
+msgid "Edit Playlists"
+msgstr "Edit Playlists"
+
+#: views/templates/header.jade:23 views/templates/mediasearch.jade:11
+msgid "Search Medias"
+msgstr "Search Medias"
+
+#: views/templates/header.jade:27
+msgid "Add Medias"
+msgstr "Add Medias"
+
+#: views/templates/header.jade:31
+msgid "TEST"
+msgstr "TEST"
+
+#: views/templates/header.jade:35
+msgid "Configure"
+msgstr "Configure"
+
+#: views/templates/header.jade:39
+msgid "About"
+msgstr "About"
+
+#: views/templates/header.jade:41
+msgid "Resources"
+msgstr "Resources"
+
+#: views/templates/header.jade:46
+msgid "Backbone.js"
+msgstr "Backbone.js"
+
+#: views/templates/header.jade:49
+msgid "Twitter Bootstrap"
+msgstr "Twitter Bootstrap"
+
+#: views/templates/header.jade:52
+msgid "Node.js"
+msgstr "Node.js"
+
+#: views/templates/header.jade:55
+msgid "Express"
+msgstr "Express"
+
+#: views/templates/header.jade:58
+msgid "MongoDB"
+msgstr "MongoDB"
+
+#: views/templates/header.jade:61
+msgid "This App"
+msgstr "This App"
+
+#: views/templates/header.jade:64
+msgid "GitHub Repository"
+msgstr "GitHub Repository"
+
+#: views/templates/item.jade:42
+msgid "Success"
+msgstr "Success"
+
+#: views/templates/item.jade:45
+msgid "Error"
+msgstr "Error"
+
+#: views/templates/mediaview.jade:4
+msgid "Notes about this media"
+msgstr "Notes about this media"
+
+#: views/templates/mediaview.jade:15 views/templates/mediaview.jade:17
+#: views/templates/mediaview.jade:19 views/templates/mediaview.jade:21
+msgid "None"
+msgstr "None"
+
+#: views/templates/mediaview.jade:23
+msgid "Duration"
+msgstr "Duration"
+
+#: views/templates/mediaview.jade:24
+msgid "Format"
+msgstr "Format"
+
+#: views/templates/mediaview.jade:28
+msgid "Media Details"
+msgstr "Media Details"
+
+#: views/templates/mediaview.jade:33
+msgid "Name"
+msgstr "Name"
+
+#: views/templates/mediaview.jade:51
+msgid "Notes"
+msgstr "Notes"
+
+#: views/templates/mediaview.jade:70 views/templates/mediaedit.jade:18
+msgid "Delete"
+msgstr "Delete"
+
+#: views/templates/mediaview.jade:75
+msgid "Success!"
+msgstr "Success!"
+
+#: views/templates/mediaview.jade:76
+msgid "Media saved successfully"
+msgstr "Media saved successfully"
+
+#: views/templates/mediaedit.jade:11
+msgid "Set a list name !"
+msgstr "Set a list name !"
+
+#: views/templates/mediaedit.jade:12
+msgid "You are currently editing an un-named playlist\\n"
+msgstr "You are currently editing an un-named playlist\\n"
+
+#: views/templates/mediaedit.jade:15
+msgid "Add some media !"
+msgstr "Add some media !"
+
+#: views/templates/mediaedit.jade:16
+msgid ""
+"You need to add some media before you can save a playlist, drag some rows "
+"from the left pane to start adding"
 msgstr ""
+"You need to add some media before you can save a playlist, drag some rows "
+"from the left pane to start adding"
+
+#: views/templates/mediaedit.jade:21
+msgid "It looks like you have no playlist to show here"
+msgstr "It looks like you have no playlist to show here"
+
+#: views/templates/medialist.jade:5
+msgid "New Playlist"
+msgstr "New Playlist"
+
+#: views/templates/medialist.jade:13
+msgid "Edit me !"
+msgstr "Edit me !"
+
+#: views/templates/medialist.jade:14
+msgid "Click here to edit Playlist Name."
+msgstr "Click here to edit Playlist Name."
+
+#: views/templates/medialist.jade:33
+msgid "Thumbnail"
+msgstr "Thumbnail"
+
+#: views/templates/medialist.jade:34
+msgid "Media info"
+msgstr "Media info"
+
+#: views/templates/medialist.jade:35
+msgid "Status"
+msgstr "Status"
+
+#: views/templates/medialist.jade:36
+msgid "Availability"
+msgstr "Availability"
