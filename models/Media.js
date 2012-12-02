@@ -37,6 +37,33 @@ Media.Model = BackboneIO.Model.extend({
 Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
     url: 'media',
+    add: function (models, opts) {
+        var self = this;
+        console.log ('hacked add', this, models, opts);
+
+        if (!opts)
+            opts = {};
+
+        var index = (opts.at) ? opts.at : this.size();
+        opts.at = index;
+
+        if (! (models instanceof Array))
+            models = [models]
+
+        models.forEach (function (e, i) {
+            self.set_index (e, index + i);
+            console.log ('aaadododd', e, opts);
+        });
+
+        return BackboneIO.Collection.prototype.add.call (this, models.reverse(), opts);
+    },
+    create: function (model, opts) {
+        var index = (opts && opts.at) ? opts.at : this.size();
+        this.set_index (model, index);
+        return Backbone.Collection.prototype.create.call (this, model, opts);
+    },
+});
+
 });
 
 Media.Piece = Media.Model.extend({
