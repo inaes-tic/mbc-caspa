@@ -54,16 +54,19 @@ BackboneIO.Model.prototype.view = function (args) {
 }
 
 BackboneIO.Model.prototype.get_id = function () {
-    return this.get(this.idAttribute || 'id');
+    return this.get(this.idAttribute || console.error ('could not get idAttribute'));
 };
 
-BackboneIO.Model.prototype.set_id = function (id) {
-    var idAttr = this.idAttribute || 'id';
-    return this.set(idAttr, id);
+BackboneIO.Model.prototype.set_id = function (id, opts) {
+    var idAttr = this.idAttribute || console.error ('could not get idAttribute');
+    var attrs = {}
+    attrs[idAttr] = id;
+//    return this.set(idAttr, id, opts);
+    return this.set(attrs, opts);
 };
 
 BackboneIO.Model.prototype.index2Pos = function (index) {
-    return index;
+    return index || 0;
 };
 
 BackboneIO.Model.prototype.get_index = function () {
