@@ -1,13 +1,15 @@
 window.MediaListItemView = Backbone.View.extend({
     tagName: "tr",
     initialize: function () {
-        this.model.bind("change", this.render, this);
+        this.model.bind("change",  this.render, this);
         this.model.bind("destroy", this.remove, this);
+        this.model.bind("all", function (event) {console.log ('an item view got', event)}, this);
     },
     events: {
 //        "click" : "onClick"
     },
     render: function () {
+        console.log ("rendering item:", this.model);
         $(this.el).html(template.item(this.model.toJSON()));
         return this;
     },
