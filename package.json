@@ -20,7 +20,6 @@
         "jade": "*",
         "folio": "0.2.x",
         "less-middleware": "*",
-        "fluent-ffmpeg": "*",
         "underscore": "*",
         "backboneio": "*",
         "jquery-browser": "1.8.x",
