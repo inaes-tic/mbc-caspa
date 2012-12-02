@@ -97,14 +97,16 @@ io.set('transports', [                     // enable all transports (optional if
 
 io.sockets.on('connection', function (socket) {
     media.mediaList.bindServer(socket);
+    media.Universe.bindServer(socket);
     appModel.bindServer(socket);
 
     socket.on('disconnect', function () {
         media.mediaList.unbindServer(socket);
+        media.Universe.unbindServer(socket);
         appModel.unbindServer(socket);
     });
-    socket.on('medias:moved', function (move) {
-        socket.broadcast.emit ('medias:moved', move);
+    socket.on(media.mediaList.url + ':moved', function (move) {
+        socket.broadcast.emit (media.mediaList.url + ':moved', move);
         media.mediaList.move(move.from, move.to);
 
     });

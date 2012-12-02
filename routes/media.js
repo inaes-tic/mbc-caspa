@@ -8,14 +8,16 @@ module.exports = function (app) {
     //var mlt = new melted({reconnect: true});
 
     var Media = require (__dirname + '/../models/Media.js')
-    , mediaList = new Media.Collection();
+    , mediaList = new Media.Collection()
+    , Universe  = new Media.Universe();
 
     exports.mediaList = mediaList;
+    exports.Universe  = Universe;
 
-    setInterval (function () { 
-        var mediaNames = _.map(mediaList.models, function (w) {return w.attributes.file;});
-        console.log ('hello, mediaList: ', mediaList.models.length, mediaNames);},
-                 5000);
+    setInterval (function () {
+        console.log ('hello, mediaList: ', mediaList.models.length, mediaList.pluck('file'));
+        console.log ('hello, Universe : ',  Universe.models.length,  Universe.pluck('name'));
+    }, 5000);
 
     utils.openDB(_addMedia, function () {
         console.log ("deferring scraper launch");

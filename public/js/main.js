@@ -27,6 +27,7 @@ var AppRouter = Backbone.Router.extend({
         "media/edit"        : "editMedia",
         "media/:id"         : "mediaDetails",
         "program/:id"       : "listProgram",
+        "universe"          : "listUniverse",
         "admin"             : "conf",
         "about"             : "about",
     },
@@ -45,6 +46,10 @@ var AppRouter = Backbone.Router.extend({
             collection.bindClient();
         }});
 
+        Universe.fetch({success: function(collection, resp){
+            collection.bindClient();
+        }});
+
         this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
     },
@@ -54,18 +59,8 @@ var AppRouter = Backbone.Router.extend({
         this.headerView.selectMenuItem('list-menu');
     },
 
-    listProgram: function (id) {
-        var prog = new Program.Block.Collection ();
-        mediaList.bind("all", function(eventName) {
-            console.log ("proxy: " + eventName);
-            prog.trigger(eventName);
-        });
-
-        _(mediaList.models).each (function (model) {
-            prog.add(new Program.Block({media: model.toJSON()}));
-        });
-        console.log (prog);
-        new ProgramBlockListView ({collection: prog});
+    listUniverse: function () {
+        new UniverseListView({collection: Universe});
     },
 
     mediaDetails: function (id) {
@@ -88,12 +83,12 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editMedia: function() {
-        new EditView ();
-        new MediaListView({model: mediaDB,
-                           dragSource: true,
-                           el: $("#left-pane")});
-        new MediaListView({model: editList,
-                           el: $("#right-pane")});
+        new EditView ({el: $("#content")});
+        this.headerView.selectMenuItem('edit-menu');
+    },
+    searchMedia: function() {
+        var media = new Media.Model();
+        $('#content').html(new SearchView({model: media}).el);
         this.headerView.selectMenuItem('search-menu');
     },
     searchMedia: function() {

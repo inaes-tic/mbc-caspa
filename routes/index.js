@@ -79,6 +79,7 @@ module.exports = function(app) {
                  'programlist',
                  'conf',
                  'upload-resumable',
+                 'universe',
                  'about'];
 
     var viewsJs = new folio.Glossary(
@@ -122,6 +123,8 @@ module.exports = function(app) {
                      'mediaedit',
                      'confview',
                      'upload',
+                     'universe',
+                     'uniitem',
                     ];
 
     var templateJs = new folio.Glossary([
