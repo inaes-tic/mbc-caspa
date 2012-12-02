@@ -252,8 +252,8 @@ window.MediaListView = Backbone.View.extend({
         });
     },
     updateTotalTime: function () {
-        console.log ('update time', this.collection.pluck('duration'));
-        var totalTime = _.reduce(this.collection.pluck('duration'), function (m, n) {
+        console.log ('update time', this.collection.pluck('durationraw'));
+        var totalTime = _.reduce(this.collection.pluck('durationraw'), function (m, n) {
             console.log (n); return m + toMili(n);}, 0);
         $('.total-time', this.el)[0].textContent = prettyTime(totalTime);
         console.log ('Total Time: ', prettyTime(totalTime));
