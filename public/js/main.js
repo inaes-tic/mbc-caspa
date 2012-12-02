@@ -1,8 +1,20 @@
 var mediaList = new Media.Collection();
 var mediaDB   = new Media.List({collection: mediaList,
+                                fixed: true,
                                 name: 'Media Database'});
-var editList  = new Media.List({collection: new Media.Block([], {connectable: true}),
-                                name: 'Unnamed Edit List'});
+var editList;
+
+var Universe  = new Media.Universe();
+
+Universe.bind ('add', function (arg) {
+    console.log('something happened in the universe',Universe, 'ADD', arg);
+    console.trace ();
+});
+
+Universe.bind ('create', function (arg) {
+    console.log('something happened in the universe',Universe, 'CREATE', arg);
+    console.trace ();
+});
 
 var appModel = new App.Model();
 
