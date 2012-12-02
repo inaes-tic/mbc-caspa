@@ -2,7 +2,9 @@ var express = require('express'),
     path    = require('path'),
     exec    = require('child_process').exec,
     io      = require('socket.io'),
-    i18n    = require('i18n-abide');
+    i18n    = require('i18n-abide'),
+    _       = require('underscore'),
+    exec    = require('child_process').exec;
 
 var dirs = {
     pub    : path.join(__dirname, 'public'),
