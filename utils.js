@@ -1,7 +1,7 @@
 var     _ = require('underscore')
 ,   fp    = require('functionpool')
+, ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs')
-, ffmpeg  = require('fluent-ffmpeg')
 ,  mongo  = require('mongodb');
 
 var _exists     = fs.exists     || require('path').exists;
@@ -104,28 +104,28 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
         return done(media);
     }
 */
-    var proc = new ffmpeg({source: media.file})
-        .withSize('150x100')
-        .onCodecData(function(metadata) {
-            console.log ('got metadata for ' + media._id, callback);
-            if (!callback)
-                return;
+    var f = new ffmpeg();
+    f.run (media.file, dest, {
+            size: '150x100',
+            onCodecData: function(metadata) {
+                console.log ('here');
+                if (!callback)
+                    return;
 
-            metadata._id  = media._id;
-            metadata.file = media.file;
-            metadata.stat = media.stat;
-            callback (metadata);
-        })
-        .takeScreenshots({
-            count: 1,
-            timemarks : [ '10%'],
-            filename : media._id}, './public/sc/', function (err, fn) {
-                if (! _existsSync (dest) || err)
-                    return done (new Error('File not created' + err));
-                console.log('sc ok: ' + media._id);
-                return done(media);
-            });
-    console.log ('sc...', proc);
+                console.log(metadata);
+                metadata._id  = media._id;
+                metadata.file = media.file;
+                metadata.stat = media.stat;
+                callback (metadata);
+            }
+    }, function(retcode, fds) {
+        console.log ('here0');
+        if (! _existsSync (dest) || retcode)
+            return done (new Error('File not created' + fds.err));
+
+        console.log('sc ok: ' + media._id);
+        return done(media);
+    });
 });
 
 exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
