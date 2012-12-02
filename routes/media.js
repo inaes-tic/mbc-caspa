@@ -17,9 +17,7 @@ module.exports = function (app) {
         console.log ('hello, mediaList: ', mediaList.models.length, mediaNames);},
                  5000);
 
-    utils.openDB(function (item) {
-        _addMedia(item);
-    }, function () {
+    utils.openDB(_addMedia, function () {
         console.log ("deferring scraper launch");
         setTimeout(function () {
             utils.scrape_files (process.env.HOME + "/Downloads/Gardel", _addMedia);
