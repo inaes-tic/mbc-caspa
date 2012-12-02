@@ -23,6 +23,22 @@ if (! Backbone || ! BackboneIO) {
     abort();
 }
 
+BackboneIO.Model.prototype.initialize = function () {
+    if (server) {
+        console.log ('SEEN ON SERVER');
+        return this.set({_NEW: false})
+    }
+
+    if (this.attributes.hasOwnProperty('_NEW'))
+        return this.get('_NEW');
+
+    return this.set({_NEW: true});
+},
+
+BackboneIO.Model.prototype.isNew = function () {
+    return this.get('_NEW');
+},
+
 BackboneIO.Model.prototype.get_id = function () {
     return this.get(this.idAttribute || 'id');
 };
