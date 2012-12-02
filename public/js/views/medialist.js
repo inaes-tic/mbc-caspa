@@ -298,8 +298,6 @@ window.MediaListView = Backbone.View.extend({
     render: function () {
         console.log ("render...");
 
-//        $(this.el).append(new Paginator({model: this.model, page: this.options.page}).render().el);
-
         return this;
     }
 });
