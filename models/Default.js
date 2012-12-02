@@ -39,6 +39,20 @@ BackboneIO.Model.prototype.isNew = function () {
     return this.get('_NEW');
 },
 
+BackboneIO.Model.prototype.view = function (args) {
+    if (server) {
+        console.error ("asking for view on server ?");
+        return false;
+    }
+
+    if (! this.options.view) {
+        console.error ("you didn't configure this model properly");
+        return false;
+    }
+
+    return new this.options.view (args);
+}
+
 BackboneIO.Model.prototype.get_id = function () {
     return this.get(this.idAttribute || 'id');
 };
