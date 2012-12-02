@@ -85,18 +85,32 @@ BackboneIO.Collection.prototype._set_index = function (model, index) {
     }
 },
 
+BackboneIO.Collection.prototype.set_index = function (model, index) {
+    return this._set_index(model, index);
+}
+
+BackboneIO.Collection.prototype._get_id = function (model) {
+    if (model.attributes) {
+        return model.get_id();
+    } else {
+        return model[this.model.idAttribute || '_id'];
+    }
+},
+
+BackboneIO.Collection.prototype._set_id = function (model, id) {
+    if (model.attributes) {
+        model.set_id(id)
+    } else {
+        model[this.model.idAttribute || '_id'] = id;
+    }
+},
+
 BackboneIO.Collection.prototype.index_add = function (model, opts) {
     var index = (opts && opts.at) ? opts.at : this.size();
     this._set_index (model, index);
     opts.at = index;
     this.add (model, opts);
     return this.models[index];
-}
-
-BackboneIO.Collection.prototype.create = function (model, opts) {
-    var index = (opts && opts.at) ? opts.at : this.size();
-    this._set_index (model, opts);
-    return Backbone.Collection.prototype.create.call (this, model, opts);
 }
 
 BackboneIO.Collection.prototype.move = function (from, to) {
