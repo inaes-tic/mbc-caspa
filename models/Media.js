@@ -124,12 +124,15 @@ Media.Block = Media.Collection.extend ({
 
 Media.List = Media.Model.extend ({
     urlRoot: 'list',
+    newCol: function (models, opts) {
+        return new Media.Block (models, opts);
+    },
     initialize: function () {
         var models = this.get('models')
         var col    = this.get('collection')
         console.log ("initing media list", models, col);
         if (!col || col instanceof Array) {
-            col = new Media.Block(models, {connectable: true});
+            col = this.newCol(models, {connectable: true});
             console.log ('col is array ! recreating as collection', col);
         }
 
@@ -140,18 +143,21 @@ Media.List = Media.Model.extend ({
             console.log ('got a change in the force', a, b);
             var models = self.get('collection').models;
             self.set({models: models});
-            self.updateMD5(models);
+            self.updateId(models);
             console.log ('-----got a change in the force', a, b);
         }, this);
 
         this.set ({collection: col, models: col.models});
         Media.Model.prototype.initialize.call (this);
     },
-    updateMD5: function (models) {
+    hashSeed: function () {
+        return this.get('name');
+    },
+    updateId: function (models) {
         if (server)
             return;
         var spark = new SparkMD5();
-        spark.append (this.get('name') || 'NULL');
+        spark.append (this.hashSeed() || 'NULL');
 
         console.log ('(MODEL) about to calculate MD5 for', models);
 
