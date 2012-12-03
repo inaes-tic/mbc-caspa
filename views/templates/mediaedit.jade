@@ -1,4 +1,7 @@
 block content
+  h1= i18n.gettext('Here you should be able to choose from all the stored playlists,')
+  p=  i18n.gettext('save new, create, ...')
+
   #universe
   .row
     .span6
@@ -9,14 +12,14 @@ block content
         .alert.alert-block.alert-unnamed-playlist(style='display:none')
           button.close(type='button', data-dismiss='alert') ×
           h4= i18n.gettext('Set a list name !')
-          p= i18n.gettext('You are currently editing an un-named playlist\n'+ 'set a name before you can save.')
+          p=  i18n.gettext('You are currently editing an un-named playlist\n'+ 'set a name before you can save.')
         .alert.alert-block.alert-empty-playlist(style='display:none')
           button.close(type='button', data-dismiss='alert') ×
           h4= i18n.gettext('Add some media !')
-          p= i18n.gettext('You need to add some media before you can save a playlist, drag some rows from the left pane to start adding')
+          p=  i18n.gettext('You need to add some media before you can save a playlist, drag some rows from the left pane to start adding')
         .btn.btn-block.btn-primary.save=  i18n.gettext('Save')
         .btn.btn-block.btn-danger.delete= i18n.gettext('Delete')
       .alert.alert-block.no-playlist-alert
           h4= i18n.gettext('Oops!')
-          p= i18n.gettext('It looks like you have no playlist to show here')
+          p=  i18n.gettext('It looks like you have no playlist to show here')
           button.btn.btn-block.btn-large.btn-primary#create-playlist= i18n.gettext('Create New Playlist')
