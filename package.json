@@ -28,7 +28,8 @@
         "po2json" : "*",
         "jed" : "0.5.x",
         "walk": "2.2.x",
-        "functionpool": ">=0.1.1"
+        "functionpool": ">=0.1.1",
+        "fullcalendar-browser": ">=1.5.4",
     },
     "engines": {
         "node": "0.8.4",
