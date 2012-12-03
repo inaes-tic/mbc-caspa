@@ -1,6 +1,7 @@
 var Media, server = false;
 if (typeof exports !== 'undefined') {
     BackboneIO = require(__dirname + '/Default');
+    _ = require('underscore');
     Media = exports.Media = {};
     server = true;
 } else {
