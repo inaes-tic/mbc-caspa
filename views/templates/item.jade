@@ -16,7 +16,7 @@ td
   a.plain(href='#media/' + _id.split('-')[0])
     img(src=picture, height="100",width="150",alt="")
     br
-    span.label.label-inverse.format
+    span.label.label-warning.format
         i.icon-time.icon-white
         span= ' ' + durationraw
 td
@@ -25,15 +25,15 @@ td
     .progress
       .bar(style="width: 60%;")
     -if (video.container)
-      span.label.label-inverse.format
+      span.label.label-warning.format
         i.icon-file.icon-white
         span= ' ' + video.container
       span=' '
-    span.label.label-inverse.video
+    span.label.label-warning.video
       i.icon-film.icon-white
       span= ' ' + video.codec
     span=' '
-    span.label.label-inverse.audio
+    span.label.label-warning.audio
       i.icon-volume-up.icon-white
       span= ' ' + audio.codec
 
