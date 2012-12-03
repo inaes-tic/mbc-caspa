@@ -1,0 +1,33 @@
+{
+    "name": "melted-bone",
+    "description": "Glue code between node-mlt and backbone.js (we use it with BackboneIO)",
+    "version": "0.0.1",
+    "author": "Juan Martin Runge <jmrunge@gmail.com>",
+    "contributors": [ "Niv Sardi <xaiki@inaes.gob.ar>"],
+    "scripts": {
+        "test": "./node_modules/.bin/mocha --reporter list --timeout 3000 mocha.js"
+    },
+    "main": "melted-bone",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/inaes-tic/melted-bone"
+    },
+    "keywords": [
+        "glue",
+        "backbone",
+        "model"
+    ],
+    "dependencies" : {
+        "melted-node" : "0.0.x",
+        "node-mlt"    : "0.0.x"
+    },
+    "devDependencies": {
+        "mocha"    :  "1.7.x"
+    },
+    "bundledDependencies": [
+    ],
+    "license": "agplv3",
+    "engines": {
+        "node": ">=0.6"
+    }
+}
