@@ -1,4 +1,4 @@
-OB# MBC Playout {mlt edition} #
+# MBC Playout {mlt edition} #
 
 "Media Cellar" es una applicación simple construida bajo el modelo
 [[CRUD|http://es.wikipedia.org/wiki/CRUD]] con Backbone.js, Twitter
