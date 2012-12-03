@@ -144,11 +144,20 @@ Media.List = Media.Model.extend ({
             var models = self.get('collection').models;
             self.set({models: models});
             self.updateId(models);
+            self.update_duration(col);
             console.log ('-----got a change in the force', a, b);
         }, this);
 
         this.set ({collection: col, models: col.models});
         Media.Model.prototype.initialize.call (this);
+    },
+    update_duration: function (col) {
+        console.log ('TOTAL TIME IN MODEL', col.pluck('durationraw'));
+        this.set({duration : arrayDuration(col.pluck('durationraw'))});
+        console.log ('TOTAL TIME IN MODEL->', this.pretty_duration());
+    },
+    pretty_duration: function () {
+        return prettyTime (this.get('duration'));
     },
     hashSeed: function () {
         return this.get('name');
@@ -171,6 +180,7 @@ Media.List = Media.Model.extend ({
         name: null,
         hash: null,
         fixed: false,
+        duration: 0,
         pos: 0,
     },
 });
