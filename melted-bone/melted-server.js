@@ -1,5 +1,5 @@
 var melted_node = require('melted-node'),
-    melted_xml  = require('../node-modules/node-mlt'),
+    melted_xml  = require('../node_modules/node-mlt'),
     fs          = require('fs');
     
 function melted_server(opts) {

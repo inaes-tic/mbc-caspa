@@ -19,6 +19,6 @@
 [submodule "node_modules/resumable.js"]
 	path = node_modules/resumable.js
 	url = git://github.com/inaes-tic/resumable.js
-[submodule "node-modules/node-mlt"]
-	path = node-modules/node-mlt
+[submodule "node_modules/node-mlt"]
+	path = node_modules/node-mlt
 	url = git://github.com/redmantech/node-mlt.git

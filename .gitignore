@@ -3,4 +3,5 @@
 Procfile
 .gitignore
 *.mo
-public/css/main.css
+public/css
+public/sc
