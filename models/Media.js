@@ -103,10 +103,10 @@ Media.Piece = Media.Model.extend ({
     defaults: {
         trim: {
             timein:  0,
-            timeout: 0
+            timeout: 0,
         },
         overlay: [],
-    }
+    },
 });
 
 Media.Block = Media.Collection.extend ({
