@@ -190,5 +190,23 @@ Media.Universe = Media.Collection.extend ({
     model: Media.List,
 });
 
+Media.Occurence = Media.List.extend ({
+    urlRoot: 'sched',
+    defaults: {
+        event: null,
+    },
+    newCol: function (models, opts) {
+        return new Media.Occurence (models, opts);
+    },
+    hashSeed: function () {
+        return this.get('event') + this.get('name');
+    },
+});
+
+Media.Schedule = Media.Universe.extend ({
+    url: 'sched',
+    model: Media.Occurence,
+});
+
 if(server) module.exports = Media;
 else root.Media = Media;
