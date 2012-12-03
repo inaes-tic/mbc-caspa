@@ -33,10 +33,16 @@ AGPL v3.
    apt-get install nodejs
 ```
 
++ mongodb
+
+```shell
+   apt-get install mongodb
+```
+
 + alltoogethernow
 
 ```shell
-   sudo apt-get install gettext npm nodejs
+   sudo apt-get install gettext npm nodejs mongodb
 ```
 
 # Instalación #

@@ -12,6 +12,12 @@ But we release the changes as AGPL v3.
 
 # requirements #
 
++ gettext
+
+```shell
+   apt-get install gettext 
+```
+
 + npm
 
 ```shell
@@ -21,6 +27,18 @@ But we release the changes as AGPL v3.
 
 ```shell
    apt-get install nodejs
+```
+
++ mongodb
+
+```shell
+   apt-get install mongodb
+```
+
++ alltoogethernow
+
+```shell
+   sudo apt-get install gettext npm nodejs mongodb
 ```
 
 # Installing #
