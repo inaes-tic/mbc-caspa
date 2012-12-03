@@ -54,6 +54,7 @@ module.exports = function(app) {
         require.resolve('backboneio/backboneio.js'),
         require.resolve('resumable.js/resumable.js'),
         require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
+        require.resolve('moment'),
         require.resolve('jed'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
         path.join(lib_dir, 'bootstrap.min.js'),

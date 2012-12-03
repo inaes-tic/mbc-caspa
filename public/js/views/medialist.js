@@ -30,40 +30,6 @@ window.MediaListItemView = Backbone.View.extend({
 
 });
 
-var leadingZero = function(num){
-    return (num < 10) ? "0"+num : num;
-}
-
-var toMili = function (time) {
-    var t = time.match(/(\d{2}):(\d{2}):(\d{2})\.(\d*)/);
-    t.shift();
-    var n, m = parseInt(t.pop());
-    var f = [24, 60, 60, 100];
-    var F = 1;
-
-    while (n = parseInt(t.pop())) {
-        F = F * f.pop();
-        m += n * F;
-    }
-
-    return m;
-};
-var prettyTime =  function (m) {
-    var t = [];
-    var f = [24, 60, 60, 100];
-
-    while (F = f.pop()) {
-        t.push(m - Math.floor(m/F)*F);
-        m = Math.floor(m/F)
-    }
-
-    var mili = t.shift();
-    t.reverse();
-    t = _.map (t, function (e) {return leadingZero(e);});
-    var s = t.join(':');
-    return s +  '.' + leadingZero(mili);
-};
-
 window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     events: {
@@ -252,11 +218,9 @@ window.MediaListView = Backbone.View.extend({
         });
     },
     updateTotalTime: function () {
-        console.log ('update time', this.collection.pluck('durationraw'));
-        var totalTime = _.reduce(this.collection.pluck('durationraw'), function (m, n) {
-            console.log (n); return m + toMili(n);}, 0);
-        $('.total-time', this.el)[0].textContent = prettyTime(totalTime);
-        console.log ('Total Time: ', prettyTime(totalTime));
+        var duration = arrayDuration (this.collection.pluck('durationraw'));
+        $('.total-time', this.el)[0].textContent = prettyTime(duration);
+        return duration;
     },
     update: function(){
         this.collection.sort()

@@ -11,11 +11,11 @@ window.UniverseItemView = MediaListItemView.extend({
         return this;
     },
     updateTotalTime: function () {
-        console.log ('update time (item)', this.collection.pluck('durationraw'));
-        var totalTime = _.reduce(this.collection.pluck('durationraw'), function (m, n) {
-            console.log (n); return m + toMili(n);}, 0);
-        $('.total-time', this.el)[0].textContent = prettyTime(totalTime);
-        console.log ('Total Time: ', prettyTime(totalTime));
+        console.log ('update time (item)',
+                     this.collection.pluck('durationraw'),
+                     this.model.get('duration')
+                    );
+        $('.total-time', this.el)[0].textContent = this.model.pretty_duration();
     },
 });
 

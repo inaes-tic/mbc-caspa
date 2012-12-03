@@ -8,6 +8,37 @@ if (typeof exports !== 'undefined') {
     Media = root.Media = {};
 }
 
+var leadingZero = function (num) {
+    return (num < 10) ? "0"+num : num;
+}
+
+var toMilliseconds = function (time) {
+    var t = time.match(/(\d{2}):(\d{2}):(\d{2})\.(\d*)/);
+    t.shift();
+    d = moment.duration ({
+        hours:        t[0],
+        minutes:      t[1],
+        seconds:      t[2],
+        milliseconds: t[3]*10
+    });
+
+    return d.asMilliseconds();
+};
+
+var prettyTime =  function (m) {
+    d = moment.duration(m);
+    var p = leadingZero(d.hours())   + ':'
+        + leadingZero(d.minutes()) + ':'
+        + leadingZero(d.seconds()) + '.'
+        + leadingZero(d.milliseconds()/10);
+    return p;
+};
+
+var arrayDuration = function (a) {
+    return  _.reduce(a, function (m, n) {
+        return m + toMilliseconds (n);}, 0);
+};
+
 Media.Model = BackboneIO.Model.extend({
     urlRoot: "media",
     idAttribute: "_id",
