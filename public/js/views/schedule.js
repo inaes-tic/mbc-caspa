@@ -106,6 +106,9 @@ window.ScheduleView = Backbone.View.extend({
 	    ]
         });
 
+        setTimeout (function () {
+            $('#calendar table', this.el).addClass("table table-bordered");
+        }, 500);
         return this;
     },
 });
