@@ -134,29 +134,5 @@ Media.Universe = Media.Collection.extend ({
     model: Media.List,
 });
 
-Media.Piece = Media.Model.extend({
-    urlRoot: "program",
-    set_index: function (index, opts) {
-        var new_id = this.get(this.idAttribute).split('-')[0] + '-' + index;
-        this.set ({_id : new_id}, {silent: true});
-        this.set({pos: this.index2Pos(index)}, opts);
-        return this
-    }
-});
-
-Media.Block = Media.Collection.extend ({
-    model: Media.Piece,
-    url:   'program',
-    indexed_id: function (model, index) {
-        var new_id = model.get(model.idAttribute).split('-')[0] + '-' + index;
-        model.set ({_id : new_id}, {silent: true});
-        return new_id;
-    }
-});
-
-Media.List = Media.Model.extend ({
-    urlRoot: 'list',
-});
-
 if(server) module.exports = Media;
 else root.Media = Media;
