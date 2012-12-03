@@ -30,6 +30,7 @@ Media.Model = BackboneIO.Model.extend({
         name: "",
         audio: "None",
         video: "None",
+        template: 'mediaview',
     }
 });
 
@@ -67,6 +68,13 @@ Media.Collection = BackboneIO.Collection.extend({
 
 Media.Piece = Media.Model.extend ({
     urlRoot: 'piece',
+    defaults: {
+        trim: {
+            timein:  0,
+            timeout: 0
+        },
+        overlay: [],
+    }
 });
 
 Media.Block = Media.Collection.extend ({
