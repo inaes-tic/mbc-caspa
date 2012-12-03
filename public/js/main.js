@@ -5,6 +5,7 @@ var mediaDB   = new Media.List({collection: mediaList,
 var editList;
 
 var Universe  = new Media.Universe();
+var Schedule  = new Media.Schedule();
 
 Universe.bind ('add', function (arg) {
     console.log('something happened in the universe',Universe, 'ADD', arg);
@@ -43,20 +44,18 @@ var AppRouter = Backbone.Router.extend({
             model.bindClient();
         }});
 
-        mediaList.fetch({success: function(collection, resp){
-            collection.bindClient();
-        }});
-
-        Universe.fetch({success: function(collection, resp){
-            collection.bindClient();
-        }});
+        _([mediaList, Universe, Schedule]).each( function (col) {
+            col.fetch({success: function(collection, resp){
+                collection.bindClient();
+            }});
+        });
 
         this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
     },
 
     schedule: function() {
-        new ScheduleView({model: mediaDB});
+        new ScheduleView({collection: Schedule});
         this.headerView.selectMenuItem('schedule-menu');
     },
 

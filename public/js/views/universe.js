@@ -53,6 +53,15 @@ window.UniverseListView = MediaListView.extend({
         console.log ("adding: ", list.get('name'));
         var item = this.renderModel (list);
         this.$('#playlists', this.el).append(item);
+
+        if (this.options.draggable)
+            $(item).draggable({
+                helper: 'clone',
+                cursorAt: { top: -5, left: -5 },
+                zIndex: 900
+            });
+
+        return item;
     },
     addOneAnim: function (list) {
         this.addOne(list);

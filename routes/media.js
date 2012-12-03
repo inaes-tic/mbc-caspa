@@ -7,16 +7,21 @@ module.exports = function (app) {
 
     //var mlt = new melted({reconnect: true});
 
-    var Media = require (__dirname + '/../models/Media.js')
-    , mediaList = new Media.Collection()
-    , Universe  = new Media.Universe();
+    var Media = require (__dirname + '/../models/Media.js');
 
-    exports.mediaList = mediaList;
-    exports.Universe  = Universe;
+    exports.collectionsToBind = {
+        mediaList: new Media.Collection(),
+        Universe : new Media.Universe(),
+        Schedule : new Media.Schedule(),
+    };
+
+    var mediaList = exports.collectionsToBind.mediaList;
 
     setInterval (function () {
-        console.log ('hello, mediaList: ', mediaList.models.length, mediaList.pluck('file'));
-        console.log ('hello, Universe : ',  Universe.models.length,  Universe.pluck('name'));
+        for (col in exports.collectionsToBind) {
+            var c = exports.collectionsToBind[col];
+            console.log ('hello, ' + col + ' : ', c.models.length, c.pluck('name'));
+        }
     }, 5000);
 
     utils.openDB(_addMedia, function () {
