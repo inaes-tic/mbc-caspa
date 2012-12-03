@@ -53,6 +53,7 @@ module.exports = function(app) {
         require.resolve('backbone/backbone.js'),
         require.resolve('backboneio/backboneio.js'),
         require.resolve('resumable.js/resumable.js'),
+        require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
         require.resolve('jed'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
         path.join(lib_dir, 'bootstrap.min.js'),
@@ -80,6 +81,7 @@ module.exports = function(app) {
                  'conf',
                  'upload-resumable',
                  'universe',
+                 'schedule',
                  'about'];
 
     var viewsJs = new folio.Glossary(
@@ -125,6 +127,7 @@ module.exports = function(app) {
                      'upload',
                      'universe',
                      'uniitem',
+                     'schedule',
                     ];
 
     var templateJs = new folio.Glossary([

@@ -28,6 +28,7 @@ var AppRouter = Backbone.Router.extend({
         "media/:id"         : "mediaDetails",
         "program/:id"       : "listProgram",
         "universe"          : "listUniverse",
+        "schedule"          : "schedule",
         "admin"             : "conf",
         "about"             : "about",
     },
@@ -52,6 +53,11 @@ var AppRouter = Backbone.Router.extend({
 
         this.headerView = new HeaderView({model: appModel});
         $('.header').html(this.headerView.el);
+    },
+
+    schedule: function() {
+        new ScheduleView({model: mediaDB});
+        this.headerView.selectMenuItem('schedule-menu');
     },
 
     list: function() {
