@@ -145,6 +145,7 @@ window.MediaListView = Backbone.View.extend({
             forceHelperSize : true,
             forcePlaceholderSize : true,
             revert : true,
+            cancel: ".no-sort",
             start: function (e, ui) {
                 /**
                  * HUGE HACK: we only get this set when the helper
