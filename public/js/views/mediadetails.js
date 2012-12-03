@@ -5,74 +5,8 @@ window.MediaView = Backbone.View.extend({
         this.render();
     },
     render: function () {
-        try {
-            $(this.el).html(template.mediaview(this.model.toJSON()));
-            return this;
-        } catch (e) {
-            alert (e);
-        }
-    },
-
-    events: {
-        "change"        : "change",
-        "click .save"   : "beforeSave",
-        "click .delete" : "deleteMedia",
-        "drop .droparea" : "dropHandler"
-    },
-
-    change: function (event) {
-        // Remove any existing alert message
-        utils.hideAlert();
-
-        // Apply the change to the model
-        var target = event.target;
-        var change = {};
-        change[target.name] = target.value;
-        this.model.set(change);
-
-        // Run validation rule (if any) on changed item
-        var check = this.model.validateItem(target.id);
-        if (check.isValid === false) {
-            utils.addValidationError(target.id, check.message);
-        } else {
-            utils.removeValidationError(target.id);
-        }
-    },
-
-    beforeSave: function () {
-        var self = this;
-        var check = this.model.validateAll();
-        if (check.isValid === false) {
-            utils.displayValidationErrors(check.messages);
-            return false;
-        }
-        this.saveMedia();
-        return false;
-    },
-
-    saveMedia: function () {
-        var self = this;
-        console.log('before save');
-        this.model.save(null, {
-            success: function (model) {
-                self.render();
-                app.navigate('media/' + model.id, false);
-                utils.showAlert('Success!', 'Media saved successfully', 'alert-success');
-            },
-            error: function () {
-                utils.showAlert('Error', 'An error occurred while trying to delete this item', 'alert-error');
-            }
-        });
-    },
-
-    deleteMedia: function () {
-        this.model.destroy({
-            success: function () {
-                alert('Media deleted successfully');
-                window.history.back();
-            }
-        });
-        return false;
+        $(this.el).html(template.mediaview(this.model.toJSON()));
+        return this;
     },
 
     dropHandler: function (event) {
