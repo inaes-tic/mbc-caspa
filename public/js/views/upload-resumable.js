@@ -92,8 +92,6 @@ window.UploadView = Backbone.View.extend({
         "change"        : "change",
         "click .pause"  : "pause",
         "click .resume" : "resume",
-        "click .save"   : "beforeSave",
-        "click .delete" : "deleteMedia",
         "drop .droparea" : "dropHandler",
         "all" : "debug"
     },
@@ -112,42 +110,6 @@ window.UploadView = Backbone.View.extend({
     change: function (event) {
 
         console.log ("change", event);
-    },
-
-    beforeSave: function () {
-        var self = this;
-        var check = this.model.validateAll();
-        if (check.isValid === false) {
-            utils.displayValidationErrors(check.messages);
-            return false;
-        }
-        this.saveMedia();
-        return false;
-    },
-
-    saveMedia: function () {
-        var self = this;
-        console.log('before save');
-        this.model.save(null, {
-            success: function (model) {
-                self.render();
-                app.navigate('media/' + model.id, false);
-                utils.showAlert('Success!', 'Media saved successfully', 'alert-success');
-            },
-            error: function () {
-                utils.showAlert('Error', 'An error occurred while trying to delete this item', 'alert-error');
-            }
-        });
-    },
-
-    deleteMedia: function () {
-        this.model.destroy({
-            success: function () {
-                alert('Media deleted successfully');
-                window.history.back();
-            }
-        });
-        return false;
     },
 
     dropHandler: function (event) {
