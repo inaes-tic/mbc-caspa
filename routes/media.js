@@ -20,7 +20,8 @@ module.exports = function (app) {
     setInterval (function () {
         for (col in exports.collectionsToBind) {
             var c = exports.collectionsToBind[col];
-            console.log ('hello, ' + col + ' : ', c.models.length, c.pluck('name'));
+            console.log ('hello, ' + col + ' : ', c.models.length, 
+                         _.zip(c.pluck('file'), c.pluck('name'), c.pluck('_id')));
         }
     }, 5000);
 
