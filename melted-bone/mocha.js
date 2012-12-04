@@ -9,7 +9,7 @@ describe('first test', function(){
             mlt.playFile();
             setTimeout(function() {
                 done();
-            }, 1000);
+            }, 2000);
         })
         it('--should return true', function(){
             assert.equal (1, 1);

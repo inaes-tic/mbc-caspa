@@ -21,7 +21,7 @@ function melted_server(opts) {
         multitrack.addTrack(track);
         
         //var watermark = new melted_xml.Filter.Watermark({resource: '/home/jmrunge/melted-node/logo.jpg'});
-        var webvfx = new melted_xml.Filter.WebVFX({resource: '/home/jmrunge//webvfx/demo/examples/filter-banner.html', Title: 'Suck my dick'});
+        var webvfx = new melted_xml.Filter.WebVFX({resource: '/home/jmrunge/webvfx/demo/examples/filter-banner.html', Title: 'Suck my dick'});
         
         
         var tractor = new melted_xml.Tractor; 
