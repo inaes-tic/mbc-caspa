@@ -20,11 +20,13 @@ function melted_server(opts) {
         var multitrack = new melted_xml.Multitrack;
         multitrack.addTrack(track);
         
-        var watermark = new melted_xml.Filter.Watermark({resource: '/home/jmrunge/melted-node/logo.jpg', x: 1, y: 1, w: 10, h: 10});
+        //var watermark = new melted_xml.Filter.Watermark({resource: '/home/jmrunge/melted-node/logo.jpg'});
+        var webvfx = new melted_xml.Filter.WebVFX({resource: '/home/jmrunge//webvfx/demo/examples/filter-banner.html', Title: 'Suck my dick'});
+        
         
         var tractor = new melted_xml.Tractor; 
         tractor.push(multitrack);
-        tractor.push(watermark);
+        tractor.push(webvfx);
         xml.push(tractor);
         
         fs.writeFile("/home/jmrunge/test.xml", xml.toString({pretty:true}), sendXml);
