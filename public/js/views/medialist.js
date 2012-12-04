@@ -34,8 +34,8 @@ window.MediaListView = Backbone.View.extend({
     el: $("#content"),
     events: {
         "click    .editable-list-name"  : "editListName",
-        "keyup    .editable-list-name"  : "showListNameEnter",
-        "focusout .editable-list-name"  : "showListName",
+        "keyup    .editable-list-name"  : "saveListNameEnter",
+        "focusout .editable-list-name"  : "saveListName",
     },
     get_collection: function () {
         return this.model.get('collection');
@@ -76,7 +76,7 @@ window.MediaListView = Backbone.View.extend({
                   'updateTotalTime',
                   'prepareSortable',
                   'editListName',
-                  'showListName'
+                  'saveListName'
                  );
 
 //        mediaList.bind('change', this.renderMe, this);
@@ -107,14 +107,14 @@ window.MediaListView = Backbone.View.extend({
         $('.editable-list-name .edit',  this.el).show();
         this.editting = true;
     },
-    showListNameEnter: function (event) {
+    saveListNameEnter: function (event) {
         if (event.which != 13) {
             return;
         }
         event.preventDefault();
-        this.showListName();
+        this.saveListName();
     },
-    showListName: function () {
+    saveListName: function () {
         var h1 = $('.editable-list-name .fixed h1', this.el);
         var input = $('.editable-list-name .edit input',  this.el)[0]
 
