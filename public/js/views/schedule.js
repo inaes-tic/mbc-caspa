@@ -65,7 +65,23 @@ window.ScheduleView = Backbone.View.extend({
 		    end:   new Date(2012, 11, 8, 6, 0),
                     allDay: false,
 		},
-	    ]
+	    ],
+            eventRender: function(event, element) {
+                console.log ('----o---', element);
+
+
+                element.tooltip({
+                    trigger: 'click',
+                    placement: 'left',
+                    title: function () {
+                        var target = document.createElement('div');
+                        var view = new MediaListView({model: event.model,
+                                                      noSearch:true,
+                                                      el: target});
+                        return view.render().el;
+                    },
+                });
+            }
         });
 
         setTimeout (function () {
