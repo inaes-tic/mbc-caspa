@@ -113,6 +113,10 @@ BackboneIO.Collection.prototype.index_add = function (model, opts) {
 }
 
 BackboneIO.Collection.prototype.move = function (from, to) {
+    console.log ('moving', from, to, this);
+    if (! this.models[from] || ! this.models[to])
+        return;
+
     var model = this.models[from].set_index(to, {silent: true});
 
     if (from < to) {
