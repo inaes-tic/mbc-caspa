@@ -2,7 +2,7 @@ window.EditView = Backbone.View.extend({
     el: '#content',
     events: {
         "click #create-playlist" : "createPlaylist",
-        "click #universe li"     : "switchPlaylist",
+        "click #universe li"     : "switchPlaylistEvent",
         "click #right-pane .kill-media-list"  : "killEditList",
         "click .playlist-button-array .save"  : "savePlaylist",
         "click .playlist-button-array .delete": "delPlaylist",
@@ -43,9 +43,12 @@ window.EditView = Backbone.View.extend({
         $('.playlist-button-array', this.el).hide();
         $('.no-playlist-alert', this.el).show();
     },
-    switchPlaylist: function (event, a) {
-        var plid = Universe.get(event.currentTarget.id);
-        console.log ('swittching to', plid);
+    switchPlaylistEvent: function (event, a) {
+        return this.switchPlaylist(event.currentTarget.id);
+    },
+    switchPlaylist: function (id) {
+        var plid = Universe.get(id);
+        console.log ('switching to', id, plid);
         this.showPlaylist (plid);
     },
     savePlaylist: function (event) {
