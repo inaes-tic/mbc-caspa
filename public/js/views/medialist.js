@@ -115,6 +115,8 @@ window.MediaListView = Backbone.View.extend({
         this.saveListName();
     },
     saveListName: function () {
+        if (! this.editting)
+            return;
         var h1 = $('.editable-list-name .fixed h1', this.el);
         var input = $('.editable-list-name .edit input',  this.el)[0]
 
@@ -160,21 +162,18 @@ window.MediaListView = Backbone.View.extend({
                 $('.delete-drop').show()
             },
             stop: function (e, ui) {
-                console.log ('stop');
                 $('.delete-drop').hide()
                 if (! self.nextDrop) /* we are dropping internally */
                     return;
 
                 var drop = mediaList.get(self.nextDrop);
                 $(ui.item).addClass("handleMe");
+                console.log ('stop', drop);
 
                 _($(this).children()).each (function (order, index) {
                     if (order.classList.contains("handleMe")) {
-                        if (self.collection.indexed_id)
-                            self.collection.indexed_id (drop, index);
-                        var item = self.collection.create (drop.attributes, {at: index, silent: true});
-                        self.collection.add (item, {silent: true});
-
+                        var item = self.collection.create (drop.attributes, {at: index});
+                        console.log ('item is:', item);
                         $(order).animate({
                             'opacity': 0,
                         }, 500, function () {
@@ -190,7 +189,6 @@ window.MediaListView = Backbone.View.extend({
                 });
                 self.nextDrop = false;
                 console.log('col is now', self.collection.models);
-                self.collection.trigger ('change');
             },
             /**
              * This is not ready. what we need to do is disable the add
@@ -199,15 +197,16 @@ window.MediaListView = Backbone.View.extend({
              * other add events, (that may come from other sources
              **/
             receive: function( event, ui ) {
-                console.log ('receive', $(ui), ui.sender[0].getAttribute('id'), this.lastDrop);
-                self.nextDrop =  ui.sender[0].getAttribute('id');
+                console.log ('receivette', $(ui), ui.sender[0].id, this.nextDrop);
+                self.lastDrop = self.nextDrop =  ui.sender[0].id;
+                console.log ("last drop:", self.lastDrop);
             },
             update: function (e, ui) {
                 var dragged_id = ui.item[0].id;
                 _($(this).children()).each(function (order, index) {
                     var media = self.collection.get(order);
                     if (media && media.get(media.idAttribute) == dragged_id) {
-                        var move = {id: dragged_id, from: media.get_index(), to: index}
+                        var move = {id: dragged_id, from: media.get('pos'), to: index}
                         console.log ("moving", self.collection.url + ':moved', move, media);
                         window.socket.emit(self.collection.url + ':moved', move);
                         self.collection.move(move.from, move.to);
@@ -240,12 +239,19 @@ window.MediaListView = Backbone.View.extend({
         return item;
     },
     addOne: function (media) {
-        console.log ("adding: ", media.get('file'));
+        if (media.id == this.lastDrop) {
+            console.log ('already have: it');
+            this.lastDrop = false;
+            return false;
+        }
+
+        console.log ("adding: ", media.id, this.lastDrop, media.get('file'));
         var item = this.renderModel (media);
         this.$('#media-view', this.el).append(item);
     },
     addOneAnim: function (media) {
-        this.addOne(media);
+        if (! this.addOne(media))
+            return;
 
         // ooh, shiny animation!
         this.$('#' + media.id, this.el).css('opacity', 0);

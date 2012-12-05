@@ -13,7 +13,7 @@ window.EditView = Backbone.View.extend({
     },
     render: function () {
         $(this.el).html(template.mediaedit());
-        new UniverseListView({collection: Universe,
+        new UniverseListView({collection: this.collection,
                              el: $("#universe")});
         new MediaListView({model: mediaDB,
                            dragSource: true,
@@ -47,7 +47,7 @@ window.EditView = Backbone.View.extend({
         return this.switchPlaylist(event.currentTarget.id);
     },
     switchPlaylist: function (id) {
-        var plid = Universe.get(id);
+        var plid = this.collection.get(id);
         console.log ('switching to', id, plid);
         this.showPlaylist (plid);
     },
@@ -71,9 +71,10 @@ window.EditView = Backbone.View.extend({
             return;
         }
 
-        if (! Universe.get(id)) {
-            var item = Universe.create (this.editview.model.attributes);
-            console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model, item);
+        if (this.editview.model == editList) {
+            console.log ("about to feed this to the universe:", this.editview.model.attributes);
+            this.editview.model = this.collection.create (this.editview.model.attributes);
+            console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);
         } else {
             this.editview.model.save();
             console.log ('universe knows of us, just saving');

@@ -7,6 +7,24 @@ var editList;
 var Universe  = new Media.Universe();
 var Schedule  = new Media.Schedule();
 
+var DEBUG = false;
+if (DEBUG) {
+    var i = 0;
+    cols = [mediaList, Universe, Schedule];
+    setInterval (function () {
+        for (col in cols) {
+            c = cols[col];
+            c.create({name: i++, file: 'file' + i, duration: 293829829});
+            console.log ('hello, ' + col + ' : ', c.models.length,
+                         _.zip(c.pluck('file'), c.pluck('name'), c.pluck('_id')));
+        }
+    }, 5000);
+}
+
+Universe.bind ('all', function (arg) {
+    console.log ('UNIVERSE:' , arg);
+});
+
 Universe.bind ('add', function (arg) {
     console.log('something happened in the universe',Universe, 'ADD', arg);
     console.trace ();
@@ -40,14 +58,10 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        appModel.fetch({success: function(model, resp){
-            model.bindClient();
-        }});
 
         _([mediaList, Universe, Schedule]).each( function (col) {
-            col.fetch({success: function(collection, resp){
-                collection.bindClient();
-            }});
+            console.log ('fetching', col);
+            col.fetch();
         });
 
         this.headerView = new HeaderView({model: appModel});
@@ -69,10 +83,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     mediaDetails: function (id) {
-        mediaList.fetch({success: function(collection, resp){
-            collection.bindClient();
-            new MediaView({model: mediaList.get(id)});
-        }});
+        new MediaView({model: mediaList.get(id)});
         this.headerView.selectMenuItem('list-menu');
     },
 
@@ -88,7 +99,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editMedia: function() {
-        new EditView ({el: $("#content")});
+        new EditView ({el: $("#content"), collection: Universe});
         this.headerView.selectMenuItem('edit-menu');
     },
     searchMedia: function() {

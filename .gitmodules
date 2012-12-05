@@ -4,9 +4,6 @@
 [submodule "node_modules/fluent-ffmpeg"]
 	path = node_modules/fluent-ffmpeg
 	url = git://github.com/inaes-tic/node-fluent-ffmpeg
-[submodule "node_modules/backboneio"]
-	path = node_modules/backboneio
-	url = git://github.com/inaes-tic/backboneio
 [submodule "vendor/bootstrap"]
 	path = vendor/bootstrap
 	url = git://github.com/twitter/bootstrap.git
@@ -22,3 +19,6 @@
 [submodule "node_modules/node-mlt"]
 	path = node_modules/node-mlt
 	url = git://github.com/redmantech/node-mlt.git
+[submodule "node_modules/backbone.io"]
+	path = node_modules/backbone.io
+	url = git://github.com/inaes-tic/backbone.io

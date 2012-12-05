@@ -51,7 +51,6 @@ module.exports = function(app) {
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('underscore/underscore.js'),
         require.resolve('backbone/backbone.js'),
-        require.resolve('backboneio/backboneio.js'),
         require.resolve('resumable.js/resumable.js'),
         require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
         require.resolve('moment'),

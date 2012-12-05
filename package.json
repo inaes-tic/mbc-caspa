@@ -21,7 +21,7 @@
         "folio": "0.2.x",
         "less-middleware": "*",
         "underscore": "*",
-        "backboneio": "*",
+        "backbone.io": "0.3.x",
         "jquery-browser": "1.8.x",
         "jqueryui-browser": "1.9.x",
         "i18n-abide" : "0.0.7",

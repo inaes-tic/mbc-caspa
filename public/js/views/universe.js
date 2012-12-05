@@ -11,10 +11,6 @@ window.UniverseItemView = MediaListItemView.extend({
         return this;
     },
     updateTotalTime: function () {
-        console.log ('update time (item)',
-                     this.collection.pluck('durationraw'),
-                     this.model.get('duration')
-                    );
         $('.total-time', this.el)[0].textContent = this.model.pretty_duration();
     },
 });

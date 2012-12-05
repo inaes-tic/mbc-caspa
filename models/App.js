@@ -17,9 +17,9 @@ var _ = root._;
 if (!_ && (typeof require !== 'undefined')) _ = require('underscore');
 
 var BackboneIO = root.BackboneIO;
-if (!BackboneIO && (typeof require !== 'undefined')) BackboneIO = require('backboneio');
+if ((typeof require !== 'undefined')) Backbone = require('backbone');
 
-App.Model = BackboneIO.Model.extend({
+App.Model = Backbone.Model.extend({
     urlRoot: 'app',
     defaults: {
         title: 'MBC Playout {mlt edition}', 

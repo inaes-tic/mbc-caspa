@@ -1,10 +1,11 @@
 var express = require('express'),
     path    = require('path'),
     exec    = require('child_process').exec,
-    io      = require('socket.io'),
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
-    exec    = require('child_process').exec;
+    exec    = require('child_process').exec,
+ backboneio = require('backbone.io');
+
 
 var dirs = {
     pub    : path.join(__dirname, 'public'),
@@ -75,44 +76,41 @@ app.configure('production', function(){
 });
 
 var appModel = require('./routes')(app);
-var media    = require('./routes/media')(app);
+var media = require('./routes/media')(app);
 
-console.log ('hohohoh', media, media.mediaList);
 
-io = io.listen(app.listen(app.get('port'), function(){
-  console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
-}));
-
-io.enable('browser client minification');  // send minified client
-io.enable('browser client etag');          // apply etag caching logic based on version number
-io.enable('browser client gzip');          // gzip the file
-io.set('log level', app.get('io.loglevel'));
-io.set('transports', [                     // enable all transports (optional if you want flashsocket)
-    'websocket'
-  , 'flashsocket'
-  , 'htmlfile'
-  , 'xhr-polling'
-  , 'jsonp-polling'
-]);
-
-io.sockets.on('connection', function (socket) {
-    for (col in media.collectionsToBind) {
-        var c = media.collectionsToBind[col];
-        c.bindServer(socket);
-        socket.on(c.url + ':moved', function (move) {
-            socket.broadcast.emit (c.url + ':moved', move);
-            c.move(move.from, move.to);
-        });
-    }
-
-    appModel.bindServer(socket);
-
-    socket.on('disconnect', function () {
-        for (col in media.collectionsToBind)
-            media.collectionsToBind[col].unbindServer(socket);
-
-        appModel.unbindServer(socket);
-    });
+var mediabackend = backboneio.createBackend();
+mediabackend.use(backboneio.middleware.mongoStore('mediadb', 'medias'));
+var blockbackend = backboneio.createBackend();
+blockbackend.use(function(req, res, next) {
+    console.log(req.backend);
+    console.log(req.method);
+    console.log(JSON.stringify(req.model));
+    next();
 });
+
+blockbackend.use(backboneio.middleware.memoryStore('mediadb', 'blocks'));
+
+var listbackend = backboneio.createBackend();
+listbackend.use(function(req, res, next) {
+    console.log(req.backend);
+    console.log(req.method);
+    console.log(JSON.stringify(req.model));
+    next();
+});
+
+listbackend.use(backboneio.middleware.mongoStore ('mediadb', 'lists'));
+var schedbackend = backboneio.createBackend();
+schedbackend.use(backboneio.middleware.mongoStore('mediadb', 'scheds'));
+
+backboneio.listen(app.listen(app.get('port'), function(){
+    console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
+}), { mediabackend: mediabackend,
+      blockbackend: blockbackend,
+      listbackend:  listbackend,
+      schedbackend: schedbackend,
+    });
+
+setTimeout (function () { console.log (mediabackend);}, 5000);
 
 

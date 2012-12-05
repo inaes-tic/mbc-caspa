@@ -1,13 +1,3 @@
-var Media, server = false;
-if (typeof exports !== 'undefined') {
-    BackboneIO = require(__dirname + '/Default');
-    _ = require('underscore');
-    Media = exports.Media = {};
-    server = true;
-} else {
-    Media = root.Media = {};
-}
-
 var leadingZero = function (num) {
     return (num < 10) ? "0"+num : num;
 }
@@ -44,9 +34,14 @@ var arrayDuration = function (a) {
         return m + toMilliseconds (n);}, 0);
 };
 
-Media.Model = BackboneIO.Model.extend({
+var Media = {};
+
+Media.Model = Backbone.Model.extend({
     urlRoot: "media",
     idAttribute: "_id",
+    initialize: function () {
+        console.log ('creating new Media.Model');
+    },
     validate: function (attrs) {
         console.log ("checking", attrs);
         if (attrs.file && ! attrs.file.length) {
@@ -72,14 +67,27 @@ Media.Model = BackboneIO.Model.extend({
 });
 
 /* all methods are overriden in Default.js */
-Media.Collection = BackboneIO.Collection.extend({
+Media.Collection = Backbone.Collection.extend({
     model: Media.Model,
     url: 'media',
+    backend: 'mediabackend',
+    initialize: function () {
+        this.bindBackend();
+
+        this.bind('backend', function(method, model) {
+            console.log ('got from backend:', method, model);
+        });
+
+        console.log ('creating new Media.Collection');
+
+        Backbone.Collection.prototype.initialize.call (this);
+    }
 });
 
 
 Media.Piece = Media.Model.extend ({
     urlRoot: 'piece',
+    idAttribute: "_id",
     defaults: {
         trim: {
             timein:  0,
@@ -87,11 +95,20 @@ Media.Piece = Media.Model.extend ({
         },
         overlay: [],
     },
+    initialize: function () {
+        console.log ('creating new Media.Piece');
+    },
+
 });
 
 Media.Block = Media.Collection.extend ({
     model: Media.Piece,
     url: 'piece',
+    backend: 'blockbackend',
+    initialize: function () {
+        console.log ('creating new Media.Block');
+    },
+
 });
 
 Media.List = Media.Model.extend ({
@@ -107,30 +124,28 @@ Media.List = Media.Model.extend ({
             return false;
 
         console.trace();
-        console.log ("initing media list", models, col);
+        console.log ("creating new Media.List", models, col);
         if (!col || col instanceof Array) {
+            console.log ('col is array ! recreating as collection', col, models);
             col = this.newCol(models, {connectable: true});
-            console.log ('col is array ! recreating as collection', col);
         }
 
         var self = this;
         col.wrapper = this;
 
         col.bind('all', function (a, b) {
-            console.log ('got a change in the force', a, b);
             var models = self.get('collection').models;
             self.set({models: models});
             self.update_duration(col);
             console.log ('-----got a change in the force', a, b);
+            console.trace();
         }, this);
 
         this.set ({collection: col, models: col.models});
         Media.Model.prototype.initialize.call (this);
     },
     update_duration: function (col) {
-        console.log ('TOTAL TIME IN MODEL', col.pluck('durationraw'));
         this.set({duration : arrayDuration(col.pluck('durationraw'))});
-        console.log ('TOTAL TIME IN MODEL->', this.pretty_duration());
     },
     pretty_duration: function () {
         return prettyTime (this.get('duration'));
@@ -150,12 +165,19 @@ Media.List = Media.Model.extend ({
 Media.Universe = Media.Collection.extend ({
     url: 'list',
     model: Media.List,
+    backend: 'listbackend',
+    initialize: function () {
+        console.log ('creating new Media.Universe');
+    },
 });
 
 Media.Occurence = Media.List.extend ({
     urlRoot: 'sched',
     defaults: {
         event: null,
+    },
+    initialize: function () {
+        console.log ('creating new Media.Occurence');
     },
     newCol: function (models, opts) {
         return new Media.Occurence (models, opts);
@@ -165,7 +187,10 @@ Media.Occurence = Media.List.extend ({
 Media.Schedule = Media.Universe.extend ({
     url: 'sched',
     model: Media.Occurence,
+    backend: 'schedbackend',
+    initialize: function () {
+        console.log ('creating new Media.Schedule');
+    },
+
 });
 
-if(server) module.exports = Media;
-else root.Media = Media;
