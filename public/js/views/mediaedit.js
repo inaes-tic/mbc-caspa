@@ -54,7 +54,7 @@ window.EditView = Backbone.View.extend({
     savePlaylist: function (event) {
         var medias = this.editview.model.get('models');
         var name   = this.editview.model.get('name');
-        var id     = this.editview.model.get_id();
+        var id     = this.editview.model.get('_id');
 
         console.log ("i want to save", this.editview.model, medias, id);
         $('.alert-empty-playlist').hide();

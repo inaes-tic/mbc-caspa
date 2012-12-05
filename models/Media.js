@@ -13,6 +13,11 @@ var leadingZero = function (num) {
 }
 
 var toMilliseconds = function (time) {
+    if (!time) {
+        console.error("No time");
+        return -1;
+    }
+
     var t = time.match(/(\d{2}):(\d{2}):(\d{2})\.(\d*)/);
     t.shift();
     d = moment.duration ({
@@ -70,31 +75,6 @@ Media.Model = BackboneIO.Model.extend({
 Media.Collection = BackboneIO.Collection.extend({
     model: Media.Model,
     url: 'media',
-    add: function (models, opts) {
-        var self = this;
-        console.log ('hacked add', this, models, opts);
-
-        if (!opts)
-            opts = {};
-
-        var index = (opts.at) ? opts.at : this.size();
-        opts.at = index;
-
-        if (! (models instanceof Array))
-            models = [models]
-
-        models.forEach (function (e, i) {
-            self.set_index (e, index + i);
-            console.log ('aaadododd', e, opts);
-        });
-
-        return BackboneIO.Collection.prototype.add.call (this, models.reverse(), opts);
-    },
-    create: function (model, opts) {
-        var index = (opts && opts.at) ? opts.at : this.size();
-        this.set_index (model, index);
-        return Backbone.Collection.prototype.create.call (this, model, opts);
-    },
 });
 
 
@@ -112,14 +92,6 @@ Media.Piece = Media.Model.extend ({
 Media.Block = Media.Collection.extend ({
     model: Media.Piece,
     url: 'piece',
-    set_index: function (model, index) {
-        console.log ('BLOCK set_index');
-        console.trace();
-        var id = this._get_id(model);
-        this._set_id (model, id.split('-')[0] + '-' + index);
-
-        return Media.Collection.prototype.set_index.call (this, model, index);
-    },
 });
 
 Media.List = Media.Model.extend ({
@@ -130,6 +102,11 @@ Media.List = Media.Model.extend ({
     initialize: function () {
         var models = this.get('models')
         var col    = this.get('collection')
+
+        if (!models)
+            return false;
+
+        console.trace();
         console.log ("initing media list", models, col);
         if (!col || col instanceof Array) {
             col = this.newCol(models, {connectable: true});
@@ -143,7 +120,6 @@ Media.List = Media.Model.extend ({
             console.log ('got a change in the force', a, b);
             var models = self.get('collection').models;
             self.set({models: models});
-            self.updateId(models);
             self.update_duration(col);
             console.log ('-----got a change in the force', a, b);
         }, this);
@@ -158,20 +134,6 @@ Media.List = Media.Model.extend ({
     },
     pretty_duration: function () {
         return prettyTime (this.get('duration'));
-    },
-    hashSeed: function () {
-        return this.get('name');
-    },
-    updateId: function (models) {
-        if (server)
-            return;
-        var spark = new SparkMD5();
-        spark.append (this.hashSeed() || 'NULL');
-
-        console.log ('(MODEL) about to calculate MD5 for', models);
-
-        models.forEach(function (e) {spark.append(e);});
-        this.set_id(spark.end());
     },
 
     defaults: {
@@ -197,9 +159,6 @@ Media.Occurence = Media.List.extend ({
     },
     newCol: function (models, opts) {
         return new Media.Occurence (models, opts);
-    },
-    hashSeed: function () {
-        return this.get('event') + this.get('name');
     },
 });
 
