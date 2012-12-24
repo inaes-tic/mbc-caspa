@@ -78,9 +78,10 @@ app.configure('production', function(){
 var appModel = require('./routes')(app);
 var media = require('./routes/media')(app);
 
+var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
 
 var mediabackend = backboneio.createBackend();
-mediabackend.use(backboneio.middleware.mongoStore('mediadb', 'medias'));
+mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
 var blockbackend = backboneio.createBackend();
 blockbackend.use(function(req, res, next) {
     console.log(req.backend);
@@ -89,7 +90,7 @@ blockbackend.use(function(req, res, next) {
     next();
 });
 
-blockbackend.use(backboneio.middleware.memoryStore('mediadb', 'blocks'));
+blockbackend.use(backboneio.middleware.memoryStore(db, 'blocks'));
 
 var listbackend = backboneio.createBackend();
 listbackend.use(function(req, res, next) {
@@ -99,9 +100,9 @@ listbackend.use(function(req, res, next) {
     next();
 });
 
-listbackend.use(backboneio.middleware.mongoStore ('mediadb', 'lists'));
+listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
 var schedbackend = backboneio.createBackend();
-schedbackend.use(backboneio.middleware.mongoStore('mediadb', 'scheds'));
+schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
 
 backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
@@ -111,6 +112,18 @@ backboneio.listen(app.listen(app.get('port'), function(){
       schedbackend: schedbackend,
     });
 
-setTimeout (function () { console.log (mediabackend);}, 5000);
+var utils = require('./utils');
 
+//var mlt = new melted({reconnect: true});
+setTimeout(function () {
+    utils.scrape_files (process.env.HOME + "/Downloads/Gardel", function (model) {
+        db.collection('medias').insert(model, {safe:true}, function(err, result) {
+            if (err) {
+                console.error ('error','An error has occurred' + err);
+            } else {
+                mediabackend.emit('created', model);
+            }
+        });
+    });
+}, 300);
 
