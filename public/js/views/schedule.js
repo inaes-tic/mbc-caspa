@@ -1,23 +1,37 @@
 window.ScheduleView = Backbone.View.extend({
     el: $("#content"),
-    initialize: function () {
-        console.log ("rendering schedule");
-        this.render();
+    get_templateHTML: function () {
+        return template.schedule();
     },
-    render: function () {
+    get_collection: function () {
+        return this.collection;
+    },
+    addOne: function (item) {
+        console.log ("Calendar addOne", item);
+        event = item.get('event');
+	$('#calendar', this.el).fullCalendar('renderEvent', event, true);
+    },
+    addAll: function() {
+        this.collection.each(this.addOne);
+    },
+    initialize: function () {
         var self = this;
-        $(this.el).html(template.schedule());
+        self.collection = this.get_collection();
+
+        $(this.el).html(this.get_templateHTML());
 
         new UniverseListView({
             collection: Universe,
-            el: $("#universe"),
+            el: $('#universe', this.el),
             draggable: true,
         });
 
-	var date = new Date();
-	var d = date.getDate();
-	var m = date.getMonth();
-	var y = date.getFullYear();
+        this.render();
+    },
+    render: function () {
+        console.log ('render calendar', $(this.el));
+        var self = this;
+        this.collection = this.get_collection();
 
         $('#calendar', this.el).fullCalendar({
 	    editable: true,
@@ -25,7 +39,7 @@ window.ScheduleView = Backbone.View.extend({
             disableResizing: true,
             aspectRatio: 2,
             drop: function(date, allDay) {
-                var list = Universe.get(this.id);
+                var list  = Universe.get(this.id);
                 var start = moment(date);
                 var end   = moment(start);
 
@@ -37,7 +51,7 @@ window.ScheduleView = Backbone.View.extend({
                     allDay: allDay,
                 };
 
-                var item = self.collection.create (list);
+                var item = self.collection.create ({list: list, event: event});
                 event.model = item;
 
                 console.log (this, list, event);
@@ -85,8 +99,22 @@ window.ScheduleView = Backbone.View.extend({
         });
 
         setTimeout (function () {
-            $('#calendar table', this.el).addClass("table table-bordered");
+            $('table', this.el).addClass("table table-bordered");
+            self.addAll();
         }, 500);
+
+
+        _.bindAll(this,
+                  'addOne',
+                  'addAll'
+                 );
+
+        self.collection.bind('add',   this.addOne, this);
+        self.collection.bind('reset', this.addAll, this);
+//        self.collection.bind('remove',this.checkEmpty, this);
+        self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
+        self.collection.bind('update',this.update, this);
+
         return this;
     },
 });
