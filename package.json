@@ -13,9 +13,9 @@
     },
     "dependencies": {
         "express": "3.x",
-        "mongodb": "1.1.8",
+        "mongoskin": "0.4.x",
         "socket.io": "0.9.10",
-        "backbone": "0.5.x",
+        "backbone": "0.9.x",
         "underscore": "1.2.x",
         "jade": "*",
         "folio": "0.2.x",
