@@ -44,20 +44,15 @@ window.ScheduleView = Backbone.View.extend({
                 var end   = moment(start);
 
                 end.add('ms', list.get('duration'));
-                var event ={
+                var event = {
                     title: list.get('name'),
-                    start: start.toDate(),
-                    end:   end.toDate(),
+                    start: start.unix(),
+                    end:     end.unix(),
                     allDay: allDay,
                 };
 
                 var item = self.collection.create ({list: list, event: event});
-                event.model = item;
-
-                console.log (this, list, event);
-                // render the event on the calendar
-		// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-		$('#calendar', self.el).fullCalendar('renderEvent', event, true);
+                console.log (this, list, event, item);
             },
             eventDrop: function(event,dayDelta,minuteDelta,allDay,revertFunc) {
                 console.log ('changed', event.list, event.id);
