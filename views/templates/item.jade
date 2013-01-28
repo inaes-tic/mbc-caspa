@@ -16,10 +16,6 @@
 td
   a.plain(href='#media/' + _id.split('-')[0])
     img(src=picture, height="100",width="150",alt="")
-    br
-    span.label.label-warning.format
-        i.icon-time.icon-white
-        span= ' ' + durationraw
 td
     h5=stat.name
 
@@ -30,18 +26,20 @@ td
       .span2
         label(for="out-cut") OUT:
         input#out-cut(type="text",style="border: 0; color: #f6931f; font-weight: bold;")
-    .progress
+    span.label.label-warning.format
+        i.icon-time.icon-white
+        span= ' ' + durationraw
 
     -if (video.container)
-      span.label.label-warning.format
+      span.label.format
         i.icon-file.icon-white
         span= ' ' + video.container
       span=' '
-    span.label.label-warning.video
+    span.label.video
       i.icon-film.icon-white
       span= ' ' + video.codec
     span=' '
-    span.label.label-warning.audio
+    span.label.audio
       i.icon-volume-up.icon-white
       span= ' ' + audio.codec
 

@@ -4,7 +4,7 @@
 /*---////////////////////    SOURCE INFO    ////////////////////---*/
 .source-info-block {
     padding:0 0 0 2px;
-	background: url(img/masterpanel_spacer.png) no-repeat 0 0;
+	background: url(images/masterpanel_spacer.png) no-repeat 0 0;
 	margin-right: 0;
 	}
 	.source-info-block h3, .on-air-block h3 {
@@ -67,15 +67,15 @@
 				height:15px;
 				padding:0;
 				border-left:2px solid #3e3e3e;
-				background:url(img/source_to_switch_lines.png) repeat-x 0 0;
+				background:url(images/source_to_switch_lines.png) repeat-x 0 0;
 				}
 				.source-info-block li .line-to-switch.off {
 					border-color:#3e3e3e;
-					background:url(img/source_to_switch_lines.png) repeat-x 0 0;
+					background:url(images/source_to_switch_lines.png) repeat-x 0 0;
 					}
 				.source-info-block li .line-to-switch.on {
 					border-color:#ff611f;
-					background:url(img/source_to_switch_lines.png) repeat-x 0 -15px;
+					background:url(images/source_to_switch_lines.png) repeat-x 0 -15px;
 					}
 			.source-info-block li .line-to-on-air, .source-info-block li .line-to-on-air.off {
 				margin:0;
@@ -83,7 +83,7 @@
 				float:left;
 				height:15px;
 				padding:0;
-				background:url(img/source_to_switch_lines.png) repeat-x 0 0;
+				background:url(images/source_to_switch_lines.png) repeat-x 0 0;
 				}
 				.source-info-block li .line-to-on-air, .source-info-block li .line-to-on-air.off {
 					margin:0;
@@ -91,13 +91,13 @@
 					float:left;
 					height:15px;
 					padding:0;
-					background:url(img/source-info_lines.png) repeat-x 0 0;
+					background:url(images/source-info_lines.png) repeat-x 0 0;
 					}
 					.source-info-block li .line-to-on-air.off  {
-						background:url(img/source-info_lines.png) no-repeat 0 0;
+						background:url(images/source-info_lines.png) no-repeat 0 0;
 						}
 					.source-info-block li .line-to-on-air.on {
-						background:url(img/source-info_lines.png) no-repeat 0 -15px;
+						background:url(images/source-info_lines.png) no-repeat 0 -15px;
 						}
 
 
@@ -207,7 +207,7 @@
 	-webkit-border-radius:2px;
 	-moz-border-radius:2px;
 	border-radius:2px;
-	background: #262626 url(img/thin_delete.png) no-repeat 0 0;
+	background: #262626 url(images/thin_delete.png) no-repeat 0 0;
 }
 
 .source-kick-button:hover{
