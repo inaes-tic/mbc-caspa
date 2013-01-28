@@ -21,32 +21,19 @@ block content
       input.input-block-level.input-list-name(type='text')
 
   #media-search
+  #playlist-table
+    .total-time-div
+      h1.label.label-inverse.format
+          i.icon-time.icon-white
+          span= ' '
+          span.total-time.label.label-inverse.format
 
-  .total-time-div
-    h1.label.label-inverse.format
-        i.icon-time.icon-white
-        span= ' '
-        span.total-time.label.label-inverse.format
-
-  .table-container(style='overflow-x:scroll;')
-    table.table.table-bordered.table-striped.table-condensed#table
-          thead
-            tr
-              th= i18n.gettext('Thumbnail')
-              th= i18n.gettext('Media info')
-              th= i18n.gettext('Status')
-              th= i18n.gettext('Availability')
-          tbody.tbody#media-view(class='tbody' + connectable?' connected-sortable':'')
-
-    table(style='display:none;')
-      tbody
-        tr#empty-alert.no-sort
-              td
-              td
-                .alert.alert-block
-                  button.close(type='button', data-dismiss='alert') ×
-                  h4= i18n.gettext('Oops!')
-                  p= i18n.gettext('It looks like you have no media to show here, start dragging media or go to the ')
-                    a(href='/conf/')= i18n.gettext('Configuration')
-              td
-              td
+    .table-container(style='overflow-x:scroll;')
+      table.table.table-bordered.table-striped.table-condensed#table
+            thead
+              tr
+                th= i18n.gettext('Thumbnail')
+                th= i18n.gettext('Media info')
+                th= i18n.gettext('Status')
+                th= i18n.gettext('Availability')
+            tbody.tbody#media-view(class='tbody' + connectable?' connected-sortable':'')

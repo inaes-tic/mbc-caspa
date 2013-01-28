@@ -21,10 +21,17 @@ td
         i.icon-time.icon-white
         span= ' ' + durationraw
 td
-  a.plain(href='#media/' + _id.split('-')[0])
     h5=stat.name
+
+    .row(style="display:none;")
+      .span2
+        label(for="in-cut") IN:
+        input#in-cut(type="text",style="border: 0; color: #f6931f; font-weight: bold;")
+      .span2
+        label(for="out-cut") OUT:
+        input#out-cut(type="text",style="border: 0; color: #f6931f; font-weight: bold;")
     .progress
-      .bar(style="width: 60%;")
+
     -if (video.container)
       span.label.label-warning.format
         i.icon-file.icon-white

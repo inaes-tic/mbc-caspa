@@ -2,8 +2,6 @@ var mediaList = new Media.Collection();
 var mediaDB   = new Media.List({collection: mediaList,
                                 fixed: true,
                                 name: 'Media Database'});
-var editList;
-
 var Universe  = new Media.Universe();
 var Schedule  = new Media.Schedule();
 
@@ -41,12 +39,15 @@ var AppRouter = Backbone.Router.extend({
 
     routes: {
         "media"	: "list",
+        "media-draggable"   : "list_draggable",
+        "universe"          : "universe",
+        "universe-draggable": "universe_draggable",
         "media/add"         : "upload",
         "media/search"      : "searchMedia",
         "media/edit"        : "editMedia",
         "media/:id"         : "mediaDetails",
         "program/:id"       : "listProgram",
-        "universe"          : "listUniverse",
+
         "schedule"          : "schedule",
         "admin"             : "conf",
         "about"             : "about",
@@ -77,10 +78,18 @@ var AppRouter = Backbone.Router.extend({
         new MediaListView({model: mediaDB});
         this.headerView.selectMenuItem('list-menu');
     },
+    list_draggable: function() {
+        new MediaListView({model: mediaDB, draggable: true});
+        this.headerView.selectMenuItem('list-menu');
+    },
 
-    listUniverse: function () {
+    universe: function () {
         new UniverseListView({collection: Universe});
     },
+    universe_draggable: function () {
+        new UniverseListView({collection: Universe, draggable: true});
+    },
+
 
     mediaDetails: function (id) {
         new MediaView({model: mediaList.get(id)});

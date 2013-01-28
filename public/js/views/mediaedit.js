@@ -13,33 +13,26 @@ window.EditView = Backbone.View.extend({
     },
     render: function () {
         $(this.el).html(template.mediaedit());
-        new UniverseListView({collection: this.collection,
-                             el: $("#universe")});
-        new MediaListView({model: mediaDB,
-                           dragSource: true,
-                           el: $("#left-pane")});
-        if (editList)
-            this.showPlaylist(editList);
+        new UniverseListView({
+            collection: this.collection,
+            el: $("#universe")});
+        new MediaListView({
+            model: mediaDB,
+            draggable: true,
+            el: $("#left-pane")});
+        if (this.editList)
+            this.showPlaylist(this.editList);
 
         return this;
     },
-    showPlaylist: function (list) {
-        this.editview = new MediaListView({model: list,
-                                           el: $("#right-pane")});
-
-        console.log ('show edit view', this.editview);
-
-        $('.no-playlist-alert',     this.el).hide();
-        $('.playlist-button-array', this.el).show();
-    },
     createPlaylist: function () {
         console.log ("re-instanciating editList");
-        editList = new Media.List();
+        this.editList = new Media.List({published: false});
 
-        this.showPlaylist (editList)
+        this.showPlaylist (this.editList)
     },
     killEditList: function () {
-        editList = null;
+        this.editList = null;
         $('.playlist-button-array', this.el).hide();
         $('.no-playlist-alert', this.el).show();
     },
@@ -48,8 +41,20 @@ window.EditView = Backbone.View.extend({
     },
     switchPlaylist: function (id) {
         var plid = this.collection.get(id);
-        console.log ('switching to', id, plid);
+        console.log ('switching to', id, '--', plid);
         this.showPlaylist (plid);
+    },
+    showPlaylist: function (list) {
+        console.log ('show edit view', list);
+        this.editview = new MediaListView({
+            model: list,
+            el: $("#right-pane")
+        });
+
+        console.log ('show edit view', this.editview, list);
+
+        $('.no-playlist-alert',     this.el).hide();
+        $('.playlist-button-array', this.el).show();
     },
     savePlaylist: function (event) {
         var medias = this.editview.model.get('models');
@@ -71,7 +76,7 @@ window.EditView = Backbone.View.extend({
             return;
         }
 
-        if (this.editview.model == editList) {
+        if (this.editview.model == this.editList) {
             console.log ("about to feed this to the universe:", this.editview.model.attributes);
             this.editview.model = this.collection.create (this.editview.model.attributes);
             console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);

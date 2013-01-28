@@ -4,8 +4,8 @@ var leadingZero = function (num) {
 
 var toMilliseconds = function (time) {
     if (!time) {
-        console.error("No time");
-        return -1;
+        console.log ("No time");
+        return 0;
     }
 
     var t = time.match(/(\d{2}):(\d{2}):(\d{2})\.(\d*)/);
@@ -43,7 +43,7 @@ Media.Model = Backbone.Model.extend({
         console.log ('creating new Media.Model');
     },
     validate: function (attrs) {
-        console.log ("checking", attrs);
+        console.log ("checking -> ", attrs);
         if (attrs.file && ! attrs.file.length) {
             console.log ('NO file');
             return new Error("file must be defined");
@@ -123,7 +123,6 @@ Media.List = Media.Model.extend ({
         if (!models)
             return false;
 
-        console.trace();
         console.log ("creating new Media.List", models, col);
         if (!col || col instanceof Array) {
             console.log ('col is array ! recreating as collection', col, models);
@@ -138,7 +137,6 @@ Media.List = Media.Model.extend ({
             self.set({models: models});
             self.update_duration(col);
             console.log ('-----got a change in the force', a, b);
-            console.trace();
         }, this);
 
         this.set ({collection: col, models: col.models});
@@ -155,7 +153,6 @@ Media.List = Media.Model.extend ({
         collection: null,
         models: [],
         name: null,
-        hash: null,
         fixed: false,
         duration: 0,
         pos: 0,
@@ -177,10 +174,16 @@ Media.Occurence = Media.List.extend ({
         event: null,
     },
     initialize: function () {
-        console.log ('creating new Media.Occurence');
+        console.log ('creating new Media.Occurence', this);
     },
     newCol: function (models, opts) {
         return new Media.Occurence (models, opts);
+    },
+    update: function (attrs) {
+        for (a in this.attributes) {
+            if (attrs.hasOwnProperty(a))
+                this.set(a, attrs[a]);
+        }
     },
 });
 

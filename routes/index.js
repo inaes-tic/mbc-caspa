@@ -128,6 +128,7 @@ module.exports = function(app) {
                      'universe',
                      'uniitem',
                      'schedule',
+                     'emptyalert'
                     ];
 
     var templateJs = new folio.Glossary([

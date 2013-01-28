@@ -6,12 +6,13 @@ window.ScheduleView = Backbone.View.extend({
     get_collection: function () {
         return this.collection;
     },
-    addOne: function (item) {
-        console.log ("Calendar addOne", item);
-        event = item.get('event');
-	$('#calendar', this.el).fullCalendar('renderEvent', event, true);
+    addOne: function (event) {
+        console.log ("Calendar addOne", event);
+        var fce = _(event.attributes).clone();
+	$('#calendar', this.el).fullCalendar('renderEvent', fce, true);
     },
     addAll: function() {
+	$('#calendar', this.el).fullCalendar('removeEvents');
         this.collection.each(this.addOne);
     },
     initialize: function () {
@@ -28,6 +29,22 @@ window.ScheduleView = Backbone.View.extend({
 
         this.render();
     },
+/*    saveEvent: function (event) {
+        // we filter out the event to only store what we really need
+
+        console.log ('saving event:', event);
+        var nattr = {
+            title:  event.get('title'),
+            start:  moment(event.get('start')).unix(),
+            end:    moment(event.get('end')).unix(),
+            allDay: event.get('allDay'),
+            list:   event.get('list'),
+        };
+
+        event.clear({silent:true});
+        event.save(nattr);
+
+    },*/
     render: function () {
         console.log ('render calendar', $(this.el));
         var self = this;
@@ -40,26 +57,35 @@ window.ScheduleView = Backbone.View.extend({
             aspectRatio: 2,
             drop: function(date, allDay) {
                 var list  = Universe.get(this.id);
+                console.log ('drop->', self.collection.pluck('end'));
+
                 var start = moment(date);
                 var end   = moment(start);
 
                 end.add('ms', list.get('duration'));
                 var event = {
-                    title: list.get('name'),
-                    start: start.unix(),
-                    end:     end.unix(),
+                    title:  list.get('name'),
+                    list:   list.get('_id'),
+                    start:  start.unix(), end: end.unix(),
                     allDay: allDay,
                 };
 
-                var item = self.collection.create ({list: list, event: event});
+                console.log ('to save', event);
+                var item = self.collection.create (event);
                 console.log (this, list, event, item);
             },
             eventDrop: function(event,dayDelta,minuteDelta,allDay,revertFunc) {
                 console.log ('changed', event.list, event.id);
 
-                if (!confirm("Are you sure about this change?")) {
+/*                if (!confirm("Are you sure about this change?")) {
                     revertFunc();
-                }
+                }*/
+
+                console.log ('drop->', event, self.collection, self.collection.pluck('end'));
+
+                item = self.collection.where({list: event.list})[0];
+                item.update(event);
+                item.save();
             },
 	    header: {
 		left: 'prev,next today',
@@ -77,14 +103,14 @@ window.ScheduleView = Backbone.View.extend({
 	    ],
             eventRender: function(event, element) {
                 console.log ('----o---', element);
-
+                var model = self.collection.where({list: event.list})[0];
 
                 element.tooltip({
                     trigger: 'click',
                     placement: 'left',
                     title: function () {
                         var target = document.createElement('div');
-                        var view = new MediaListView({model: event.model,
+                        var view = new MediaListView({model: model,
                                                       noSearch:true,
                                                       el: target});
                         return view.render().el;

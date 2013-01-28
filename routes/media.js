@@ -5,7 +5,6 @@ module.exports = function (app) {
     , utils = require('../utils')
     ,resumable = require('resumable.js')(__dirname + '/../public/uploads/incoming');
 
-    //var mlt = new melted({reconnect: true});
 
     var i = 0;
 /*
@@ -26,7 +25,7 @@ module.exports = function (app) {
 
             if (status == 'done') {
                 setTimeout(function () {
-                    utils.merge (original_filename, expots.addMedia);
+                    utils.merge (original_filename, exports.addMedia);
                 }, 100);
             }
 
