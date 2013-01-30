@@ -6,7 +6,7 @@ locale/es/LC_MESSAGES/messages.mo:
 	./bin/extract_po.sh
 	./bin/update_languages.sh
 
-submodules: sparkmd5 i18n-abide resumable.js melted-node node-mlt
+submodules: sparkmd5 bootstrap
 	git submodule update
 
 sparkmd5: vendor/sparkmd5/spark-md5.js
