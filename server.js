@@ -77,31 +77,31 @@ app.configure('production', function(){
 var appModel = require('./routes')(app);
 var media = require('./routes/media')(app);
 
+function debug_backend (backend) {
+        console.log ('Debugging backend: ', backend);
+        backend.use(function(req, res, next) {
+                console.log(req.backend);
+                console.log(req.method);
+                console.log(JSON.stringify(req.model));
+                next();
+        });
+}
+
 var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
 
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
-var blockbackend = backboneio.createBackend();
-blockbackend.use(function(req, res, next) {
-    console.log(req.backend);
-    console.log(req.method);
-    console.log(JSON.stringify(req.model));
-    next();
-});
 
+var blockbackend = backboneio.createBackend();
 blockbackend.use(backboneio.middleware.memoryStore(db, 'blocks'));
 
 var listbackend = backboneio.createBackend();
-listbackend.use(function(req, res, next) {
-    console.log(req.backend);
-    console.log(req.method);
-    console.log(JSON.stringify(req.model));
-    next();
-});
-
 listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
+
 var schedbackend = backboneio.createBackend();
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
+
+_([mediabackend, listbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
@@ -114,7 +114,7 @@ backboneio.listen(app.listen(app.get('port'), function(){
 var utils = require('./utils');
 
 //var mlt = new melted({reconnect: true});
-setTimeout(function () {
+/* setTimeout(function () {
     utils.scrape_files (process.env.HOME + "/Downloads/Gardel", function (model) {
         db.collection('medias').insert(model, {safe:true}, function(err, result) {
             if (err) {
@@ -126,3 +126,4 @@ setTimeout(function () {
     });
 }, 300);
 
+*/
