@@ -4,6 +4,7 @@
     "version": "0.0.1",
     "private": true,
     "licence": "agplv3",
+    "main" : "server.js",
     "author": {
         "name": "Niv Sardi",
         "email": "xaiki@debian.org"
@@ -24,7 +25,7 @@
         "backbone.io": "0.3.x",
         "jquery-browser": "1.8.x",
         "jqueryui-browser": "1.9.x",
-        "i18n-abide" : "0.0.7",
+        "i18n-abide" : "*",
         "po2json" : "*",
         "jed" : "0.5.x",
         "walk": "2.2.x",
