@@ -1,18 +1,12 @@
 var     _ = require('underscore')
 ,   fp    = require('functionpool')
 , ffmpeg  = require('./ffmpeg/')
-,   fs    = require ('fs')
-,  mongo  = require('mongodb');
+,   fs    = require ('fs');
+
 
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
 
-var   Db = mongo.Db,
-    BSON = mongo.BSONPure;
-
-var server = new mongo.Server('localhost', 27017, {auto_reconnect: true});
-
-exports.db = db = new Db('mediadb', server, {safe: true});
 
 exports.openDB = function (callback, populateCallback) {
     db.open(function(err, db) {
