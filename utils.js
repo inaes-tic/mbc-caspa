@@ -3,10 +3,10 @@ var     _ = require('underscore')
 , ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs');
 
-
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
 
+var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
 
 exports.openDB = function (callback, populateCallback) {
     db.open(function(err, db) {
@@ -113,9 +113,12 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
                 callback (metadata);
             }
     }, function(retcode, fds) {
-        console.log ('here0');
-        if (! _existsSync (dest) || retcode)
-            return done (new Error('File not created' + fds.err));
+        console.log ('here0 ');
+        if (! _existsSync (dest) || retcode) {
+            var error = new Error('File not created' + fds.err);
+            console.log ('ERROR', error);
+            return done (error);
+        }
 
         console.log('sc ok: ' + media._id);
         return done(media);
@@ -126,22 +129,21 @@ exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     var spawn = require('child_process').spawn,
     md5sum    = spawn('md5sum', [file]);
 
-    db.collection('medias', function(err, collection) {
-        collection.findOne({'file': file}, function(err, item) {
-            if (!err && item) {
-                if (stat === item.stat) return (done(item));
-                else item.stat = stat;
-            } else {
-                item = {file: file, stat: stat};
-            }
+    db.collection('medias').findOne({'file': file}, function(err, item) {
+        if (!err && item) {
+            if (stat === item.stat) return (done(item));
+            else item.stat = stat;
+        } else {
+            item = {file: file, stat: stat};
+        }
 
-            md5sum.stdout.on('data', function (data) {
-                item._id = data.toString().split(' ')[0];
-                done(item);
-            });
+        md5sum.stdout.on('data', function (data) {
+            item._id = data.toString().split(' ')[0];
+            done(item);
         });
     });
 });
+
 
 exports.scrape_files = function (path, callback) {
   var walk      = require('walk')
@@ -172,7 +174,7 @@ exports.scrape_files = function (path, callback) {
         exports.parse_pool.task(file, stat, function (res, err) {
             if (err)
                 return (console.error('error:', err));
-            console.log ('parsed: ' + stat.name);
+            console.log ('parsed: ' + stat.name, res);
             exports.sc_pool.task(res, callback, function (err, res) {return res});
         });
 

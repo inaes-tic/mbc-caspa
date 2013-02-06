@@ -88,6 +88,10 @@ function debug_backend (backend) {
 }
 
 var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
+var mubsub = require ('mubsub');
+var client = mubsub (db);
+
+var schedchannel = client.channel('scheds', { size: 10000000, max: 50000 });
 
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
@@ -100,6 +104,9 @@ listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
 
 var schedbackend = backboneio.createBackend();
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
+schedchannel.subscribe ({}, function (sched) {
+    schedbackend.emit('updated', sched);
+});
 
 _([mediabackend, listbackend]).each (debug_backend);
 
