@@ -1,0 +1,9 @@
+block empty-alert
+        tr#empty-alert.no-sort
+              td
+              td
+                .alert.alert-block
+                  button.close(type='button', data-dismiss='alert') ×
+                  h4= i18n.gettext('Oops!')
+                  p= i18n.gettext("It looks like you have no media to show here, start dragging some or go to the ")
+                    a(href='/conf/')= i18n.gettext('Configuration')
