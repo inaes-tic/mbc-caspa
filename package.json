@@ -37,7 +37,8 @@
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
         "melted-node"   : "git://github.com/inaes-tic/melted-node",
         "node-mlt"      : "git://github.com/inaes-tic/node-mlt",
-        "resumable.js"  : "git://github.com/inaes-tic/resumable.js"
+        "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
+        "node-gir"	: "git://github.com/creationix/node-gir"
     },
     "engines": {
         "node": "0.8.4",
