@@ -91,7 +91,7 @@ var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe
 var mubsub = require ('mubsub');
 var client = mubsub (db);
 
-var schedchannel = client.channel('scheds', { size: 10000000, max: 50000 });
+var channel = client.channel('messages', { size: 10000000, max: 50000 });
 
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
@@ -103,9 +103,14 @@ var listbackend = backboneio.createBackend();
 listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
 
 var schedbackend = backboneio.createBackend();
+schedbackend.use(function (req, res, next) {
+        console.log ("schedbackend handler", req);
+        channel.publish ({method: req.method, backend: req.backend, model: req.model});
+        next();
+});
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
-schedchannel.subscribe ({}, function (sched) {
-    schedbackend.emit('updated', sched);
+channel.subscribe ({channel: 'schedbackend'}, function (sched) {
+    schedbackend.emit('updated', sched.model);
 });
 
 _([mediabackend, listbackend]).each (debug_backend);
