@@ -126,16 +126,19 @@ backboneio.listen(app.listen(app.get('port'), function(){
 var utils = require('./utils');
 
 //var mlt = new melted({reconnect: true});
-/* setTimeout(function () {
-    utils.scrape_files (process.env.HOME + "/Downloads/Gardel", function (model) {
-        db.collection('medias').insert(model, {safe:true}, function(err, result) {
-            if (err) {
-                console.error ('error','An error has occurred' + err);
-            } else {
-                mediabackend.emit('created', model);
-            }
-        });
-    });
-}, 300);
 
-*/
+if (process.env.MBC_SCRAPE) {
+    setTimeout(function () {
+        utils.scrape_files (process.env.HOME + "/Downloads/Gardel", function (model) {
+            db.collection('medias').insert(model, {safe:true}, function(err, result) {
+                if (err) {
+                    console.error ('error','An error has occurred' + err);
+                } else {
+                    mediabackend.emit('created', model);
+                }
+            });
+        });
+    }, 300);
+} else {
+    console.log ("not scrapping");
+}
