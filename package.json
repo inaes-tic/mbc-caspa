@@ -33,12 +33,12 @@
         "xmlbuilder": "0.3.x",
         "moment": "1.7.x",
         "i18n-abide"    : "git://github.com/inaes-tic/i18n-abide",
-        "fluent-ffmpeg" : "git://github.com/inaes-tic/node-fluent-ffmpeg",
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
         "melted-node"   : "git://github.com/inaes-tic/melted-node",
         "node-mlt"      : "git://github.com/inaes-tic/node-mlt",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
-        "mubsub"        : "git://github.com/inaes-tic/mubsub.git"
+        "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
+        "navcodec"	: "*"
     },
     "engines": {
         "node": "0.8.4",
