@@ -21,6 +21,19 @@ if ((typeof require !== 'undefined')) Backbone = require('backbone');
 
 App.Model = Backbone.Model.extend({
     urlRoot: 'app',
+    backend: 'appbackend',
+    initialize: function () {
+        if (!server) {
+            this.bindBackend();
+
+            this.bind('backend', function(method, model) {
+                console.log ('got from backend:', method, model);
+            });
+        }
+        console.log ('creating new App.Model');
+
+        return Backbone.Model.prototype.initialize.call (this);
+    },
     defaults: {
         title: 'MBC Playout {mlt edition}', 
         subtitle: 'A simple Playout server built with magic and love',
