@@ -48,5 +48,24 @@ App.Model = Backbone.Model.extend({
     },
 });
 
+App.Status = App.Model.extend ({
+    urlRoot: 'app',
+    backend: 'appbackend',
+    defaults: {
+        track: {
+            previous: null,
+            current:  null,
+            next:     null,
+        },
+        show: {
+            previous: null,
+            current:  null,
+            next:     null,
+        },
+        source: null,
+        on_air: false,
+    },
+}
+
 if(server) module.exports = App;
 else root.App = App;
