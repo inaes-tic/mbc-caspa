@@ -71,16 +71,16 @@ select {
     background-position:center;
 }
 #version-icon.outdated {
-	background-image:url(/css/images/icon_outdated.png);
+	background-image:url(images/icon_outdated.png);
 }
 #version-icon.update2 {
-	background-image:url(/css/images/icon_update2.png);
+	background-image:url(images/icon_update2.png);
 }
 #version-icon.update {
-	background-image:url(/css/images/icon_update.png);
+	background-image:url(images/icon_update.png);
 }
 #version-icon.uptodate {
-	background-image:url(/css/images/icon_uptodate.png);
+	background-image:url(images/icon_uptodate.png);
 }
 
 #ui-tooltip-version a {
