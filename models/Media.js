@@ -1,3 +1,24 @@
+// Save a reference to the global object (`window` in the browser, `global`
+// on the server).
+var root = this;
+
+// The top-level namespace. All public Backbone classes and modules will
+// be attached to this. Exported for both CommonJS and the browser.
+var Media, server = false;
+if (typeof exports !== 'undefined') {
+    Media = exports;
+    server = true;
+} else {
+    Media = root.Media = {};
+}
+
+// Require Underscore, Backbone & BackboneIO, if we're on the server, and it's not already present.
+var _ = root._;
+if (!_ && (typeof require !== 'undefined')) _ = require('underscore');
+
+var BackboneIO = root.BackboneIO;
+if ((typeof require !== 'undefined')) Backbone = require('backbone');
+
 var leadingZero = function (num) {
     return (num < 10) ? "0"+num : num;
 }
@@ -72,12 +93,13 @@ Media.Collection = Backbone.Collection.extend({
     url: 'media',
     backend: 'mediabackend',
     initialize: function () {
-        this.bindBackend();
+        if (!server) {
+            this.bindBackend();
 
-        this.bind('backend', function(method, model) {
-            console.log ('got from backend:', method, model);
-        });
-
+            this.bind('backend', function(method, model) {
+                console.log ('got from backend:', method, model);
+            });
+        }
         console.log ('creating new Media.Collection');
 
         Backbone.Collection.prototype.initialize.call (this);
@@ -94,6 +116,8 @@ Media.Piece = Media.Model.extend ({
             timeout: 0,
         },
         overlay: [],
+        starts: 0,
+        ends: 0,
     },
     initialize: function () {
         console.log ('creating new Media.Piece');
@@ -106,6 +130,8 @@ Media.Block = Media.Collection.extend ({
     url: 'piece',
     backend: 'blockbackend',
     initialize: function () {
+        if (!server)
+            this.bindBackend();
         console.log ('creating new Media.Block');
     },
 
@@ -164,6 +190,8 @@ Media.Universe = Media.Collection.extend ({
     model: Media.List,
     backend: 'listbackend',
     initialize: function () {
+        if (!server)
+            this.bindBackend();
         console.log ('creating new Media.Universe');
     },
 });
@@ -192,6 +220,8 @@ Media.Schedule = Media.Universe.extend ({
     model: Media.Occurence,
     backend: 'schedbackend',
     initialize: function () {
+        if (!server)
+            this.bindBackend();
         console.log ('creating new Media.Schedule');
     },
 
