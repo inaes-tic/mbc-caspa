@@ -1,0 +1,20 @@
+block nowplaying
+  - if (!type)
+    - var type = 'Show'
+  .text-row
+          strong= i18n.gettext('Previous:')
+          span#previous
+          span#prev-length
+  .now-playing-info.song
+          .time-flow
+            span.time-elapsed#time-elapsed
+            span.time-remaining#time-remaining
+          span#current= i18n.gettext('Current ' + type + ':')
+            strong.alert Nothing Scheduled
+          span.length#song-length
+  .progressbar
+          .progress-song#progress-bar(style="width:0%")
+  .text-row.next-song
+          strong= i18n.gettext('Next:')
+          span#next
+          span#next-length

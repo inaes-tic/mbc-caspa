@@ -1,0 +1,9 @@
+block timeinfo
+- if (!timezone)
+  - var timezone = 'UTC'
+
+ul
+  li= i18n.gettext('Station time')
+  li.time#time 
+  li.time-zone
+    span#time-zone= timezone

@@ -8,72 +8,9 @@ block panel
     #version-icon.uptodate
     #master-panel
       .now-playing-block
-        .text-row
-          strong Previous:
-          span#previous
-          span#prev-length
-        .now-playing-info.song
-          .time-flow
-            span.time-elapsed#time-elapsed
-            span.time-remaining#time-remaining
-          span#current Current:
-            span(style="color:red; font-weight:bold") Nothing Scheduled
-          span.length#song-length
-        .progressbar
-          .progress-song#progress-bar(style="width:0%")
-        .text-row.next-song
-          strong Next:
-          span#next
-          span#next-length
-
       .show-block
-        .text-row
-        .now-playing-info.show
-          .recording-show(style="display: none;")
-          span#playlist Current Show:
-          span#show-length.show-length
-        .progressbar
-          .progress-show-error#progress-show(style="width:0%")
-
-
-      .source-info-block
-        h3 Source Streams
-        ul
-            li
-              #master_dj_div.source-label
-                a#master_dj.source-kick-button(onclick="kickSource(this)").
-                | Master Source
-              .line-to-switch.off
-              a#master_dj.source-switch-button(href="#", onclick="setSwitchListener(this);")
-                span off
-              .line-to-on-air.off
-            li
-              #live_dj_div.source-label
-                a#live_dj.source-kick-button(onclick="kickSource(this)").
-                | Show Source
-              .line-to-switch.off
-              a#live_dj.source-switch-button(href="#", onclick="setSwitchListener(this);")
-                span off
-              .line-to-on-air.off
-            li
-              #scheduled_play_div.source-label Scheduled Play
-              .line-to-switch.off
-              a#scheduled_play.source-switch-button.active(href="#", onclick="setSwitchListener(this);")
-                span on
-              .line-to-on-air.off
-
-      .on-air-block
-        h3
-        .on-air-info.off#on-air-info ON AIR
-        a.listen-control-button(href="#")
-          span Listen
-
+      .streams-to-air-block
       .time-info-block.pull-right
-        ul
-          li Station time
-          li.time#time 05:41:29
-          li.time-zone
-            span#time-zone UTC
     #jquery_jplayer_1.jp-jplayer(style="width:0px; height:0px;")
     .personal-block.solo
       ul

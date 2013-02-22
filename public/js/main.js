@@ -35,6 +35,9 @@ Universe.bind ('create', function (arg) {
 
 var appModel = new App.Model();
 
+window.appmodel = appModel;
+window.appstatus = new App.Status();
+
 var AppRouter = Backbone.Router.extend({
 
     routes: {
@@ -59,13 +62,12 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-
         _([mediaList, Universe, Schedule]).each( function (col) {
             console.log ('fetching', col);
             col.fetch();
         });
 
-        this.headerView = new HeaderView({model: appModel});
+        this.headerView = new HeaderView({model: window.appstatus});
         $('.header').html(this.headerView.el);
     },
 

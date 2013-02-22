@@ -22,6 +22,10 @@ module.exports = function(app) {
         res.render('index', appModel.toJSON());
     });
 
+    app.get('/app/:id', function (req, res) {
+
+    });
+
     app.get('/po/:id', function (req, res) {
         var lang = req.params.id;
 
@@ -128,7 +132,10 @@ module.exports = function(app) {
                      'universe',
                      'uniitem',
                      'schedule',
-                     'emptyalert'
+                     'emptyalert',
+                     'timeinfo',
+                     'nowplaying',
+                     'sourceinfo'
                     ];
 
     var templateJs = new folio.Glossary([
