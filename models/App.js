@@ -22,6 +22,7 @@ if ((typeof require !== 'undefined')) Backbone = require('backbone');
 App.Model = Backbone.Model.extend({
     urlRoot: 'app',
     backend: 'appbackend',
+    idAttribute: '_id',
     initialize: function () {
         if (!server) {
             this.bindBackend();
@@ -35,6 +36,7 @@ App.Model = Backbone.Model.extend({
         return Backbone.Model.prototype.initialize.call (this);
     },
     defaults: {
+        _id: 1,
         title: 'MBC Playout {mlt edition}', 
         subtitle: 'A simple Playout server built with magic and love',
         state: 0,
@@ -49,10 +51,9 @@ App.Model = Backbone.Model.extend({
 });
 
 App.Status = App.Model.extend ({
-    urlRoot: 'app',
-    backend: 'appbackend',
     defaults: {
-        track: {
+        _id: 2,
+        piece: {
             previous: null,
             current:  null,
             next:     null,
@@ -64,8 +65,9 @@ App.Status = App.Model.extend ({
         },
         source: null,
         on_air: false,
+        timezone: 'UTC',
     },
-}
+});
 
 if(server) module.exports = App;
 else root.App = App;
