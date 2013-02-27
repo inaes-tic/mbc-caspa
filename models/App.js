@@ -47,6 +47,7 @@ App.Model = Backbone.Model.extend({
         error: {
             melted: [],
         },
+        timezone: 'UTC',
     },
 });
 
@@ -65,7 +66,7 @@ App.Status = App.Model.extend ({
         },
         source: null,
         on_air: false,
-        timezone: 'UTC',
+
     },
 });
 
