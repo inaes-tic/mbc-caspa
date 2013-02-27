@@ -59,7 +59,6 @@ window.SourceInfoView = Backbone.View.extend({
         el: $('.streams-to-air-block'),
         initialize: function () {
             $(this.el).html(template.sourceinfo(this.model.toJSON()));
-            console.log ('HEREDOC', $(this.el).html());
          }
 });
 
