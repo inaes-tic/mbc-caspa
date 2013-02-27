@@ -9,10 +9,10 @@ window.ScheduleView = Backbone.View.extend({
     addOne: function (event) {
         console.log ("Calendar addOne", event);
         var fce = _(event.attributes).clone();
-	$('#calendar', this.el).fullCalendar('renderEvent', fce, true);
+	this.calendar.fullCalendar('renderEvent', fce, true);
     },
     addAll: function() {
-	$('#calendar', this.el).fullCalendar('removeEvents');
+	this.calendar.fullCalendar('removeEvents');
         this.collection.each(this.addOne);
     },
     initialize: function () {
@@ -49,12 +49,62 @@ window.ScheduleView = Backbone.View.extend({
         console.log ('render calendar', $(this.el));
         var self = this;
         this.collection = this.get_collection();
+        this.opts = {"timestamp":1361784505,
+                     "timezoneOffset":"0",
+                     "timeScale":"agendaWeek",
+                     "timeInterval":"30",
+                     "weekStartDay":"0"};
+        this.calendar = $('#schedule_calendar', this.$el);
 
-        $('#calendar', this.el).fullCalendar({
-	    editable: true,
+        var mainHeight = document.documentElement.clientHeight - 200 - 50;
+
+        this.calendar.fullCalendar({
+            header: {
+                left: 'prev, next, today',
+                center: 'title',
+                right: 'agendaDay, agendaWeek, month'
+            },
+            defaultView: this.opts.timeScale,
+            slotMinutes: parseInt(this.opts.timeInterval),
+            firstDay: this.opts.weekStartDay,
+            editable: true,
             droppable: true,
-            disableResizing: true,
-            aspectRatio: 2,
+            allDaySlot: false,
+            axisFormat: 'H:mm',
+            timeFormat: {
+                agenda: 'H:mm{ - H:mm}',
+                month: 'H:mm{ - H:mm}'
+            },
+            contentHeight: mainHeight,
+            theme: true,
+            lazyFetching: false,
+            serverTimestamp: parseInt(this.opts.timestamp, 10),
+            serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
+
+            //callbacks (in full-calendar-functions.js)
+            viewDisplay: viewDisplay,
+            dayClick: dayClick,
+            eventRender: function (event, element, view) {
+                var model = self.collection.where({list: event.list})[0];
+
+                element.tooltip({
+                    trigger: 'click',
+                    placement: 'left',
+                    title: function () {
+                        console.log ("creating tooltip", model);
+                        var target = document.createElement('div');
+                        var view = new MediaListView({model: model,
+                                                      noSearch:true,
+                                                      el: target});
+                        return view.render().el;
+                    },
+                });
+
+                eventRender(event, element, view);
+            },
+            eventAfterRender: eventAfterRender,
+            eventDrop: eventDrop,
+            eventResize: eventResize,
             drop: function(date, allDay) {
                 var list  = Universe.get(this.id);
                 console.log ('drop->', self.collection.pluck('end'));
@@ -74,25 +124,6 @@ window.ScheduleView = Backbone.View.extend({
                 var item = self.collection.create (event);
                 console.log (this, list, event, item);
             },
-            eventDrop: function(event,dayDelta,minuteDelta,allDay,revertFunc) {
-                console.log ('changed', event.list, event.id);
-
-/*                if (!confirm("Are you sure about this change?")) {
-                    revertFunc();
-                }*/
-
-                console.log ('drop->', event, self.collection, self.collection.pluck('end'));
-
-                item = self.collection.where({list: event.list})[0];
-                item.update(event);
-                item.save();
-            },
-	    header: {
-		left: 'prev,next today',
-		center: 'title',
-		right: 'month,agendaWeek,agendaDay'
-	    },
-	    defaultView: 'agendaWeek',
 	    events: [
 		{
 		    title: 'WALLKINTUN SALE AL AIRE !',
@@ -100,9 +131,11 @@ window.ScheduleView = Backbone.View.extend({
 		    end:   new Date(2012, 11, 8, 6, 0),
                     allDay: false,
 		},
-	    ],
+            ]
+        });
+
+                                             /*
             eventRender: function(event, element) {
-                console.log ('----o---', element);
                 var model = self.collection.where({list: event.list})[0];
 
                 element.tooltip({
@@ -117,13 +150,8 @@ window.ScheduleView = Backbone.View.extend({
                     },
                 });
             }
-        });
-
-        setTimeout (function () {
-            $('table', this.el).addClass("table table-bordered");
-            self.addAll();
-        }, 500);
-
+            });
+                                             */
 
         _.bindAll(this,
                   'addOne',

@@ -1,25 +1,23 @@
 block sourceinfo
   .source-info-block
-    h3 Source Streams
+    h3= i18n.gettext('Source Streams')
       ul
         li
-              #master_dj_div.source-label
+              #master_dj_div.source-label= i18n.gettext('Master Src')
                 a#master_dj.source-kick-button(onclick="kickSource(this)").
-                | Master Src
               .line-to-switch.off
               a#master_dj.source-switch-button(href="#", onclick="setSwitchListener(this);")
                 span off
               .line-to-on-air.off
         li
-              #live_dj_div.source-label
+              #live_dj_div.source-label= i18n.gettext('Show Src')
                 a#live_dj.source-kick-button(onclick="kickSource(this)").
-                | Show Src
               .line-to-switch.off
               a#live_dj.source-switch-button(href="#", onclick="setSwitchListener(this);")
                 span off
               .line-to-on-air.off
         li
-              #scheduled_play_div.source-label Scheduled Play
+              #scheduled_play_div.source-label= i18n.gettext('Scheduled Play')
               .line-to-switch.off
               a#scheduled_play.source-switch-button.active(href="#", onclick="setSwitchListener(this);")
                 span on

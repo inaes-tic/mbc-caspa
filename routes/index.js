@@ -86,7 +86,9 @@ module.exports = function(app) {
                  'upload-resumable',
                  'universe',
                  'schedule',
-                 'about'];
+                 'about',
+                 'airtime/schedule/full-calendar-functions'
+                ];
 
     var viewsJs = new folio.Glossary(
         views.map (function (e) {
