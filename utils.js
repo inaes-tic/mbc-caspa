@@ -1,8 +1,8 @@
 var     _ = require('underscore')
 ,   fp    = require('functionpool')
 , ffmpeg  = require('./ffmpeg/')
-,   fs    = require ('fs');
-
+,   fs    = require ('fs')
+,   db    = require('./db').db();
 
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
@@ -126,19 +126,17 @@ exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     var spawn = require('child_process').spawn,
     md5sum    = spawn('md5sum', [file]);
 
-    db.collection('medias', function(err, collection) {
-        collection.findOne({'file': file}, function(err, item) {
-            if (!err && item) {
-                if (stat === item.stat) return (done(item));
-                else item.stat = stat;
-            } else {
-                item = {file: file, stat: stat};
-            }
+    db.collection('medias').findOne({'file': file}, function(err, item) {
+        if (!err && item) {
+            if (stat === item.stat) return (done(item));
+            else item.stat = stat;
+        } else {
+            item = {file: file, stat: stat};
+        }
 
-            md5sum.stdout.on('data', function (data) {
-                item._id = data.toString().split(' ')[0];
-                done(item);
-            });
+        md5sum.stdout.on('data', function (data) {
+            item._id = data.toString().split(' ')[0];
+            done(item);
         });
     });
 });

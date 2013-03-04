@@ -88,7 +88,7 @@ function debug_backend (backend) {
         });
 }
 
-var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
+var db = require('./db').db();
 
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
@@ -115,8 +115,8 @@ backboneio.listen(app.listen(app.get('port'), function(){
 var utils = require('./utils');
 
 //var mlt = new melted({reconnect: true});
-/* setTimeout(function () {
-    utils.scrape_files (process.env.HOME + "/Downloads/Gardel", function (model) {
+ setTimeout(function () {
+    utils.scrape_files (process.env.HOME + "/Desarrollo/malbec/mbc-playout/videos", function (model) {
         db.collection('medias').insert(model, {safe:true}, function(err, result) {
             if (err) {
                 console.error ('error','An error has occurred' + err);
@@ -127,4 +127,4 @@ var utils = require('./utils');
     });
 }, 300);
 
-*/
+
