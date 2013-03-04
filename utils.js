@@ -165,7 +165,7 @@ exports.scrape_files = function (path, callback) {
     .on('file', function (root, stat, next) {
         var file = root + '/' +  stat.name;
         next();
-        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
+        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|mov|ogm|ogg)$/i)) {
             return new Error('file not a vid');
         }
 
