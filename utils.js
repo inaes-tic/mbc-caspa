@@ -2,10 +2,11 @@ var     _ = require('underscore')
 ,   fp    = require('functionpool')
 , ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs')
+,  path   = require('path')
 ,   db    = require('./db').db();
 
-var _exists     = fs.exists     || require('path').exists;
-var _existsSync = fs.existsSync || require('path').existsSync;
+var _exists     = fs.exists     || path.exists;
+var _existsSync = fs.existsSync || path.existsSync;
 
 
 exports.openDB = function (callback, populateCallback) {
@@ -90,14 +91,15 @@ var populateDB = function() {
 }
 
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
-    var dest = './public/sc/' + media._id + '.jpg';
+    var dest = path.join(__dirname + '/public/sc/') + media._id + '.jpg';
     console.log ('starting sc', media.file);
-/*
-    if (_existsSync('./public/sc/' + media._id)) {
-        console.log ('skipping screenshot of: ' + md5 + '(file already there).');
+
+    if (_existsSync(dest)) {
+        console.log ('skipping screenshot of: ' + media._id + ' (file already there).');
+        callback(media); //if screenshot's file is on directory and not on mongoDB 
         return done(media);
     }
-*/
+
     var f = new ffmpeg();
     f.run (media.file, dest, {
             size: '150x100',
