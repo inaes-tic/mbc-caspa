@@ -3,7 +3,8 @@ var express = require('express'),
     exec    = require('child_process').exec,
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
- backboneio = require('backbone.io');
+ backboneio = require('backbone.io'),
+    conf    = require('config');
 
 
 var dirs = {
@@ -115,16 +116,17 @@ backboneio.listen(app.listen(app.get('port'), function(){
 var utils = require('./utils');
 
 //var mlt = new melted({reconnect: true});
- setTimeout(function () {
-    utils.scrape_files (process.env.HOME + "/Desarrollo/malbec/mbc-playout/videos", function (model) {
-        db.collection('medias').insert(model, {safe:true}, function(err, result) {
-            if (err) {
-                console.error ('error','An error has occurred' + err);
-            } else {
-                mediabackend.emit('created', model);
-            }
+
+if (app.settings.env == "development") {
+    setTimeout(function () {
+        utils.scrape_files( path.join(__dirname, conf.Dirs.scrapeDir), function (model) {
+            db.collection('medias').insert(model, {safe:true}, function(err, result) {
+                if (err) {
+                    console.error ('error','An error has occurred' + err);
+                } else {
+                    mediabackend.emit('created', model);
+                }
+            });
         });
-    });
-}, 300);
-
-
+    }, 300);
+}
