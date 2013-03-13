@@ -1,6 +1,6 @@
 var     _ = require('underscore')
 ,   fp    = require('functionpool')
-,   navc  = require('navcodec')
+, ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs')
 ,   conf  = require('config');
 
@@ -102,15 +102,29 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
         return done(media);
     }
 */
-    navc.open (media.file, function (err, avmedia) {
-        if (! avmedia) {
-            return done(err);
+    var f = new ffmpeg();
+    f.run (media.file, dest, {
+            size: '150x100',
+            onCodecData: function(metadata) {
+                console.log ('here');
+                if (!callback)
+                    return;
+
+                console.log(metadata);
+                metadata._id  = media._id;
+                metadata.file = media.file;
+                metadata.stat = media.stat;
+                callback (metadata);
+            }
+    }, function(retcode, fds) {
+        console.log ('here0 ');
+        if (! _existsSync (dest) || retcode) {
+            var error = new Error('File not created' + fds.err);
+            console.log ('ERROR', error);
+            return done (error);
         }
 
-        avmedia.thumbnail ([{dest:5}], {width:150, height:100});
-
-        media.avmedia = avmedia;
-        console.log('sc ok: ', media._id, dest);
+        console.log('sc ok: ' + media._id);
         return done(media);
     });
 });
@@ -164,10 +178,8 @@ exports.scrape_files = function (path, callback) {
         exports.parse_pool.task(file, stat, function (res, err) {
             if (err)
                 return (console.error('error:', err));
-            console.log ('parsed: ' + stat.name);
-            exports.sc_pool.task(res, callback, function (err, res) {
-                return callback(err, res);
-            });
+            console.log ('parsed: ' + stat.name, res);
+            exports.sc_pool.task(res, callback, function (err, res) {return res});
         });
 
     })
