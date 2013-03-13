@@ -1,12 +1,16 @@
 var     _ = require('underscore')
 ,   fp    = require('functionpool')
 , ffmpeg  = require('./ffmpeg/')
-,   fs    = require ('fs');
+,   fs    = require ('fs')
+,   conf  = require('config');
 
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
 
-var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
+// path.sep is only available on node >= 0.8
+var pathsep = require('path').sep || (process.platform === 'win32') ? '\\' : '/';
+
+var db = require('./db').db();
 
 exports.openDB = function (callback, populateCallback) {
     db.open(function(err, db) {
@@ -36,8 +40,8 @@ exports.openDB = function (callback, populateCallback) {
 
 exports.merge = function (original_filename, callback) {
     var i = 1;
-    var path = require ('path');
-    var source_base = path.join (__dirname, '/public/uploads/incoming', '/resumable-' + original_filename + '.');
+    var path = require('path');
+    var source_base = path.join (conf.Dirs.uploads, pathsep + 'resumable-' + original_filename + '.');
 
     dest = path.join (__dirname, '/public/uploads/', original_filename);
     if (_existsSync (dest))
@@ -90,7 +94,7 @@ var populateDB = function() {
 }
 
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
-    var dest = './public/sc/' + media._id + '.jpg';
+    var dest = conf.Dirs.screenshots + pathsep + media._id + '.jpg';
     console.log ('starting sc', media.file);
 /*
     if (_existsSync('./public/sc/' + media._id)) {
@@ -165,9 +169,9 @@ exports.scrape_files = function (path, callback) {
     //This listens for files found
     walk.walk(observe, { followLinks: false })
     .on('file', function (root, stat, next) {
-        var file = root + '/' +  stat.name;
+        var file = root + pathsep +  stat.name;
         next();
-        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|ogm|ogg)$/i)) {
+        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mkv|mov|ogm|ogg)$/i)) {
             return new Error('file not a vid');
         }
 
@@ -193,7 +197,7 @@ exports.check_media = function (media, cb, arg) {
             return;
         if (cb)
             cb(arg)
-        _exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
+        _exists (conf.Dirs.screenshots + pathsep + media._id + '.jpg', function (e) {
             if (!e)
                 exports.sc_pool.task (media, null, function (res, err) {
                     if (err) {
