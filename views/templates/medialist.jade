@@ -36,11 +36,10 @@ block content
                 th= i18n.gettext('Media info')
                 th= i18n.gettext('Status')
                 th= i18n.gettext('Availability')
-            tbody.tbody#media-view(data-bind='foreach: collection',class='tbody' + connectable?' connected-sortable':'').
-                <td>
-                     <a class="plain" data-bind="attr:{href: '#media/'+_id().split('-')[0]}">
-                         <img width="150" height="100" data-bind="attr:{ src: _id() ?  'sc/'+_id().split('-')[0]+'.jpg' : '/pics/generic.jpg' }" /></a>
-                </td>
-                <td>
-                     <h5 data-bind="text: stat().name ? stat().name : file"> </h5>
-                </td>
+            tbody.tbody#media-view(data-bind='foreach: collection',class='tbody' + connectable?' connected-sortable':'')
+              tr
+                td
+                  a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
+                    img(width="150",height="100",data-bind="attr:{ src: _id() ?  'sc/'+_id().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
+                td
+                    h5(data-bind="text: stat().name ? stat().name : file")
