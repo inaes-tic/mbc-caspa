@@ -32,6 +32,20 @@ window.MediaListItemView = Backbone.View.extend({
 
 });
 
+window.MediaListView2 = function(options){
+    var model = options['model'];
+    var collection = model.get('collection');
+    var el = $('#content');
+
+//XXX: there has to be a better way to pre render this
+    el.html(template.medialist());
+    console.log('ML2');
+
+    view_model = kb.viewModel(model);
+    ko.applyBindings(view_model, el[0]);
+
+}
+
 window.MediaListView = Backbone.View.extend({
     el: $('#content'),
     defaults: {
