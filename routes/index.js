@@ -46,6 +46,8 @@ module.exports = function(app) {
      * backbone
      * backbone.iosync
      * backbone.iobind
+     * knockout-client
+     * knockback
      */
 
     var lib_dir = path.join(__dirname, '..', 'vendor')
@@ -66,6 +68,8 @@ module.exports = function(app) {
         path.join(lib_dir, 'sprintf/sprintf.js'),
         path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
         path.join(lib_dir, 'airtime/common.js')
+        require.resolve('knockout-client/knockout.js'),
+        require.resolve('knockback/knockback-core.js'),
     ], {minify:app.get('minify')});
 
     // serve using express
