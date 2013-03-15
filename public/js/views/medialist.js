@@ -41,6 +41,14 @@ window.MediaListView2 = function(options){
     el.html(template.medialist());
     console.log('ML2');
 
+//XXX We need to change this to KO
+    new SearchView({
+            el: $('#media-search', el),
+            collection: collection,
+            field  : 'file',
+            target : $('#table', el)
+        });
+
     view_model = kb.viewModel(model);
     ko.applyBindings(view_model, el[0]);
 
