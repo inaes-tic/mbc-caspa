@@ -46,6 +46,8 @@ module.exports = function(app) {
      * backbone
      * backbone.iosync
      * backbone.iobind
+     * knockout-client
+     * knockback
      */
 
     var lib_dir = path.join(__dirname, '..', 'vendor')
@@ -63,6 +65,8 @@ module.exports = function(app) {
         path.join(lib_dir, 'bootstrap.min.js'),
         path.join(lib_dir, 'andika.js'),
         path.join(lib_dir, 'arvo.js'),
+        require.resolve('knockout-client/knockout.js'),
+        require.resolve('knockback/knockback-core.js'),
     ], {minify:app.get('minify')});
 
     // serve using express
