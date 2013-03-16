@@ -70,6 +70,18 @@ module.exports = function(app) {
     app.get('/js/vendor.js', folio.serve(vendorJs));
 
     /**
+     * Common extra libraries for views
+     */
+    var libraries = ['sprintf/sprintf',
+                     'common/common'];
+    var libsJs = new folio.Glossary(
+        libraries.map(function(e) {
+            return path.join(__dirname, '..', 'public/js/libs/', e + '.js');
+        }),
+        {minify: app.get('minify')});
+    app.get('/js/libs.js', folio.serve(libsJs));
+
+    /**
      * Views Javascript Package
      */
 
