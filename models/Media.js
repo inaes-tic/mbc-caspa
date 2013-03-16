@@ -84,6 +84,7 @@ Media.Model = Backbone.Model.extend({
         audio: "None",
         video: "None",
         template: 'mediaview',
+        notes: "",
     }
 });
 
