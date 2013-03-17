@@ -111,6 +111,8 @@ window.ScheduleView = Backbone.View.extend({
                                 .fullCalendar(opt)
                                 .fullCalendar( 'gotoDate', date );
 
+                            self.addAll();
+
                             //save slotMin value to db
                             var url = '/Schedule/set-time-interval/format/json';
                             $.post(url, {timeInterval: slotMin});
