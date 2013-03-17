@@ -64,25 +64,13 @@ module.exports = function(app) {
         path.join(lib_dir, 'andika.js'),
         path.join(lib_dir, 'arvo.js'),
         path.join(lib_dir, 'sprintf/sprintf.js'),
-        path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js')
+        path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
+        path.join(lib_dir, 'airtime/common.js')
     ], {minify:app.get('minify')});
 
     // serve using express
 
     app.get('/js/vendor.js', folio.serve(vendorJs));
-
-    /**
-     * Common extra libraries for views
-     */
-    var libraries = [
-        'common/common'
-        ];
-    var libsJs = new folio.Glossary(
-        libraries.map(function(e) {
-            return path.join(__dirname, '..', 'public/js/libs/', e + '.js');
-        }),
-        {minify: app.get('minify')});
-    app.get('/js/libs.js', folio.serve(libsJs));
 
     /**
      * Views Javascript Package
