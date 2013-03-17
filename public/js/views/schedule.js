@@ -113,9 +113,12 @@ window.ScheduleView = Backbone.View.extend({
 
                             self.addAll();
 
+                            /** TODO: save view config 
+                             *
                             //save slotMin value to db
                             var url = '/Schedule/set-time-interval/format/json';
                             $.post(url, {timeInterval: slotMin});
+                            */
                         });
 
                     var topLeft = $(view.element).find("table.fc-agenda-days > thead th:first");
