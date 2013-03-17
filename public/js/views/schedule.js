@@ -9,10 +9,10 @@ window.ScheduleView = Backbone.View.extend({
     addOne: function (event) {
         console.log ("Calendar addOne", event);
         var fce = _(event.attributes).clone();
-	this.calendar.fullCalendar('renderEvent', fce, true);
+        this.calendar.fullCalendar('renderEvent', fce, true);
     },
     addAll: function() {
-	this.calendar.fullCalendar('removeEvents');
+        this.calendar.fullCalendar('removeEvents');
         this.collection.each(this.addOne);
     },
     initialize: function () {
@@ -82,7 +82,71 @@ window.ScheduleView = Backbone.View.extend({
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
             //callbacks (in full-calendar-functions.js)
-            viewDisplay: viewDisplay,
+            viewDisplay: function ( view ) {
+                view_name = view.name;
+
+                if(view.name === 'agendaDay' || view.name === 'agendaWeek') {
+
+                    var calendarEl = this;
+
+                    var select = $('<select class="schedule_change_slots input_select"/>')
+                        .append('<option value="1">1m</option>')
+                        .append('<option value="5">5m</option>')
+                        .append('<option value="10">10m</option>')
+                        .append('<option value="15">15m</option>')
+                        .append('<option value="30">30m</option>')
+                        .append('<option value="60">60m</option>')
+                        .change(function(){
+                            var slotMin = $(this).val();
+                            var opt = view.calendar.options;
+                            var date = $(calendarEl).fullCalendar('getDate');
+
+                            opt.slotMinutes = parseInt(slotMin);
+                            opt.events = getFullCalendarEvents;
+                            opt.defaultView = view.name;
+
+                            //re-initialize calendar with new slotmin options
+                            $(calendarEl)
+                                .fullCalendar('destroy')
+                                .fullCalendar(opt)
+                                .fullCalendar( 'gotoDate', date );
+
+                            self.addAll();
+
+                            /** TODO: save view config 
+                             *
+                            //save slotMin value to db
+                            var url = '/Schedule/set-time-interval/format/json';
+                            $.post(url, {timeInterval: slotMin});
+                            */
+                        });
+
+                    var topLeft = $(view.element).find("table.fc-agenda-days > thead th:first");
+
+                    select.width(topLeft.width())
+                        .height(topLeft.height());
+
+                    topLeft.empty()
+                        .append(select);
+
+                    var slotMin = view.calendar.options.slotMinutes;
+                    $('.schedule_change_slots option[value="'+slotMin+'"]').attr('selected', 'selected');
+                }
+
+                if(($("#add-show-form").length == 1) && ($("#add-show-form").css('display')=='none') && ($('.fc-header-left > span').length == 5)) {
+
+                    //userType is defined in bootstrap.php, and is derived from the currently logged in user.
+                    if(userType == "A" || userType == "P"){
+                        makeAddShowButton();
+                    }
+                }
+
+                /* FIXME
+                //save view name to db
+                var url = '/Schedule/set-time-scale/format/json';
+                $.post(url, {timeScale: view.name});
+            */
+            },
             dayClick: dayClick,
             eventRender: function (event, element, view) {
                 var model = self.collection.where({list: event.list})[0];
@@ -103,7 +167,12 @@ window.ScheduleView = Backbone.View.extend({
                 eventRender(event, element, view);
             },
             eventAfterRender: eventAfterRender,
-            eventDrop: eventDrop,
+            eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
+                var start = moment(event.start);
+                var end = moment(event.end);
+                self.collection.find(function(e){ return e.get("_id") == event._id }).set(
+                    {start: start.unix(), end: end.unix()}).save({start: start.unix(), end: end.unix()});
+            },
             eventResize: eventResize,
             drop: function(date, allDay) {
                 var list  = Universe.get(this.id);
