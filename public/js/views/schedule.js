@@ -103,7 +103,12 @@ window.ScheduleView = Backbone.View.extend({
                 eventRender(event, element, view);
             },
             eventAfterRender: eventAfterRender,
-            eventDrop: eventDrop,
+            eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
+                var start = moment(event.start);
+                var end = moment(event.end);
+                self.collection.find(function(e){ return e.get("_id") == event._id }).set(
+                    {start: start.unix(), end: end.unix()}).save({start: start.unix(), end: end.unix()});
+            },
             eventResize: eventResize,
             drop: function(date, allDay) {
                 var list  = Universe.get(this.id);
