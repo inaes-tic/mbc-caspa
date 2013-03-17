@@ -82,7 +82,66 @@ window.ScheduleView = Backbone.View.extend({
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
             //callbacks (in full-calendar-functions.js)
-            viewDisplay: viewDisplay,
+            viewDisplay: function ( view ) {
+                view_name = view.name;
+
+                if(view.name === 'agendaDay' || view.name === 'agendaWeek') {
+
+                    var calendarEl = this;
+
+                    var select = $('<select class="schedule_change_slots input_select"/>')
+                        .append('<option value="1">1m</option>')
+                        .append('<option value="5">5m</option>')
+                        .append('<option value="10">10m</option>')
+                        .append('<option value="15">15m</option>')
+                        .append('<option value="30">30m</option>')
+                        .append('<option value="60">60m</option>')
+                        .change(function(){
+                            var slotMin = $(this).val();
+                            var opt = view.calendar.options;
+                            var date = $(calendarEl).fullCalendar('getDate');
+
+                            opt.slotMinutes = parseInt(slotMin);
+                            opt.events = getFullCalendarEvents;
+                            opt.defaultView = view.name;
+
+                            //re-initialize calendar with new slotmin options
+                            $(calendarEl)
+                                .fullCalendar('destroy')
+                                .fullCalendar(opt)
+                                .fullCalendar( 'gotoDate', date );
+
+                            //save slotMin value to db
+                            var url = '/Schedule/set-time-interval/format/json';
+                            $.post(url, {timeInterval: slotMin});
+                        });
+
+                    var topLeft = $(view.element).find("table.fc-agenda-days > thead th:first");
+
+                    select.width(topLeft.width())
+                        .height(topLeft.height());
+
+                    topLeft.empty()
+                        .append(select);
+
+                    var slotMin = view.calendar.options.slotMinutes;
+                    $('.schedule_change_slots option[value="'+slotMin+'"]').attr('selected', 'selected');
+                }
+
+                if(($("#add-show-form").length == 1) && ($("#add-show-form").css('display')=='none') && ($('.fc-header-left > span').length == 5)) {
+
+                    //userType is defined in bootstrap.php, and is derived from the currently logged in user.
+                    if(userType == "A" || userType == "P"){
+                        makeAddShowButton();
+                    }
+                }
+
+                /* FIXME
+                //save view name to db
+                var url = '/Schedule/set-time-scale/format/json';
+                $.post(url, {timeScale: view.name});
+            */
+            },
             dayClick: dayClick,
             eventRender: function (event, element, view) {
                 var model = self.collection.where({list: event.list})[0];
