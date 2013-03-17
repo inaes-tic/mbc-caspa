@@ -196,16 +196,16 @@ Media.Universe = Media.Collection.extend ({
     },
 });
 
-Media.Occurence = Media.List.extend ({
+Media.Occurrence = Media.List.extend ({
     urlRoot: 'sched',
     defaults: {
         event: null,
     },
     initialize: function () {
-        console.log ('creating new Media.Occurence', this);
+        console.log ('creating new Media.Occurrence', this);
     },
     newCol: function (models, opts) {
-        return new Media.Occurence (models, opts);
+        return new Media.Occurrence (models, opts);
     },
     update: function (attrs) {
         for (a in this.attributes) {
@@ -217,7 +217,7 @@ Media.Occurence = Media.List.extend ({
 
 Media.Schedule = Media.Universe.extend ({
     url: 'sched',
-    model: Media.Occurence,
+    model: Media.Occurrence,
     backend: 'schedbackend',
     initialize: function () {
         if (!server)
