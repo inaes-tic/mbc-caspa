@@ -9,10 +9,10 @@ window.ScheduleView = Backbone.View.extend({
     addOne: function (event) {
         console.log ("Calendar addOne", event);
         var fce = _(event.attributes).clone();
-	this.calendar.fullCalendar('renderEvent', fce, true);
+        this.calendar.fullCalendar('renderEvent', fce, true);
     },
     addAll: function() {
-	this.calendar.fullCalendar('removeEvents');
+        this.calendar.fullCalendar('removeEvents');
         this.collection.each(this.addOne);
     },
     initialize: function () {
