@@ -305,24 +305,6 @@ function eventAfterRender( event, element, view ) {
     });
 }
 
-function eventDrop(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
-    var url;
-
-    url = '/Schedule/move-show/format/json';
-
-    $.post(url,
-        {day: dayDelta, min: minuteDelta, showInstanceId: event.id},
-        function(json){
-            if(json.show_error == true){
-                alertShowErrorAndReload();
-            }
-            if(json.error) {
-                alert(json.error);
-                revertFunc();
-            }
-        });
-}
-
 function eventResize( event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view ) {
     var url;
 
