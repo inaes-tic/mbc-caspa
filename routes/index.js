@@ -63,6 +63,9 @@ module.exports = function(app) {
         path.join(lib_dir, 'bootstrap.min.js'),
         path.join(lib_dir, 'andika.js'),
         path.join(lib_dir, 'arvo.js'),
+        path.join(lib_dir, 'sprintf/sprintf.js'),
+        path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
+        path.join(lib_dir, 'airtime/common.js')
     ], {minify:app.get('minify')});
 
     // serve using express
