@@ -63,6 +63,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'bootstrap.min.js'),
         path.join(lib_dir, 'andika.js'),
         path.join(lib_dir, 'arvo.js'),
+        path.join(lib_dir, 'sprintf/sprintf.js')
     ], {minify:app.get('minify')});
 
     // serve using express
@@ -72,8 +73,9 @@ module.exports = function(app) {
     /**
      * Common extra libraries for views
      */
-    var libraries = ['sprintf/sprintf',
-                     'common/common'];
+    var libraries = [
+        'common/common'
+        ];
     var libsJs = new folio.Glossary(
         libraries.map(function(e) {
             return path.join(__dirname, '..', 'public/js/libs/', e + '.js');
