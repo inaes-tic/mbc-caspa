@@ -32,6 +32,14 @@ window.MediaListItemView = Backbone.View.extend({
 
 });
 
+window.SearchView2 = function(options) {
+    var el = options['el'];
+    //var view_model = options['view_model'];
+    el.html(template.mediasearch());
+    console.log('MS2');
+    return;
+}
+
 window.MediaListView2 = function(options){
     var model = options['model'];
     var collection = model.get('collection');
@@ -41,17 +49,25 @@ window.MediaListView2 = function(options){
     el.html(template.medialist());
     console.log('ML2');
 
-//XXX We need to change this to KO
-    new SearchView({
-            el: $('#media-search', el),
-            collection: collection,
-            field  : 'file',
-            target : $('#table', el)
+//XXX: We need to put this on SearchView2
+    var MediaListViewModel = function(collection) {
+        var _this = this;
+        this.filter = ko.observable('');
+        this.collection =  kb.collectionObservable( collection, {
+            view_model: kb.viewModel,
+            sort_attribute: 'file',
+            filters: function(model) {
+                var filter;
+                filter = _this.filter();
+                if (!filter) return false;
+                return model.get('file').search(filter) < 0;
+            },
         });
+    };
 
-    view_model = kb.viewModel(model);
+    new SearchView2({el: $('#media-search',el) });
+    var view_model = new MediaListViewModel(collection);
     ko.applyBindings(view_model, el[0]);
-
 }
 
 window.MediaListView = Backbone.View.extend({
