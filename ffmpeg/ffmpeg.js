@@ -11,13 +11,11 @@ function FFMPEG (opts) {
 
         this.proc = _spawnProcess (['-i',
                                          orig,
-                                         '-sameq',
                                          '-r', 1,
                                          '-ss', 5,
                                          '-vcodec', 'mjpeg',
                                          '-vframes', '1',
                                          '-an',
-                                         '-f', 'rawvideo',
 
                                          '-s', opts.size ||' 150x100',
                                      '-y', dest])

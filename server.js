@@ -12,7 +12,8 @@ var dirs = {
     styles : path.join(__dirname, 'styles'),
     models : path.join(__dirname, 'models'),
     vendor : path.join(__dirname, 'vendor'),
-    uploads: path.join(__dirname, 'public/uploads/incoming')
+    uploads: path.join(__dirname, 'public/uploads/incoming'),
+    thumbs : path.join(__dirname, 'public/sc')
 };
 
 /* make sure at runtime that we atempt to get the dirs we need */
