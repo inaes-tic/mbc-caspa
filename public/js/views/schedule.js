@@ -6,6 +6,10 @@ window.ScheduleView = Backbone.View.extend({
     get_collection: function () {
         return this.collection;
     },
+    make_event: function(occurrence) {
+        // make a Media.Occurrence into a fullCalendar event
+        return _(occurrence.attributes).clone();
+    },
     addOne: function (event) {
         console.log ("Calendar addOne", event);
         var fce = _(event.attributes).clone();
