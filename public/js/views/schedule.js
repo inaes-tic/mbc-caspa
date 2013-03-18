@@ -10,10 +10,9 @@ window.ScheduleView = Backbone.View.extend({
         // make a Media.Occurrence into a fullCalendar event
         return _(occurrence.attributes).clone();
     },
-    addOne: function (event) {
-        console.log ("Calendar addOne", event);
-        var fce = _(event.attributes).clone();
-        this.calendar.fullCalendar('renderEvent', fce, true);
+    addOne: function (occurrence) {
+        console.log ("Calendar addOne", occurrence);
+        this.calendar.fullCalendar('renderEvent', this.make_event(occurrence), true);
     },
     addAll: function() {
         this.calendar.fullCalendar('removeEvents');
