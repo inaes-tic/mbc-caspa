@@ -1,12 +1,13 @@
 var     _ = require('underscore')
 ,   fp    = require('functionpool')
 , ffmpeg  = require('./ffmpeg/')
-,   fs    = require ('fs');
+,   fs    = require ('fs')
+, conf    = require('config');
 
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
 
-var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
+var db = require('./db').db();
 
 exports.openDB = function (callback, populateCallback) {
     db.open(function(err, db) {
@@ -37,7 +38,7 @@ exports.openDB = function (callback, populateCallback) {
 exports.merge = function (original_filename, callback) {
     var i = 1;
     var path = require ('path');
-    var source_base = path.join (__dirname, '/public/uploads/incoming', '/resumable-' + original_filename + '.');
+    var source_base = path.join (conf.Dirs.uploads, '/resumable-' + original_filename + '.'); 
 
     dest = path.join (__dirname, '/public/uploads/', original_filename);
     if (_existsSync (dest))
@@ -90,7 +91,7 @@ var populateDB = function() {
 }
 
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
-    var dest = './public/sc/' + media._id + '.jpg';
+    var dest = conf.Dirs.screenshots + '/' + media._id + '.jpg';   
     console.log ('starting sc', media.file);
 /*
     if (_existsSync('./public/sc/' + media._id)) {
@@ -193,7 +194,7 @@ exports.check_media = function (media, cb, arg) {
             return;
         if (cb)
             cb(arg)
-        _exists (__dirname + '/../public/sc/' + media._id + '.jpg', function (e) {
+        _exists (conf.Dirs.screenshots + '/' + media._id + '.jpg', function (e) {  
             if (!e)
                 exports.sc_pool.task (media, null, function (res, err) {
                     if (err) {
