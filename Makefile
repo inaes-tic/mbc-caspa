@@ -6,7 +6,7 @@ locale/es/LC_MESSAGES/messages.mo:
 	./bin/extract_po.sh
 	./bin/update_languages.sh
 
-submodules: sparkmd5 bootstrap
+submodules: sparkmd5 bootstrap knockout-sortable
 	git submodule update
 
 sparkmd5: vendor/sparkmd5/spark-md5.js
