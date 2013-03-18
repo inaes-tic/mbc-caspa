@@ -3,23 +3,14 @@ var express = require('express'),
     exec    = require('child_process').exec,
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
- backboneio = require('backbone.io');
-
-
-var dirs = {
-    pub    : path.join(__dirname, 'public'),
-    views  : path.join(__dirname, 'views') ,
-    styles : path.join(__dirname, 'styles'),
-    models : path.join(__dirname, 'models'),
-    vendor : path.join(__dirname, 'vendor'),
-    uploads: path.join(__dirname, 'public/uploads/incoming'),
-    thumbs : path.join(__dirname, 'public/sc')
-};
+ backboneio = require('backbone.io'),
+    conf    = require('config')
+ ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
-for (d in dirs) {
+for (d in conf.Dirs) {
     /* HACK: but I'm not going to waist time writing mkdir -p */
-    exec ('mkdir -p ' + dirs[d], function (error, stdout, stderr) {
+    exec ('mkdir -p ' + conf.Dirs[d], function (error, stdout, stderr) {
         if (error !== null) {
             console.log('exec error: ' + error);
         }
@@ -36,17 +27,17 @@ app.configure(function () {
         locale_directory: 'locale'
     }));
     app.set('port', process.env.PORT || 3000);
-    app.set('views', dirs.views);
+    app.set('views', conf.Dirs.views);
     app.set('view engine', 'jade');
     app.use(express.logger('dev'));
 /*    app.use('/uploads', upload({
-        tmpDir:    dirs.uploads + '/incoming',
-        uploadDir: dirs.upolads,
+        tmpDir:    conf.Dirs.uploads + '/incoming',
+        uploadDir: conf.Dirs.upolads,
         uploadUrl: '/uploads/',
         safeFileTypes: /\.(webm|mkv|mov|mp4|avi|ogg)$/i,
     }));*/
     app.use(express.bodyParser({
-            uploadDir: dirs.uploads,
+            uploadDir: conf.Dirs.uploads,
             maxFieldsSize: 10 * 1024 * 1024
     })); /* */
     app.use(express.methodOverride());
@@ -54,13 +45,13 @@ app.configure(function () {
     app.use(express.session());
     app.use(app.router);
     app.use(require('less-middleware')({ 
-        src:  dirs.styles,
-        dest: dirs.pub,
+        src:  conf.Dirs.styles,
+        dest: conf.Dirs.pub,
         compress: true}
     ));
-    app.use(express.static(dirs.pub));
-    app.use('/models', express.static(dirs.models));
-    app.use('/lib',    express.static(dirs.vendor));
+    app.use(express.static(conf.Dirs.pub));
+    app.use('/models', express.static(conf.Dirs.models));
+    app.use('/lib',    express.static(conf.Dirs.vendor));
 });
 
 app.configure('development', function(){
@@ -88,7 +79,7 @@ function debug_backend (backend) {
         });
 }
 
-var db = require('mongoskin').db('localhost:27017/mediadb?auto_reconnect', {safe:true});
+var db = require('./db').db();
 var mubsub = require ('mubsub');
 var client = mubsub (db);
 
@@ -130,7 +121,7 @@ var utils = require('./utils');
 
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
-        utils.scrape_files (process.env.HOME + "/Downloads/Gardel", function (model) {
+        utils.scrape_files (conf.Dirs.scrape, function (model) {
             db.collection('medias').insert(model, {safe:true}, function(err, result) {
                 if (err) {
                     console.error ('error','An error has occurred' + err);
