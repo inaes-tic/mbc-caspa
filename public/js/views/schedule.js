@@ -81,6 +81,8 @@ window.ScheduleView = Backbone.View.extend({
             serverTimestamp: parseInt(this.opts.timestamp, 10),
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
+            events: getFullCalendarEvents,
+
             //callbacks (in full-calendar-functions.js)
             viewDisplay: function ( view ) {
                 view_name = view.name;
@@ -102,7 +104,6 @@ window.ScheduleView = Backbone.View.extend({
                             var date = $(calendarEl).fullCalendar('getDate');
 
                             opt.slotMinutes = parseInt(slotMin);
-                            opt.events = getFullCalendarEvents;
                             opt.defaultView = view.name;
 
                             //re-initialize calendar with new slotmin options
@@ -170,8 +171,8 @@ window.ScheduleView = Backbone.View.extend({
             eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
                 var start = moment(event.start);
                 var end = moment(event.end);
-                self.collection.find(function(e){ return e.get("_id") == event._id }).set(
-                    {start: start.unix(), end: end.unix()}).save({start: start.unix(), end: end.unix()});
+                self.collection.find(function(e){ return e.get("_id") == event._id }).save(
+                    {start: start.unix(), end: end.unix()});
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
@@ -192,15 +193,7 @@ window.ScheduleView = Backbone.View.extend({
                 console.log ('to save', event);
                 var item = self.collection.create (event);
                 console.log (this, list, event, item);
-            },
-	    events: [
-		{
-		    title: 'WALLKINTUN SALE AL AIRE !',
-		    start: new Date(2012, 11, 7, 22, 0),
-		    end:   new Date(2012, 11, 8, 6, 0),
-                    allDay: false,
-		},
-            ]
+            }
         });
 
                                              /*
