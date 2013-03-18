@@ -13,7 +13,9 @@ sparkmd5: vendor/sparkmd5/spark-md5.js
 
 bootstrap: vendor/bootstrap/js/bootstrap-typeahead.js
 
-vendor/bootstrap/js/bootstrap-typeahead.js vendor/sparkmd5/spark-md5.js:
+knockout-sortable: vendor/knockout-sortable/build/knockout-sortable.js
+
+vendor/bootstrap/js/bootstrap-typeahead.js vendor/sparkmd5/spark-md5.js vendor/knockout-sortable/build/knockout-sortable.js:
 	git submodule update --init
 
 node_modules:
