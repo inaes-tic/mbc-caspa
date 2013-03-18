@@ -44,6 +44,8 @@ window.MediaListView2 = function(options){
     var model = options['model'];
     var collection = model.get('collection');
     var el = $('#content');
+    if(options['el'])
+        el = options['el'];
 
 //XXX: there has to be a better way to pre render this
     el.html(template.medialist());

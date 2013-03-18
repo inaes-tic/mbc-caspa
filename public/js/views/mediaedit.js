@@ -16,9 +16,9 @@ window.EditView = Backbone.View.extend({
         new UniverseListView({
             collection: this.collection,
             el: $("#universe")});
-        new MediaListView({
+        new MediaListView2({
             model: mediaDB,
-            draggable: true,
+//            draggable: true,
             el: $("#left-pane")});
         if (this.editList)
             this.showPlaylist(this.editList);
