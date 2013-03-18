@@ -84,7 +84,9 @@ window.ScheduleView = Backbone.View.extend({
             serverTimestamp: parseInt(this.opts.timestamp, 10),
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
-            events: getFullCalendarEvents,
+            events: function (start, end, callback) {
+                callback(self.collection.map(self.make_event));
+            },
 
             //callbacks (in full-calendar-functions.js)
             viewDisplay: function ( view ) {
