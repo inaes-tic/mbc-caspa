@@ -13,6 +13,14 @@ window.ScheduleView = Backbone.View.extend({
     all_events: function() {
         return this.get_collection().map(this.make_event);
     },
+    historical_events: [
+        {
+            title: 'WALLKINTUN SALE AL AIRE !',
+            start: new Date(2012, 11, 7, 22, 0),
+            end:   new Date(2012, 11, 8, 6, 0),
+            allDay: false,
+        },
+    ],
     addOne: function (occurrence) {
         console.log ("Calendar addOne", occurrence);
         this.calendar.fullCalendar('addEventSource', [this.make_event(occurrence)]);
@@ -20,6 +28,7 @@ window.ScheduleView = Backbone.View.extend({
     addAll: function() {
         this.calendar.fullCalendar('removeEvents');
         this.calendar.fullCalendar('addEventSource', this.all_events());
+        this.calendar.fullCalendar('addEventSource', this.historical_events);
     },
     initialize: function () {
         var self = this;
