@@ -19,7 +19,7 @@ window.ScheduleView = Backbone.View.extend({
     },
     addAll: function() {
         this.calendar.fullCalendar('removeEvents');
-        this.collection.each(this.addOne);
+        this.calendar.fullCalendar('addEventSource', this.all_events());
     },
     initialize: function () {
         var self = this;
