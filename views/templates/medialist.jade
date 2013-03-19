@@ -6,6 +6,7 @@ block content
 - if (!fixed)
   - var fixed = false
 
+
 .well#media-list
   - if (!fixed)
      button.close.kill-media-list(type='button', data-dismiss='alert') ×
@@ -37,7 +38,7 @@ block content
                 th= i18n.gettext('Media info')
                 th= i18n.gettext('Status')
                 th= i18n.gettext('Availability')
-            tbody.tbody#media-view(data-bind='foreach: collection',class='tbody' + connectable?' connected-sortable':'')
+            tbody.tbody#media-view(data-bind='sortable: { data: collection , allowDrop: allowDrop}',class='tbody' + connectable?' connected-sortable':'')
               tr
                 td
                   a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")

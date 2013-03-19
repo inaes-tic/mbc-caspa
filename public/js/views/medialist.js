@@ -65,7 +65,11 @@ window.MediaListView2 = function(options){
                 return model.get('file').search(filter) < 0;
             },
         });
+
+        this.allowDrop = 'sortable' in options ? options['sortable'] : false;
     };
+
+    this.model = model;
 
     new SearchView2({el: $('#media-search',el) });
     var view_model = new MediaListViewModel(collection);
