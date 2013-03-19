@@ -10,6 +10,9 @@ window.ScheduleView = Backbone.View.extend({
         // make a Media.Occurrence into a fullCalendar event
         return _(occurrence.attributes).clone();
     },
+    all_events: function() {
+        return this.get_collection().map(this.make_event);
+    },
     addOne: function (occurrence) {
         console.log ("Calendar addOne", occurrence);
         this.calendar.fullCalendar('addEventSource', [this.make_event(occurrence)]);
@@ -85,7 +88,8 @@ window.ScheduleView = Backbone.View.extend({
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
             events: function (start, end, callback) {
-                callback(self.collection.map(self.make_event));
+                self.calendar.fullCalendar('removeEvents');
+                callback(self.all_events());
             },
 
             //callbacks (in full-calendar-functions.js)
