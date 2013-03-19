@@ -12,7 +12,7 @@ window.ScheduleView = Backbone.View.extend({
     },
     addOne: function (occurrence) {
         console.log ("Calendar addOne", occurrence);
-        this.calendar.fullCalendar('renderEvent', this.make_event(occurrence), true);
+        this.calendar.fullCalendar('addEventSource', [this.make_event(occurrence)]);
     },
     addAll: function() {
         this.calendar.fullCalendar('removeEvents');
