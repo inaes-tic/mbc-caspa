@@ -46,7 +46,7 @@ window.EditView = Backbone.View.extend({
     },
     showPlaylist: function (list) {
         console.log ('show edit view', list);
-        this.editview = new MediaListView({
+        this.editview = new MediaListView2({
             sortable: true,
             model: list,
             el: $("#right-pane")
