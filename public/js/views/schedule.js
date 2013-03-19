@@ -22,13 +22,10 @@ window.ScheduleView = Backbone.View.extend({
         },
     ],
     addOne: function (occurrence) {
-        console.log ("Calendar addOne", occurrence);
-        this.calendar.fullCalendar('addEventSource', [this.make_event(occurrence)]);
+        this.calendar.fullCalendar('refetchEvents');
     },
     addAll: function() {
-        this.calendar.fullCalendar('removeEvents');
-        this.calendar.fullCalendar('addEventSource', this.all_events());
-        this.calendar.fullCalendar('addEventSource', this.historical_events);
+        this.calendar.fullCalendar('refetchEvents');
     },
     initialize: function () {
         var self = this;
