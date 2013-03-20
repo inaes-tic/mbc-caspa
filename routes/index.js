@@ -71,6 +71,7 @@ module.exports = function(app) {
         require.resolve('knockout-client/knockout.js'),
         require.resolve('knockback/knockback-core.js'),
         path.join(lib_dir, 'knockout-sortable/build/knockout-sortable.js'),
+        path.join(lib_dir, 'knockout-drag-binding.js'),
     ], {minify:app.get('minify')});
 
     // serve using express
