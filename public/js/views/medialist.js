@@ -63,6 +63,7 @@ window.MediaListView2 = function(options){
             this.editingName(true);
         }
 
+        this.changeFocus = function () {  _this.editingName(false); }
         this.filter = ko.observable('');
         this.collection =  kb.collectionObservable( collection, {
             view_model: kb.viewModel,
