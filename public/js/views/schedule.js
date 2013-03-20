@@ -70,7 +70,7 @@ window.ScheduleView = Backbone.View.extend({
 
         var mainHeight = document.documentElement.clientHeight - 200 - 50;
 
-        calendarEventSources = [
+        var calendarEventSources = [
             function(start, end, callback) {
                 callback(self.all_events());
             }
