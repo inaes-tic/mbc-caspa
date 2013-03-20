@@ -47,8 +47,10 @@ window.MediaListView2 = function(options){
     if(options['el'])
         el = options['el'];
 
+    var sortable = 'sortable' in options ? options['sortable'] : false;
+
 //XXX: there has to be a better way to pre render this
-    el.html(template.medialist());
+    el.html(template.medialist({sortable: sortable}));
     console.log('ML2');
 
 //XXX: We need to put this on SearchView2
@@ -66,7 +68,7 @@ window.MediaListView2 = function(options){
             },
         });
 
-        this.allowDrop = 'sortable' in options ? options['sortable'] : false;
+        this.allowDrop = sortable;
     };
 
     this.model = model;
