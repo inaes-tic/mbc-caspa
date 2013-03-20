@@ -70,6 +70,12 @@ window.ScheduleView = Backbone.View.extend({
 
         var mainHeight = document.documentElement.clientHeight - 200 - 50;
 
+        calendarEventSources = [
+            function(start, end, callback) {
+                callback(self.all_events());
+            }
+        ].concat(self.historical_events);
+
         this.calendar.fullCalendar({
             header: {
                 left: 'prev, next, today',
@@ -93,10 +99,7 @@ window.ScheduleView = Backbone.View.extend({
             serverTimestamp: parseInt(this.opts.timestamp, 10),
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
-            events: function (start, end, callback) {
-                self.calendar.fullCalendar('removeEvents');
-                callback(self.all_events());
-            },
+            eventSources: calendarEventSources,
 
             //callbacks (in full-calendar-functions.js)
             viewDisplay: function ( view ) {
@@ -120,14 +123,15 @@ window.ScheduleView = Backbone.View.extend({
 
                             opt.slotMinutes = parseInt(slotMin);
                             opt.defaultView = view.name;
+                            // event sources are not kept in the options, I don't know
+                            //  if there's a way to retrieve them
+                            opt.eventSources = calendarEventSources;
 
                             //re-initialize calendar with new slotmin options
                             $(calendarEl)
                                 .fullCalendar('destroy')
                                 .fullCalendar(opt)
                                 .fullCalendar( 'gotoDate', date );
-
-                            self.addAll();
 
                             /** TODO: save view config 
                              *
