@@ -21,7 +21,6 @@ window.ScheduleView = Backbone.View.extend({
     },
     make_event: function(occurrence) {
         // make a Media.Occurrence into a fullCalendar event
-        //_.bindAll(this, 'deleteOcurrence');
         var attribs = _(occurrence.attributes).clone();
         attribs.model = occurrence;
         return attribs;
@@ -265,6 +264,7 @@ window.ScheduleView = Backbone.View.extend({
         self.collection.bind('add',   this.reload, this);
         self.collection.bind('reset', this.reload, this);
         self.collection.bind('remove',this.reload, this);
+        self.collection.bind('update',this.reload, this);
         self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
 
         return this;
