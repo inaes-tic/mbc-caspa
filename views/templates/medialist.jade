@@ -6,6 +6,11 @@ block content
 - if (!fixed)
   - var fixed = false
 
+- var dbind = 'foreach: collection';
+- var inndbind = 'drag: $data';
+- if (sortable)
+  -  dbind = 'sortable: { data: collection , allowDrop: allowDrop}';
+  -  inndbind = '';
 
 .well#media-list
   - if (!fixed)
@@ -38,8 +43,9 @@ block content
                 th= i18n.gettext('Media info')
                 th= i18n.gettext('Status')
                 th= i18n.gettext('Availability')
-            tbody.tbody#media-view(data-bind='sortable: { data: collection , allowDrop: allowDrop}',class='tbody' + connectable?' connected-sortable':'')
-              tr
+
+            tbody.tbody#media-view(data-bind=dbind,class='tbody' + connectable?' connected-sortable':'')
+              tr(data-bind=inndbind)
                 td
                   a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
                     img(width="150",height="100",data-bind="attr:{ src: _id() ?  'sc/'+_id().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
