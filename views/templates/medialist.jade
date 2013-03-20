@@ -2,7 +2,7 @@ block content
 - if (!connectable)
   - var connectable = false
 - if (!name)
-  - var name = i18n.gettext('New Playlist');
+  - var name = i18n.gettext('Media List');
 - if (!fixed)
   - var fixed = false
 
@@ -15,6 +15,7 @@ block content
 .well#media-list
   - if (!fixed)
      button.close.kill-media-list(type='button', data-dismiss='alert') ×
+
   .editable-list-name(
         data-trigger= 'hover'
         data-placement= 'left'
@@ -22,10 +23,13 @@ block content
         data-content= i18n.gettext('Click here to edit Playlist Name.')
         style= 'border:none;'
     )
+
     .fixed
-      h1.list-name= name
-    .edit(style='display:none;')
-      input.input-block-level.input-list-name(type='text')
+    - if (sortable)
+        h1.list-name(data-bind="text: name, visible: !editingName(), click: nameClick")
+        input.input-block-level.input-list-name(data-bind="value: name, visible: editingName, hasfocus: editingName", type='text')
+    - else
+        h1.list-name= name
 
   #media-search
   #playlist-table
