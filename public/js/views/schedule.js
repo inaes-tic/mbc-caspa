@@ -6,14 +6,26 @@ window.ScheduleView = Backbone.View.extend({
     get_collection: function () {
         return this.collection;
     },
-    addOne: function (event) {
-        console.log ("Calendar addOne", event);
-        var fce = _(event.attributes).clone();
-        this.calendar.fullCalendar('renderEvent', fce, true);
+    make_event: function(occurrence) {
+        // make a Media.Occurrence into a fullCalendar event
+        return _(occurrence.attributes).clone();
+    },
+    all_events: function() {
+        return this.get_collection().map(this.make_event);
+    },
+    historical_events: [
+        {
+            title: 'WALLKINTUN SALE AL AIRE !',
+            start: new Date(2012, 11, 7, 22, 0),
+            end:   new Date(2012, 11, 8, 6, 0),
+            allDay: false,
+        },
+    ],
+    addOne: function (occurrence) {
+        this.calendar.fullCalendar('refetchEvents');
     },
     addAll: function() {
-        this.calendar.fullCalendar('removeEvents');
-        this.collection.each(this.addOne);
+        this.calendar.fullCalendar('refetchEvents');
     },
     initialize: function () {
         var self = this;
@@ -58,6 +70,19 @@ window.ScheduleView = Backbone.View.extend({
 
         var mainHeight = document.documentElement.clientHeight - 200 - 50;
 
+        var calendarEventSources = [
+            function(start, end, callback) {
+                console.log(start, end);
+                var unix_start = moment(start).unix();
+                var unix_end = moment(end).unix();
+                events = self.get_collection().filter(function(el){
+                    return unix_start <= el.get('end') && unix_end >= el.get('start');
+                }).map(self.make_event);
+                console.log('Returning events #', events.length);
+                callback(events);
+            }
+        ].concat(self.historical_events);
+
         this.calendar.fullCalendar({
             header: {
                 left: 'prev, next, today',
@@ -81,6 +106,8 @@ window.ScheduleView = Backbone.View.extend({
             serverTimestamp: parseInt(this.opts.timestamp, 10),
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
+            eventSources: calendarEventSources,
+
             //callbacks (in full-calendar-functions.js)
             viewDisplay: function ( view ) {
                 view_name = view.name;
@@ -102,16 +129,16 @@ window.ScheduleView = Backbone.View.extend({
                             var date = $(calendarEl).fullCalendar('getDate');
 
                             opt.slotMinutes = parseInt(slotMin);
-                            opt.events = getFullCalendarEvents;
                             opt.defaultView = view.name;
+                            // event sources are not kept in the options, I don't know
+                            //  if there's a way to retrieve them
+                            opt.eventSources = calendarEventSources;
 
                             //re-initialize calendar with new slotmin options
                             $(calendarEl)
                                 .fullCalendar('destroy')
                                 .fullCalendar(opt)
                                 .fullCalendar( 'gotoDate', date );
-
-                            self.addAll();
 
                             /** TODO: save view config 
                              *
@@ -170,8 +197,8 @@ window.ScheduleView = Backbone.View.extend({
             eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
                 var start = moment(event.start);
                 var end = moment(event.end);
-                self.collection.find(function(e){ return e.get("_id") == event._id }).set(
-                    {start: start.unix(), end: end.unix()}).save({start: start.unix(), end: end.unix()});
+                self.collection.find(function(e){ return e.get("_id") == event._id }).save(
+                    {start: start.unix(), end: end.unix()});
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
@@ -192,15 +219,7 @@ window.ScheduleView = Backbone.View.extend({
                 console.log ('to save', event);
                 var item = self.collection.create (event);
                 console.log (this, list, event, item);
-            },
-	    events: [
-		{
-		    title: 'WALLKINTUN SALE AL AIRE !',
-		    start: new Date(2012, 11, 7, 22, 0),
-		    end:   new Date(2012, 11, 8, 6, 0),
-                    allDay: false,
-		},
-            ]
+            }
         });
 
                                              /*

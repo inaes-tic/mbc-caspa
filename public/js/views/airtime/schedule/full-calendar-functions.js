@@ -264,21 +264,6 @@ function eventResize( event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, vie
         });
 }
 
-function getFullCalendarEvents(start, end, callback) {
-    var url, start_date, end_date;
-
-    start_date = makeTimeStamp(start);
-    end_date = makeTimeStamp(end);
-
-    url = '/Schedule/event-feed';
-
-    var d = new Date();
-    
-    $.post(url, {format: "json", start: start_date, end: end_date, cachep: d.getTime()}, function(json){
-        callback(json.events);
-    });
-}
-
 function checkSCUploadStatus(){
     var url = '/Library/get-upload-to-soundcloud-status/format/json';
     $("span[class*=progress]").each(function(){
