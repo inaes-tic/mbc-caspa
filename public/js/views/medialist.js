@@ -56,6 +56,13 @@ window.MediaListView2 = function(options){
 //XXX: We need to put this on SearchView2
     var MediaListViewModel = function(collection) {
         var _this = this;
+
+        this.name = ko.observable(model.get('name')); 
+        this.editingName = ko.observable(false);
+        this.nameClick = function () {
+            this.editingName(true);
+        }
+
         this.filter = ko.observable('');
         this.collection =  kb.collectionObservable( collection, {
             view_model: kb.viewModel,
