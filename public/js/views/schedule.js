@@ -1,3 +1,16 @@
+window.OccurrenceView = Backbone.View.extend({
+    events: {
+      "click .fc-event-closebutton": "deleteOcurrence"
+    },
+    initialize: function() {
+      this.calendar = this.options.calendar;
+    },
+    deleteOcurrence: function(sth) {
+      this.$el.fadeOut(400, this.model.destroy.bind(this.model));
+      console.log("Deleting ocurrence", this.model);
+    }
+});
+
 window.ScheduleView = Backbone.View.extend({
     el: $("#content"),
     get_templateHTML: function () {
@@ -8,7 +21,10 @@ window.ScheduleView = Backbone.View.extend({
     },
     make_event: function(occurrence) {
         // make a Media.Occurrence into a fullCalendar event
-        return _(occurrence.attributes).clone();
+        //_.bindAll(this, 'deleteOcurrence');
+        var attribs = _(occurrence.attributes).clone();
+        attribs.model = occurrence;
+        return attribs;
     },
     all_events: function() {
         return this.get_collection().map(this.make_event);
@@ -21,10 +37,7 @@ window.ScheduleView = Backbone.View.extend({
             allDay: false,
         },
     ],
-    addOne: function (occurrence) {
-        this.calendar.fullCalendar('refetchEvents');
-    },
-    addAll: function() {
+    reload: function() {
         this.calendar.fullCalendar('refetchEvents');
     },
     initialize: function () {
@@ -193,12 +206,20 @@ window.ScheduleView = Backbone.View.extend({
 
                 eventRender(event, element, view);
             },
-            eventAfterRender: eventAfterRender,
+            eventAfterRender: function (event, element, view) {
+              var ocurrence = new OccurrenceView({
+                el: element,
+                id: event._id,
+                model: event.model,
+                collection: self.collection,
+                calendar: self.calendar
+              });
+              eventAfterRender(event, element, view);
+        },
             eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
                 var start = moment(event.start);
                 var end = moment(event.end);
-                self.collection.find(function(e){ return e.get("_id") == event._id }).save(
-                    {start: start.unix(), end: end.unix()});
+                event.model.save({start: start.unix(), end: end.unix()});
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
@@ -241,16 +262,10 @@ window.ScheduleView = Backbone.View.extend({
             });
                                              */
 
-        _.bindAll(this,
-                  'addOne',
-                  'addAll'
-                 );
-
-        self.collection.bind('add',   this.addOne, this);
-        self.collection.bind('reset', this.addAll, this);
-//        self.collection.bind('remove',this.checkEmpty, this);
+        self.collection.bind('add',   this.reload, this);
+        self.collection.bind('reset', this.reload, this);
+        self.collection.bind('remove',this.reload, this);
         self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
-        self.collection.bind('update',this.update, this);
 
         return this;
     },

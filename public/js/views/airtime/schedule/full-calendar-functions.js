@@ -235,6 +235,10 @@ function eventRender(event, element, view) {
     if(view.name === 'month' && event.rebroadcast === 1) {
         $(element).find(".fc-event-title").after('<span id="'+event.id+'" class="small-icon rebroadcast"></span>');
     }
+    
+    // Add delete button
+    var closeButton = $('<button type="button" class="close fc-event-closebutton">×</button>');
+    $(element).find('.fc-event-head').append(closeButton);
 }
 
 function eventAfterRender( event, element, view ) {
@@ -323,10 +327,10 @@ function getCurrentShow(){
         $(".now-playing").each(function(){
             id = $(this).attr("id");
                 if (id != json.si_id) {
-                    $(this).remove("span[small-icon now-playing]");	
-                }    	
+                    $(this).remove("span[small-icon now-playing]");
+                }
             });
-    }); 	
+    });
 }
 
 function addQtipToSCIcons(ele){
