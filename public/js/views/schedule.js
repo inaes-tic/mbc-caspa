@@ -72,7 +72,14 @@ window.ScheduleView = Backbone.View.extend({
 
         var calendarEventSources = [
             function(start, end, callback) {
-                callback(self.all_events());
+                console.log(start, end);
+                var unix_start = moment(start).unix();
+                var unix_end = moment(end).unix();
+                events = self.get_collection().filter(function(el){
+                    return unix_start <= el.get('end') && unix_end >= el.get('start');
+                }).map(self.make_event);
+                console.log('Returning events #', events.length);
+                callback(events);
             }
         ].concat(self.historical_events);
 
