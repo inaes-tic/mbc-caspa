@@ -8,9 +8,11 @@ block content
 
 - var dbind = 'foreach: collection';
 - var inndbind = 'drag: $data';
+- var default_name = '';
 - if (sortable)
   -  dbind = 'sortable: { data: collection , allowDrop: allowDrop}';
   -  inndbind = '';
+  -  default_name= "||'" + i18n.gettext('New Playlist') + "'";
 
 .well#media-list
   - if (!fixed)
@@ -26,7 +28,7 @@ block content
 
     .fixed
     - if (sortable)
-        h1.list-name(data-bind="text: name, visible: !editingName(), click: nameClick")
+        h1.list-name(data-bind="text: name()" + default_name + ", visible: !editingName(), click: nameClick")
         input.input-block-level.input-list-name(data-bind="value: name, visible: editingName, hasfocus: editingName, valueUpdate: 'afterkeydown', addOnEnter: changeFocus", type='text')
     - else
         h1.list-name= name
