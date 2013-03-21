@@ -49,46 +49,54 @@ window.MediaListView2 = function(options){
 
     var sortable = 'sortable' in options ? options['sortable'] : false;
 
+    this.model = model;
+
 //XXX: there has to be a better way to pre render this
     el.html(template.medialist({sortable: sortable}));
     console.log('ML2');
 
 //XXX: We need to put this on SearchView2
-    var MediaListViewModel = function(collection) {
-        var _this = this;
+    var MediaListViewModel = kb.ViewModel.extend({
+        constructor: function(model) {
+            kb.ViewModel.prototype.constructor.apply(this, arguments);
 
-        this.name = ko.observable(model.get('name')); 
-        this.editingName = ko.observable(false);
-        this.nameClick = function () {
-            this.editingName(true);
-        }
+            this.editingName = ko.observable(false);
+            this.nameClick = function () {
+                this.editingName(true);
+            }
 
-        this.changeFocus = function () {
-            if(_this.name().length<=0)
-              return false;
-            _this.editingName(false);
-        }
+            this.changeFocus = function () {
+                if(_this.name().length<=0)
+                  return false;
+                _this.editingName(false);
+            }
 
-        this.filter = ko.observable('');
-        this.collection =  kb.collectionObservable( collection, {
-            view_model: kb.viewModel,
-            sort_attribute: 'file',
-            filters: function(model) {
-                var filter;
-                filter = _this.filter();
-                if (!filter) return false;
-                return model.get('file').search(filter) < 0;
-            },
-        });
+            this.filter = ko.observable('');
+            var _this = this;
+            this.collection =  kb.collectionObservable( collection, {
+                view_model: kb.viewModel,
+                sort_attribute: 'file',
+                filters: function(model) {
+                    var filter;
+                    filter = _this.filter();
+                    if (!filter) return false;
+                    return model.get('file').search(filter) < 0;
+                },
+            });
 
-        this.allowDrop = sortable;
-    };
+        },
 
-    this.model = model;
+        allowDrop: sortable,
+    });
 
     new SearchView2({el: $('#media-search',el) });
-    var view_model = new MediaListViewModel(collection);
-    ko.applyBindings(view_model, el[0]);
+    this.view_model = new MediaListViewModel(model);
+
+    this.editListName = function () {
+        this.view_model.editingName(true);
+    };
+
+    ko.applyBindings(this.view_model, el[0]);
 }
 
 window.MediaListView = Backbone.View.extend({
