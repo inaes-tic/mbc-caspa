@@ -50,6 +50,7 @@ window.MediaListView2 = function(options){
     var sortable = 'sortable' in options ? options['sortable'] : false;
 
     this.model = model;
+    this.el = el;
 
 //XXX: there has to be a better way to pre render this
     el.html(template.medialist({sortable: sortable}));
@@ -73,8 +74,8 @@ window.MediaListView2 = function(options){
 
             this.filter = ko.observable('');
             var _this = this;
-            this.collection =  kb.collectionObservable( collection, {
-                view_model: kb.viewModel,
+            this.collection =  kb.collectionObservable( model.get('collection'), {
+                view_model: kb.ViewModel,
                 sort_attribute: 'file',
                 filters: function(model) {
                     var filter;
@@ -95,6 +96,13 @@ window.MediaListView2 = function(options){
     this.editListName = function () {
         this.view_model.editingName(true);
     };
+
+    this.destroy = function () {
+        kb.release(this.view_model);
+        this.model.destroy();
+        ko.cleanNode(this.el);
+        this.el.html('');
+    }
 
     ko.applyBindings(this.view_model, el[0]);
 }
@@ -208,6 +216,7 @@ window.MediaPlayListView = MediaListView.extend({
         var self = this;
 
         this.collection = this.get_collection();
+console.log('XXX window.MediaPlayListView');
 
         if (this.options.sortable) {
             console.log("this is sortable", this);
