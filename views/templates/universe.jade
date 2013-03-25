@@ -6,4 +6,11 @@ block content
           span= ' '
           span.total-time.label.label-inverse.format
   .row-fluid
-    ul#playlists.nav.nav-pills.nav-stacked
+    ul#playlists.nav.nav-pills.nav-stacked(data-bind="foreach: collection")
+        li(data-bind='attr: {id: id}')
+          .playlist-name.span4.well
+                  h1(data-bind="text: name")
+                  span.label.label-warning.format
+                    i.icon-time.icon-white
+                    span= ' '
+                    span(data-bind="text: total_time")

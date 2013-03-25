@@ -13,7 +13,7 @@ window.EditView = Backbone.View.extend({
     },
     render: function () {
         $(this.el).html(template.mediaedit());
-        new UniverseListView({
+        new UniverseListView2({
             collection: this.collection,
             el: $("#universe")});
         new MediaListView2({
@@ -37,7 +37,7 @@ window.EditView = Backbone.View.extend({
         $('.no-playlist-alert', this.el).show();
     },
     switchPlaylistEvent: function (event, a) {
-        return this.switchPlaylist(event.currentTarget.id);
+        return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
     },
     switchPlaylist: function (id) {
         var plid = this.collection.get(id);
@@ -79,7 +79,9 @@ window.EditView = Backbone.View.extend({
 
         if (this.editview.model == this.editList) {
             console.log ("about to feed this to the universe:", this.editview.model.attributes);
-            this.editview.model = this.collection.create (this.editview.model.attributes);
+//XXX: ugly hack para que actualice el view_model con el objeto nuevo
+            var m = this.collection.create (this.editview.model.attributes);
+            this.showPlaylist(m);
             console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);
         } else {
             this.editview.model.save();
@@ -88,10 +90,11 @@ window.EditView = Backbone.View.extend({
     },
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
-        var id = this.editview.model.get_id();
+        var id = this.editview.model.get('_id');
         if (id) {
-//            this.editview.model.destroy();
+            this.editview.destroy();
             Universe.remove (id);
+            this.killEditList();
         }
     },
 });
