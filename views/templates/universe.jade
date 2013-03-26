@@ -6,7 +6,7 @@ block content
           span= ' '
           span.total-time.label.label-inverse.format
   .row-fluid
-    ul#playlists.nav.nav-pills.nav-stacked(data-bind="foreach: collection")
+    ul#playlists.nav.nav-pills.nav-stacked(data-bind="foreach: playlists")
         li(data-bind='attr: {id: id}')
           .playlist-name.span4.well
                   h1(data-bind="text: name")

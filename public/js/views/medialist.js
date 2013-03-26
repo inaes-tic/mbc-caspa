@@ -60,7 +60,7 @@ window.MediaListView2 = function(options){
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
-
+            var _this = this;
             this.editingName = ko.observable(false);
             this.nameClick = function () {
                 this.editingName(true);
@@ -73,7 +73,6 @@ window.MediaListView2 = function(options){
             }
 
             this.filter = ko.observable('');
-            var _this = this;
             this.collection =  kb.collectionObservable( model.get('collection'), {
                 view_model: kb.ViewModel,
                 sort_attribute: 'file',

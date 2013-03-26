@@ -83,14 +83,11 @@ window.UniverseListView2 = function(options){
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var _this = this;
-            this.collection =  kb.collectionObservable(collection, {view_model:UniItemViewModel});
-
+            this.playlists =  kb.collectionObservable(collection, {view_model:UniItemViewModel});
         },
     });
 
     this.view_model = new MediaListViewModel(collection);
-
-    window.UVM = this.view_model;
 
     this.destroy = function () {
         kb.release(this.view_model);

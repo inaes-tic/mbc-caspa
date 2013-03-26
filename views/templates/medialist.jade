@@ -57,7 +57,6 @@ block content
                     img(width="150",height="100",data-bind="attr:{ src: _id() ?  'sc/'+_id().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                 td
                     h5(data-bind="text: name")
-                    h5(data-bind="text: file")
                     h5(data-bind="text: stat().name ? stat().name : file")
                     span.label.label-warning.format
                         i.icon-time.icon-white
