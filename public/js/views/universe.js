@@ -49,7 +49,6 @@ window.UniverseListView2 = function(options){
     if(options['el'])
         el = options['el'];
 
-
     this.collection = collection;
     this.el = el;
 
@@ -61,7 +60,7 @@ window.UniverseListView2 = function(options){
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             options = options || {};
             options['keys'] = ['collection', 'name'];
-            this.collection =  kb.collectionObservable(model.models);
+            this.medias =  kb.collectionObservable(model.models);
             this.total_time = ko.computed(function(){
                 return model.pretty_duration();
             }, model);
@@ -87,7 +86,7 @@ window.UniverseListView2 = function(options){
         },
     });
 
-    this.view_model = new MediaListViewModel(collection);
+    this.view_model = new MediaListViewModel(this.collection);
 
     this.destroy = function () {
         kb.release(this.view_model);
