@@ -218,6 +218,25 @@ window.ScheduleView = Backbone.View.extend({
             eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
                 var start = moment(event.start);
                 var end = moment(event.end);
+                var overlap = self.calendar.fullCalendar('clientEvents', function(ev) {
+                    if( ev == event)
+                        return false;
+                    var estart = moment(ev.start);
+                    var eend = moment(ev.end);
+                    return estart.unix() < end.unix() && eend.unix() > start.unix();
+                });
+                if( overlap.length ) {
+                    overlap = overlap[0];
+                    var estart = moment(overlap.start);
+                    var eend = moment(overlap.end);
+                    var duration = eend - estart;
+                    start = eend.clone();
+                    end = start.clone();
+                    end.add(duration);
+                    event.start = start.toDate();
+                    event.end = end.toDate();
+                    self.calendar.fullCalendar('updateEvent', event);
+                }
                 event.model.save({start: start.unix(), end: end.unix()});
             },
             eventResize: eventResize,
