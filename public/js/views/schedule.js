@@ -255,10 +255,13 @@ window.ScheduleView = Backbone.View.extend({
                 var end   = moment(start);
 
                 end.add('ms', list.get('duration'));
+
+                var times = self.checkOverlap({start: start, end: end});
+
                 var event = {
                     title:  list.get('name'),
                     list:   list.get('_id'),
-                    start:  start.unix(), end: end.unix(),
+                    start:  times.start.unix(), end: times.end.unix(),
                     allDay: allDay,
                 };
 
