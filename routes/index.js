@@ -67,7 +67,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'arvo.js'),
         path.join(lib_dir, 'sprintf/sprintf.js'),
         path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
-        path.join(lib_dir, 'airtime/common.js')
+        path.join(lib_dir, 'airtime/common.js'),
         require.resolve('knockout-client/knockout.js'),
         require.resolve('knockback/knockback-core.js'),
         path.join(lib_dir, 'knockout-sortable/build/knockout-sortable.js'),
