@@ -48,9 +48,7 @@ window.ScheduleView = Backbone.View.extend({
         var overlap = this.calendar.fullCalendar('clientEvents', function(ev) {
             if( ev == event)
                 return false;
-            var estart = moment(ev.start);
-            var eend = moment(ev.end);
-            return estart.unix() < end.unix() && eend.unix() > start.unix();
+            return ev.start < end && ev.end > start;
         });
         if( overlap.length ) {
             overlap = overlap[0];
