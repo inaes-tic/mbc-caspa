@@ -87,7 +87,7 @@ window.ScheduleView = Backbone.View.extend({
                 console.log(start, end);
                 var unix_start = moment(start).unix();
                 var unix_end = moment(end).unix();
-                events = self.get_collection().filter(function(el){
+                var events = self.get_collection().filter(function(el){
                     return unix_start <= el.get('end') && unix_end >= el.get('start');
                 }).map(self.make_event);
                 console.log('Returning events #', events.length);
