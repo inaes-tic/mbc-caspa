@@ -33,6 +33,8 @@
         "xmlbuilder": "0.3.x",
         "moment": "1.7.x",
         "config": "0.4.20",
+        "knockback" : "*",
+        "knockout-client" : "*",
         "i18n-abide"    : "git://github.com/inaes-tic/i18n-abide",
         "fluent-ffmpeg" : "git://github.com/inaes-tic/node-fluent-ffmpeg",
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
