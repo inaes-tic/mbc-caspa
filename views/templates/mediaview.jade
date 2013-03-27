@@ -1,5 +1,5 @@
-- if (_id)
-  - var picture= 'sc/' + _id + '.jpg'
+- if (checksum)
+  - var picture= 'sc/' + checksum + '.jpg'
 - if (!description)
   - var description= i18n.gettext('Notes about this media')
 - if (!picture)
@@ -32,11 +32,11 @@
             .control-group
               label.control-label(for="mediaName")= i18n.gettext('Name') + ': '
               .controls
-                  input.input-block-level#mediaName(name="Name",type="text",value=name)
+                  input.input-block-level#mediaName(name="Name",type="text", data-bind="value: name, valueUpdate: 'keyup'")
       .row
         .span6
           .control-group
-            - var items = {md5: _id, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
+            - var items = {md5: checksum, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
             each v, k in items
               - var Item = k.charAt(0).toUpperCase() + k.slice(1)
 
@@ -50,7 +50,7 @@
           .control-group
               label.control-label(for="description")= i18n.gettext('Notes') + ': '
               .controls
-                  textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description)
+                  textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description, data-bind="value: notes")
 
         .span6
             .well.droparea.image-droparea
@@ -66,7 +66,7 @@
                   p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
 
     .form-actions
-      a.btn.btn-primary.save(href="#")= i18n.gettext('Save')
+      a.btn.btn-primary.save(href="#", data-bind="click: save")= i18n.gettext('Save')
       a.btn.delete(href="#")= i18n.gettext('Delete')
 
 .row-fluid.status-bar
