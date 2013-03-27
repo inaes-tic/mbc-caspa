@@ -80,7 +80,9 @@ window.MediaListView2 = function(options){
                     var filter;
                     filter = _this.filter();
                     if (!filter) return false;
-                    return model.get('file').search(filter) < 0;
+                    return ( model.get('file').search(filter) < 0 &&
+                             model.get('name').search(filter) < 0
+                    );
                 },
             });
 
