@@ -75,7 +75,6 @@ window.MediaListView2 = function(options){
             this.filter = ko.observable('');
             this.collection =  kb.collectionObservable( model.get('collection'), {
                 view_model: kb.ViewModel,
-                sort_attribute: 'file',
                 filters: function(model) {
                     var filter;
                     filter = _this.filter();
