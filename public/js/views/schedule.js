@@ -56,10 +56,18 @@ window.ScheduleView = Backbone.View.extend({
             overlap = overlap[0];
             var estart = moment(overlap.start);
             var eend = moment(overlap.end);
-            var duration = eend - estart;
-            start = eend.clone();
-            end = start.clone();
-            end.add(duration);
+            var duration = end - start;
+            if( estart > start ) {
+                // clamp to beginning
+                end = estart.clone();
+                start = end.clone();
+                start.subtract(duration);
+            } else {
+                // clamp to end
+                start = eend.clone();
+                end = start.clone();
+                end.add(duration);
+            }
         }
         return {start: start, end: end};
     },
