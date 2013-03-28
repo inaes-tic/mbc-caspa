@@ -58,11 +58,13 @@ window.UniverseListView2 = function(options){
 
     var UniItemViewModel = kb.ViewModel.extend({
         constructor: function(model) {
+            var self = this;
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             options = options || {};
             options['keys'] = ['collection', 'name'];
-            this.medias =  kb.collectionObservable(model.models);
+            this.medias =  kb.collectionObservable(model.get('collection'));
             this.total_time = ko.computed(function(){
+                var x = self.medias();
                 return model.pretty_duration();
             }, model);
             this.id = ko.observable(model.id);
