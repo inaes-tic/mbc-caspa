@@ -91,7 +91,7 @@ var populateDB = function() {
 }
 
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
-    var dest = conf.Dirs.screenshots + '/' + media._id + '.jpg';   
+    var dest = conf.Dirs.screenshots + '/' + media.checksum + '.jpg';   
     console.log ('starting sc', media.file);
 /*
     if (_existsSync('./public/sc/' + media._id)) {
@@ -108,7 +108,7 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
                     return;
 
                 console.log(metadata);
-                metadata._id  = media._id;
+                metadata.checksum  = media.checksum;
                 metadata.file = media.file;
                 metadata.stat = media.stat;
                 callback (metadata);
@@ -121,7 +121,7 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
             return done (error);
         }
 
-        console.log('sc ok: ' + media._id);
+        console.log('sc ok: ' + media.checksum);
         return done(media);
     });
 });
@@ -139,7 +139,7 @@ exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
         }
 
         md5sum.stdout.on('data', function (data) {
-            item._id = data.toString().split(' ')[0];
+            item.checksum = data.toString().split(' ')[0];
             done(item);
         });
     });
