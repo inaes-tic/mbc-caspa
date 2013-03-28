@@ -96,9 +96,9 @@ listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
 
 var schedbackend = backboneio.createBackend();
 schedbackend.use(function (req, res, next) {
-        console.log ("schedbackend handler", req);
-        channel.publish ({method: req.method, backend: req.backend, model: req.model});
-        next();
+    console.log ("schedbackend handler", req);
+    channel.publish ({channel: "schedbackend", method: req.method, backend: req.backend, model: req.model});
+    next();
 });
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
 channel.subscribe ({channel: 'schedbackend'}, function (sched) {
