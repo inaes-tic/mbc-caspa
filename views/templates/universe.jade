@@ -3,7 +3,16 @@
     - inndbind += ',drag: id, dragOptions: { zIndex: 900, cursorAt: { top: 5, left: 5 } } ';
 
 block content
-  #media-search
+  .form-search
+    .input-prepend
+        button.btn(type="submit")
+          i.icon-search
+        input.span5.search-query#media-search(
+          type="text",
+          data-provide="typeahead",
+          data-items="4",
+          placeholder= i18n.gettext('search playlists'),
+          data-bind="value: filterUniverse, valueUpdate: 'keyup'")
   .total-time-div
       h1.label.label-inverse.format
           i.icon-time.icon-white
