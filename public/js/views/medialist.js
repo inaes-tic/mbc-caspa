@@ -48,12 +48,13 @@ window.MediaListView2 = function(options){
         el = options['el'];
 
     var sortable = 'sortable' in options ? options['sortable'] : false;
+    var disable_drag = 'disable_drag' in options ? options['disable_drag'] : false;
 
     this.model = model;
     this.el = el;
 
 //XXX: there has to be a better way to pre render this
-    el.html(template.medialist({sortable: sortable}));
+    el.html(template.medialist({sortable: sortable, disable_drag: disable_drag}));
     console.log('ML2');
 
 //XXX: We need to put this on SearchView2

@@ -1,6 +1,4 @@
 block content
-- if (!connectable)
-  - var connectable = false
 - if (!name)
   - var name = i18n.gettext('Media List');
 - if (!fixed)
@@ -13,6 +11,10 @@ block content
   -  dbind = 'sortable: { data: collection , allowDrop: allowDrop}';
   -  inndbind = '';
   -  default_name= "||'" + i18n.gettext('New Playlist') + "'";
+
+- if (disable_drag)
+  - dbind = 'foreach: collection';
+  - inndbind = '';
 
 .well#media-list
   - if (!fixed)
@@ -50,7 +52,7 @@ block content
                 th= i18n.gettext('Status')
                 th= i18n.gettext('Availability')
 
-            tbody.tbody#media-view(data-bind=dbind,class='tbody' + connectable?' connected-sortable':'')
+            tbody.tbody#media-view(data-bind=dbind,class='tbody')
               tr(data-bind=inndbind)
                 td
                   a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
