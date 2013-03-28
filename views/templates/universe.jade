@@ -1,3 +1,7 @@
+- var inndbind = 'attr: {id: id }';
+- if (draggable)
+    - inndbind += ',drag: id, dragOptions: { zIndex: 900, cursorAt: { top: 5, left: 5 } } ';
+
 block content
   #media-search
   .total-time-div
@@ -7,7 +11,7 @@ block content
           span.total-time.label.label-inverse.format
   .row-fluid
     ul#playlists.nav.nav-pills.nav-stacked(data-bind="foreach: playlists")
-        li(data-bind='attr: {id: id}')
+        li(data-bind=inndbind)
           .playlist-name.span4.well
                   h1(data-bind="text: name")
                   span.label.label-warning.format

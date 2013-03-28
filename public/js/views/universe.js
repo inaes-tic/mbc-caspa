@@ -44,6 +44,7 @@ window.UniversePlayListView = MediaPlayListView.extend({
 });
 
 window.UniverseListView2 = function(options){
+    var draggable = 'draggable' in options ? options['draggable'] : false;
     var collection = options['collection'];
     var el = $('#content');
     if(options['el'])
@@ -52,7 +53,7 @@ window.UniverseListView2 = function(options){
     this.collection = collection;
     this.el = el;
 
-    el.html(template.universe());
+    el.html(template.universe({draggable: draggable}));
     console.log('UV2');
 
     var UniItemViewModel = kb.ViewModel.extend({
