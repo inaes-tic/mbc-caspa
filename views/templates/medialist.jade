@@ -52,10 +52,12 @@ block content
                 th= i18n.gettext('Status')
                 th= i18n.gettext('Availability')
 
-            tbody.tbody#media-view(data-bind=dbind,class='tbody')
+            tbody.tbody#media-view(data-bind=dbind,class='tbody connectable')
               tr(data-bind=inndbind)
                 td
-                  a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
+                  - if (!is_playlist)
+                    - var target = "attr:{href: '#media/'+_id().split('-')[0]}";
+                  a.plain(data-bind=target )
                     img(width="150",height="100",data-bind="attr:{ src: checksum() ?  'sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                 td
                     h5(data-bind="text: name")
