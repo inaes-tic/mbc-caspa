@@ -17,7 +17,7 @@ block content
   - inndbind = '';
 
 .well#media-list
-  - if (!fixed)
+  - if (is_playlist)
      button.close.kill-media-list(type='button', data-dismiss='alert') ×
 
   .editable-list-name(
