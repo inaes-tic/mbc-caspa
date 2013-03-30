@@ -57,7 +57,7 @@ block content
       h1.label.label-inverse.format
           i.icon-time.icon-white
           span= ' '
-          span.total-time.label.label-inverse.format
+          span.total-time.label.label-inverse.format(data-bind="text: total_time")
 
     .table-container(style='overflow-x:scroll;')
       table.table.table-bordered.table-striped.table-condensed#table
