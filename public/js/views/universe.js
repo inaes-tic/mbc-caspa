@@ -64,6 +64,7 @@ window.UniverseListView2 = function(options){
             options['keys'] = ['collection', 'name'];
             this.medias =  kb.collectionObservable(model.get('collection'));
             this.total_time = ko.computed(function(){
+//XXX: keep this, it tells KO to update total_time when something happens to the collection
                 var x = self.medias();
                 return model.pretty_duration();
             }, model);
