@@ -18,7 +18,6 @@ window.EditView = Backbone.View.extend({
             el: $("#universe")});
         new MediaListView2({
             model: mediaDB,
-//            draggable: true,
             el: $("#left-pane")});
         if (this.editList)
             this.showPlaylist(this.editList);
@@ -47,7 +46,6 @@ window.EditView = Backbone.View.extend({
     showPlaylist: function (list) {
         console.log ('show edit view', list);
         this.editview = new MediaListView2({
-            sortable: true,
             is_playlist: true,
             model: list,
             el: $("#right-pane")

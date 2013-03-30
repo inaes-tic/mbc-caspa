@@ -47,7 +47,6 @@ window.MediaListView2 = function(options){
     if(options['el'])
         el = options['el'];
 
-    var sortable = 'sortable' in options ? options['sortable'] : false;
     var disable_drag = 'disable_drag' in options ? options['disable_drag'] : false;
     var is_playlist = 'is_playlist' in options ? options['is_playlist'] : false;
 
@@ -55,7 +54,7 @@ window.MediaListView2 = function(options){
     this.el = el;
 
 //XXX: there has to be a better way to pre render this
-    el.html(template.medialist({sortable: sortable, disable_drag: disable_drag, is_playlist:is_playlist}));
+    el.html(template.medialist({disable_drag: disable_drag, is_playlist:is_playlist}));
     console.log('ML2');
 
 //XXX: We need to put this on SearchView2
@@ -94,7 +93,7 @@ window.MediaListView2 = function(options){
 
         },
 
-        allowDrop: sortable,
+        allowDrop: is_playlist,
     });
 
     new SearchView2({el: $('#media-search',el) });
