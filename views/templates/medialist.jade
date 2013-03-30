@@ -52,7 +52,7 @@ block content
                 th= i18n.gettext('Status')
                 th= i18n.gettext('Availability')
 
-            tbody.tbody#media-view(data-bind=dbind,class='tbody connectable')
+            tbody.tbody#media-view(data-bind=dbind,class='tbody')
               tr(data-bind=inndbind)
                 td
                   - if (!is_playlist)
