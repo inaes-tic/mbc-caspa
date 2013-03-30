@@ -61,20 +61,20 @@ window.MediaListView2 = function(options){
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
-            var _this = this;
+            var self = this;
             this.editingName = ko.observable(false);
             this.nameClick = function () {
                 this.editingName(true);
             }
 
             this.changeFocus = function () {
-                if(_this.name().length<=0)
+                if(self.name().length<=0)
                   return false;
-                _this.editingName(false);
+                self.editingName(false);
             }
 
             this.removeItem = function (item) {
-                _this.collection.remove(item);
+                self.collection.remove(item);
             }
 
             this.filter = ko.observable('');
@@ -82,7 +82,7 @@ window.MediaListView2 = function(options){
                 view_model: kb.ViewModel,
                 filters: function(model) {
                     var filter;
-                    filter = _this.filter();
+                    filter = self.filter();
                     if (!filter) return false;
                     var re = new RegExp(filter,"i");
                     return ( model.get('file').search(re) < 0 &&
@@ -90,6 +90,12 @@ window.MediaListView2 = function(options){
                     );
                 },
             });
+
+            this.total_time = ko.computed(function(){
+//XXX: keep this, it tells KO to update total_time when something happens to the collection
+                var x = self.collection();
+                return model.pretty_duration();
+            }, model);
 
         },
 
