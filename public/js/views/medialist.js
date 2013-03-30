@@ -83,6 +83,12 @@ window.MediaListView2 = function(options){
                 },
             });
 
+            this.total_time = ko.computed(function(){
+//XXX: keep this, it tells KO to update total_time when something happens to the collection
+                var x = _this.collection();
+                return model.pretty_duration();
+            }, model);
+
         },
 
         allowDrop: allow_drop,
