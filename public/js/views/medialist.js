@@ -47,14 +47,32 @@ window.MediaListView2 = function(options){
     if(options['el'])
         el = options['el'];
 
-    var disable_drag = 'disable_drag' in options ? options['disable_drag'] : false;
-    var is_playlist = 'is_playlist' in options ? options['is_playlist'] : false;
-
     this.model = model;
     this.el = el;
 
-//XXX: there has to be a better way to pre render this
-    el.html(template.medialist({disable_drag: disable_drag, is_playlist:is_playlist}));
+    var allow_drop = false;
+
+    var type = '';
+
+    if('type' in options){
+        type = options['type'];
+    }
+    if( !type.match(/playlist-(searchable|draggable|sortable|readonly)/) ){
+        type = 'playlist-searchable';
+    }
+
+    switch(type) {
+        case "playlist-sortable":
+            allow_drop = true;
+            break;
+        case "playlist-draggable":
+        case "playlist-searchable":
+        case "playlist-readonly":
+        default:
+            break;
+    }
+
+    el.html(template.medialist({type: type}));
     console.log('ML2');
 
 //XXX: We need to put this on SearchView2
@@ -99,7 +117,7 @@ window.MediaListView2 = function(options){
 
         },
 
-        allowDrop: is_playlist,
+        allowDrop: allow_drop,
     });
 
     new SearchView2({el: $('#media-search',el) });
