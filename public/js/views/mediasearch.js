@@ -1,8 +1,8 @@
 window.SearchView = function(options) {
     var el = options['el'];
-    //var view_model = options['view_model'];
-    el.html(template.mediasearch());
-    console.log('MS2');
+    var type = options['type'];
+    el.html(template.mediasearch({type: type}));
+    console.log('Render: SearchView');
     return;
 }
 

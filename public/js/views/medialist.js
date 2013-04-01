@@ -80,7 +80,7 @@ window.MediaListView = function(options){
         allowDrop: allow_drop,
     });
 
-    new SearchView({el: $('#media-search',el) });
+    new SearchView({el: $('#media-search',el), type: 'media' });
     this.view_model = new MediaListViewModel(model);
 
     this.editListName = function () {
