@@ -95,6 +95,9 @@ window.MediaListView2 = function(options){
                 self.collection.remove(item);
             }
 
+            this.trash = ko.observable('');
+            this.trash.id = "trash"; 
+
             this.filter = ko.observable('');
             this.collection =  kb.collectionObservable( model.get('collection'), {
                 view_model: kb.ViewModel,

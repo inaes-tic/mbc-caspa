@@ -38,6 +38,7 @@ case type
 .well#media-list
   - if (!fixed)
      button.close.kill-media-list(type='button', data-dismiss='alert') ×
+     .trash(data-bind="sortable: trash",style="width:100px; min-height:50px; background-color: #000;float:right;")
 
   .editable-list-name(
         data-trigger= 'hover'
