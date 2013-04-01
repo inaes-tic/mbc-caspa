@@ -24,16 +24,6 @@ window.UniverseListView = function(options){
                 return model.pretty_duration();
             }, model);
             this.id = ko.observable(model.id);
-//            this.id = ko.computed({
-//                read: function(){
-//                        return this.id;
-//                    },
-//                write: function(id){
-//                        this.id = id;
-//                    },
-//                owner: model
-//            });
-
         },
     });
 
