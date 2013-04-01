@@ -77,21 +77,13 @@ var AppRouter = Backbone.Router.extend({
     },
 
     list: function() {
-        new MediaListView2({model: mediaDB});
-        this.headerView.selectMenuItem('list-menu');
-    },
-    list_draggable: function() {
-        new MediaListView({model: mediaDB, draggable: true});
+        new MediaListView({model: mediaDB});
         this.headerView.selectMenuItem('list-menu');
     },
 
     universe: function () {
         new UniverseListView({collection: Universe});
     },
-    universe_draggable: function () {
-        new UniverseListView({collection: Universe, draggable: true});
-    },
-
 
     mediaDetails: function (id) {
         new MediaView({model: mediaList.get(id)});
@@ -113,11 +105,7 @@ var AppRouter = Backbone.Router.extend({
         new EditView ({el: $("#content"), collection: Universe});
         this.headerView.selectMenuItem('edit-menu');
     },
-    searchMedia: function() {
-        var media = new Media.Model();
-        $('#content').html(new SearchView({model: media}).el);
-        this.headerView.selectMenuItem('search-menu');
-    },
+
     searchMedia: function() {
         var media = new Media.Model();
         $('#content').html(new SearchView({model: media}).el);

@@ -1,5 +1,5 @@
 Backbone.io.connect();
-
+/*
 Backbone.Collection.prototype.move = function (from, to) {
     console.log ('moving', from, to, this);
     if (! this.models[from] || ! this.models[to])
@@ -33,3 +33,4 @@ Backbone.View.prototype.moveDOM = function (id, from, to) {
     }
     return dest;
 };
+*/
