@@ -43,6 +43,13 @@ window.UniverseListView = function(options){
                },
 
             });
+
+            this._onClick = function (item) {
+                if (_this.onClick) {
+                    return _this.onClick(item);
+                }
+                return true;
+            };
         }
     });
 
@@ -53,7 +60,17 @@ window.UniverseListView = function(options){
         kb.release(this.view_model);
         ko.cleanNode(this.el);
         this.el.html('');
-    }
+    };
 
+    var _this = this;
+    this._onClick = function (item) {
+        console.log('outer click');
+        if (_this.onClick) {
+            return _this.onClick(item);
+        }
+        return true;
+    };
+
+    this.view_model.onClick = this._onClick;
     ko.applyBindings(this.view_model, el[0]);
 }
