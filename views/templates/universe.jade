@@ -4,21 +4,8 @@
 
 block content
   p
-   .form-search
-    .input-prepend
-        button.btn(type="submit")
-          i.icon-search
-        input.span5.search-query#media-search(
-          type="text",
-          data-provide="typeahead",
-          data-items="4",
-          placeholder= i18n.gettext('search playlists'),
-          data-bind="value: filterUniverse, valueUpdate: 'keyup'")
+    #playlist-search
   .total-time-div
-      h1.label.label-inverse.format
-          i.icon-time.icon-white
-          span= ' '
-          span.total-time.label.label-inverse.format
   .row-fluid
     ul#playlists.nav.nav-pills.nav-stacked(data-bind="foreach: playlists")
         li(data-bind=inndbind)
