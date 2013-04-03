@@ -100,7 +100,8 @@ var schedbackend = backboneio.createBackend();
 schedbackend.use(function (req, res, next) {
     if( req.method == 'create') {
         var now = moment(new Date());
-        req.model._id = now.unix()*1000 + now.milliseconds();
+        if(req.model._id === undefined)
+            req.model._id = now.unix()*1000 + now.milliseconds();
     }
     next();
 });
