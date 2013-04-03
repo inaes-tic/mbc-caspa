@@ -51,6 +51,7 @@ window.ScheduleView = Backbone.View.extend({
             return ev.start < end && ev.end > start;
         });
         if( overlap.length ) {
+            // TODO: choose better?
             overlap = overlap[0];
             var over_start = moment(overlap.start);
             var over_end = moment(overlap.end);
@@ -250,7 +251,14 @@ window.ScheduleView = Backbone.View.extend({
                 event.start = data.start.toDate();
                 event.end = data.end.toDate();
                 self.calendar.fullCalendar('updateEvent', event);
-                event.model.save({start: data.start.unix(), end: data.end.unix()});
+                event.model.update({start: data.start.unix(), end: data.end.unix()});
+                var overlapping = self.collection.filter(function(oc) {
+                    return (oc.get('start') <= event.model.get('end') &&
+                            oc.get('end') >= event.model.get('start'));
+                });
+                if ( overlapping.length ) {
+                    console.log(overlapping);
+                }
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
