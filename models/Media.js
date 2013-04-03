@@ -78,7 +78,7 @@ Media.Model = Backbone.Model.extend({
         }
     },
     defaults: {
-        checksum: '',
+        _id: '',
         stat: {},
         file: "None",
         name: "",
