@@ -5,7 +5,7 @@ block content
   - var fixed = false
 
 - var dbind = 'foreach: collection';
-- var inndbind = 'drag: $data';
+- var inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 } }';
 - var default_name = '';
 - if (sortable)
   -  dbind = 'sortable: { data: collection , allowDrop: allowDrop}';
@@ -58,6 +58,8 @@ block content
                   a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
                     img(width="150",height="100",data-bind="attr:{ src: checksum() ?  'sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                 td
+                    - if (is_playlist)
+                      button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×
                     h5(data-bind="text: name")
                     h5(data-bind="text: stat().name ? stat().name : file")
                     span.label.label-warning.format
