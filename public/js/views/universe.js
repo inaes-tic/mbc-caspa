@@ -44,6 +44,7 @@ window.UniversePlayListView = MediaPlayListView.extend({
 });
 
 window.UniverseListView2 = function(options){
+    var draggable = 'draggable' in options ? options['draggable'] : false;
     var collection = options['collection'];
     var el = $('#content');
     if(options['el'])
@@ -52,7 +53,7 @@ window.UniverseListView2 = function(options){
     this.collection = collection;
     this.el = el;
 
-    el.html(template.universe());
+    el.html(template.universe({draggable: draggable}));
     console.log('UV2');
 
     var UniItemViewModel = kb.ViewModel.extend({
@@ -78,15 +79,26 @@ window.UniverseListView2 = function(options){
         },
     });
 
-    var MediaListViewModel = kb.ViewModel.extend({
+    var UniverseListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var _this = this;
-            this.playlists =  kb.collectionObservable(collection, {view_model:UniItemViewModel});
-        },
+            this.filterUniverse = ko.observable('');
+            this.playlists =  kb.collectionObservable(collection, {
+               view_model: UniItemViewModel,
+               filters: function(model) {
+                   var filter;
+                   filter = _this.filterUniverse();
+                   if (!filter) return false;
+                   var re = new RegExp(filter,"i");
+                   return model.get('name').search(re) < 0;
+               },
+
+            });
+        }
     });
 
-    this.view_model = new MediaListViewModel(this.collection);
+    this.view_model = new UniverseListViewModel(this.collection);
 
     this.destroy = function () {
         kb.release(this.view_model);
