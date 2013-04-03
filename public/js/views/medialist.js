@@ -32,14 +32,6 @@ window.MediaListItemView = Backbone.View.extend({
 
 });
 
-window.SearchView2 = function(options) {
-    var el = options['el'];
-    //var view_model = options['view_model'];
-    el.html(template.mediasearch());
-    console.log('MS2');
-    return;
-}
-
 window.MediaListView2 = function(options){
     var model = options['model'];
     var collection = model.get('collection');
@@ -47,14 +39,18 @@ window.MediaListView2 = function(options){
     if(options['el'])
         el = options['el'];
 
-    var sortable = 'sortable' in options ? options['sortable'] : false;
-    var disable_drag = 'disable_drag' in options ? options['disable_drag'] : false;
-
     this.model = model;
     this.el = el;
 
+    var allow_drop = false;
+    var type = 'type' in options ? options['type'] : 'playlist-searchable-fixed';
+
+    if (type.match(/sortable/)){
+        allow_drop = true;
+    }
+
 //XXX: there has to be a better way to pre render this
-    el.html(template.medialist({sortable: sortable, disable_drag: disable_drag}));
+    el.html(template.medialist({type: type}));
     console.log('ML2');
 
 //XXX: We need to put this on SearchView2
@@ -89,10 +85,10 @@ window.MediaListView2 = function(options){
 
         },
 
-        allowDrop: sortable,
+        allowDrop: allow_drop,
     });
 
-    new SearchView2({el: $('#media-search',el) });
+    new SearchView({el: $('#media-search',el), type: 'media' });
     this.view_model = new MediaListViewModel(model);
 
     this.editListName = function () {
