@@ -1,5 +1,5 @@
-- if (checksum)
-  - var picture= 'sc/' + checksum + '.jpg'
+- if (_id)
+  - var picture= 'sc/' + _id + '.jpg'
 - if (!description)
   - var description= i18n.gettext('Notes about this media')
 - if (!picture)
@@ -36,7 +36,7 @@
       .row
         .span6
           .control-group
-            - var items = {md5: checksum, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
+            - var items = {md5: _id, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
             each v, k in items
               - var Item = k.charAt(0).toUpperCase() + k.slice(1)
 

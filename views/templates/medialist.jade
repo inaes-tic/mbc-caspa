@@ -56,7 +56,7 @@ block content
               tr(data-bind=inndbind)
                 td
                   a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
-                    img(width="150",height="100",data-bind="attr:{ src: checksum() ?  'sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
+                    img(width="150",height="100",data-bind="attr:{ src: _id() ?  'sc/'+_id().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                 td
                     h5(data-bind="text: name")
                     h5(data-bind="text: stat().name ? stat().name : file")
