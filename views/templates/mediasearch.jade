@@ -1,4 +1,12 @@
 block content
+case type
+    when 'playlist'
+        - input_txt= i18n.gettext('Search Playlists')
+    when 'media'
+        - input_txt= i18n.gettext('Search Medias')
+    default
+        - input_txt= i18n.gettext('Search')
+
   .form-search
     .input-prepend
         button.btn(type="submit")
@@ -7,5 +15,5 @@ block content
           type="text",
           data-provide="typeahead",
           data-items="4",
-          placeholder= i18n.gettext('Search Medias'),
+          placeholder= input_txt,
           data-bind="value: filter, valueUpdate: 'keyup'")

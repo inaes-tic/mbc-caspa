@@ -5,20 +5,40 @@ block content
   - var fixed = false
 
 - var dbind = 'foreach: collection';
-- var inndbind = 'drag: $data';
-- var default_name = '';
-- if (sortable)
-  -  dbind = 'sortable: { data: collection , allowDrop: allowDrop}';
-  -  inndbind = '';
-  -  default_name= "||'" + i18n.gettext('New Playlist') + "'";
+- var inndbind = '';
 
-- if (disable_drag)
-  - dbind = 'foreach: collection';
-  - inndbind = '';
+- var default_name = '';
+
+- var readonly = false;
+- var is_playlist = false;
+
+case type
+    when 'playlist-sortable'
+        - dbind = 'sortable: { data: collection , allowDrop: allowDrop}';
+        - inndbind = '';
+        - default_name= "||'" + i18n.gettext('New Playlist') + "'";
+        - fixed = false;
+        - is_playlist = true;
+
+    when 'playlist-draggable'
+        - dbind = 'foreach: collection';
+        - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 } }';
+        - fixed = true;
+
+    when 'playlist-searchable'
+        - dbind = 'foreach: collection';
+        - fixed = true;
+
+    when 'playlist-readonly'
+        - dbind = 'foreach: collection';
+        - readonly = true;
+        - fixed = false;
+
 
 .well#media-list
   - if (!fixed)
      button.close.kill-media-list(type='button', data-dismiss='alert') ×
+     .trash(data-bind="sortable: trash",style="width:100px; min-height:50px; background-color: #000;float:right;")
 
   .editable-list-name(
         data-trigger= 'hover'
@@ -29,7 +49,7 @@ block content
     )
 
     .fixed
-    - if (sortable)
+    - if (is_playlist && !readonly)
         h1.list-name(data-bind="text: name()" + default_name + ", visible: !editingName(), click: nameClick")
         input.input-block-level.input-list-name(data-bind="value: name, visible: editingName, hasfocus: editingName, valueUpdate: 'afterkeydown', addOnEnter: changeFocus", type='text')
     - else
@@ -38,10 +58,10 @@ block content
   #media-search
   #playlist-table
     .total-time-div
-      h1.label.label-inverse.format
-          i.icon-time.icon-white
-          span= ' '
-          span.total-time.label.label-inverse.format
+        h1.label.label-inverse.format
+            i.icon-time.icon-white
+            span= ' '
+            span.total-time.label.label-inverse.format(data-bind="text: total_time")
 
     .table-container(style='overflow-x:scroll;')
       table.table.table-bordered.table-striped.table-condensed#table
@@ -55,9 +75,13 @@ block content
             tbody.tbody#media-view(data-bind=dbind,class='tbody')
               tr(data-bind=inndbind)
                 td
-                  a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
+                  - if (!is_playlist)
+                    - var target = "attr:{href: '#media/'+_id().split('-')[0]}";
+                  a.plain(data-bind=target )
                     img(width="150",height="100",data-bind="attr:{ src: checksum() ?  'sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                 td
+                    - if (is_playlist && !readonly)
+                      button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×
                     h5(data-bind="text: name")
                     h5(data-bind="text: stat().name ? stat().name : file")
                     span.label.label-warning.format

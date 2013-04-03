@@ -13,13 +13,14 @@ window.EditView = Backbone.View.extend({
     },
     render: function () {
         $(this.el).html(template.mediaedit());
-        new UniverseListView2({
+        new UniverseListView({
             collection: this.collection,
             el: $("#universe")});
-        new MediaListView2({
+        new MediaListView({
             model: mediaDB,
-//            draggable: true,
-            el: $("#left-pane")});
+            el: $("#left-pane"),
+            type: 'playlist-draggable',
+        });
         if (this.editList)
             this.showPlaylist(this.editList);
 
@@ -46,14 +47,17 @@ window.EditView = Backbone.View.extend({
     },
     showPlaylist: function (list) {
         console.log ('show edit view', list);
-        this.editview = new MediaListView2({
-            sortable: true,
+        this.editview = new MediaListView({
+            is_playlist: true,
             model: list,
-            el: $("#right-pane")
+            el: $("#right-pane"),
+            type: 'playlist-sortable',
         });
 
         console.log ('show edit view', this.editview, list);
 
+        $('.alert-empty-playlist', this.el).hide();
+        $('.alert-unnamed-playlist', this.el).hide();
         $('.no-playlist-alert',     this.el).hide();
         $('.playlist-button-array', this.el).show();
     },
@@ -63,17 +67,17 @@ window.EditView = Backbone.View.extend({
         var id     = this.editview.model.get('_id');
 
         console.log ("i want to save", this.editview.model, medias, id);
-        $('.alert-empty-playlist').hide();
-        $('.alert-unnamed-playlist').hide();
+        $('.alert-empty-playlist', this.el).hide();
+        $('.alert-unnamed-playlist', this.el).hide();
         if (! medias.length) {
             console.log ("noooo medias");
-            $('.alert-empty-playlist').show();
+            $('.alert-empty-playlist', this.el).show();
             return;
         }
         if (!name) {
             console.log ("noooo ");
             this.editview.editListName();
-            $('.alert-unnamed-playlist').show();
+            $('.alert-unnamed-playlist', this.el).show();
             return;
         }
 

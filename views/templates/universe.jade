@@ -1,13 +1,14 @@
+- var inndbind = 'attr: {id: id }, click: $root._onClick ';
+- if (draggable)
+    - inndbind += ',drag: id, dragOptions: { zIndex: 900, cursorAt: { top: 5, left: 5 } } ';
+
 block content
-  #media-search
+  p
+    #playlist-search
   .total-time-div
-      h1.label.label-inverse.format
-          i.icon-time.icon-white
-          span= ' '
-          span.total-time.label.label-inverse.format
   .row-fluid
     ul#playlists.nav.nav-pills.nav-stacked(data-bind="foreach: playlists")
-        li(data-bind='attr: {id: id}')
+        li(data-bind=inndbind)
           .playlist-name.span4.well
                   h1(data-bind="text: name")
                   span.label.label-warning.format
