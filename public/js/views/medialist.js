@@ -33,6 +33,8 @@ window.MediaListItemView = Backbone.View.extend({
 });
 
 window.MediaListView2 = function(options){
+    var self = this;
+
     var model = options['model'];
     var collection = model.get('collection');
     var el = $('#content');
@@ -41,6 +43,7 @@ window.MediaListView2 = function(options){
 
     this.model = model;
     this.el = el;
+    this.has_dummy_row = false;
 
     var allow_drop = false;
     var type = 'type' in options ? options['type'] : 'playlist-searchable-fixed';
@@ -112,7 +115,29 @@ window.MediaListView2 = function(options){
         this.el.html('');
     }
 
+    this.addDummyRow = function () {
+        if (this.has_dummy_row) {
+            return;
+        }
+
+        $("#media-view", this.el).append('<tr><td></td></tr>');
+        this.has_dummy_row = true;
+    };
+
+    this.onCollectionChange = function (value) {
+        if (0 == value.length){
+            this.addDummyRow();
+        }
+    };
+
+    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'editListName');
+    this.view_model.collection.subscribe(this.onCollectionChange);
+
     ko.applyBindings(this.view_model, el[0]);
+
+    if (0 == collection.length){
+        this.addDummyRow();
+    }
 }
 
 window.MediaListView = Backbone.View.extend({
