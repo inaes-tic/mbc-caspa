@@ -69,6 +69,10 @@ window.MediaListView2 = function(options){
                 self.editingName(false);
             }
 
+            this.removeItem = function (item) {
+                self.collection.remove(item);
+            }
+
             this.filter = ko.observable('');
             this.collection =  kb.collectionObservable( model.get('collection'), {
                 view_model: kb.ViewModel,
