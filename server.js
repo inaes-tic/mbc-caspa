@@ -96,16 +96,17 @@ blockbackend.use(backboneio.middleware.memoryStore(db, 'blocks'));
 var listbackend = backboneio.createBackend();
 listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
 
-var schedbackend = backboneio.createBackend();
-schedbackend.use(function (req, res, next) {
+function id_middleware(req, res, next) {
     if( req.method == 'create') {
         var now = moment(new Date());
         if(req.model._id === undefined)
             req.model._id = now.unix()*1000 + now.milliseconds();
     }
     next();
-});
+}
 
+var schedbackend = backboneio.createBackend();
+schedbackend.use(id_middleware);
 schedbackend.use(function (req, res, next) {
     console.log ("schedbackend handler", req);
     channel.publish ({channel: "schedbackend", method: req.method, backend: req.backend, model: req.model});
