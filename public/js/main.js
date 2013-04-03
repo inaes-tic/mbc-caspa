@@ -42,11 +42,8 @@ var AppRouter = Backbone.Router.extend({
 
     routes: {
         "media"	: "list",
-        "media-draggable"   : "list_draggable",
         "universe"          : "universe",
-        "universe-draggable": "universe_draggable",
         "media/add"         : "upload",
-        "media/search"      : "searchMedia",
         "media/edit"        : "editMedia",
         "media/:id"         : "mediaDetails",
         "program/:id"       : "listProgram",
@@ -80,18 +77,10 @@ var AppRouter = Backbone.Router.extend({
         new MediaListView2({model: mediaDB});
         this.headerView.selectMenuItem('list-menu');
     },
-    list_draggable: function() {
-        new MediaListView({model: mediaDB, draggable: true});
-        this.headerView.selectMenuItem('list-menu');
-    },
 
     universe: function () {
         new UniverseListView({collection: Universe});
     },
-    universe_draggable: function () {
-        new UniverseListView({collection: Universe, draggable: true});
-    },
-
 
     mediaDetails: function (id) {
         new MediaView({model: mediaList.get(id)});
@@ -112,16 +101,6 @@ var AppRouter = Backbone.Router.extend({
     editMedia: function() {
         new EditView ({el: $("#content"), collection: Universe});
         this.headerView.selectMenuItem('edit-menu');
-    },
-    searchMedia: function() {
-        var media = new Media.Model();
-        $('#content').html(new SearchView({model: media}).el);
-        this.headerView.selectMenuItem('search-menu');
-    },
-    searchMedia: function() {
-        var media = new Media.Model();
-        $('#content').html(new SearchView({model: media}).el);
-        this.headerView.selectMenuItem('search-menu');
     },
 
     about: function () {
