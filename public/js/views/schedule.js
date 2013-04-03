@@ -45,7 +45,7 @@ window.ScheduleView = Backbone.View.extend({
 
         $(this.el).html(this.get_templateHTML());
 
-        new UniverseListView({
+        new UniverseListView2({
             collection: Universe,
             el: $('#universe', this.el),
             draggable: true,
