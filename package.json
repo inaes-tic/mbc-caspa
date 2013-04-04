@@ -20,7 +20,7 @@
         "underscore": "1.2.x",
         "jade": "*",
         "folio": "0.2.x",
-        "less-middleware": "*",
+        "less-middleware": ">=0.1.11",
         "underscore": "*",
         "jquery-browser": "1.8.x",
         "jqueryui-browser": "1.9.x",
@@ -35,7 +35,7 @@
         "config": "0.4.x",
         "knockback" : "*",
         "knockout-client" : "*",
-        "i18n-abide"    : "git://github.com/inaes-tic/i18n-abide",
+        "i18n-abide"    : ">=0.0.7",
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git"
