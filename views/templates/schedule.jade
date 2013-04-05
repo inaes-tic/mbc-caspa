@@ -1,3 +1,11 @@
 block content
   #universe(title= i18n.gettext('Drag and drop programs to the calendar below'))
+  
+  #overlapping-alert.row-fluid
+    .span4.offset4.alert.lead
+      span= i18n.gettext('There are overlapping events. ')
+      a(href='#pushdown')= i18n.gettext('Push down')
+      span  or 
+      a(href='#revert')= i18n.gettext('revert')  
+  
   #schedule_calendar.ui-widget-content.block-shadow.padded.omega-block
