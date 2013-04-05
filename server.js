@@ -3,7 +3,7 @@ var express = require('express'),
     exec    = require('child_process').exec,
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
- backboneio = require('backbone.io'),
+    backboneio = require('backbone.io'),
     conf    = require('config')
  ;
 
