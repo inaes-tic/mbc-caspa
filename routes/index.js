@@ -63,8 +63,6 @@ module.exports = function(app) {
         require.resolve('jed'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
         path.join(lib_dir, 'bootstrap.min.js'),
-        path.join(lib_dir, 'andika.js'),
-        path.join(lib_dir, 'arvo.js'),
         path.join(lib_dir, 'sprintf/sprintf.js'),
         path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
         path.join(lib_dir, 'airtime/common.js'),
