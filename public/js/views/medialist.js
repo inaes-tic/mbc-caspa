@@ -32,14 +32,6 @@ window.MediaListItemView = Backbone.View.extend({
 
 });
 
-window.SearchView2 = function(options) {
-    var el = options['el'];
-    //var view_model = options['view_model'];
-    el.html(template.mediasearch());
-    console.log('MS2');
-    return;
-}
-
 window.MediaListView2 = function(options){
     var model = options['model'];
     var collection = model.get('collection');
@@ -92,7 +84,7 @@ window.MediaListView2 = function(options){
         allowDrop: sortable,
     });
 
-    new SearchView2({el: $('#media-search',el) });
+    new SearchView({el: $('#media-search',el), type: 'media' });
     this.view_model = new MediaListViewModel(model);
 
     this.editListName = function () {

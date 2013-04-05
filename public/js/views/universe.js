@@ -83,12 +83,12 @@ window.UniverseListView2 = function(options){
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var _this = this;
-            this.filterUniverse = ko.observable('');
+            this.filter = ko.observable('');
             this.playlists =  kb.collectionObservable(collection, {
                view_model: UniItemViewModel,
                filters: function(model) {
                    var filter;
-                   filter = _this.filterUniverse();
+                   filter = _this.filter();
                    if (!filter) return false;
                    var re = new RegExp(filter,"i");
                    return model.get('name').search(re) < 0;
@@ -98,6 +98,7 @@ window.UniverseListView2 = function(options){
         }
     });
 
+    new SearchView({el: $('#playlist-search',el), type: 'playlist' });
     this.view_model = new UniverseListViewModel(this.collection);
 
     this.destroy = function () {
