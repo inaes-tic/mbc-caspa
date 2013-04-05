@@ -3,8 +3,9 @@ var express = require('express'),
     exec    = require('child_process').exec,
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
- backboneio = require('backbone.io'),
-    conf    = require('config')
+    backboneio = require('backbone.io'),
+    conf    = require('config'),
+    mbc = require('mbc-common')
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -79,7 +80,7 @@ function debug_backend (backend) {
         });
 }
 
-var db = require('./db').db();
+var db = mbc.db();
 var mubsub = require ('mubsub');
 var client = mubsub (db);
 
