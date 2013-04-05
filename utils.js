@@ -139,7 +139,7 @@ exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
                 if (stat === item.stat) return (done(item));
                 else item.stat = stat;
             } else {
-                item = {file: file, stat: stat};
+                item = { _id: md5 , file: file, stat: stat};
             }
 
             return done(item);
