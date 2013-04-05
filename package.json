@@ -38,7 +38,8 @@
         "i18n-abide"    : ">=0.0.7",
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
-        "mubsub"        : "git://github.com/inaes-tic/mubsub.git"
+        "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
+        "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git"
     },
     "engines": {
         "node": "0.8.4",
