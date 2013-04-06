@@ -7,7 +7,7 @@ var     _ = require('underscore')
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
 
-var db = require('./db').db();
+var db = require('mbc-common').db();
 
 exports.openDB = function (callback, populateCallback) {
     db.open(function(err, db) {
