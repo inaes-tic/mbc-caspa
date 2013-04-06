@@ -130,18 +130,21 @@ exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     var spawn = require('child_process').spawn,
     md5sum    = spawn('md5sum', [file]);
 
-    db.collection('medias').findOne({'file': file}, function(err, item) {
-        if (!err && item) {
-            if (stat === item.stat) return (done(item));
-            else item.stat = stat;
-        } else {
-            item = {file: file, stat: stat};
-        }
+    console.log ("looking at :" + file);
+    md5sum.stdout.on('data', function (data) {
+        var md5 = data.toString().split(' ')[0];
 
-        md5sum.stdout.on('data', function (data) {
-            item._id = data.toString().split(' ')[0];
-            done(item);
+        db.collection('medias').findOne(md5, function(err, item) {
+            if (!err && item) {
+                if (stat === item.stat) return (done(item));
+                else item.stat = stat;
+            } else {
+                item = { _id: md5 , file: file, stat: stat};
+            }
+
+            return done(item);
         });
+
     });
 });
 
