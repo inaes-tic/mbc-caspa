@@ -33,6 +33,8 @@ window.MediaListItemView = Backbone.View.extend({
 });
 
 window.MediaListView2 = function(options){
+    var self = this;
+
     var model = options['model'];
     var collection = model.get('collection');
     var el = $('#content');
@@ -41,6 +43,7 @@ window.MediaListView2 = function(options){
 
     this.model = model;
     this.el = el;
+    this.has_dummy_row = false;
 
     var allow_drop = false;
     var type = 'type' in options ? options['type'] : 'playlist-searchable-fixed';
@@ -57,16 +60,20 @@ window.MediaListView2 = function(options){
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
-            var _this = this;
+            var self = this;
             this.editingName = ko.observable(false);
             this.nameClick = function () {
                 this.editingName(true);
             }
 
             this.changeFocus = function () {
-                if(_this.name().length<=0)
+                if(self.name().length<=0)
                   return false;
-                _this.editingName(false);
+                self.editingName(false);
+            }
+
+            this.removeItem = function (item) {
+                self.collection.remove(item);
             }
 
             this.filter = ko.observable('');
@@ -74,7 +81,7 @@ window.MediaListView2 = function(options){
                 view_model: kb.ViewModel,
                 filters: function(model) {
                     var filter;
-                    filter = _this.filter();
+                    filter = self.filter();
                     if (!filter) return false;
                     var re = new RegExp(filter,"i");
                     return ( model.get('file').search(re) < 0 &&
@@ -82,6 +89,12 @@ window.MediaListView2 = function(options){
                     );
                 },
             });
+
+            this.total_time = ko.computed(function(){
+//XXX: keep this, it tells KO to update total_time when something happens to the collection
+                var x = self.collection();
+                return model.pretty_duration();
+            }, model);
 
         },
 
@@ -102,7 +115,29 @@ window.MediaListView2 = function(options){
         this.el.html('');
     }
 
+    this.addDummyRow = function () {
+        if (this.has_dummy_row) {
+            return;
+        }
+
+        $("#media-view", this.el).append('<tr><td></td></tr>');
+        this.has_dummy_row = true;
+    };
+
+    this.onCollectionChange = function (value) {
+        if (0 == value.length){
+            this.addDummyRow();
+        }
+    };
+
+    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'editListName');
+    this.view_model.collection.subscribe(this.onCollectionChange);
+
     ko.applyBindings(this.view_model, el[0]);
+
+    if (0 == collection.length){
+        this.addDummyRow();
+    }
 }
 
 window.MediaListView = Backbone.View.extend({
