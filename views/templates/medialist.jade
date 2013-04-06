@@ -57,7 +57,7 @@ block content
       h1.label.label-inverse.format
           i.icon-time.icon-white
           span= ' '
-          span.total-time.label.label-inverse.format
+          span.total-time.label.label-inverse.format(data-bind="text: total_time")
 
     .table-container(style='overflow-x:scroll;')
       table.table.table-bordered.table-striped.table-condensed#table
@@ -76,6 +76,8 @@ block content
                   a.plain(data-bind=target)
                     img(width="150",height="100",data-bind="attr:{ src: _id() ?  'sc/'+_id().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                 td
+                    - if (is_playlist)
+                      button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×
                     h5(data-bind="text: name")
                     h5(data-bind="text: stat().name ? stat().name : file")
                     span.label.label-warning.format
