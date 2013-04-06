@@ -27,13 +27,13 @@ window.UniverseListView = function(options){
     var UniverseListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
-            var _this = this;
+            var self = this;
             this.filter = ko.observable('');
             this.playlists =  kb.collectionObservable(collection, {
                view_model: UniItemViewModel,
                filters: function(model) {
                    var filter;
-                   filter = _this.filter();
+                   filter = self.filter();
                    if (!filter) return false;
                    var re = new RegExp(filter,"i");
                    return model.get('name').search(re) < 0;
