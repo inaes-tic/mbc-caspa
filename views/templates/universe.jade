@@ -3,12 +3,11 @@
     - inndbind += ',drag: id, dragOptions: { zIndex: 900, cursorAt: { top: 5, left: 5 } } ';
 
 block content
-  p
    .form-search
     .input-prepend
         button.btn(type="submit")
           i.icon-search
-        input.span5.search-query#media-search(
+        input.search-query#media-search(
           type="text",
           data-provide="typeahead",
           data-items="4",
