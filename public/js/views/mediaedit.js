@@ -13,10 +13,10 @@ window.EditView = Backbone.View.extend({
     },
     render: function () {
         $(this.el).html(template.mediaedit());
-        new UniverseListView2({
+        new UniverseListView({
             collection: this.collection,
             el: $("#universe")});
-        new MediaListView2({
+        new MediaListView({
             model: mediaDB,
             el: $("#left-pane"),
             type: 'playlist-draggable-fixed',
@@ -47,7 +47,7 @@ window.EditView = Backbone.View.extend({
     },
     showPlaylist: function (list) {
         console.log ('show edit view', list);
-        this.editview = new MediaListView2({
+        this.editview = new MediaListView({
             sortable: true,
             model: list,
             el: $("#right-pane"),
