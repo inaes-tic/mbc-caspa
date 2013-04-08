@@ -253,8 +253,9 @@ window.ScheduleView = Backbone.View.extend({
                 self.calendar.fullCalendar('updateEvent', event);
                 event.model.update({start: data.start.unix(), end: data.end.unix()});
                 var overlapping = self.collection.filter(function(oc) {
-                    return (oc.get('start') <= event.model.get('end') &&
-                            oc.get('end') >= event.model.get('start'));
+                    return (oc.get('_id') != event._id &&
+                            oc.get('start') < event.model.get('end') &&
+                            oc.get('end') > event.model.get('start'));
                 });
                 if ( overlapping.length ) {
                     console.log(overlapping);
