@@ -39,6 +39,37 @@ window.ScheduleView = Backbone.View.extend({
     reload: function() {
         this.calendar.fullCalendar('refetchEvents');
     },
+    checkOverlap: function(event) {
+        // This checks if an event has any overlapping events on the calendar. It expects the event
+        // to have a 'start' and an 'end' properties
+
+        var start = moment(event.start);
+        var end = moment(event.end);
+        var overlap = this.calendar.fullCalendar('clientEvents', function(ev) {
+            if( ev == event)
+                return false;
+            return ev.start < end && ev.end > start;
+        });
+        if( overlap.length ) {
+            // TODO: choose better?
+            overlap = overlap[0];
+            var over_start = moment(overlap.start);
+            var over_end = moment(overlap.end);
+            var duration = end - start;
+            if( over_start > start ) {
+                // clamp to beginning
+                end = over_start.clone();
+                start = end.clone();
+                start.subtract(duration);
+            } else {
+                // clamp to end
+                start = over_end.clone();
+                end = start.clone();
+                end.add(duration);
+            }
+        }
+        return {start: start, end: end};
+    },
     initialize: function () {
         var self = this;
         self.collection = this.get_collection();
@@ -87,7 +118,7 @@ window.ScheduleView = Backbone.View.extend({
                 console.log(start, end);
                 var unix_start = moment(start).unix();
                 var unix_end = moment(end).unix();
-                events = self.get_collection().filter(function(el){
+                var events = self.get_collection().filter(function(el){
                     return unix_start <= el.get('end') && unix_end >= el.get('start');
                 }).map(self.make_event);
                 console.log('Returning events #', events.length);
@@ -216,9 +247,18 @@ window.ScheduleView = Backbone.View.extend({
               eventAfterRender(event, element, view);
             },
             eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
-                var start = moment(event.start);
-                var end = moment(event.end);
-                event.model.save({start: start.unix(), end: end.unix()});
+                var data = self.checkOverlap(event);
+                event.start = data.start.toDate();
+                event.end = data.end.toDate();
+                self.calendar.fullCalendar('updateEvent', event);
+                event.model.update({start: data.start.unix(), end: data.end.unix()});
+                var overlapping = self.collection.filter(function(oc) {
+                    return (oc.get('start') <= event.model.get('end') &&
+                            oc.get('end') >= event.model.get('start'));
+                });
+                if ( overlapping.length ) {
+                    console.log(overlapping);
+                }
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
@@ -229,10 +269,13 @@ window.ScheduleView = Backbone.View.extend({
                 var end   = moment(start);
 
                 end.add('ms', list.get('duration'));
+
+                var times = self.checkOverlap({start: start, end: end});
+
                 var event = {
                     title:  list.get('name'),
                     list:   list.get('_id'),
-                    start:  start.unix(), end: end.unix(),
+                    start:  times.start.unix(), end: times.end.unix(),
                     allDay: allDay,
                 };
 
