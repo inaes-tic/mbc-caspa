@@ -2,7 +2,8 @@ module.exports = function(app) {
     var path = require('path')
     , folio = require('folio')
     , jade = require('jade')
-    , po2json = require('po2json');
+    , po2json = require('po2json')
+    , i18n = require('i18n-abide');
 
     var self = require (__dirname + '/../models/App.js')
     , appModel = new self.Model();
@@ -28,10 +29,10 @@ module.exports = function(app) {
 
     app.get('/po/:id', function (req, res) {
         var lang = req.params.id;
-
+        var locale = i18n.localeFrom(lang);
         var jsondata = '';
         try {
-            jsondata = po2json.parseSync('locale/' + lang + '/LC_MESSAGES/messages.po');
+            jsondata = po2json.parseSync('locale/' + locale + '/LC_MESSAGES/messages.po');
             res.send (jsondata);
         } catch (e) {
             console.log (e);
