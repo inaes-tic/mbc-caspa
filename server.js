@@ -126,6 +126,8 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
         });
     }
 });
+statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
+
 _([mediabackend, listbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
