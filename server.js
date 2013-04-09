@@ -104,6 +104,7 @@ channel.subscribe ({channel: 'schedbackend'}, function (sched) {
     schedbackend.emit('updated', sched.model);
 });
 
+var statusbackend = backboneio.createBackend();
 _([mediabackend, listbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
