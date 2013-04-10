@@ -3,7 +3,8 @@ module.exports = function(app) {
     , folio = require('folio')
     , jade = require('jade')
     , po2json = require('po2json')
-    , i18n = require('i18n-abide');
+    , i18n = require('i18n-abide')
+    , conf = require('config').Caspa;
 
     var self = require (__dirname + '/../models/App.js')
     , appModel = new self.Model();
@@ -18,9 +19,8 @@ module.exports = function(app) {
     /*
      * GET home page.
      */
-
     app.get('/',  function(req, res) {
-        res.render('index', appModel.toJSON());
+        res.render('index', {title: conf.name, subtitle: conf.description });
     });
 
     app.get('/app/:id', function (req, res) {
