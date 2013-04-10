@@ -19,7 +19,7 @@ block content
   - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 } }';
 
 - if (type.match(/sortable/))
-  - dbind = 'sortable: { data: collection , allowDrop: allowDrop}';
+  - dbind = 'sortable: { data: collection , allowDrop: allowDrop, dragged: dragHandler}';
   - inndbind = '';
   - is_playlist = true;
   - default_name= "||'" + i18n.gettext('New Playlist') + "'";
@@ -72,9 +72,9 @@ block content
               tr(data-bind=inndbind)
                 td
                   - if (!is_playlist)
-                    - var target = "attr:{href: '#media/'+_id().split('-')[0]}";
+                    - var target = "attr:{href: '#media/'+checksum().split('-')[0]}";
                   a.plain(data-bind=target)
-                    img(width="150",height="100",data-bind="attr:{ src: _id() ?  'sc/'+_id().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
+                    img(width="150",height="100",data-bind="attr:{ src: checksum() ?  'sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                 td
                     - if (is_playlist)
                       button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×
@@ -101,8 +101,8 @@ block content
                         span(data-bind=" text: ' '+audio().codec")
                         span=' '
                 td
-                  a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
+                  a.plain(data-bind= "attr:{href: '#media/'+checksum().split('-')[0]}")
                     span.label.label-success= i18n.gettext('Success')
                 td
-                  a.plain(data-bind= "attr:{href: '#media/'+_id().split('-')[0]}")
+                  a.plain(data-bind= "attr:{href: '#media/'+checksum().split('-')[0]}")
                     span.label.label-important= i18n.gettext('Error')

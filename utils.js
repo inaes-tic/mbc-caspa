@@ -111,6 +111,7 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
                 metadata._id  = media._id;
                 metadata.file = media.file;
                 metadata.stat = media.stat;
+                metadata.checksum = media._id;
                 callback (metadata);
             }
     }, function(retcode, fds) {
