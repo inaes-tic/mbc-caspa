@@ -26,7 +26,7 @@ app.configure(function () {
         supported_languages: ['en-US', 'es', 'db-LB', 'it-CH'],
         default_lang: 'es',
         debug_lang: 'it-CH',
-        locale_directory: 'locale'
+        translation_directory: 'locale'
     }));
     app.set('port', process.env.PORT || 3000);
     app.set('views', conf.Dirs.views);
