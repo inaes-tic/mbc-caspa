@@ -5,6 +5,7 @@ mos: locale/es/LC_MESSAGES/messages.mo
 locale/es/LC_MESSAGES/messages.mo:
 	./bin/extract_po.sh
 	./bin/update_languages.sh
+	./bin/compile-json locale locale
 
 submodules: sparkmd5 bootstrap knockout-sortable
 	git submodule update
