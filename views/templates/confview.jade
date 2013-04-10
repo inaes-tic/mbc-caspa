@@ -1,3 +1,5 @@
+- var c = ''
+- var add_size = 5
 .row
   .span3.bs-docs-sidebar
     ul.nav.nav-list.bs-docs-sidenav.affix
@@ -9,9 +11,8 @@
             span= i18n.gettext(k)
       li
         .form-actions
-          a.btn.btn-primary.save(href="#")= i18n.gettext('Save')
-          a.btn.delete(href="#")= i18n.gettext('Cancel')
-
+          a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
+          a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
   .span9
     section#overview
       .page-header
@@ -20,12 +21,29 @@
      .page-header
        h1= i18n.gettext('Main configuration')
          small= i18n.gettext('the finest of the fine tuning')
-     h2= i18n.gettext('Scrapper')
        form.form-horizontal
          .control-group
-           label.control-label(for='scrape_path')= i18n.gettext('Scrape Path') + ':'
-           .controls
-             input#scrape_path(type='text', placeholder=i18n.gettext('Scrape Path'), value=config.scrape_path)
+           each v, k in config
+             h1= k
+               small= i18n.gettext('Configuration')
+             each v0, k0 in v
+               - if (typeof(v0) == 'string') {
+                 - var label= k+'.'+k0
+                 - var value= v0
+                 - var size= v0.length+add_size
+                 label.control-label(for=label)= label + ':'
+                 .controls
+                   input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, size=size)
+               - } else {
+                 h2= k0
+                 each v1, k1 in v0
+                   - var label=  k+'.'+k0+'.'+k1
+                   - var value= v1
+                   - var size= v1.length+add_size
+                   label.control-label(for=label)= label + ':'
+                   .controls
+                     input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, size=size)
+               - }
     section#config-sec
      .page-header
        h1= i18n.gettext('Clearly secondary')
