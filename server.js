@@ -82,10 +82,8 @@ function debug_backend (backend) {
 }
 
 var db = mbc.db();
-var mubsub = require ('mubsub');
-var client = mubsub (db);
 
-var channel = client.channel('messages', { size: 10000000, max: 50000 });
+var channel = mbc.pubsub();
 
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
