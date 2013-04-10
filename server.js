@@ -5,7 +5,8 @@ var express = require('express'),
     _       = require('underscore'),
     backboneio = require('backbone.io'),
     conf    = require('config'),
-    mbc = require('mbc-common')
+    mbc = require('mbc-common'),
+    moment = require('moment')
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -95,7 +96,15 @@ blockbackend.use(backboneio.middleware.memoryStore(db, 'blocks'));
 var listbackend = backboneio.createBackend();
 listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
 
+function id_middleware(req, res, next) {
+    if( req.method == 'create' && req.model._id === undefined) {
+        req.model._id = moment().valueOf();
+    }
+    next();
+}
+
 var schedbackend = backboneio.createBackend();
+schedbackend.use(id_middleware);
 schedbackend.use(function (req, res, next) {
     console.log ("schedbackend handler", req);
     channel.publish ({channel: "schedbackend", method: req.method, backend: req.backend, model: req.model});
