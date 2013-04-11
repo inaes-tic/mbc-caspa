@@ -12,11 +12,13 @@ var express = require('express'),
 /* make sure at runtime that we atempt to get the dirs we need */
 for (d in conf.Dirs) {
     /* HACK: but I'm not going to waist time writing mkdir -p */
-    exec ('mkdir -p ' + conf.Dirs[d], function (error, stdout, stderr) {
-        if (error !== null) {
-            console.log('exec error: ' + error);
-        }
-    });
+    if (d!= 'Info') {
+        exec ('mkdir -p ' + conf.Dirs[d], function (error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        });
+    }
 }
 
 var app = express();

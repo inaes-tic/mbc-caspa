@@ -20,7 +20,7 @@ module.exports = function(app) {
      * GET home page.
      */
     app.get('/',  function(req, res) {
-        res.render('index', {title: conf.name, subtitle: conf.description });
+        res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
     });
 
     app.get('/app/:id', function (req, res) {
