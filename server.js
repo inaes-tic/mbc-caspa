@@ -113,6 +113,30 @@ channel.subscribe ({channel: 'schedbackend'}, function (sched) {
     schedbackend.emit('updated', sched.model);
 });
 
+var statusbackend = backboneio.createBackend();
+channel.subscribe({backend: 'mostoStatus'}, function(msg) {
+    // This receives messages from mosto and propagates the message through
+    //  backbone.io
+    var status = msg.model;
+    if( status._id ) {
+        // is there a faster way to do this? Maybe make sure status id=1 always
+        // exists and just assume updates afterwards?
+        db.collections('status').findOne({_id: status._id}, function(err, res) {
+            var method = 'updated';
+            if( err )
+                // uhm.. do something?
+                return;
+            if( res == null ) {
+                // it doesn't exist, create it
+                method = 'created';
+                res._id = 1;
+            }
+            statusbackend.emit(method, status);
+        });
+    }
+});
+statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
+
 _([mediabackend, listbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
