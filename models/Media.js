@@ -301,10 +301,14 @@ Media.Occurrence = Media.List.extend ({
                I call checkOverlap. Could be improved. */
             
             delete this.validationError;
-            this.overlapsWith.forEach(function(oc) {
+            // Prevent infinite loops by first emptying the list            
+            var overlapsWith = _.clone(this.overlapsWith);
+            this.overlapsWith = [];
+            
+            overlapsWith.forEach(function(oc) {
                 oc.save();
             });
-            this.overlapsWith = [];
+            
             this.collection.checkOverlap();
         }
     },

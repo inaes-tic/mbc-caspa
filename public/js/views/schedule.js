@@ -103,26 +103,33 @@ window.ScheduleView = Backbone.View.extend({
         };
     },
     pushdownAll: function() {
+        var self = this;
+        var invalid = this.collection.getInvalid();
+        invalid.forEach(function(oc){
+            if (!oc.validationError) return // conflict may have already been fixed by other pushdown
+            var first = oc.getOverlappingEvents()[0];
+            if (oc.get('start') > first.get('start')) {
+                self.pushdown(first);
+            } else {
+                self.pushdown(oc);
+            }
+        })
+    },
+    pushdown: function(oc) {
         /* We assume the last dragged object is the one the user
            wants to keep in that position */
-        var invalid = this.collection.getInvalid();
-        this.pushdown(invalid);
-    },
-    pushdown: function(ocs) {
         var self = this;
-        ocs.forEach(function(oc) {
-            overlapping = oc.getOverlappingEvents();
-            first = overlapping[0];
-            
+        var overlapping = oc.getOverlappingEvents();
+        overlapping.forEach(function(first) {
             start = oc.get('end');
             duration = first.get('end') - first.get('start');
             end = start + duration
             first.save({start: start, end: end});
             // If I stepped over another event, call myself again
             if (first.validationError) {
-                self.pushdown([first]);
+                self.pushdown(first);
             };
-        });
+        })
     },
     revert: function() {
         this.collection.fetch({reset: true});
