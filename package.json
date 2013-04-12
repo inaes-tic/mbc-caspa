@@ -10,7 +10,7 @@
         "email": "xaiki@debian.org"
     },
     "scripts": {
-        "start": "node app"
+        "start": "make serve"
     },
     "dependencies": {
         "express": "3.x",
