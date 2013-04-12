@@ -94,8 +94,8 @@ window.HeaderView = Backbone.View.extend({
         });
 
         this.model.bind("all", function (event, arg) {
-            console.log ('an item view got', event, arg)
-            this.parseItems(this.model.toJSON());
+            console.debug ('HEADER an item view got', event, arg)
+            //this.parseItems(this.model.toJSON());
         }, this);
 
     },
