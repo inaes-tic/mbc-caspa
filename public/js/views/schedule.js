@@ -6,7 +6,14 @@ window.OccurrenceView = Backbone.View.extend({
       this.calendar = this.options.calendar;
     },
     deleteOcurrence: function(sth) {
-      this.$el.fadeOut(400, this.model.destroy.bind(this.model));
+      var overlapped = this.model.overlapsWith;
+      var options = {success: function() {
+        overlapped.forEach(function(o) {
+          o.save();
+          });
+        }
+      };
+      this.$el.fadeOut(400, this.model.destroy.bind(this.model, options));
       console.log("Deleting ocurrence", this.model);
     }
 });

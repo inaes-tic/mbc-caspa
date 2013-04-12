@@ -284,18 +284,23 @@ Media.Occurrence = Media.List.extend ({
                });
     },
     validate: function(attrs, options) {
+        // Do not validate when fetching from the server
+        if (options.parse) return;
         // Only save model if it's not overlapping with anything
         var self = this;
         overlapping = this.getOverlappingEvents();
         if (overlapping.length) {
             overlapping.forEach(function(oc) {
-                // TODO: maybe this is added twice.
                 oc.overlapsWith.push(self);
             });
             this.collection.trigger('overlap', true);
             return overlapping
         } else {
-            // When this event is no longer overlapping, the other events could be valid.
+            /* When this event is no longer overlapping, the other events could be valid.
+               validationError would be unset after this function returns, but I need if before
+               I call checkOverlap. Could be improved. */
+            
+            delete this.validationError;
             this.overlapsWith.forEach(function(oc) {
                 oc.save();
             });
