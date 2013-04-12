@@ -145,6 +145,7 @@ backboneio.listen(app.listen(app.get('port'), function(){
       blockbackend: blockbackend,
       listbackend:  listbackend,
       schedbackend: schedbackend,
+      statusbackend: statusbackend,
     });
 
 var utils = require('./utils');
