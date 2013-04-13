@@ -117,7 +117,22 @@ var statusbackend = backboneio.createBackend();
 channel.subscribe({backend: 'mostoStatus'}, function(msg) {
     // This receives messages from mosto and propagates the message through
     //  backbone.io
-    statusbackend.emit('updated', msg.model);
+    var status = msg.model;
+    var emit = _.after(3, function() {
+        console.log('emitting', status);
+        statusbackend.emit('updated', status)
+    });
+    ['previous', 'current', 'next'].forEach(function(pos) {
+        db.collection('scheds').findById(status.show[pos], function(err, res) {
+            if( res ) {
+                status.show[pos] = {
+                    name: res.name,
+                    _id: res._id,
+                }
+            }
+            emit();
+        });
+    });
 });
 statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
 
