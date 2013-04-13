@@ -110,7 +110,7 @@ Media.Collection = Backbone.Collection.extend({
 
 
 Media.Piece = Media.Model.extend ({
-    urlRoot: 'piece',
+    urlRoot: 'block',
     idAttribute: "_id",
     defaults: {
         trim: {
@@ -129,7 +129,7 @@ Media.Piece = Media.Model.extend ({
 
 Media.Block = Media.Collection.extend ({
     model: Media.Piece,
-    url: 'piece',
+    url: 'block',
     backend: 'blockbackend',
     initialize: function () {
         if (!server)

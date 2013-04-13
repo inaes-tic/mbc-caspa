@@ -63,6 +63,13 @@ window.MediaListView = function(options){
         },
 
         allowDrop: allow_drop,
+
+        dragHandler: function(item, event, ui){
+            var piece = new Media.Piece(item.model().attributes);
+            piece.unset('_id');
+            piece.set('checksum', item.model().get('_id'));
+            return kb.viewModel(piece)
+        },
     });
 
     new SearchView({el: $('#media-search',el), type: 'media' });
