@@ -51,7 +51,22 @@ App.Model = Backbone.Model.extend({
     },
 });
 
-App.Status = App.Model.extend ({
+App.Status = Backbone.Model.extend ({
+    backend: 'statusbackend',
+    urlRoot: 'status',
+    idAttribute: '_id',
+    initialize: function () {
+        if (!server) {
+            this.bindBackend();
+
+            this.bind('backend', function(method, model) {
+                console.log ('STATUS got from backend:', method, model);
+            });
+        }
+        console.log ('creating new STATUS');
+
+        return Backbone.Model.prototype.initialize.call (this);
+    },
     defaults: {
         _id: 2,
         piece: {

@@ -1,20 +1,27 @@
 block nowplaying
   - if (!type)
     - var type = 'Show'
+
+  - if (type.match(/track/i))
+    - var src = 'piece()'
+
+  - if (type.match(/show/i))
+    - var src = 'show()'
+
   .text-row
           strong= i18n.gettext('Previous:')
-          span#previous
+          span#previous(data-bind='text: ' + src + '.previous.name')
           span#prev-length
   .now-playing-info.song
           .time-flow
             span.time-elapsed#time-elapsed
             span.time-remaining#time-remaining
           span#current= i18n.gettext('Current ' + type + ':')
-            strong.alert Nothing Scheduled
+            strong(data-bind='text: ' + src + '.current.name')
           span.length#song-length
   .progressbar
-          .progress-song#progress-bar(style="width:0%")
+          .progress-song#progress-bar(data-bind='{attr: {style:"width:"+' + src + '.progress }}')
   .text-row.next-song
           strong= i18n.gettext('Next:')
-          span#next
+          span#next(data-bind='text: ' + src + '.next.name')
           span#next-length
