@@ -136,6 +136,22 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
 });
 statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
 
+// there should probably be two backends or two collections or both, or something, one for
+// one-time momentary messages like warnings and such to be dismissed by the frontend,
+// and another one for "sticky" messages like long-lived status problems, like if melted died
+// or the DB has a problem
+var mostomessagesbackend = backboneio.createBackend();
+channel.subscribe({backend: 'mostoMessage', method: 'emit'}, function(msg) {
+    mostomessagesbackend.emit('created', msg.model);
+});
+channel.subscribe({backend: 'mostoMessage', method: 'create'}, function(msg) {
+    mostomessagesbackend.emit('created', msg.model);
+});
+channel.subscribe({backend: 'mostoMessage', method: 'delete'}, function(msg) {
+    mostomessagesbackend.emit('deleted', msg.model);
+});
+mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
+
 _([mediabackend, listbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
