@@ -113,6 +113,45 @@ channel.subscribe ({channel: 'schedbackend'}, function (sched) {
     schedbackend.emit('updated', sched.model);
 });
 
+var statusbackend = backboneio.createBackend();
+channel.subscribe({backend: 'mostoStatus'}, function(msg) {
+    // This receives messages from mosto and propagates the message through
+    //  backbone.io
+    var status = msg.model;
+    var emit = _.after(3, function() {
+        console.log('emitting', status);
+        statusbackend.emit('updated', status)
+    });
+    ['previous', 'current', 'next'].forEach(function(pos) {
+        db.collection('scheds').findById(status.show[pos]._id, function(err, res) {
+            if( res ) {
+                status.show[pos] = {
+                    name: res.name,
+                    _id: res._id,
+                }
+            }
+            emit();
+        });
+    });
+});
+statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
+
+// there should probably be two backends or two collections or both, or something, one for
+// one-time momentary messages like warnings and such to be dismissed by the frontend,
+// and another one for "sticky" messages like long-lived status problems, like if melted died
+// or the DB has a problem
+var mostomessagesbackend = backboneio.createBackend();
+channel.subscribe({backend: 'mostoMessage', method: 'emit'}, function(msg) {
+    mostomessagesbackend.emit('created', msg.model);
+});
+channel.subscribe({backend: 'mostoMessage', method: 'create'}, function(msg) {
+    mostomessagesbackend.emit('created', msg.model);
+});
+channel.subscribe({backend: 'mostoMessage', method: 'delete'}, function(msg) {
+    mostomessagesbackend.emit('deleted', msg.model);
+});
+mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
+
 _([mediabackend, listbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
@@ -121,6 +160,7 @@ backboneio.listen(app.listen(app.get('port'), function(){
       blockbackend: blockbackend,
       listbackend:  listbackend,
       schedbackend: schedbackend,
+      statusbackend: statusbackend,
     });
 
 var utils = require('./utils');
