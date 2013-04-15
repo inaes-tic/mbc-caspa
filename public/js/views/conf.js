@@ -5,7 +5,7 @@ window.ConfView = Backbone.View.extend({
     },
     render: function () {
 //        try {
-            $(this.el).html(template.confview(this.model.toJSON()));
+            $(this.el).html(template.confview({ config: this.model.toJSON()}));
 //            $(".bs-docs-sidebar").scrollspy();
             return this;
 //        } catch (e) {
@@ -15,25 +15,22 @@ window.ConfView = Backbone.View.extend({
     },
     events: {
         "change"        : "change",
-        "click .save"   : "save",
-        "click .abort"  : "abort",
+        "click .save_conf"   : "save",
+        "click .abort_conf"  : "abort",
     },
+
     change: function (event) {
         // Remove any existing alert message
         utils.hideAlert();
 
         // Apply the change to the model
         var target = event.target;
-        var change = {};
-        change[target.name] = target.value;
-        this.model.set(change);
-
-        // Run validation rule (if any) on changed item
-        var check = this.model.validateItem(target.id);
-        if (check.isValid === false) {
-            utils.addValidationError(target.id, check.message);
-        } else {
-            utils.removeValidationError(target.id);
+        var res = target.name.split(".");
+        switch(res.length) {
+            case 1: this.model.attributes[target.name] = target.value; break;
+            case 2: this.model.attributes[res[0]][res[1]] = target.value; break;
+            case 3: this.model.attributes[res[0]][res[1]][res[2]] = target.value; break;
+            default:
         }
     },
     abort: function () {

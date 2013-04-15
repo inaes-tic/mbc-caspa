@@ -4,7 +4,7 @@ var express = require('express'),
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
     backboneio = require('backbone.io'),
-    conf    = require('config'),
+    conf    = require('config').Caspa,
     mbc = require('mbc-common'),
     moment = require('moment')
  ;
@@ -12,11 +12,13 @@ var express = require('express'),
 /* make sure at runtime that we atempt to get the dirs we need */
 for (d in conf.Dirs) {
     /* HACK: but I'm not going to waist time writing mkdir -p */
-    exec ('mkdir -p ' + conf.Dirs[d], function (error, stdout, stderr) {
-        if (error !== null) {
-            console.log('exec error: ' + error);
-        }
-    });
+    if (d!= 'Info') {
+        exec ('mkdir -p ' + conf.Dirs[d], function (error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        });
+    }
 }
 
 var app = express();
@@ -113,7 +115,10 @@ channel.subscribe ({channel: 'schedbackend'}, function (sched) {
     schedbackend.emit('updated', sched.model);
 });
 
-_([mediabackend, listbackend]).each (debug_backend);
+var appbackend = backboneio.createBackend();
+appbackend.use(backboneio.middleware.configStore());
+
+_([mediabackend, listbackend, appbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
@@ -121,6 +126,7 @@ backboneio.listen(app.listen(app.get('port'), function(){
       blockbackend: blockbackend,
       listbackend:  listbackend,
       schedbackend: schedbackend,
+      appbackend: appbackend,
     });
 
 var utils = require('./utils');

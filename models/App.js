@@ -35,20 +35,6 @@ App.Model = Backbone.Model.extend({
 
         return Backbone.Model.prototype.initialize.call (this);
     },
-    defaults: {
-        _id: 1,
-        title: 'MBC Playout {mlt edition}', 
-        subtitle: 'A simple Playout server built with magic and love',
-        state: 0,
-        state_name: ['UNKNOWN', 'SYNCING', 'LOADING', 'PREROLL', 'PAUSED', 'PLAYING', 'REMOVED'],
-        config: {
-            scrape_path: "/home/xaiki/Downloads",
-        },
-        error: {
-            melted: [],
-        },
-        timezone: 'UTC',
-    },
 });
 
 App.Status = App.Model.extend ({
