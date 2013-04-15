@@ -6,6 +6,7 @@ window.ConfView = Backbone.View.extend({
     render: function () {
 //        try {
             $(this.el).html(template.confview({ config: this.model.toJSON()}));
+            $('.bs-docs-sidenav').affix();
 //            $(".bs-docs-sidebar").scrollspy();
             return this;
 //        } catch (e) {
