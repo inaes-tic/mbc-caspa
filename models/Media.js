@@ -257,7 +257,7 @@ Media.Universe = Media.Collection.extend ({
 });
 
 Media.Occurrence = Media.List.extend ({
-    urlRoot: 'sched',
+    urlRoot: 'occur',
     defaults: {
         event: null,
     },
@@ -276,7 +276,7 @@ Media.Occurrence = Media.List.extend ({
 });
 
 Media.Schedule = Media.Universe.extend ({
-    url: 'sched',
+    url: 'occur',
     model: Media.Occurrence,
     backend: 'schedbackend',
     initialize: function () {
