@@ -59,7 +59,7 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        _([mediaList, Universe, Schedule]).each( function (col) {
+        _([appModel, mediaList, Universe, Schedule]).each( function (col) {
             console.log ('fetching', col);
             col.fetch();
         });
