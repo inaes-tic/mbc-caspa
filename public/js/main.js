@@ -66,6 +66,7 @@ var AppRouter = Backbone.Router.extend({
 
         this.headerView = new HeaderView({model: window.appstatus});
         $('.header').html(this.headerView.el);
+        TowTruck(this);
     },
 
     schedule: function() {
