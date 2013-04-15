@@ -22,55 +22,55 @@
 
 - var duration_name= i18n.gettext('Duration')
 - var format_name= i18n.gettext('Format')
-
-h1= i18n.gettext('Media Details')
-.row-fluid
-  form.form-horizontal.span12
-    fieldset
-      .row
-          .span12
-            .control-group
-              label.control-label(for="mediaName")= i18n.gettext('Name') + ': '
-              .controls
-                  input.input-block-level#mediaName(name="Name",type="text", data-bind="value: name, valueUpdate: 'keyup'")
-      .row
-        .span6
-          .control-group
-            - var items = {md5: _id, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
-            each v, k in items
-              - var Item = k.charAt(0).toUpperCase() + k.slice(1)
-
-                label.control-label(for='media' + Item)= i18n.gettext(k) + ': '
+.well
+  h1= i18n.gettext('Media Details')
+  .row-fluid
+    form.form-horizontal.span12
+      fieldset(style='border: none;')
+        .row
+            .span12
+              .control-group
+                label.control-label(for="mediaName")= i18n.gettext('Name') + ': '
                 .controls
-                  .contain
-                    span.label.label-inverse.format= v
-
-                    span.help-inline
-                  br
-          .control-group
-              label.control-label(for="description")= i18n.gettext('Notes') + ': '
-              .controls
-                  textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description, data-bind="value: notes")
-
-        .span6
-            .well.droparea.image-droparea
-              - if (_id)
-                p
-                  video(poster=picture, controls, tabindex="0", width="100%", height="100%")
-                    source(src='media/play/' + _id)
-              - if (! _id)
-                p
-                  img(src=picture)
-                  .progress.progress-stripped
-                    .bar(style="width: 0%;")
-                  p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
-
-    .form-actions
-      a.btn.btn-primary.save(href="#", data-bind="click: save")= i18n.gettext('Save')
-      a.btn.delete(href="#")= i18n.gettext('Delete')
-
-.row-fluid.status-bar
-  .span12
-    .alert.alert-success(style="display: none")
-      b= i18n.gettext('Success!')
-      span= i18n.gettext('Media saved successfully')
+                    input.input-block-level#mediaName(name="Name",type="text", data-bind="value: name, valueUpdate: 'keyup'")
+        .row
+          .span6
+            .control-group
+              - var items = {md5: _id, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
+              each v, k in items
+                - var Item = k.charAt(0).toUpperCase() + k.slice(1)
+  
+                  label.control-label(for='media' + Item)= i18n.gettext(k) + ': '
+                  .controls
+                    .contain
+                      span.label.label-inverse.format= v
+  
+                      span.help-inline
+                    br
+            .control-group
+                label.control-label(for="description")= i18n.gettext('Notes') + ': '
+                .controls
+                    textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description, data-bind="value: notes")
+  
+          .span6
+              .well.droparea.image-droparea
+                - if (_id)
+                  p
+                    video(poster=picture, controls, tabindex="0", width="100%", height="100%")
+                      source(src='media/play/' + _id)
+                - if (! _id)
+                  p
+                    img(src=picture)
+                    .progress.progress-stripped
+                      .bar(style="width: 0%;")
+                    p(style="color:#999;")= i18n.gettext('To add media, drag a new file from your file system onto this box.')
+  
+      .form-actions
+        a.btn.btn-primary.save(href="#", data-bind="click: save")= i18n.gettext('Save')
+        a.btn.delete(href="#")= i18n.gettext('Delete')
+  
+  .row-fluid.status-bar
+    .span12
+      .alert.alert-success(style="display: none")
+        b= i18n.gettext('Success!')
+        span= i18n.gettext('Media saved successfully')

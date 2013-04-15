@@ -2,24 +2,20 @@
 - var add_size = 5
 .row
   .span3.bs-docs-sidebar
-    ul.nav.nav-list.bs-docs-sidenav.affix
+    ul.nav.nav-list.bs-docs-sidenav
       each v, k in config
         li
           a(href='#' + k,data-toggle="tab")
             i.icon-cheveron-right
             span= k
-      li
-        .form-actions
-          a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
-          a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
-  .span9
+      .form-actions.well(style='margin: 0;')
+        a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
+        a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
+  .span9.well
     form.form-horizontal
-      .control-group
-         each v, k in config
-           section(id=k)
-            .page-header
-              h1= k
-                small= i18n.gettext('Configuration')
+      each v, k in config
+          .page-header(id=k)
+            h1= k
            each v0, k0 in v
              - if (typeof(v0) != 'string' && k0 != 'Info') {
                h2= k0
@@ -28,8 +24,9 @@
                    - var label=  k+'.'+k0+'.'+k1
                    - var value= v1
                    - var size= v1.length+add_size
-                   label.control-label(for=label)= label + ':'
-                   .controls
-                     input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, size=size)
+                   .control-group
+                     label.control-label(for=label)= label + ':'
+                     .controls
+                       input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, size=80)
                  - }
              - }
