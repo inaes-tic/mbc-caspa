@@ -4,10 +4,29 @@ var express = require('express'),
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
     backboneio = require('backbone.io'),
-    conf    = require('config').Caspa,
+    whole_config  = require('config'),
     mbc = require('mbc-common'),
     moment = require('moment')
  ;
+
+/* Make Info keys immutable */
+for (app in whole_config) {
+    for (prop in whole_config[app]) {
+        if(prop == 'Info')  {
+          whole_config.makeImmutable(whole_config[app].Info, 'name');
+          whole_config.makeImmutable(whole_config[app].Info, 'description');
+        }
+        for (subprop in whole_config[app][prop]) {
+            if(subprop == 'Info')  {
+                whole_config.makeImmutable(whole_config[app][prop].Info ,'name');
+                whole_config.makeImmutable(whole_config[app][prop].Info ,'description');
+            }
+        }
+    }
+}
+
+/* Getting only Caspa config */
+var conf = whole_config.Caspa;
 
 /* make sure at runtime that we atempt to get the dirs we need */
 for (d in conf.Dirs) {
