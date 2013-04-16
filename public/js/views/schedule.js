@@ -6,7 +6,14 @@ window.OccurrenceView = Backbone.View.extend({
       this.calendar = this.options.calendar;
     },
     deleteOcurrence: function(sth) {
-      this.$el.fadeOut(400, this.model.destroy.bind(this.model));
+      var overlapped = this.model.overlapsWith;
+      var options = {success: function() {
+        overlapped.forEach(function(o) {
+          o.save();
+          });
+        }
+      };
+      this.$el.fadeOut(400, this.model.destroy.bind(this.model, options));
       console.log("Deleting ocurrence", this.model);
     }
 });
@@ -39,6 +46,37 @@ window.ScheduleView = Backbone.View.extend({
     reload: function() {
         this.calendar.fullCalendar('refetchEvents');
     },
+    checkOverlap: function(event) {
+        // This checks if an event has any overlapping events on the calendar. It expects the event
+        // to have a 'start' and an 'end' properties
+
+        var start = moment(event.start);
+        var end = moment(event.end);
+        var overlap = this.calendar.fullCalendar('clientEvents', function(ev) {
+            if( ev == event)
+                return false;
+            return ev.start < end && ev.end > start;
+        });
+        if( overlap.length ) {
+            // TODO: choose better?
+            overlap = overlap[0];
+            var over_start = moment(overlap.start);
+            var over_end = moment(overlap.end);
+            var duration = end - start;
+            if( over_start > start ) {
+                // clamp to beginning
+                end = over_start.clone();
+                start = end.clone();
+                start.subtract(duration);
+            } else {
+                // clamp to end
+                start = over_end.clone();
+                end = start.clone();
+                end.add(duration);
+            }
+        }
+        return {start: start, end: end};
+    },
     initialize: function () {
         var self = this;
         self.collection = this.get_collection();
@@ -52,6 +90,50 @@ window.ScheduleView = Backbone.View.extend({
         });
 
         this.render();
+    },
+    events: {
+        "click #pushdown"   : "pushdownAll",
+        "click #revert"     : "revert"
+    },
+    displayOverlap: function(bool) {
+        if (bool) {
+            $('#overlapping-alert').fadeIn();
+        } else {
+            $('#overlapping-alert').fadeOut();
+        };
+    },
+    pushdownAll: function() {
+        var self = this;
+        var invalid = this.collection.getInvalid();
+        invalid.forEach(function(oc){
+            if (!oc.validationError) return // conflict may have already been fixed by other pushdown
+            var first = oc.getOverlappingEvents()[0];
+            if (oc.get('start') > first.get('start')) {
+                self.pushdown(first);
+            } else {
+                self.pushdown(oc);
+            }
+        })
+    },
+    pushdown: function(oc) {
+        /* We assume the last dragged object is the one the user
+           wants to keep in that position */
+        var self = this;
+        var overlapping = oc.getOverlappingEvents();
+        overlapping.forEach(function(first) {
+            start = oc.get('end');
+            duration = first.get('end') - first.get('start');
+            end = start + duration
+            first.save({start: start, end: end});
+            // If I stepped over another event, call myself again
+            if (first.validationError) {
+                self.pushdown(first);
+            };
+        })
+    },
+    revert: function() {
+        this.collection.fetch({reset: true});
+        this.displayOverlap(false);
     },
 /*    saveEvent: function (event) {
         // we filter out the event to only store what we really need
@@ -87,7 +169,7 @@ window.ScheduleView = Backbone.View.extend({
                 console.log(start, end);
                 var unix_start = moment(start).unix();
                 var unix_end = moment(end).unix();
-                events = self.get_collection().filter(function(el){
+                var events = self.get_collection().filter(function(el){
                     return unix_start <= el.get('end') && unix_end >= el.get('start');
                 }).map(self.make_event);
                 console.log('Returning events #', events.length);
@@ -216,9 +298,11 @@ window.ScheduleView = Backbone.View.extend({
               eventAfterRender(event, element, view);
             },
             eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
-                var start = moment(event.start);
-                var end = moment(event.end);
-                event.model.save({start: start.unix(), end: end.unix()});
+                var data = self.checkOverlap(event);
+                event.start = data.start.toDate();
+                event.end = data.end.toDate();
+                self.calendar.fullCalendar('updateEvent', event);
+                event.model.save({start: data.start.unix(), end: data.end.unix()});
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
@@ -229,10 +313,13 @@ window.ScheduleView = Backbone.View.extend({
                 var end   = moment(start);
 
                 end.add('ms', list.get('duration'));
+
+                var times = self.checkOverlap({start: start, end: end});
+
                 var event = {
                     title:  list.get('name'),
                     list:   list.get('_id'),
-                    start:  start.unix(), end: end.unix(),
+                    start:  times.start.unix(), end: times.end.unix(),
                     allDay: allDay,
                 };
 
@@ -261,12 +348,9 @@ window.ScheduleView = Backbone.View.extend({
             });
                                              */
 
-
-        self.collection.bind('add',   this.reload, this);
-        self.collection.bind('reset', this.reload, this);
-        self.collection.bind('remove',this.reload, this);
+        self.collection.bind('add reset remove change', this.reload, this);
         self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
-        self.collection.bind('update',this.reload, this);
+        self.collection.bind('overlap', this.displayOverlap, this);
 
         return this;
     },

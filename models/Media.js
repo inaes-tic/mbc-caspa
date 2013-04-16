@@ -263,6 +263,7 @@ Media.Occurrence = Media.List.extend ({
     },
     initialize: function () {
         console.log ('creating new Media.Occurrence', this);
+        this.overlapsWith = [];
     },
     newCol: function (models, opts) {
         return new Media.Occurrence (models, opts);
@@ -271,6 +272,44 @@ Media.Occurrence = Media.List.extend ({
         for (a in this.attributes) {
             if (attrs.hasOwnProperty(a))
                 this.set(a, attrs[a]);
+        }
+    },
+    getOverlappingEvents: function() {
+        // Get all events that overlap with this one
+        var self = this;
+        return this.collection.filter(function(oc) {
+                    return (oc.get('_id') != self.get('_id') &&
+                            oc.get('start') < self.get('end') &&
+                            oc.get('end') > self.get('start'));
+               });
+    },
+    validate: function(attrs, options) {
+        // Do not validate when fetching from the server
+        if (options.parse) return;
+        // Only save model if it's not overlapping with anything
+        var self = this;
+        overlapping = this.getOverlappingEvents();
+        if (overlapping.length) {
+            overlapping.forEach(function(oc) {
+                oc.overlapsWith.push(self);
+            });
+            this.collection.trigger('overlap', true);
+            return overlapping
+        } else {
+            /* When this event is no longer overlapping, the other events could be valid.
+               validationError would be unset after this function returns, but I need if before
+               I call checkOverlap. Could be improved. */
+            
+            delete this.validationError;
+            // Prevent infinite loops by first emptying the list            
+            var overlapsWith = _.clone(this.overlapsWith);
+            this.overlapsWith = [];
+            
+            overlapsWith.forEach(function(oc) {
+                oc.save();
+            });
+            
+            this.collection.checkOverlap();
         }
     },
 });
@@ -283,7 +322,17 @@ Media.Schedule = Media.Universe.extend ({
         if (!server)
             this.bindBackend();
         console.log ('creating new Media.Schedule');
+        this.on('add remove', this.checkOverlap)
     },
-
+    comparator: "start",
+    getInvalid: function() {
+        return this.filter(function(oc) {
+            return oc.validationError
+        });
+    },
+    checkOverlap: function() {
+        var elems = this.getInvalid();
+        this.trigger('overlap', elems.length);
+    }
 });
 
