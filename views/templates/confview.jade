@@ -1,11 +1,10 @@
 - var c = ''
-- var add_size = 5
 .row
   .span3.bs-docs-sidebar
     ul.nav.nav-list.bs-docs-sidenav
       each v, k in config
         li
-          a(href='#' + k,data-toggle="tab")
+          a(href='#' + k)
             i.icon-cheveron-right
             span= k
       .form-actions.well(style='margin: 0;')
@@ -14,19 +13,20 @@
   .span9.well
     form.form-horizontal
       each v, k in config
-          .page-header(id=k)
-            h1= k
+          .page-header
+            a(id=k, class='anchor-offset')
+            h1= v['Info']['name']
+            h2= v['Info']['description']
            each v0, k0 in v
              - if (typeof(v0) != 'string' && k0 != 'Info') {
-               h2= k0
+               h3= k0
                each v1, k1 in v0
                  - if (k1 != 'Info') {
                    - var label=  k+'.'+k0+'.'+k1
                    - var value= v1
-                   - var size= v1.length+add_size
                    .control-group
-                     label.control-label(for=label)= label + ':'
+                     label.control-label(for=label)= k1 + ':'
                      .controls
-                       input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, size=80)
+                       input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, class='input-block-level')
                  - }
              - }

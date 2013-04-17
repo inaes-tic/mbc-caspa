@@ -10,8 +10,17 @@
 @import 'font-Andika.less';
 @import 'font-Arvo.less';
 
+@header-height: 139px;
+
+#Panel {
+    position: fixed;
+    width: 100%;
+    z-index: 999;
+    top: 0;
+}
+
 #content {
-    padding-top: 15px;
+    padding-top: @header-height + 15px;
 }
 
 h1, h2, h3, h4, h5 {
@@ -230,4 +239,10 @@ legend {
 
 .playlist-name {
     margin: 10px;
+}
+
+.anchor-offset {
+    display: block;
+    position: relative;
+    top: -(@header-height + 20px);
 }

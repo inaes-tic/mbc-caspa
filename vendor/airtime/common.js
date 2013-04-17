@@ -1,12 +1,3 @@
-$(document).ready(function() {
-
-    $("#Panel").stickyPanel({
-	    topPadding: 1,
-	    afterDetachCSSClass: "floated-panel",
-	    savePanelSpace: true
-    });
-});
-
 function adjustDateToServerDate(date, serverTimezoneOffset){
     //date object stores time in the browser's localtime. We need to artificially shift 
     //it to 

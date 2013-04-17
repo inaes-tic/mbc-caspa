@@ -25,7 +25,7 @@ window.HeaderView = function (options) {
     var model = options['model'];
     self.model = model;
 
-    self.el = 'el' in options ? options['el'] : $('.header');
+    self.el = 'el' in options ? options['el'] : $('#Panel');
 
     $(self.el).html(template.header(this.model.toJSON()));
 
