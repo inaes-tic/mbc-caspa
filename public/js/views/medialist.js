@@ -66,7 +66,8 @@ window.MediaListView = function(options){
 
         dragHandler: function(item, event, ui){
             var piece = new Media.Piece(item.model().attributes);
-            piece.unset('_id');
+            var newid = self.model.get('_id') + '-' + moment().valueOf();
+            piece.set('_id', newid);
             piece.set('checksum', item.model().get('_id'));
             return kb.viewModel(piece)
         },
@@ -84,7 +85,23 @@ window.MediaListView = function(options){
         this.model.destroy();
         ko.cleanNode(this.el);
         this.el.html('');
-    }
+    };
+
+    this.save = function (newmodel) {
+        var set_piece_id = function(element, index, list) {
+            var newid = this.model.get('_id') + '-' + moment().valueOf();
+            element.set('_id', newid);
+        };
+
+        if (newmodel) {
+            // this is a model just created from the collection, so we use the correct List id
+            // for each of the elements.
+            this.view_model.model(newmodel);
+            this.model = newmodel;
+            _.each(this.model.get('collection').models, set_piece_id, this);
+        }
+        this.model.save();
+    };
 
     this.addDummyRow = function () {
         if (this.has_dummy_row) {
@@ -101,7 +118,7 @@ window.MediaListView = function(options){
         }
     };
 
-    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'editListName');
+    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'save', 'editListName');
     this.view_model.collection.subscribe(this.onCollectionChange);
 
     ko.applyBindings(this.view_model, el[0]);

@@ -81,14 +81,22 @@ window.EditView = Backbone.View.extend({
             return;
         }
 
-        if (this.editview.model == this.editList) {
+        if (this.editview.model.isNew()) {
             console.log ("about to feed this to the universe:", this.editview.model.attributes);
-//XXX: ugly hack para que actualice el view_model con el objeto nuevo
-            var m = this.collection.create (this.editview.model.attributes);
-            this.showPlaylist(m);
+            // this is called after we get the model just created with an id from the server,
+            // so we can update the view with the new model.
+            // WHY not just use the result of collection.create()?
+            // even if we set {wait: true} that model won't have an id, at least not after the 'sync'
+            // event fires when we get the response from the server, so calling .save() on that leads
+            // to duplicate (but different) playlist and all sorts of fun debugging time.
+            var afterSync = function(model) {
+                this.editview.save(model);
+            };
+            afterSync = _.bind(afterSync, this);
+            this.collection.create (this.editview.model.attributes, {success: afterSync});
             console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);
         } else {
-            this.editview.model.save();
+            this.editview.save();
             console.log ('universe knows of us, just saving');
         }
     },
