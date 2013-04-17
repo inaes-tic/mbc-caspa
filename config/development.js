@@ -4,8 +4,8 @@ var path = require('path'),
 module.exports = {
     Caspa: {
         Info: {
-            name: 'General UI Caspa config',
-            description: 'fine tune all configuration',
+            name: 'Caspa',
+            description: 'configuration for the playout interface',
         },
         Branding: {
             Info: {
@@ -48,8 +48,8 @@ module.exports = {
     },
     Mosto: {
         Info: {
-            name: 'General UI Mosto config',
-            description: 'fine tune all configuration ',
+            name: 'Mosto',
+            description: 'configuration for the Mosto backend',
         },
         Branding: {
             Info: {
@@ -62,8 +62,8 @@ module.exports = {
     },
     Common: {
         Info: {
-            name: 'General UI Common config',
-            description: 'Fine tune all configuration',
+            name: 'Common',
+            description: 'settings common to mbc-playout',
         },
         Branding: {
             Info: {
