@@ -15,16 +15,17 @@
       each v, k in config
           .page-header
             a(id=k, class='anchor-offset')
-            h1= k
+            h1= v['Info']['name']
+            h2= v['Info']['description']
            each v0, k0 in v
              - if (typeof(v0) != 'string' && k0 != 'Info') {
-               h2= k0
+               h3= k0
                each v1, k1 in v0
                  - if (k1 != 'Info') {
                    - var label=  k+'.'+k0+'.'+k1
                    - var value= v1
                    .control-group
-                     label.control-label(for=label)= label + ':'
+                     label.control-label(for=label)= k1 + ':'
                      .controls
                        input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, class='input-block-level')
                  - }
