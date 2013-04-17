@@ -4,7 +4,7 @@
     ul.nav.nav-list.bs-docs-sidenav
       each v, k in config
         li
-          a(href='#' + k,data-toggle="tab")
+          a(href='#' + k)
             i.icon-cheveron-right
             span= k
       .form-actions.well(style='margin: 0;')
@@ -13,7 +13,8 @@
   .span9.well
     form.form-horizontal
       each v, k in config
-          .page-header(id=k)
+          .page-header
+            a(id=k, class='anchor-offset')
             h1= k
            each v0, k0 in v
              - if (typeof(v0) != 'string' && k0 != 'Info') {

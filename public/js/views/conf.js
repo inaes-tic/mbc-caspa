@@ -4,15 +4,10 @@ window.ConfView = Backbone.View.extend({
         this.render();
     },
     render: function () {
-//        try {
             $(this.el).html(template.confview({ config: this.model.toJSON()}));
             $('.bs-docs-sidenav').affix();
-//            $(".bs-docs-sidebar").scrollspy();
+            $('body').scrollspy('refresh');
             return this;
-//        } catch (e) {
-            utils.showAlert('Error', 'An error occurred while trying to change this item', 'alert-error');
-            alert (e);
- //       }
     },
     events: {
         "change"        : "change",
