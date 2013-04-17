@@ -1050,12 +1050,6 @@ dt.block-display, dd.block-display {
 	width:100%;
 }
 
-.floated-panel {
-	margin-top:0;
-	width:99.99%;
-	z-index:999;
-}
-
 
 /*---//////////////////// Schedule Show ////////////////////---*/
 
