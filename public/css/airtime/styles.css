@@ -387,7 +387,6 @@ fieldset.plain {
     margin: 0;
     padding: 4px 3px;
     /*text-indent: 3px;*/
-	width:auto;
     background-color: #dddddd;
 	border: 1px solid #5b5b5b;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2) inset;

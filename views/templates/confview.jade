@@ -1,5 +1,4 @@
 - var c = ''
-- var add_size = 5
 .row
   .span3.bs-docs-sidebar
     ul.nav.nav-list.bs-docs-sidenav
@@ -23,10 +22,9 @@
                  - if (k1 != 'Info') {
                    - var label=  k+'.'+k0+'.'+k1
                    - var value= v1
-                   - var size= v1.length+add_size
                    .control-group
                      label.control-label(for=label)= label + ':'
                      .controls
-                       input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, size=80)
+                       input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, class='input-block-level')
                  - }
              - }
