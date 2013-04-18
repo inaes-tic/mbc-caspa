@@ -15,15 +15,6 @@ module.exports = {
             name: 'MBC Playout {mlt edition}',
             description: 'A simple Playout server built with magic and love',
         },
-        MediaDB: {
-            Info: {
-                name: 'Database',
-                description: 'Authentication params',
-            },
-            dbName: "mediadb",
-            dbHost: "localhost",
-            dbPort: 27017,
-        },
         Dirs: {
             Info: {
                 name: 'Directories',
@@ -72,6 +63,15 @@ module.exports = {
             },
             name: 'MBC Common',
             description: 'Common code for mbc-playout and mbc-mosto',
+        },
+        MediaDB: {
+            Info: {
+                name: 'Database',
+                description: 'Authentication params',
+            },
+            dbName: "mediadb",
+            dbHost: "localhost",
+            dbPort: 27017,
         },
     },
 }
