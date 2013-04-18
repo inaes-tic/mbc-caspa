@@ -27,7 +27,7 @@ npm:
 
 update: submodules npm mos
 
-serve:
+serve: update
 	node server.js
 
 .PHONY: npm submodules serve sparkmd5 bootstrap
