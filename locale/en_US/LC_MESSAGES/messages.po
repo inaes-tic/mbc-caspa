@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-02 20:38-0300\n"
+"POT-Creation-Date: 2013-04-18 01:26-0300\n"
 "PO-Revision-Date: 2012-12-02 20:38-0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -61,20 +61,21 @@ msgstr "Start Browsing\\nMedia Cellar"
 msgid "View Project\\non Github"
 msgstr "View Project\\non Github"
 
-#: views/index.jade:22
+#: views/index.jade:22 views/index.jade:18
 msgid "Follow"
 msgstr "Follow"
 
-#: views/index.jade:24
+#: views/index.jade:24 views/index.jade:20
 msgid "Tweet"
 msgstr "Tweet"
 
 #: views/templates/confview.jade:12 views/templates/mediaview.jade:69
-#: views/templates/mediaedit.jade:17
+#: views/templates/mediaedit.jade:17 views/templates/mediaedit.jade:18
+#: views/templates/confview.jade:11
 msgid "Save"
 msgstr "Save"
 
-#: views/templates/confview.jade:13
+#: views/templates/confview.jade:13 views/templates/confview.jade:12
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -123,6 +124,7 @@ msgid "forward"
 msgstr "forward"
 
 #: views/templates/upload.jade:4 views/templates/mediaedit.jade:20
+#: views/templates/mediaedit.jade:21
 msgid "Oops!"
 msgstr "Oops!"
 
@@ -154,19 +156,20 @@ msgstr "from your computer"
 msgid ".)"
 msgstr ".)"
 
-#: views/templates/header.jade:15
+#: views/templates/header.jade:15 views/templates/header.jade:23
 msgid "Browse Medias"
 msgstr "Browse Medias"
 
-#: views/templates/header.jade:19
+#: views/templates/header.jade:19 views/templates/header.jade:27
 msgid "Edit Playlists"
 msgstr "Edit Playlists"
 
 #: views/templates/header.jade:23 views/templates/mediasearch.jade:11
+#: views/templates/mediasearch.jade:6
 msgid "Search Medias"
 msgstr "Search Medias"
 
-#: views/templates/header.jade:27
+#: views/templates/header.jade:27 views/templates/header.jade:31
 msgid "Add Medias"
 msgstr "Add Medias"
 
@@ -174,7 +177,7 @@ msgstr "Add Medias"
 msgid "TEST"
 msgstr "TEST"
 
-#: views/templates/header.jade:35
+#: views/templates/header.jade:35 views/templates/header.jade:39
 msgid "Configure"
 msgstr "Configure"
 
@@ -214,11 +217,11 @@ msgstr "This App"
 msgid "GitHub Repository"
 msgstr "GitHub Repository"
 
-#: views/templates/item.jade:42
+#: views/templates/item.jade:42 views/templates/item.jade:48
 msgid "Success"
 msgstr "Success"
 
-#: views/templates/item.jade:45
+#: views/templates/item.jade:45 views/templates/item.jade:51
 msgid "Error"
 msgstr "Error"
 
@@ -239,7 +242,7 @@ msgstr "Duration"
 msgid "Format"
 msgstr "Format"
 
-#: views/templates/mediaview.jade:28
+#: views/templates/mediaview.jade:28 views/templates/mediaview.jade:26
 msgid "Media Details"
 msgstr "Media Details"
 
@@ -252,6 +255,7 @@ msgid "Notes"
 msgstr "Notes"
 
 #: views/templates/mediaview.jade:70 views/templates/mediaedit.jade:18
+#: views/templates/mediaedit.jade:19
 msgid "Delete"
 msgstr "Delete"
 
@@ -263,19 +267,19 @@ msgstr "Success!"
 msgid "Media saved successfully"
 msgstr "Media saved successfully"
 
-#: views/templates/mediaedit.jade:11
+#: views/templates/mediaedit.jade:11 views/templates/mediaedit.jade:12
 msgid "Set a list name !"
 msgstr "Set a list name !"
 
-#: views/templates/mediaedit.jade:12
+#: views/templates/mediaedit.jade:12 views/templates/mediaedit.jade:13
 msgid "You are currently editing an un-named playlist\\n"
 msgstr "You are currently editing an un-named playlist\\n"
 
-#: views/templates/mediaedit.jade:15
+#: views/templates/mediaedit.jade:15 views/templates/mediaedit.jade:16
 msgid "Add some media !"
 msgstr "Add some media !"
 
-#: views/templates/mediaedit.jade:16
+#: views/templates/mediaedit.jade:16 views/templates/mediaedit.jade:17
 msgid ""
 "You need to add some media before you can save a playlist, drag some rows "
 "from the left pane to start adding"
@@ -283,27 +287,27 @@ msgstr ""
 "You need to add some media before you can save a playlist, drag some rows "
 "from the left pane to start adding"
 
-#: views/templates/mediaedit.jade:21
+#: views/templates/mediaedit.jade:21 views/templates/mediaedit.jade:22
 msgid "It looks like you have no playlist to show here"
 msgstr "It looks like you have no playlist to show here"
 
-#: views/templates/medialist.jade:5
+#: views/templates/medialist.jade:5 views/templates/medialist.jade:25
 msgid "New Playlist"
 msgstr "New Playlist"
 
-#: views/templates/medialist.jade:13
+#: views/templates/medialist.jade:13 views/templates/medialist.jade:42
 msgid "Edit me !"
 msgstr "Edit me !"
 
-#: views/templates/medialist.jade:14
+#: views/templates/medialist.jade:14 views/templates/medialist.jade:43
 msgid "Click here to edit Playlist Name."
 msgstr "Click here to edit Playlist Name."
 
-#: views/templates/medialist.jade:33
+#: views/templates/medialist.jade:33 views/templates/medialist.jade:66
 msgid "Thumbnail"
 msgstr "Thumbnail"
 
-#: views/templates/medialist.jade:34
+#: views/templates/medialist.jade:34 views/templates/medialist.jade:67
 msgid "Media info"
 msgstr "Media info"
 
@@ -314,3 +318,42 @@ msgstr "Status"
 #: views/templates/medialist.jade:36
 msgid "Availability"
 msgstr "Availability"
+
+#: views/templates/medialist.jade:3
+#, fuzzy
+msgid "Media List"
+msgstr "Media info"
+
+#: views/templates/nowplaying.jade:12
+msgid "Previous:"
+msgstr ""
+
+#: views/templates/nowplaying.jade:25
+msgid "Next:"
+msgstr ""
+
+#: views/templates/schedule.jade:6
+msgid "There are overlapping events. "
+msgstr ""
+
+#: views/templates/sourceinfo.jade:3
+msgid "Source Streams"
+msgstr ""
+
+#: views/templates/timeinfo.jade:6
+msgid "Station time"
+msgstr ""
+
+#: views/templates/header.jade:35
+msgid "Schedule"
+msgstr ""
+
+#: views/templates/mediasearch.jade:4
+#, fuzzy
+msgid "Search Playlists"
+msgstr "New Playlist"
+
+#: views/templates/mediasearch.jade:8
+#, fuzzy
+msgid "Search"
+msgstr "Search Medias"
