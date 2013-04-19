@@ -171,8 +171,6 @@ backboneio.listen(app.listen(app.get('port'), function(){
 
 var utils = require('./utils');
 
-//var mlt = new melted({reconnect: true});
-
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
         utils.scrape_files (conf.Dirs.scrape, function (model) {
