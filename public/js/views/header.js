@@ -53,5 +53,18 @@ window.HeaderView = function (options) {
         }
         $('.btn-collapse').click()
     };
+    
+    var toggle = function(e) {
+        var panel = $('#Panel');
+        var content = $('#content');
+        if (panel.position().top) {
+            panel.animate({top: 0});
+            content.animate({'padding-top': '+=105'});
+        } else {
+            panel.animate({top: -105})
+            content.animate({'padding-top': '-=105'});
+        };
+    };
+    $('#toggle-header').click(toggle);
 }
 
