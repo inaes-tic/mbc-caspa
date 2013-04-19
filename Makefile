@@ -1,3 +1,5 @@
+export NODE_CONFIG_DIR ?= $(PWD)/node_modules/mbc-common/config
+
 all: update serve
 
 mos: locale/es/LC_MESSAGES/messages.mo
