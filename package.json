@@ -36,7 +36,6 @@
         "knockout-client" : "*",
         "i18n-abide"    : ">=0.0.7",
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
-        "config"        : "git://github.com/inaes-tic/node-config.git",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
         "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git"
