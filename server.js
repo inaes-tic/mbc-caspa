@@ -4,8 +4,8 @@ var express = require('express'),
     i18n    = require('i18n-abide'),
     _       = require('underscore'),
     backboneio = require('backbone.io'),
-    conf    = require('config').Caspa,
     mbc = require('mbc-common'),
+    conf = require('mbc-common').config.Caspa,
     moment = require('moment')
  ;
 

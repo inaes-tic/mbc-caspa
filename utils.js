@@ -2,7 +2,7 @@ var     _ = require('underscore')
 ,   fp    = require('functionpool')
 , ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs')
-, conf    = require('config').Caspa;
+, conf    = require('mbc-common').config.Caspa;
 
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
