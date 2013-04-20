@@ -128,7 +128,7 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
         db.collection('scheds').findById(status.show[pos]._id, function(err, res) {
             if( res ) {
                 status.show[pos] = {
-                    name: res.name,
+                    name: res.title,
                     _id: res._id,
                 }
             }
