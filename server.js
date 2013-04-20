@@ -98,7 +98,7 @@ listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
 
 function id_middleware(req, res, next) {
     if( req.method == 'create' && req.model._id === undefined) {
-        req.model._id = moment().valueOf();
+        req.model._id = moment().valueOf().toString();
     }
     next();
 }
