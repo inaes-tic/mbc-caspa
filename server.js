@@ -120,7 +120,7 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
     // This receives messages from mosto and propagates the message through
     //  backbone.io
     var status = msg.model;
-    var emit = _.after(3, function() {
+    var emit = _.after(6, function() {
         console.log('emitting', status);
         statusbackend.emit('updated', status)
     });
@@ -130,6 +130,25 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
                 status.show[pos] = {
                     name: res.title,
                     _id: res._id,
+                };
+            }
+            emit();
+        });
+        db.collection('lists').findEach({ "models._id": status.piece[pos]._id }, function(err, res) {
+            if( res ) {
+                var piece = _.chain(res.models).filter(function(p) {
+                    return p._id == status.piece[pos]._id;
+                }).value();
+                console.log("[mosto status] filtered pieces", piece)
+                if( !piece )
+                    console.log("[mosto status] error: this shouldn't be empty");
+                else if( piece.length != 1 )
+                    console.log("[mosto status] error: there must only be one!");
+                else { // good
+                    piece = piece[0];
+                    status.piece[pos] = piece;
+                    // default name to id
+                    status.piece[pos].name = status.piece[pos].name || status.piece[pos]._id
                 }
             }
             emit();
