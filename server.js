@@ -125,7 +125,7 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
         statusbackend.emit('updated', status)
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
-        db.collection('scheds').findById(status.show[pos]._id, function(err, res) {
+        db.collection('scheds').findEach({ _id: status.show[pos]._id }, function(err, res) {
             if( res ) {
                 status.show[pos] = {
                     name: res.title,
