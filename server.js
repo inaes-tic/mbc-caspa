@@ -148,7 +148,10 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
                     piece = piece[0];
                     status.piece[pos] = piece;
                     // default name to id
-                    status.piece[pos].name = status.piece[pos].name || status.piece[pos]._id
+                    if( !status.piece[pos].name ) {
+                        var file = piece.file;
+                        status.piece[pos].name = path.basename(file).replace(path.extname(file), '');
+                    }
                 }
             }
             emit();
