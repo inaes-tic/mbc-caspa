@@ -135,23 +135,33 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
             emit();
         });
         db.collection('lists').findEach({ "models._id": status.piece[pos]._id }, function(err, res) {
+            if( err ) {
+                // we still want to call emit() even if there was a DB error
+                console.error(err);
+            }
+
             if( res ) {
                 var piece = _.chain(res.models).filter(function(p) {
                     return p._id == status.piece[pos]._id;
                 }).value();
                 console.log("[mosto status] filtered pieces", piece)
-                if( !piece )
-                    console.log("[mosto status] error: this shouldn't be empty");
-                else if( piece.length != 1 )
-                    console.log("[mosto status] error: there must only be one!");
-                else { // good
-                    piece = piece[0];
-                    status.piece[pos] = piece;
-                    // default name to id
-                    if( !status.piece[pos].name ) {
-                        var file = piece.file;
-                        status.piece[pos].name = path.basename(file).replace(path.extname(file), '');
-                    }
+                if( !piece ) {
+                    var message = "[mosto status] error: this shouldn't be empty";
+                    console.log(message);
+                    return new Error(message);
+                }
+                if( piece.length != 1 ) {
+                    var message = "[mosto status] error: there must only be one!";
+                    console.log(message)
+                    return new Error(message);
+                }
+
+                piece = piece[0];
+                status.piece[pos] = piece;
+                // default name to id
+                if( !status.piece[pos].name ) {
+                    var file = piece.file;
+                    status.piece[pos].name = path.basename(file).replace(path.extname(file), '');
                 }
             }
             emit();
