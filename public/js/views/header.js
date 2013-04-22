@@ -57,7 +57,7 @@ window.HeaderView = function (options) {
     var toggle = function(e) {
         var panel = self.el;
         var content = $('#content');
-        if (panel.position().top) {
+        if (panel.position().top != $(window).scrollTop()) {
             panel.animate({top: 0});
             content.animate({'padding-top': '+=105'});
         } else {
