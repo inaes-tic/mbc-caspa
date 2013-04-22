@@ -55,7 +55,7 @@ window.HeaderView = function (options) {
     };
     
     var toggle = function(e) {
-        var panel = $('#Panel');
+        var panel = self.el;
         var content = $('#content');
         if (panel.position().top) {
             panel.animate({top: 0});
