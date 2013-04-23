@@ -114,10 +114,13 @@ schedbackend.use(function (req, res, next) {
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
 
 var statusbackend = backboneio.createBackend();
-channel.subscribe({backend: 'mostoStatus'}, function(msg) {
+listener.on('JSONmessage', function(chan, status) {
+
+    if( chan != "mostoStatus" ) // we can ignore this message
+        return;
+
     // This receives messages from mosto and propagates the message through
     //  backbone.io
-    var status = msg.model;
     var emit = _.after(6, function() {
         console.log('emitting', status);
         statusbackend.emit('updated', status)
@@ -166,6 +169,7 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
         });
     });
 });
+listener.subscribe('mostoStatus');
 statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
 
 var appbackend = backboneio.createBackend();
