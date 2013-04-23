@@ -188,15 +188,17 @@ defaultsbackend.use( function (req, res, next) {
 // and another one for "sticky" messages like long-lived status problems, like if melted died
 // or the DB has a problem
 var mostomessagesbackend = backboneio.createBackend();
-channel.subscribe({backend: 'mostoMessage', method: 'emit'}, function(msg) {
-    mostomessagesbackend.emit('created', msg.model);
+listener.on('JSONpmessage', function(pattern, chan, msg) {
+    switch( chan ) {
+        case "mostoMessage.emit":
+            return mostomessagesbackend.emit('created', msg.model);
+        case "mostoMessage.create":
+            return mostomessagesbackend.emit('created', msg.model);
+        case "mostoMessage.delete":
+            return mostomessagesbackend.emit('deleted', msg.model);        
+    }
 });
-channel.subscribe({backend: 'mostoMessage', method: 'create'}, function(msg) {
-    mostomessagesbackend.emit('created', msg.model);
-});
-channel.subscribe({backend: 'mostoMessage', method: 'delete'}, function(msg) {
-    mostomessagesbackend.emit('deleted', msg.model);
-});
+listener.psubscribe('mostoMessage*');
 mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
 
 _([mediabackend, listbackend, appbackend, defaultsbackend]).each (debug_backend);
