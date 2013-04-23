@@ -112,9 +112,6 @@ schedbackend.use(function (req, res, next) {
     next();
 });
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
-channel.subscribe ({channel: 'schedbackend'}, function (sched) {
-    schedbackend.emit('updated', sched.model);
-});
 
 var statusbackend = backboneio.createBackend();
 channel.subscribe({backend: 'mostoStatus'}, function(msg) {
