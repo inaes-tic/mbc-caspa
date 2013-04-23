@@ -108,7 +108,7 @@ var schedbackend = backboneio.createBackend();
 schedbackend.use(id_middleware);
 schedbackend.use(function (req, res, next) {
     console.log ("schedbackend handler", req);
-    channel.publish ({channel: "schedbackend", method: req.method, backend: req.backend, model: req.model});
+    publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
