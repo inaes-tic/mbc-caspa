@@ -1,4 +1,3 @@
-- var c = ''
 .row
   .span3.bs-docs-sidebar
     ul.nav.nav-list.bs-docs-sidenav
@@ -27,6 +26,9 @@
                    .control-group
                      label.control-label(for=label)= k1 + ':'
                      .controls
-                       input(id=c+label,type='text', name=c+label,placeholder=c+label, value=value, class='input-block-level')
+                       input.span5(id=label, type='text', name=label, placeholder=label, value=value)
+                       - if (v1 != defaults[k][k0][k1]) {
+                         button.set_default.btn.btn-primary(name=label)= i18n.gettext('Default')
+                       -}
                  - }
              - }
