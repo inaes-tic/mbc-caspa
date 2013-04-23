@@ -48,7 +48,7 @@ app.configure(function () {
     app.use(express.cookieParser('your secret here'));
     app.use(express.session());
     app.use(app.router);
-    app.use(require('less-middleware')({ 
+    app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
         compress: true}
@@ -195,7 +195,7 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
         case "mostoMessage.create":
             return mostomessagesbackend.emit('created', msg.model);
         case "mostoMessage.delete":
-            return mostomessagesbackend.emit('deleted', msg.model);        
+            return mostomessagesbackend.emit('deleted', msg.model);
     }
 });
 listener.psubscribe('mostoMessage*');
