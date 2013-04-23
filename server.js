@@ -85,7 +85,8 @@ function debug_backend (backend) {
 
 var db = mbc.db();
 
-var channel = mbc.pubsub();
+var publisher = mbc.pubsub();
+var listener = mbc.pubsub();
 
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
