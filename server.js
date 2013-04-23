@@ -173,6 +173,14 @@ statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
 var appbackend = backboneio.createBackend();
 appbackend.use(backboneio.middleware.configStore());
 
+var defaultsbackend = backboneio.createBackend();
+defaultsbackend.use( function (req, res, next) {
+    if(req.method == 'read') {
+        req.model = mbc.config.getOriginalConfig();
+    }
+    next();
+});
+
 // there should probably be two backends or two collections or both, or something, one for
 // one-time momentary messages like warnings and such to be dismissed by the frontend,
 // and another one for "sticky" messages like long-lived status problems, like if melted died
@@ -189,7 +197,7 @@ channel.subscribe({backend: 'mostoMessage', method: 'delete'}, function(msg) {
 });
 mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
 
-_([mediabackend, listbackend, appbackend]).each (debug_backend);
+_([mediabackend, listbackend, appbackend, defaultsbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
@@ -199,6 +207,7 @@ backboneio.listen(app.listen(app.get('port'), function(){
       schedbackend: schedbackend,
       statusbackend: statusbackend,
       appbackend: appbackend,
+      defaultsbackend: defaultsbackend
     });
 
 var utils = require('./utils');

@@ -4,6 +4,7 @@ var mediaDB   = new Media.List({collection: mediaList,
                                 name: 'Media Database'});
 var Universe  = new Media.Universe();
 var Schedule  = new Media.Schedule();
+var DefaultConf = new DefaultConf();
 
 var DEBUG = false;
 if (DEBUG) {
@@ -59,7 +60,7 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        _([appModel, mediaList, Universe, Schedule]).each( function (col) {
+        _([appModel, mediaList, Universe, Schedule, DefaultConf]).each( function (col) {
             console.log ('fetching', col);
             col.fetch();
         });
@@ -110,7 +111,7 @@ var AppRouter = Backbone.Router.extend({
         this.headerView.selectMenuItem('about-menu');
     },
     conf: function () {
-        new ConfView({model: appModel});
+        new ConfView({model: appModel, modelDefault: DefaultConf });
         this.headerView.selectMenuItem('conf-menu');
     },
 });

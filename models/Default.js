@@ -33,3 +33,16 @@ Backbone.View.prototype.moveDOM = function (id, from, to) {
     }
     return dest;
 };
+
+var DefaultConf = Backbone.Model.extend({
+    backend: 'defaultsbackend',
+    initialize: function () {
+        if (!server) {
+            this.bindBackend();
+            this.bind('backend', function(method, model) {
+                console.log ('got from backend:', method, model);
+            });
+            return Backbone.Model.prototype.initialize.call (this);
+        }
+    },
+});

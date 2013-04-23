@@ -4,7 +4,7 @@ window.ConfView = Backbone.View.extend({
         this.render();
     },
     render: function () {
-            $(this.el).html(template.confview({ config: this.model.toJSON()}));
+            $(this.el).html(template.confview({ config: this.model.toJSON(), defaults: this.options.modelDefault.toJSON() }));
             $('.bs-docs-sidenav').affix();
             $('body').scrollspy('refresh');
             return this;
@@ -13,6 +13,7 @@ window.ConfView = Backbone.View.extend({
         "change"        : "change",
         "click .save_conf"   : "save",
         "click .abort_conf"  : "abort",
+        "click .set_default"    : "setDefault",
     },
 
     change: function (event) {
@@ -42,5 +43,15 @@ window.ConfView = Backbone.View.extend({
                 utils.showAlert('Error', 'An error occurred while trying to change this item', 'alert-error');
             }
         });
+    },
+    setDefault: function(event) {
+        var target = event.target;
+        var res = target.name.split(".");
+        if(res.length == 3) {
+            this.model.attributes[res[0]][res[1]][res[2]] = this.options.modelDefault.attributes[res[0]][res[1]][res[2]];
+            var selector = target.name.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\\\$1');
+            $('input#'+selector, this.el).val(this.model.attributes[res[0]][res[1]][res[2]]);
+        }
+        return false;
     },
 });
