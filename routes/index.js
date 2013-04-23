@@ -72,6 +72,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'knockout-sortable/build/knockout-sortable.js'),
         path.join(lib_dir, 'knockout-drag-binding.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
+        require.resolve('node-uuid'),
     ], {minify:app.get('minify')});
 
     // serve using express

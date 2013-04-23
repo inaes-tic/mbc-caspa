@@ -123,6 +123,7 @@ Media.Piece = Media.Model.extend ({
     },
     initialize: function () {
         console.log ('creating new Media.Piece');
+        this._id = uuid.v4();
     },
 
 });
