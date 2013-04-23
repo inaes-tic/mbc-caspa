@@ -66,8 +66,6 @@ window.MediaListView = function(options){
 
         dragHandler: function(item, event, ui){
             var piece = new Media.Piece(item.model().attributes);
-            var newid = self.model.get('_id') + '-' + moment().valueOf();
-            piece.set('_id', newid);
             piece.set('checksum', item.model().get('_id'));
             return kb.viewModel(piece)
         },
