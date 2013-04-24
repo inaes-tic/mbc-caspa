@@ -48,7 +48,7 @@ app.configure(function () {
     app.use(express.cookieParser('your secret here'));
     app.use(express.session());
     app.use(app.router);
-    app.use(require('less-middleware')({ 
+    app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
         compress: true}
@@ -85,7 +85,8 @@ function debug_backend (backend) {
 
 var db = mbc.db();
 
-var channel = mbc.pubsub();
+var publisher = mbc.pubsub();
+var listener = mbc.pubsub();
 
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
@@ -107,19 +108,19 @@ var schedbackend = backboneio.createBackend();
 schedbackend.use(id_middleware);
 schedbackend.use(function (req, res, next) {
     console.log ("schedbackend handler", req);
-    channel.publish ({channel: "schedbackend", method: req.method, backend: req.backend, model: req.model});
+    publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
 schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
-channel.subscribe ({channel: 'schedbackend'}, function (sched) {
-    schedbackend.emit('updated', sched.model);
-});
 
 var statusbackend = backboneio.createBackend();
-channel.subscribe({backend: 'mostoStatus'}, function(msg) {
+listener.on('JSONmessage', function(chan, status) {
+
+    if( chan != "mostoStatus" ) // we can ignore this message
+        return;
+
     // This receives messages from mosto and propagates the message through
     //  backbone.io
-    var status = msg.model;
     var emit = _.after(6, function() {
         console.log('emitting', status);
         statusbackend.emit('updated', status)
@@ -168,6 +169,7 @@ channel.subscribe({backend: 'mostoStatus'}, function(msg) {
         });
     });
 });
+listener.subscribe('mostoStatus');
 statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
 
 var appbackend = backboneio.createBackend();
@@ -186,15 +188,17 @@ defaultsbackend.use( function (req, res, next) {
 // and another one for "sticky" messages like long-lived status problems, like if melted died
 // or the DB has a problem
 var mostomessagesbackend = backboneio.createBackend();
-channel.subscribe({backend: 'mostoMessage', method: 'emit'}, function(msg) {
-    mostomessagesbackend.emit('created', msg.model);
+listener.on('JSONpmessage', function(pattern, chan, msg) {
+    switch( chan ) {
+        case "mostoMessage.emit":
+            return mostomessagesbackend.emit('created', msg.model);
+        case "mostoMessage.create":
+            return mostomessagesbackend.emit('created', msg.model);
+        case "mostoMessage.delete":
+            return mostomessagesbackend.emit('deleted', msg.model);
+    }
 });
-channel.subscribe({backend: 'mostoMessage', method: 'create'}, function(msg) {
-    mostomessagesbackend.emit('created', msg.model);
-});
-channel.subscribe({backend: 'mostoMessage', method: 'delete'}, function(msg) {
-    mostomessagesbackend.emit('deleted', msg.model);
-});
+listener.psubscribe('mostoMessage*');
 mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
 
 _([mediabackend, listbackend, appbackend, defaultsbackend]).each (debug_backend);
