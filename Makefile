@@ -1,3 +1,4 @@
+export MOCHA=node_modules/mocha/bin/mocha
 export NODE_CONFIG_DIR ?= $(PWD)/node_modules/mbc-common/config
 
 all: update serve
@@ -28,6 +29,9 @@ npm:
 	npm install
 
 update: submodules npm mos
+
+test:
+	${MOCHA} --reporter spec --timeout 3000 test
 
 serve: update
 	node server.js
