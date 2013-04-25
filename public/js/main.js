@@ -49,6 +49,7 @@ var AppRouter = Backbone.Router.extend({
         "media/:id"         : "mediaDetails",
         "program/:id"       : "listProgram",
 
+        "playout"           : "playout",
         "schedule"          : "schedule",
         "admin"             : "conf",
         "about"             : "about",
@@ -66,6 +67,11 @@ var AppRouter = Backbone.Router.extend({
         });
 
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
+    },
+    
+    playout: function() {
+        new PlayoutView({collection: Schedule});
+        this.headerView.selectMenuItem('playout-menu')
     },
 
     schedule: function() {
