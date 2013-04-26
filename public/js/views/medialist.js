@@ -86,17 +86,9 @@ window.MediaListView = function(options){
     };
 
     this.save = function (newmodel) {
-        var set_piece_id = function(element, index, list) {
-            var newid = this.model.get('_id') + '-' + moment().valueOf();
-            element.set('_id', newid);
-        };
-
         if (newmodel) {
-            // this is a model just created from the collection, so we use the correct List id
-            // for each of the elements.
             this.view_model.model(newmodel);
             this.model = newmodel;
-            _.each(this.model.get('collection').models, set_piece_id, this);
         }
         this.model.save();
     };
