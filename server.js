@@ -6,7 +6,8 @@ var express = require('express'),
     backboneio = require('backbone.io'),
     mbc = require('mbc-common'),
     conf = require('mbc-common').config.Caspa,
-    moment = require('moment')
+    moment = require('moment'),
+    App = require("./models/App")
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -172,6 +173,17 @@ listener.on('JSONmessage', function(chan, status) {
 listener.subscribe('mostoStatus');
 statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
 
+var currentframebackend = backboneio.createBackend();
+listener.on('JSONmessage', function(chan, msg) {
+    if( !(chan == 'mostoStatus.progress' ) )
+        return;
+
+    var status = new App.ProgressStatus(msg);
+    currentframebackend.emit('updated', status);
+});
+listener.subscribe('mostoStatus.progress');
+currentframebackend.use(backboneio.middleware.memoryStore(db, 'progress'));
+
 var appbackend = backboneio.createBackend();
 appbackend.use(backboneio.middleware.configStore());
 
@@ -210,6 +222,7 @@ backboneio.listen(app.listen(app.get('port'), function(){
       listbackend:  listbackend,
       schedbackend: schedbackend,
       statusbackend: statusbackend,
+      currentframebackend: currentframebackend,
       appbackend: appbackend,
       defaultsbackend: defaultsbackend
     });
