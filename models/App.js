@@ -86,6 +86,7 @@ App.ProgressStatus = Backbone.Model.extend({
         return Backbone.Model.prototype.initialize.call (this);
     },
     defaults: {
+        id: 3,
         currentFrame: 0,
         totalFrames: 0,
     },
