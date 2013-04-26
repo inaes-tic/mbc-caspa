@@ -65,8 +65,11 @@ window.MediaListView = function(options){
         allowDrop: allow_drop,
 
         dragHandler: function(item, event, ui){
-            var piece = new Media.Piece(item.model().attributes);
-            piece.set('checksum', item.model().get('_id'));
+            var attrs = _.clone(item.model().attributes);
+            var id = attrs['_id'];
+            delete attrs['_id'];
+            var piece = new Media.Piece(attrs);
+            piece.set('checksum', id);
             return kb.viewModel(piece)
         },
     });
@@ -86,17 +89,9 @@ window.MediaListView = function(options){
     };
 
     this.save = function (newmodel) {
-        var set_piece_id = function(element, index, list) {
-            var newid = this.model.get('_id') + '-' + moment().valueOf();
-            element.set('_id', newid);
-        };
-
         if (newmodel) {
-            // this is a model just created from the collection, so we use the correct List id
-            // for each of the elements.
             this.view_model.model(newmodel);
             this.model = newmodel;
-            _.each(this.model.get('collection').models, set_piece_id, this);
         }
         this.model.save();
     };

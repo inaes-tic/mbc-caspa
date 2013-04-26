@@ -112,18 +112,20 @@ Media.Collection = Backbone.Collection.extend({
 Media.Piece = Media.Model.extend ({
     urlRoot: 'piece',
     idAttribute: "_id",
-    defaults: {
-        trim: {
-            timein:  0,
-            timeout: 0,
-        },
-        overlay: [],
-        starts: 0,
-        ends: 0,
+    defaults: function () {
+        return {
+            trim: {
+                timein:  0,
+                timeout: 0,
+            },
+            overlay: [],
+            starts: 0,
+            ends: 0,
+            _id: uuid.v4(),
+        };
     },
     initialize: function () {
         console.log ('creating new Media.Piece');
-        this._id = uuid.v4();
     },
 
 });
