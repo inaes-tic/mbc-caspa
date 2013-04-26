@@ -72,7 +72,7 @@ App.Status = Backbone.Model.extend ({
 
 App.ProgressStatus = Backbone.Model.extend({
     urlRoot: 'progress',
-    backend: 'currentframebackend',
+    backend: 'framebackend',
     initialize: function () {
         if (!server) {
             this.bindBackend();

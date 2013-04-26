@@ -173,16 +173,16 @@ listener.on('JSONmessage', function(chan, status) {
 listener.subscribe('mostoStatus');
 statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
 
-var currentframebackend = backboneio.createBackend();
+var framebackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, msg) {
     if( !(chan == 'mostoStatus.progress' ) )
         return;
 
     var status = new App.ProgressStatus(msg);
-    currentframebackend.emit('updated', status);
+    framebackend.emit('updated', status);
 });
 listener.subscribe('mostoStatus.progress');
-currentframebackend.use(backboneio.middleware.memoryStore(db, 'progress'));
+framebackend.use(backboneio.middleware.memoryStore(db, 'progress'));
 
 var appbackend = backboneio.createBackend();
 appbackend.use(backboneio.middleware.configStore());
@@ -222,7 +222,7 @@ backboneio.listen(app.listen(app.get('port'), function(){
       listbackend:  listbackend,
       schedbackend: schedbackend,
       statusbackend: statusbackend,
-      currentframebackend: currentframebackend,
+      framebackend: framebackend,
       appbackend: appbackend,
       defaultsbackend: defaultsbackend
     });
