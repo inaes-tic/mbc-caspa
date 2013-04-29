@@ -38,6 +38,7 @@ var appModel = new App.Model();
 
 window.appmodel = appModel;
 window.appstatus = new App.Status();
+window.framestatus = new App.ProgressStatus();
 
 var AppRouter = Backbone.Router.extend({
 
@@ -65,7 +66,7 @@ var AppRouter = Backbone.Router.extend({
             col.fetch();
         });
 
-        this.headerView = new HeaderView({model: window.appstatus});
+        this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
     },
 
     schedule: function() {

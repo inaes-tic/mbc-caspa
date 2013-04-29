@@ -22,15 +22,15 @@ window.HeaderView = function (options) {
 
     var self = this;
 
-    var model = options['model'];
-    self.model = model;
+    self.appstatus = options['appstatus'];
+    self.framestatus = options['framestatus'];
 
     self.el = 'el' in options ? options['el'] : $('#Panel');
 
-    $(self.el).html(template.header(this.model.toJSON()));
+    $(self.el).html(template.header());
 
-    new SourceInfoView ({model: self.model, el: $('.streams-to-air-block', self.$el)});
-    new TimeInfoView   ({model: self.model, el: $('.time-info-block', self.$el)});
+    new SourceInfoView ({model: self.appstatus, el: $('.streams-to-air-block', self.$el)});
+    new TimeInfoView   ({model: self.appstatus, el: $('.time-info-block', self.$el)});
 
     $('.now-playing-block', self.el).html(template.nowplaying({type: 'track'}));
     $('.show-block', self.el).html(template.nowplaying({type: 'Show'}));
@@ -42,8 +42,23 @@ window.HeaderView = function (options) {
         }
     });
 
+    var FrameViewModel = kb.ViewModel.extend({
+        constructor: function(model) {
+            kb.ViewModel.prototype.constructor.apply(this, arguments);
+            var self = this;
+            this.progress = ko.computed(function() {
+                var p = 100 * this.currentFrame() / this.totalFrames();
+                return p.toPrecision(3);
+            }, self);
+        }
+    });
 
-    self.view_model = new HeaderViewModel(model);
+
+    self.view_model = {
+        Header:new HeaderViewModel(self.appstatus),
+        Frame: new FrameViewModel(self.framestatus),
+    };
+
     ko.applyBindings(self.view_model, self.el[0]);
 
     self.selectMenuItem = function (menuItem) {
