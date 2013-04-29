@@ -3,10 +3,13 @@ block nowplaying
     - var type = 'Show'
 
   - if (type.match(/track/i))
-    - var src = 'piece()'
+    - var src = 'Header.piece()'
+    - var progress = '{attr: {style:"width: "+Frame.progress()+"%;" }}';
+
 
   - if (type.match(/show/i))
-    - var src = 'show()'
+    - var src = 'Header.show()'
+    - var progress = '';
 
   .text-row
           strong= i18n.gettext('Previous:')
@@ -20,7 +23,7 @@ block nowplaying
             strong(data-bind='text: ' + src + '.current.name')
           span.length#song-length
   .progressbar
-          .progress-song#progress-bar(data-bind='{attr: {style:"width:"+' + src + '.progress }}')
+          .progress-song#progress-bar(data-bind=progress)
   .text-row.next-song
           strong= i18n.gettext('Next:')
           span#next(data-bind='text: ' + src + '.next.name')

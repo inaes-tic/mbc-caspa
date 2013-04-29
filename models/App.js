@@ -78,7 +78,7 @@ App.ProgressStatus = Backbone.Model.extend({
             this.bindBackend();
 
             this.bind('backend', function(method, model) {
-                console.log ('got from backend:', method, model);
+                //console.log ('got from backend:', method, model);
             });
         }
         console.log ('creating new App.Model');
