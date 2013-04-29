@@ -121,9 +121,14 @@ Media.Piece = Media.Model.extend ({
         starts: 0,
         ends: 0,
     },
-    initialize: function () {
+    initialize: function (attributes, options) {
         console.log ('creating new Media.Piece');
-        this._id = uuid.v4();
+        if (this.idAttribute in attributes) {
+            // we got a Media id, replace it with an uuid.
+            if ( !attributes['_id'].match(/-/) ) {
+               this.set(this.idAttribute, uuid.v4(), {silent: true});
+            }
+        }
     },
 
 });
