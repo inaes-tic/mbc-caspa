@@ -70,5 +70,27 @@ App.Status = Backbone.Model.extend ({
     },
 });
 
+App.ProgressStatus = Backbone.Model.extend({
+    urlRoot: 'progress',
+    backend: 'framebackend',
+    initialize: function () {
+        if (!server) {
+            this.bindBackend();
+
+            this.bind('backend', function(method, model) {
+                console.log ('got from backend:', method, model);
+            });
+        }
+        console.log ('creating new App.Model');
+
+        return Backbone.Model.prototype.initialize.call (this);
+    },
+    defaults: {
+        id: 3,
+        currentFrame: 0,
+        totalFrames: 0,
+    },
+});
+
 if(server) module.exports = App;
 else root.App = App;
