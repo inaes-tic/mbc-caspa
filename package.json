@@ -35,7 +35,7 @@
         "moment": "1.7.x",
         "knockback" : "*",
         "knockout-client" : "*",
-        "i18n-abide"    : ">=0.0.7",
+        "i18n-abide"    : "0.0.8beta4",
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
