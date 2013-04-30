@@ -36,10 +36,10 @@
         "knockback" : "0.17.x",
         "knockout-client" : "2.2.x",
         "i18n-abide"    : "0.0.8beta4",
-        "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
+        "backbone.io"   : "git://github.com/inaes-tic/backbone.io#0.0.1",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
-        "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git"
+        "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git#0.0.1"
     },
     "devDependencies": {
         "mocha"     : "1.9.x",
