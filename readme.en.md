@@ -1,14 +1,21 @@
-# MBC Playout {mlt edition} #
+# MBC Caspa #
 
-"Media Cellar" is a sample CRUD application built with with Backbone.js,
-Twitter Bootstrap, Node.js, Express, Now.js, FFMPEG, MLT and MongoDB.
+Caspa is [CRUD](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete)
+application built with with Backbone.js, Twitter Bootstrap, Node.js,
+Express, Knockout, FFMPEG, MLT, Redis and MongoDB.
 
-The application allows you to browse through a list of medias stored on your
-hard drive. you can as well as add, update, and delete medias.
+The application allows you to:
 
-it's heavily based on [Node Cellar](http://nodecellar.coenraets.org) by @coenraets
+* Browse through a list of medias stored on your hard drive
+* Add, update, and delete medias
+* Make medias playlists
+* Schedule through a calendar playlists
 
-But we release the changes as AGPL v3.
+it is heavily based on [Node Cellar](http://nodecellar.coenraets.org) by @coenraets
+
+# License #
+
+AGPL v3.
 
 # requirements #
 
@@ -23,7 +30,7 @@ But we release the changes as AGPL v3.
 ```shell
    apt-get install npm  
 ```
-+ node > 0.6.4
++ node > 0.8
 
 ```shell
    apt-get install nodejs
@@ -35,19 +42,26 @@ But we release the changes as AGPL v3.
    apt-get install mongodb
 ```
 
++ redis
+
+```shell
+   apt-get install redis-server
+```
+
 + alltoogethernow
 
 ```shell
-   sudo apt-get install gettext npm nodejs mongodb
+   sudo apt-get install gettext npm nodejs mongodb redis-server
 ```
 
 # Installing #
 
+```shell
+   git clone http://github.com/inaes-tic/mbc-caspa
+   cd mbc-caspa
+   make
+```
 cloning this module and runing make should install all required submodules,
 npm install, and get a server working on http://localhost:3000
 
-```shell
-   git clone http://github.com/inaes-tic/mbc-playout
-   cd mbc-playout
-   make
-```
+

@@ -1,12 +1,15 @@
-# MBC Playout {mlt edition} #
+# MBC Caspa #
 
-"Media Cellar" es una applicación simple construida bajo el modelo
-[[CRUD|http://es.wikipedia.org/wiki/CRUD]] con Backbone.js, Twitter
-Bootstrap, Node.js, Express, Now.js, FFMPEG, MLT y MongoDB.
+Caspa es una applicación construida bajo el modelo [CRUD](http://es.wikipedia.org/wiki/CRUD)
+con Backbone.js, Twitter Bootstrap, Node.js, Express, Knockout,
+FFMPEG, MLT, Redis y MongoDB.
 
-La applicación permite navegar una lista de medios almacenada en su disco
-rigido, y organizarlo como playlist para que se consuma por el servidor de
-playout Melted.
+La applicación permite:
+
+* Navegar una lista de medios almacenada en su disco rigido
+* Agregar, Editar y Borrrar medios
+* Crear playlists con medios
+* Programar playlists a traves del calendario
 
 El codigo esta basado en el trabajo de [Node Cellar](http://nodecellar.coenraets.org) por @coenraets
 
@@ -27,7 +30,7 @@ AGPL v3.
 ```shell
    apt-get install npm  
 ```
-+ node > 0.6.4
++ node > 0.8
 
 ```shell
    apt-get install nodejs
@@ -39,17 +42,23 @@ AGPL v3.
    apt-get install mongodb
 ```
 
-+ alltoogethernow
++ redis
 
 ```shell
-   sudo apt-get install gettext npm nodejs mongodb
+   apt-get install redis-server
+```
+
++ todo junto
+
+```shell
+   sudo apt-get install gettext npm nodejs mongodb redis-server
 ```
 
 # Instalación #
 
 ```shell
-   git clone http://github.com/inaes-tic/mbc-playout
-   cd mbc-playout
+   git clone http://github.com/inaes-tic/mbc-caspa
+   cd mbc-caspa
    make
 ```
 tendria que levantar la app en http://localhost:3000
