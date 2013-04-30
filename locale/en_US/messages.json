@@ -1,0 +1,340 @@
+;var json_locale_data = {
+   "messages": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION\nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2013-04-30 00:18-0300\nPO-Revision-Date: 2012-12-02 20:38-0300\nLast-Translator: Automatically generated\nLanguage-Team: none\nLanguage: en_US\nMIME-Version: 1.0\nContent-Type: text/plain; charset=ASCII\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+      },
+      "Built as a sample application with ": [
+         null,
+         "Built as a sample application with "
+      ],
+      "and ": [
+         null,
+         "and "
+      ],
+      "based on work by ": [
+         null,
+         "based on work by "
+      ],
+      "The source code for this application is available in ": [
+         null,
+         "The source code for this application is available in "
+      ],
+      "this repository": [
+         null,
+         "this repository"
+      ],
+      " on GitHub.": [
+         null,
+         " on GitHub."
+      ],
+      "This project is under the ": [
+         null,
+         "This project is under the "
+      ],
+      " Licence.": [
+         null,
+         " Licence."
+      ],
+      "Welcome to ": [
+         null,
+         "Welcome to "
+      ],
+      "Start Browsing\\\nMedia Cellar": [
+         null,
+         "Start Browsing\\\nMedia Cellar"
+      ],
+      "View Project\\\non Github": [
+         null,
+         "View Project\\\non Github"
+      ],
+      "Follow": [
+         null,
+         "Follow"
+      ],
+      "Tweet": [
+         null,
+         "Tweet"
+      ],
+      "Save": [
+         null,
+         "Save"
+      ],
+      "Cancel": [
+         null,
+         "Cancel"
+      ],
+      "Configure MBC Playout": [
+         null,
+         "Configure MBC Playout"
+      ],
+      "Main configuration": [
+         null,
+         "Main configuration"
+      ],
+      "the finest of the fine tuning": [
+         null,
+         "the finest of the fine tuning"
+      ],
+      "Scrapper": [
+         null,
+         "Scrapper"
+      ],
+      "Scrape Path": [
+         null,
+         "Scrape Path"
+      ],
+      "Clearly secondary": [
+         null,
+         "Clearly secondary"
+      ],
+      "guru only": [
+         null,
+         "guru only"
+      ],
+      "back": [
+         null,
+         "back"
+      ],
+      "pause": [
+         null,
+         "pause"
+      ],
+      "play": [
+         null,
+         "play"
+      ],
+      "forward": [
+         null,
+         "forward"
+      ],
+      "Oops!": [
+         null,
+         "Oops!"
+      ],
+      "It looks like your browser is not supported !": [
+         null,
+         "It looks like your browser is not supported !"
+      ],
+      "Pause": [
+         null,
+         "Pause"
+      ],
+      "Resume": [
+         null,
+         "Resume"
+      ],
+      "To add media, drag a new file from your file system onto this box.": [
+         null,
+         "To add media, drag a new file from your file system onto this box."
+      ],
+      "(or select them ": [
+         null,
+         "(or select them "
+      ],
+      "from your computer": [
+         null,
+         "from your computer"
+      ],
+      ".)": [
+         null,
+         ".)"
+      ],
+      "Browse Medias": [
+         null,
+         "Browse Medias"
+      ],
+      "Edit Playlists": [
+         null,
+         "Edit Playlists"
+      ],
+      "Search Medias": [
+         null,
+         "Search Medias"
+      ],
+      "Add Medias": [
+         null,
+         "Add Medias"
+      ],
+      "TEST": [
+         null,
+         "TEST"
+      ],
+      "Configure": [
+         null,
+         "Configure"
+      ],
+      "About": [
+         null,
+         "About"
+      ],
+      "Resources": [
+         null,
+         "Resources"
+      ],
+      "Backbone.js": [
+         null,
+         "Backbone.js"
+      ],
+      "Twitter Bootstrap": [
+         null,
+         "Twitter Bootstrap"
+      ],
+      "Node.js": [
+         null,
+         "Node.js"
+      ],
+      "Express": [
+         null,
+         "Express"
+      ],
+      "MongoDB": [
+         null,
+         "MongoDB"
+      ],
+      "This App": [
+         null,
+         "This App"
+      ],
+      "GitHub Repository": [
+         null,
+         "GitHub Repository"
+      ],
+      "Success": [
+         null,
+         "Success"
+      ],
+      "Error": [
+         null,
+         "Error"
+      ],
+      "Notes about this media": [
+         null,
+         "Notes about this media"
+      ],
+      "None": [
+         null,
+         "None"
+      ],
+      "Duration": [
+         null,
+         "Duration"
+      ],
+      "Format": [
+         null,
+         "Format"
+      ],
+      "Media Details": [
+         null,
+         "Media Details"
+      ],
+      "Name": [
+         null,
+         "Name"
+      ],
+      "Notes": [
+         null,
+         "Notes"
+      ],
+      "Delete": [
+         null,
+         "Delete"
+      ],
+      "Success!": [
+         null,
+         "Success!"
+      ],
+      "Media saved successfully": [
+         null,
+         "Media saved successfully"
+      ],
+      "Set a list name !": [
+         null,
+         "Set a list name !"
+      ],
+      "You are currently editing an un-named playlist\\\n": [
+         null,
+         "You are currently editing an un-named playlist\\\n"
+      ],
+      "Add some media !": [
+         null,
+         "Add some media !"
+      ],
+      "You need to add some media before you can save a playlist, drag some rows from the left pane to start adding": [
+         null,
+         "You need to add some media before you can save a playlist, drag some rows from the left pane to start adding"
+      ],
+      "It looks like you have no playlist to show here": [
+         null,
+         "It looks like you have no playlist to show here"
+      ],
+      "New Playlist": [
+         null,
+         "New Playlist"
+      ],
+      "Edit me !": [
+         null,
+         "Edit me !"
+      ],
+      "Click here to edit Playlist Name.": [
+         null,
+         "Click here to edit Playlist Name."
+      ],
+      "Thumbnail": [
+         null,
+         "Thumbnail"
+      ],
+      "Media info": [
+         null,
+         "Media info"
+      ],
+      "Status": [
+         null,
+         "Status"
+      ],
+      "Availability": [
+         null,
+         "Availability"
+      ],
+      "Media List": [
+         null,
+         "Media info"
+      ],
+      "Previous:": [
+         null,
+         ""
+      ],
+      "Next:": [
+         null,
+         ""
+      ],
+      "There are overlapping events. ": [
+         null,
+         ""
+      ],
+      "Source Streams": [
+         null,
+         ""
+      ],
+      "Station time": [
+         null,
+         ""
+      ],
+      "Schedule": [
+         null,
+         ""
+      ],
+      "Search Playlists": [
+         null,
+         "New Playlist"
+      ],
+      "Search": [
+         null,
+         "Search Medias"
+      ],
+      "Default": [
+         null,
+         ""
+      ]
+   }
+}
+;

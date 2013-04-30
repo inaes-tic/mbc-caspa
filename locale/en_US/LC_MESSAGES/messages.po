@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-18 01:26-0300\n"
+"POT-Creation-Date: 2013-04-30 00:18-0300\n"
 "PO-Revision-Date: 2012-12-02 20:38-0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -71,11 +71,12 @@ msgstr "Tweet"
 
 #: views/templates/confview.jade:12 views/templates/mediaview.jade:69
 #: views/templates/mediaedit.jade:17 views/templates/mediaedit.jade:18
-#: views/templates/confview.jade:11
+#: views/templates/confview.jade:11 views/templates/confview.jade:10
 msgid "Save"
 msgstr "Save"
 
 #: views/templates/confview.jade:13 views/templates/confview.jade:12
+#: views/templates/confview.jade:11
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -157,10 +158,12 @@ msgid ".)"
 msgstr ".)"
 
 #: views/templates/header.jade:15 views/templates/header.jade:23
+#: views/templates/header.jade:25
 msgid "Browse Medias"
 msgstr "Browse Medias"
 
 #: views/templates/header.jade:19 views/templates/header.jade:27
+#: views/templates/header.jade:29
 msgid "Edit Playlists"
 msgstr "Edit Playlists"
 
@@ -170,6 +173,7 @@ msgid "Search Medias"
 msgstr "Search Medias"
 
 #: views/templates/header.jade:27 views/templates/header.jade:31
+#: views/templates/header.jade:33
 msgid "Add Medias"
 msgstr "Add Medias"
 
@@ -178,6 +182,7 @@ msgid "TEST"
 msgstr "TEST"
 
 #: views/templates/header.jade:35 views/templates/header.jade:39
+#: views/templates/header.jade:41
 msgid "Configure"
 msgstr "Configure"
 
@@ -324,11 +329,11 @@ msgstr "Availability"
 msgid "Media List"
 msgstr "Media info"
 
-#: views/templates/nowplaying.jade:12
+#: views/templates/nowplaying.jade:12 views/templates/nowplaying.jade:15
 msgid "Previous:"
 msgstr ""
 
-#: views/templates/nowplaying.jade:25
+#: views/templates/nowplaying.jade:25 views/templates/nowplaying.jade:28
 msgid "Next:"
 msgstr ""
 
@@ -344,7 +349,7 @@ msgstr ""
 msgid "Station time"
 msgstr ""
 
-#: views/templates/header.jade:35
+#: views/templates/header.jade:35 views/templates/header.jade:37
 msgid "Schedule"
 msgstr ""
 
@@ -357,3 +362,7 @@ msgstr "New Playlist"
 #, fuzzy
 msgid "Search"
 msgstr "Search Medias"
+
+#: views/templates/confview.jade:31 views/templates/confview.jade:32
+msgid "Default"
+msgstr ""
