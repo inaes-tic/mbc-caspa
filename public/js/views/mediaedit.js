@@ -36,6 +36,7 @@ window.EditView = function(options) {
             el: $("#right-pane", self.el),
             type: 'playlist-sortable',
         });
+        self.editview.onChange.subscribe(self.savePlaylist);
         console.log ('show edit view', self.editview, list);
 
         $('.alert-empty-playlist', self.el).hide();

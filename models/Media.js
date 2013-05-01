@@ -267,6 +267,7 @@ Media.Universe = Media.Collection.extend ({
                     self.add(model);
                 });
                 self.bind(event + ':update', function(model) {
+console.log('UNIVERSE update');
                     var item = self.get(model[idAttribute]);
                     if (!item) { return; }
                     if ('collection' in model){
@@ -280,7 +281,7 @@ Media.Universe = Media.Collection.extend ({
                         var collectionsAreDifferent = function(a1, a2) {
                             if (a1.length != a2.length){ return true; }
                             for (var idx=0; idx < a1.length; idx++) {
-                                //console.debug('A1: ', a1[idx]['_id'], 'A2: ', a2[idx]['id']);
+                                console.debug('A1: ', a1[idx]['_id'], 'A2: ', a2[idx]['id']);
                                 if (a1[idx]['_id'] != a2[idx]['id']) {
                                     return true;
                                 }
