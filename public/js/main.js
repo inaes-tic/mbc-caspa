@@ -4,7 +4,6 @@ var mediaDB   = new Media.List({collection: mediaList,
                                 name: 'Media Database'});
 var Universe  = new Media.Universe();
 var Schedule  = new Media.Schedule();
-var DefaultConf = new DefaultConf();
 
 var DEBUG = false;
 if (DEBUG) {
@@ -34,9 +33,9 @@ Universe.bind ('create', function (arg) {
     console.trace ();
 });
 
-var appModel = new App.Model();
+var appCollection = new App.Collection();
 
-window.appmodel = appModel;
+window.appCollection = appCollection;
 window.appstatus = new App.Status();
 window.framestatus = new App.ProgressStatus();
 
@@ -61,7 +60,7 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        _([appModel, mediaList, Universe, Schedule, DefaultConf]).each( function (col) {
+        _([appCollection, mediaList, Universe, Schedule]).each( function (col) {
             console.log ('fetching', col);
             col.fetch();
         });
@@ -89,7 +88,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     upload: function () {
-        new UploadView ({model: appModel});
+        new UploadView ({collection: appCollection});
         this.headerView.selectMenuItem('add-menu');
     },
 
@@ -112,7 +111,7 @@ var AppRouter = Backbone.Router.extend({
         this.headerView.selectMenuItem('about-menu');
     },
     conf: function () {
-        new ConfView({model: appModel, modelDefault: DefaultConf });
+        new ConfView({collection: appCollection});
         this.headerView.selectMenuItem('conf-menu');
     },
 });

@@ -81,7 +81,7 @@ window.UploadView = Backbone.View.extend({
     },
     render: function () {
         try {
-            $(this.el).html(template.upload(this.model.toJSON()));
+            $(this.el).html(template.upload(this.collection.toJSON()));
             return this;
         } catch (e) {
             alert (e);
