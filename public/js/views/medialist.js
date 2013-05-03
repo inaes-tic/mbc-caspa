@@ -3,9 +3,7 @@ window.MediaListView = function(options){
 
     var model = options['model'];
     var collection = model.get('collection');
-    var el = $('#content');
-    if(options['el'])
-        el = options['el'];
+    var el = options.el || $('#content');
 
     this.model = model;
     this.el = el;
@@ -19,7 +17,6 @@ window.MediaListView = function(options){
     }
 
     el.html(template.medialist({type: type}));
-    console.log('ML2');
 
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
@@ -86,14 +83,6 @@ window.MediaListView = function(options){
         this.el.html('');
     };
 
-    this.save = function (newmodel) {
-        if (newmodel) {
-            this.view_model.model(newmodel);
-            this.model = newmodel;
-        }
-        this.model.save();
-    };
-
     this.addDummyRow = function () {
         if (this.has_dummy_row) {
             return;
@@ -109,7 +98,34 @@ window.MediaListView = function(options){
         }
     };
 
-    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'save', 'editListName');
+    this.onChange = ko.observable();
+    this._onChange = function() {
+        if (this._onChange.paused){ return; }
+        this.onChange.notifySubscribers();
+    };
+    this._onChange.paused = false;
+
+    this.save = _.debounce(function (newmodel) {
+        if (newmodel) {
+            this.view_model.model(newmodel);
+            this.model = newmodel;
+        }
+        this._onChange.paused = true;
+        var done =  _.bind(function(){ this._onChange.paused = false; }, this);
+        var xhr = this.model.save();
+        if (xhr) {
+            xhr.done(done);
+        } else {
+            //falla de validacion o no hubo cambios.
+            done();
+        }
+    }, 100);
+
+    _.bindAll(this, '_onChange', 'onCollectionChange', 'addDummyRow', 'destroy', 'save', 'editListName');
+    this.view_model.collection.subscribe(this.onCollectionChange);
+    this.view_model.collection.subscribe(this._onChange);
+    this.view_model.editingName.subscribe(function(value){ if (!value){ self._onChange() } });
+
     this.view_model.collection.subscribe(this.onCollectionChange);
 
     ko.applyBindings(this.view_model, el[0]);
