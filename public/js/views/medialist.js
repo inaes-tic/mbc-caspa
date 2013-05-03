@@ -3,9 +3,7 @@ window.MediaListView = function(options){
 
     var model = options['model'];
     var collection = model.get('collection');
-    var el = $('#content');
-    if(options['el'])
-        el = options['el'];
+    var el = options.el || $('#content');
 
     this.model = model;
     this.el = el;
@@ -19,7 +17,6 @@ window.MediaListView = function(options){
     }
 
     el.html(template.medialist({type: type}));
-    console.log('ML2');
 
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {

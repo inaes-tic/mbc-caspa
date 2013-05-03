@@ -256,8 +256,49 @@ Media.Universe = Media.Collection.extend ({
     model: Media.List,
     backend: 'listbackend',
     initialize: function () {
-        if (!server)
-            this.bindBackend();
+        if (!server){
+            var self = this;
+            var idAttribute = this.model.prototype.idAttribute;
+
+            this.backend.ready(function() {
+                var event = self.backend.options.event;
+
+                self.bind(event + ':create', function(model) {
+                    self.add(model);
+                });
+                self.bind(event + ':update', function(model) {
+                    var item = self.get(model[idAttribute]);
+                    if (!item) { return; }
+                    if ('collection' in model){
+                        var coll = model['collection'];
+                        // KB is not happy if we overwrite the collection under the hood.
+                        delete model['collection'];
+                        delete model['models'];
+                        // very naive comparison so we do not update if the server sends
+                        // the same Pieces.
+                        // I need to write a cleaner solution to avoid circular updates.
+                        var collectionsAreDifferent = function(a1, a2) {
+                            if (a1.length != a2.length){ return true; }
+                            for (var idx=0; idx < a1.length; idx++) {
+                                //console.debug('A1: ', a1[idx]['_id'], 'A2: ', a2[idx]['id']);
+                                if (a1[idx]['_id'] != a2[idx]['id']) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                        if (collectionsAreDifferent(coll, item.get('collection').models)) {
+                            item.get('collection').reset(coll);
+                            console.debug('UPDATE COLL');
+                        }
+                    }
+                    item.set(model);
+                });
+                self.bind(event + ':delete', function(model) {
+                    self.remove(model[idAttribute]);
+                });
+            });
+        }
         console.log ('creating new Media.Universe');
     },
 });
