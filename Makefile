@@ -36,4 +36,10 @@ test:
 serve: update
 	node server.js
 
+serve_noweb:
+	node server.js
+
+serve_debug:
+	node --debug-brk server.js
+
 .PHONY: npm submodules serve sparkmd5 bootstrap
