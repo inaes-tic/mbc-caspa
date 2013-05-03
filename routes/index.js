@@ -151,19 +151,22 @@ module.exports = function(app) {
                      'nowplaying',
                      'sourceinfo'
                     ];
+                    
+    var getFileName = function (e) {
+                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
+            };
 
     var templateJs = new folio.Glossary([
         require.resolve('jade/runtime.js'),
         path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            templates.map (function (e) {
-                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
-            })
+            templates.map (getFileName)
         ),
         {
         compilers: {
             jade: function (name, source) {
                 return 'template[\'' + name + '\'] = ' +
                     jade.compile(source, {
+                        filename: getFileName(name),
                         client: true,
                         compileDebug: false
                     }) + ';';
