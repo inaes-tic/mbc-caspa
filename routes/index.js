@@ -6,7 +6,7 @@ module.exports = function(app) {
     , i18n = require('i18n-abide')
     , conf = require('mbc-common').config.Caspa;
 
-    var self = require (__dirname + '/../models/App.js')
+    var self = require ('mbc-common/models/App.js')
     , appModel = new self.Model();
 
     appModel.bind('change', function (model) {
@@ -117,7 +117,7 @@ module.exports = function(app) {
 
     var modelsJs = new folio.Glossary(
         models.map (function (e) {
-            return path.join(__dirname, '..', 'models', e + '.js');
+            return require.resolve('mbc-common/models/' + e);
         })
     );
 
