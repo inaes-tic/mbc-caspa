@@ -7,7 +7,7 @@ var express = require('express'),
     mbc = require('mbc-common'),
     conf = require('mbc-common').config.Caspa,
     moment = require('moment'),
-    App = require("./models/App")
+    App = require("mbc-common/models/App")
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
