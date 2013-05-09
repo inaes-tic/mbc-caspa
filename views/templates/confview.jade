@@ -1,22 +1,27 @@
+- var data = 0
+- var defaults = 1
 .row
   .span3.bs-docs-sidebar
     ul.nav.nav-list.bs-docs-sidenav
-      each v, k in config
+      each v, k in config[data]
+        - if (k!= 'type') {
         li
           a(href='#' + k)
             i.icon-cheveron-right
             span= k
+        - }
       .form-actions.well(style='margin: 0;')
         a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
         a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
   .span9.well
     form.form-horizontal
-      each v, k in config
+      each v, k in config[data]
+          - if (k!='type') {
           .page-header
             a(id=k, class='anchor-offset')
             h1= v['Info']['name']
             h2= v['Info']['description']
-           each v0, k0 in v
+            each v0, k0 in v
              - if (typeof(v0) != 'string' && k0 != 'Info') {
                h3= k0
                each v1, k1 in v0
@@ -27,8 +32,9 @@
                      label.control-label(for=label)= k1 + ':'
                      .controls
                        input.span5(id=label, type='text', name=label, placeholder=label, value=value)
-                       - if (v1 != defaults[k][k0][k1]) {
+                       - if (v1 != config[defaults][k][k0][k1]) {
                          button.set_default.btn.btn-primary(name=label)= i18n.gettext('Default')
                        -}
                  - }
              - }
+          - }
