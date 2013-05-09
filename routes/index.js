@@ -7,9 +7,9 @@ module.exports = function(app) {
     , conf = require('mbc-common').config.Caspa;
 
     var self = require ('mbc-common/models/App.js')
-    , appModel = new self.Model();
+    , appCollection = new self.Collection();
 
-    appModel.bind('change', function (model) {
+    appCollection.bind('change', function (model) {
         console.log("model " + 'change' + "->" + 'change', model);
         _.each(model.sockets, function (socket) {
             socket.broadcast.emit(model.url  + ':' + 'change', model.toJSON());
@@ -172,5 +172,5 @@ module.exports = function(app) {
     // serve using express
     app.get('/js/templates.js', folio.serve(templateJs));
 
-    return appModel;
+    return appCollection;
 }

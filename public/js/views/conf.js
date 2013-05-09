@@ -2,9 +2,11 @@ window.ConfView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
         this.render();
+        this.configModel = this.filter('type', 'config');
+        this.defaultModel = this.filter('type','defaults');
     },
     render: function () {
-            $(this.el).html(template.confview({ config: this.model.toJSON(), defaults: this.options.modelDefault.toJSON() }));
+            $(this.el).html(template.confview({ config: this.collection.toJSON() }));
             $('.bs-docs-sidenav').affix();
             $('body').scrollspy('refresh');
             return this;
@@ -20,13 +22,16 @@ window.ConfView = Backbone.View.extend({
         // Remove any existing alert message
         utils.hideAlert();
 
+        var config_model = this.configModel.attributes;
+
         // Apply the change to the model
         var target = event.target;
         var res = target.name.split(".");
+        /* XXX FIXME backbone problems setting with nested models. try backbone-deep-models? */
         switch(res.length) {
-            case 1: this.model.attributes[target.name] = target.value; break;
-            case 2: this.model.attributes[res[0]][res[1]] = target.value; break;
-            case 3: this.model.attributes[res[0]][res[1]][res[2]] = target.value; break;
+            case 1: config_model[target.name] = target.value; break;
+            case 2: config_model[res[0]][res[1]] = target.value; break;
+            case 3: config_model[res[0]][res[1]][res[2]] = target.value; break;
             default:
         }
     },
@@ -35,7 +40,7 @@ window.ConfView = Backbone.View.extend({
     },
     save: function () {
         var self = this;
-        this.model.save(null, {
+        this.configModel.save(null, {
             success: function (model) {
                 self.render();
             },
@@ -45,13 +50,22 @@ window.ConfView = Backbone.View.extend({
         });
     },
     setDefault: function(event) {
+        var config_model = this.configModel.attributes;
+        var default_model = this.defaultModel.attributes;
         var target = event.target;
         var res = target.name.split(".");
         if(res.length == 3) {
-            this.model.attributes[res[0]][res[1]][res[2]] = this.options.modelDefault.attributes[res[0]][res[1]][res[2]];
+            config_model[res[0]][res[1]][res[2]] = default_model[res[0]][res[1]][res[2]];
             var selector = target.name.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\\\$1');
-            $('input#'+selector, this.el).val(this.model.attributes[res[0]][res[1]][res[2]]);
+            $('input#'+selector, this.el).val(default_model[res[0]][res[1]][res[2]]);
         }
         return false;
+    },
+
+    /* XXX FIXME Newer Backbone versions (>1.0) bind underscore to use it against collections*/
+    filter: function(prop, value) { return this.collection.find( function(item) {
+            if (item.get(prop) == value)
+                return true;
+        })
     },
 });
