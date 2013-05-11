@@ -1,5 +1,6 @@
 - var data = 0
 - var defaults = 1
+- var descriptions = 2
 .row
   .span3.bs-docs-sidebar
     ul.nav.nav-list.bs-docs-sidenav
@@ -19,22 +20,24 @@
           - if (k!='type') {
           .page-header
             a(id=k, class='anchor-offset')
-            h1= v['Info']['name']
-            h2= v['Info']['description']
+            h1= config[descriptions]['properties'][k]['title']
+            h2= config[descriptions]['properties'][k]['description']
             each v0, k0 in v
-             - if (typeof(v0) != 'string' && k0 != 'Info') {
-               h3= k0
+             - if (typeof(v0) != 'string') {
+               h3=config[descriptions]['properties'][k]['properties'][k0]['title']
+               p= config[descriptions]['properties'][k]['properties'][k0]['description']
                each v1, k1 in v0
-                 - if (k1 != 'Info') {
-                   - var label=  k+'.'+k0+'.'+k1
-                   - var value= v1
-                   .control-group
-                     label.control-label(for=label)= k1 + ':'
-                     .controls
-                       input.span5(id=label, type='text', name=label, placeholder=label, value=value)
-                       - if (v1 != config[defaults][k][k0][k1]) {
-                         button.set_default.btn.btn-primary(name=label)= i18n.gettext('Default')
-                       -}
-                 - }
+                 - var label=  k+'.'+k0+'.'+k1
+                 - var value= v1
+                 - var title = config[descriptions]['properties'][k]['properties'][k0]['properties'][k1]['title']
+                 - var desc = config[descriptions]['properties'][k]['properties'][k0]['properties'][k1]['description']
+                 - var default_value = config[defaults][k][k0][k1]
+                 .control-group
+                   label.control-label(for=label)= title + ' : '
+                   .controls
+                     input.span5(id=label, type='text', name=label, placeholder=label, value=value, title=desc)
+                     - if (v1 != default_value) {
+                       button.set_default.btn.btn-primary(name=label)= i18n.gettext('Default')
+                     -}
              - }
           - }
