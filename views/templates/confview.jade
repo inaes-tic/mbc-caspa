@@ -20,17 +20,20 @@
           - if (k!='type') {
           .page-header
             a(id=k, class='anchor-offset')
-            h1= config[descriptions]['properties'][k]['title']
-            h2= config[descriptions]['properties'][k]['description']
+            - var k_desc = config[descriptions]['properties'][k]
+            h1= k_desc['title']
+            h2= k_desc['description']
             each v0, k0 in v
              - if (typeof(v0) != 'string') {
-               h3=config[descriptions]['properties'][k]['properties'][k0]['title']
-               p= config[descriptions]['properties'][k]['properties'][k0]['description']
+               - var k0_desc = k_desc['properties'][k0]
+               h3=k0_desc['title']
+               p= k0_desc['description']
                each v1, k1 in v0
                  - var label=  k+'.'+k0+'.'+k1
                  - var value= v1
-                 - var title = config[descriptions]['properties'][k]['properties'][k0]['properties'][k1]['title']
-                 - var desc = config[descriptions]['properties'][k]['properties'][k0]['properties'][k1]['description']
+                 - var k1_desc = k0_desc['properties'][k1]
+                 - var title = k1_desc['title']
+                 - var desc = k1_desc['description']
                  - var default_value = config[defaults][k][k0][k1]
                  .control-group
                    label.control-label(for=label)= title + ' : '
