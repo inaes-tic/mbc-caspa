@@ -33,6 +33,9 @@ update: submodules npm mos
 test:
 	${MOCHA} --reporter spec --timeout 3000 test
 
+test_debug:
+	${MOCHA} --debug-brk --reporter spec test
+
 serve: update
 	node server.js
 
@@ -42,4 +45,4 @@ serve_noweb:
 serve_debug:
 	node --debug-brk server.js
 
-.PHONY: npm submodules serve sparkmd5 bootstrap
+.PHONY: npm submodules serve sparkmd5 bootstrap test test_debug serve_noweb serve_debug
