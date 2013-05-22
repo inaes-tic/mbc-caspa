@@ -2,8 +2,8 @@ window.ConfView = Backbone.View.extend({
     el: $("#content"),
     initialize: function () {
         this.render();
-        this.configModel = this.filter('type', 'config');
-        this.defaultModel = this.filter('type','defaults');
+        this.configModel  = this.collection.findWhere({ type: 'config' });
+        this.defaultModel = this.collection.findWhere({ type: 'defaults' });
     },
     render: function () {
             $(this.el).html(template.confview({ config: this.collection.toJSON() }));
@@ -60,12 +60,5 @@ window.ConfView = Backbone.View.extend({
             $('input#'+selector, this.el).val(default_model[res[0]][res[1]][res[2]]);
         }
         return false;
-    },
-
-    /* XXX FIXME Newer Backbone versions (>1.0) bind underscore to use it against collections*/
-    filter: function(prop, value) { return this.collection.find( function(item) {
-            if (item.get(prop) == value)
-                return true;
-        })
-    },
+    }
 });
