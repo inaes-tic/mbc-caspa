@@ -76,6 +76,7 @@ module.exports = function(app) {
         require.resolve('backbone-pageable/lib/backbone-pageable.js'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
         path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
+        require.resolve('d3/d3.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
@@ -154,7 +155,7 @@ module.exports = function(app) {
                      'nowplaying',
                      'sourceinfo'
                     ];
-                    
+
     var getFileName = function (e) {
                 return path.join(__dirname, '..', 'views/templates/', e + '.jade');
             };
