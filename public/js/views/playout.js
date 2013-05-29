@@ -12,7 +12,7 @@ window.PlayoutView = Backbone.View.extend({
             this.end = kb.observable(model, 'end');
             this.title = kb.observable(model, 'title');
             this.height = ko.computed(function() {
-                return (this.end() - this.start())/self.ratio + "px";
+                return (this.end() - this.start()) / self.ratio + "px";
             }, this);
             this.model = model;
             this.list = Universe.get(model.get('list'));
@@ -24,10 +24,10 @@ window.PlayoutView = Backbone.View.extend({
             this.end = end;
             this.cid = cid;
             this.height = ko.computed(function() {
-                return (this.end - this.start)/self.ratio + "px";
+                return (this.end - this.start) / self.ratio + "px";
             }, this);
         };
-        
+
         var ScheduleViewModel = function(collection) {
             this.occurs = ko.observableArray();
             this.update(collection);

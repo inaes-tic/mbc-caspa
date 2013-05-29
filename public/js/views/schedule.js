@@ -241,7 +241,7 @@ window.ScheduleView = Backbone.View.extend({
                                 .fullCalendar(opt)
                                 .fullCalendar( 'gotoDate', date );
 
-                            /** TODO: save view config 
+                            /** TODO: save view config
                              *
                             //save slotMin value to db
                             var url = '/Schedule/set-time-interval/format/json';
@@ -352,7 +352,6 @@ window.ScheduleView = Backbone.View.extend({
                     },
                 });
             }
-            });
                                              */
 
         self.collection.bind('add reset remove change', this.reload, this);
