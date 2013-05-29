@@ -73,6 +73,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'knockout-drag-binding.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
         require.resolve('node-uuid'),
+        require.resolve('d3/d3.js'),
     ], {minify:app.get('minify')});
 
     // serve using express
