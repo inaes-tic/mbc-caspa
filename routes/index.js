@@ -84,6 +84,13 @@ module.exports = function(app) {
 
     app.get('/js/vendor.js', folio.serve(vendorJs));
 
+    //XXX Hack to include relational after backbone.io
+    var vendorOthersJs = new folio.Glossary([
+        require.resolve('backbone-relational/backbone-relational.js'),
+    ], {minify:app.get('minify')});
+
+    app.get('/js/vendor_others.js', folio.serve(vendorOthersJs));
+
     /**
      * Views Javascript Package
      */
