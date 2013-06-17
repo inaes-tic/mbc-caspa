@@ -141,8 +141,8 @@ window.ScheduleView = Backbone.View.extend({
         console.log ('saving event:', event);
         var nattr = {
             title:  event.get('title'),
-            start:  moment(event.get('start')).unix(),
-            end:    moment(event.get('end')).unix(),
+            start:  moment(event.get('start')).valueOf(),
+            end:    moment(event.get('end')).valueOf(),
             allDay: event.get('allDay'),
             list:   event.get('list'),
         };
@@ -167,8 +167,8 @@ window.ScheduleView = Backbone.View.extend({
         var calendarEventSources = [
             function(start, end, callback) {
                 console.log(start, end);
-                var unix_start = moment(start).unix();
-                var unix_end = moment(end).unix();
+                var unix_start = moment(start).valueOf();
+                var unix_end = moment(end).valueOf();
                 var events = self.get_collection().filter(function(el){
                     return unix_start <= el.get('end') && unix_end >= el.get('start');
                 }).map(self.make_event);
@@ -302,7 +302,7 @@ window.ScheduleView = Backbone.View.extend({
                 event.start = data.start.toDate();
                 event.end = data.end.toDate();
                 self.calendar.fullCalendar('updateEvent', event);
-                event.model.save({start: data.start.unix(), end: data.end.unix()});
+                event.model.save({start: data.start.valueOf(), end: data.end.valueOf()});
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
@@ -319,7 +319,7 @@ window.ScheduleView = Backbone.View.extend({
                 var event = {
                     title:  list.get('name'),
                     list:   list.get('_id'),
-                    start:  times.start.unix(), end: times.end.unix(),
+                    start:  times.start.valueOf(), end: times.end.valueOf(),
                     allDay: allDay,
                 };
 
