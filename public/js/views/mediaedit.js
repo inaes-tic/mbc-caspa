@@ -20,9 +20,9 @@ window.EditView = Backbone.View.extend({
             pagination: false,
             search_type: 'client' });
         new MediaListView({
-            model: mediaDB,
+            model: mediaList,
             el: $("#left-pane"),
-            type: 'playlist-draggable-fixed',
+            type: 'medialist-draggable-fixed',
         });
         if (this.editList)
             this.showPlaylist(this.editList);
@@ -31,7 +31,7 @@ window.EditView = Backbone.View.extend({
     },
     createPlaylist: function () {
         console.log ("re-instanciating editList");
-        this.editList = new Media.List({published: false});
+        this.editList = new Media.Playlist({published: false});
 
         this.showPlaylist (this.editList)
     },
@@ -45,6 +45,7 @@ window.EditView = Backbone.View.extend({
     },
     switchPlaylist: function (id) {
         var plid = this.collection.get(id);
+        plid.fetchRelated('pieces');
         console.log ('switching to', id, '--', plid);
         this.showPlaylist (plid);
     },
@@ -67,7 +68,7 @@ window.EditView = Backbone.View.extend({
         $('.playlist-button-array', this.el).show();
     },
     savePlaylist: function (event) {
-        var medias = this.editview.model.get('models');
+        var medias = this.editview.model.get('pieces');
         var name   = this.editview.model.get('name');
         var id     = this.editview.model.get('_id');
 
@@ -98,7 +99,7 @@ window.EditView = Backbone.View.extend({
                 this.editview.save(model);
             };
             afterSync = _.bind(afterSync, this);
-            this.collection.create (this.editview.model.attributes, {success: afterSync});
+            this.collection.create (this.editview.model, {success: afterSync});
             console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);
         } else {
             this.editview.save();
@@ -108,7 +109,11 @@ window.EditView = Backbone.View.extend({
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
         var id = this.editview.model.get('_id');
+        var pieces = this.editview.model.get('pieces');
         if (id) {
+            for( i=pieces.length-1; i>=0; i--) {
+                 pieces.at(i).destroy();
+            }
             this.editview.destroy();
             Universe.remove (id);
             this.killEditList();

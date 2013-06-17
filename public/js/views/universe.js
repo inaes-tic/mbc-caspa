@@ -27,7 +27,7 @@ window.UniverseListView = function(options){
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             options = options || {};
             options['keys'] = ['collection', 'name'];
-            this.medias =  kb.collectionObservable(model.get('collection'));
+            this.medias =  kb.collectionObservable(model.get('pieces'));
             this.total_time = ko.computed(function(){
 //XXX: keep this, it tells KO to update total_time when something happens to the collection
                 var x = self.medias();

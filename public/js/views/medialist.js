@@ -2,7 +2,8 @@ window.MediaListView = function(options){
     var self = this;
 
     var model = options['model'];
-    var collection = model.get('collection');
+    var collection = null;
+
     var el = $('#content');
     if(options['el'])
         el = options['el'];
@@ -13,9 +14,6 @@ window.MediaListView = function(options){
 
     var allow_drop = false;
 
-    var default_type = 'playlist-searchable-fixed';
-    var type = 'type' in options ? options['type'] : default_type;
-
     var default_pagination = 'endless';
     var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
 
@@ -25,6 +23,13 @@ window.MediaListView = function(options){
 
     var default_search_type = 'server';
     var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
+    var type = 'type' in options ? options['type'] : 'medialist-searchable-fixed';
+
+    if (type.match(/playlist/)) {
+        collection = model.get('pieces');
+    } else {
+        collection = model;
+    }
 
     if (type.match(/sortable/)){
         allow_drop = true;
@@ -55,7 +60,7 @@ window.MediaListView = function(options){
             }
 
             this.filter = ko.observable('');
-            this.collection =  kb.collectionObservable( model.get('collection'), {
+            this.collection =  kb.collectionObservable(collection, {
                 view_model: kb.ViewModel,
                 filters: function(model) {
                     var filter;
@@ -81,6 +86,9 @@ window.MediaListView = function(options){
             var attrs = _.clone(item.model().attributes);
             var piece = new Media.Piece(attrs);
             piece.set('checksum', attrs['_id']);
+            //HACK to create piece on collection  and keep checksum
+            piece.unset('_id');
+            pieceList.create(piece);
             return kb.viewModel(piece)
         },
     });
