@@ -264,7 +264,21 @@ legend {
     top: -(@header-height + 20px);
 }
 
+
+/* Playout View */
 #playout li {
   display: block;
   margin: 5px;
+}
+
+svg .axis path,
+svg .axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+svg .axis text {
+    font-family: sans-serif;
+    font-size: 11px;
 }
