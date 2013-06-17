@@ -1,7 +1,6 @@
+var transformList = new Media.TransformCollection();
 var mediaList = new Media.Collection();
-var mediaDB   = new Media.List({collection: mediaList,
-                                fixed: true,
-                                name: 'Media Database'});
+var pieceList = new Media.PieceCollection();
 var Universe  = new Media.Universe();
 var Schedule  = new Media.Schedule();
 
@@ -18,6 +17,7 @@ if (DEBUG) {
         }
     }, 5000);
 }
+
 
 Universe.bind ('all', function (arg) {
     console.log ('UNIVERSE:' , arg);
@@ -60,7 +60,7 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        _([appCollection, mediaList, Universe, Schedule]).each( function (col) {
+        _([appCollection, mediaList, Universe, Schedule, pieceList, transformList]).each( function (col) {
             console.log ('fetching', col);
             col.fetch();
         });
@@ -74,7 +74,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     list: function() {
-        new MediaListView({model: mediaDB});
+        new MediaListView({model: mediaList});
         this.headerView.selectMenuItem('list-menu');
     },
 

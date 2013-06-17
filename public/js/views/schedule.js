@@ -269,24 +269,26 @@ window.ScheduleView = Backbone.View.extend({
             */
             },
             dayClick: dayClick,
-            eventRender: function (event, element, view) {
-                var model = self.collection.where({list: event.list})[0];
 
+            eventRender: function (event, element, view) {
                 element.tooltip({
                     trigger: 'click',
                     placement: 'left',
-                    title: function () {
+/*                    title: function () {
                         console.log ("creating tooltip", model);
+                        var model = self.collection.get(event._id);
+                        var playlist = model.get('playlist');
                         var target = document.createElement('div');
-                        var view = new MediaListView({model: model,
-                                                      noSearch:true,
-                                                      el: target});
-                        return view.render().el;
+                        var view = new MediaListView({model: playlist, type: 'playlist-fixed', el: $(target)});
+                        return view.el.html();
                     },
+*/
                 });
 
                 eventRender(event, element, view);
+
             },
+
             eventAfterRender: function (event, element, view) {
               var ocurrence = new OccurrenceView({
                 el: element,
@@ -307,6 +309,7 @@ window.ScheduleView = Backbone.View.extend({
             eventResize: eventResize,
             drop: function(date, allDay) {
                 var list  = Universe.get(this.id);
+
                 console.log ('drop->', self.collection.pluck('end'));
 
                 var start = moment(date);
@@ -318,7 +321,7 @@ window.ScheduleView = Backbone.View.extend({
 
                 var event = {
                     title:  list.get('name'),
-                    list:   list.get('_id'),
+                    playlist:   list.get('_id'),
                     start:  times.start.unix(), end: times.end.unix(),
                     allDay: allDay,
                 };
@@ -328,25 +331,6 @@ window.ScheduleView = Backbone.View.extend({
                 console.log (this, list, event, item);
             }
         });
-
-                                             /*
-            eventRender: function(event, element) {
-                var model = self.collection.where({list: event.list})[0];
-
-                element.tooltip({
-                    trigger: 'click',
-                    placement: 'left',
-                    title: function () {
-                        var target = document.createElement('div');
-                        var view = new MediaListView({model: model,
-                                                      noSearch:true,
-                                                      el: target});
-                        return view.render().el;
-                    },
-                });
-            }
-            });
-                                             */
 
         self.collection.bind('add reset remove change', this.reload, this);
         self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
