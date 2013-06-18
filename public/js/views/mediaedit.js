@@ -109,11 +109,7 @@ window.EditView = Backbone.View.extend({
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
         var id = this.editview.model.get('_id');
-        var pieces = this.editview.model.get('pieces');
         if (id) {
-            for( i=pieces.length-1; i>=0; i--) {
-                 pieces.at(i).destroy();
-            }
             this.editview.destroy();
             Universe.remove (id);
             this.killEditList();

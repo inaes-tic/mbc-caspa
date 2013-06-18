@@ -109,6 +109,10 @@ window.MediaListView = function(options){
 
     this.destroy = function () {
         kb.release(this.view_model);
+        var pieces = this.model.get('pieces');
+        for( i=pieces.length-1; i>=0; i--) {
+            pieces.at(i).destroy();
+        }
         this.model.destroy();
         ko.cleanNode(this.el);
         this.el.html('');
