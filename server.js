@@ -90,8 +90,11 @@ var listener = mbc.pubsub();
 var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
 
-var blockbackend = backboneio.createBackend();
-blockbackend.use(backboneio.middleware.memoryStore(db, 'blocks'));
+var piecebackend = backboneio.createBackend();
+piecebackend.use(backboneio.middleware.mongoStore(db, 'pieces'));
+
+var transformbackend = backboneio.createBackend();
+transformbackend.use(backboneio.middleware.mongoStore(db, 'transforms'));
 
 var listbackend = backboneio.createBackend();
 listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
@@ -203,12 +206,13 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
 listener.psubscribe('mostoMessage*');
 mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
 
-_([mediabackend, listbackend, appbackend]).each (debug_backend);
+_([mediabackend, listbackend, appbackend, piecebackend, transformbackend]).each (debug_backend);
 
 backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 }), { mediabackend: mediabackend,
-      blockbackend: blockbackend,
+      piecebackend: piecebackend,
+      transformbackend: transformbackend,
       listbackend:  listbackend,
       schedbackend: schedbackend,
       statusbackend: statusbackend,
