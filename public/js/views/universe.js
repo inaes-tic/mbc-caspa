@@ -5,7 +5,9 @@ window.UniverseListView = function(options){
     if(options['el'])
         el = options['el'];
 
-    this.collection = collection;
+    var default_filter = { is_deleted: false };
+    var filter = _.defaults( options['filter'] || {}  , default_filter);
+    this.collection = collection.reset(collection.where(filter));
     this.el = el;
 
     el.html(template.universe({draggable: draggable}));
@@ -28,7 +30,7 @@ window.UniverseListView = function(options){
     });
 
     var UniverseListViewModel = kb.ViewModel.extend({
-        constructor: function(model) {
+        constructor: function(collection) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var self = this;
             this.filter = ko.observable('');

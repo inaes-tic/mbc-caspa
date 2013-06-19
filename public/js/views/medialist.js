@@ -100,6 +100,18 @@ window.MediaListView = function(options){
         this.el.html('');
     };
 
+    this.logicDestroy = function() {
+        var is_deleted = {is_deleted: true};
+        kb.release(this.view_model);
+        var pieces = this.model.get('pieces');
+        for( i=pieces.length-1; i>=0; i--) {
+            pieces.at(i).save(is_deleted);
+        }
+        this.model.save(is_deleted);
+        ko.cleanNode(this.el);
+        this.el.html('');
+    }
+
     this.save = function (newmodel) {
         if (newmodel) {
             this.view_model.model(newmodel);

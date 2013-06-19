@@ -105,7 +105,7 @@ window.EditView = Backbone.View.extend({
         console.log ("i want to delete", this.editview.model);
         var id = this.editview.model.get('_id');
         if (id) {
-            this.editview.destroy();
+            this.editview.logicDestroy();
             Universe.remove (id);
             this.killEditList();
         }
