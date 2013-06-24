@@ -722,6 +722,17 @@ PlayoutTimelinePanel.prototype = {
         }
     },
 
+    filtered_data: function() {
+        var self = this;
+
+        return self.data.filter(function(elem) {
+            return (
+                moment.unix(elem.get("start")) < self.end &&
+                moment.unix(elem.get("end")) > self.start
+            );
+        });
+    },
+
     pixelsToTime: function(pixels) {
         var self = this;
 
