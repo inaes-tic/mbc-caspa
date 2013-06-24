@@ -31,7 +31,7 @@ PlayoutTimeline.prototype = {
         // Shades
         self.configure_shades();
 
-        // Select or insert panels
+        // Insert panels
         self.panels = [];
         var total_span = config.panels.reduce(function(prev, elem) {
             return prev + elem.span;
@@ -59,10 +59,17 @@ PlayoutTimeline.prototype = {
 
     },
 
-    pan: function(time, smooth) {
+    panTime: function(time, smooth) {
         var self = this;
         for (var i = 0, li = self.panels.length; i < li; ++i) {
-            self.panels[i].pan(time, smooth);
+            self.panels[i].panTime(time, smooth);
+        }
+    },
+
+    centerTime: function(time, smooth) {
+        var self = this;
+        for (var i = 0, li = self.panels.length; i < li; ++i) {
+            self.panels[i].centerTime(time, smooth);
         }
     },
 
@@ -89,6 +96,14 @@ PlayoutTimeline.prototype = {
         }
     },
 
+    draw_highlights: function(smooth) {
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            if (i + 1 < li) {
+                this.panels[i].draw_highlight(this.panels[i + 1].axis_span, smooth);
+            }
+        }
+    },
+
     focus_playlist: function(playlist) {
         var self = this;
 
@@ -99,19 +114,13 @@ PlayoutTimeline.prototype = {
 
         var center = self.get_playlist_central_time(playlist);
 
-        // Calculate panning ammount
-        center.subtract("milliseconds", self.panels[0].axis_span / 2);
-        var amount = self.panels[0].start.diff(center);
-
         for (var i = 0, li = self.panels.length; i < li; ++i) {
             var panel = self.panels[i];
             var callback;
             if (panel.config.zoomable) {
-                callback = function() {
-                    panel.zoom_playlist.call(panel, playlist, true);
-                }
+                callback = _.bind(panel.zoom_playlist, panel, playlist, true);
             }
-            panel.pan(amount, true, callback);
+            panel.centerTime(center, true, callback);
         }
     },
 
@@ -209,7 +218,7 @@ PlayoutTimelinePanel.prototype = {
         self.data = [];
 
         self.scale_factor = 1;
-        //self.translate = 0;
+        self.translate = 0;
 
         // Adjust metrics to layout
         switch(self.timeline.layout) {
@@ -273,6 +282,7 @@ PlayoutTimelinePanel.prototype = {
 
         // Setup Axis
         self.axis_span = config.axis.span;
+        self.orig_axis_span = config.axis.span;
         self.start = moment().subtract("milliseconds", self.axis_span.asMilliseconds() / 2);
         self.end = moment(self.start).add(self.axis_span);
 
@@ -345,13 +355,20 @@ PlayoutTimelinePanel.prototype = {
     configure_events: function() {
         var self = this;
 
-        self.zoom_obj.on("zoom", _.bind(self.handleZoomEvent, self));
+        self.zoom_obj.on("zoom", _.bind(self.handlePanningEvent, self));
         self.svg.call(self.zoom_obj);
+
+        if (self.config.zoomable) {
+            self.svg.on("mousewheel.zoom", _.bind(self.handleMouseWheel, self));
+        } else {
+            self.svg.on("mousewheel.zoom", null);
+        }
     },
 
     release_events: function() {
         this.svg
             .on("mousedown.zoom", null)
+            .on("mousewheel.zoom", null)
             .on("touchstart.zoom", null)
             .on("touchmove.zoom", null)
             .on("touchend.zoom", null);
@@ -462,54 +479,61 @@ PlayoutTimelinePanel.prototype = {
         }
     },
 
-    handleZoomEvent: function() {
+    handleMouseWheel: function() {
+        var self = this;
+
+        // Set quota depending on mouse position over layer
+        var position = d3.mouse(event.currentTarget)[self.timeline.layout];
+        var quota = position / self.drawing_width;
+
+        // New scale factor
+        self.scale_factor = Math.pow(2, d3.event.wheelDelta * .002) * self.scale_factor;
+
+        // Scale
+        self.scale(self.scale_factor, quota);
+        d3.event.preventDefault();
+    },
+
+    scale: function(factor, quota) {
+        var self = this;
+
+        // Calculate new span and span delta
+        var new_span = 1 / factor * self.orig_axis_span;
+        var span_diff = new_span - self.axis_span;
+
+        // Apply delta to start and end depending on quota
+        self.start.subtract(span_diff / 2 * quota);
+        self.end.add(span_diff / 2 * (1 - quota));
+
+        // Fix axis span
+        self.axis_span = self.end.diff(self.start);
+
+        // Redraw
+        self.timeline.centerTime(moment(self.start).add(self.axis_span / 2));
+        self.timeline.draw_highlights();
+    },
+
+    handlePanningEvent: function() {
         var self = this;
         if (d3.event) {
-            // Reporting parent strategy
-            var amount = self.pixelsToTime(d3.event.translate[self.timeline.layout]); // Layout is 0 for HOR and 1 for VERT
-            self.timeline.pan(amount);
+            // Calculate differential translation
+            var tr_diff = d3.event.translate[self.timeline.layout] - self.translate; // Layout is 0 for HOR and 1 for VERT
+            self.translate = d3.event.translate[self.timeline.layout];
+
+            // Convert to time and apply
+            self.timeline.panTime(self.pixelsToTime(tr_diff));
         }
     },
 
-    scale: function(factor) {
+    panTime: function(time, smooth, callback) {
         var self = this;
-        var new_span = 1 / self.scale_factor * self.axis_span;
-        var span_diff = new_span - self.end.diff(self.start);
-
-        self.start.subtract(span_diff / 2);
-        self.end.add(span_diff / 2);
-
-    },
-
-    pan: function(time, smooth, callback) {
-        var self = this;
-
-        var pixels = Math.floor(self.timeToPixels(time));
-
-        var translation = [0, 0];
-        translation[self.timeline.layout] = pixels; // Layout is 0 for HOR and 1 for VERT
-
-        // Adjust d3 translate value
-        self.zoom_obj.translate(translation);
-
-        // Select target depending on smooth value
-        var target = self.vis;
-        if (smooth) {
-            self.timeline.release_events();
-            target = target.transition().duration(500);
-        }
-
-        // Apply panning to drawn elements
-        target.attr("transform", "translate(" +
-            (translation[0] + self.padding[0]) + "," + (translation[1] + self.padding[1]) +
-        ")");
 
         // Calculate new time window position
-        var new_start = moment(self.start).subtract(time);
-        var new_end = moment(self.end).subtract(time);
+        self.start.subtract(time);
+        self.end.subtract(time);
 
         // Reset domain and axis
-        self.time_scale.domain([new_start, new_end])
+        self.time_scale.domain([self.start, self.end])
 
         // Select target depending on smooth value
         target = self.g_axis;
@@ -518,7 +542,6 @@ PlayoutTimelinePanel.prototype = {
                 .duration(500)
                 .each("end", function() {
                     self.timeline.configure_events();
-                    console.log(translation);
                     self.zoom_obj.translate(translation);
                     if (typeof callback === "function") {
                         callback();
@@ -528,40 +551,73 @@ PlayoutTimelinePanel.prototype = {
 
         // Apply changes to axis
         target.call(self.axis);
+
+        // Redraw
+        self.redraw(smooth);
+        self.draw_now_indicator();
+    },
+
+    centerTime: function(time, smooth, callback) {
+        var self = this;
+
+        // Calculate new time window position
+        self.start = moment(time).subtract(self.axis_span / 2);
+        self.end = moment(self.start).add(self.axis_span);
+
+        // Reset domain and axis
+        self.time_scale.domain([self.start, self.end])
+
+        // Select target depending on smooth value
+        target = self.g_axis;
+        if (smooth) {
+            self.timeline.release_events();
+            target = target.transition()
+                .duration(500)
+                .each("end", function() {
+                    self.timeline.configure_events();
+                    if (typeof callback === "function") {
+                        callback();
+                    }
+                });
+        }
+
+        // Apply changes to axis
+        target.call(self.axis);
+
+        // Redraw
+        self.redraw(smooth);
+        self.draw_now_indicator();
     },
 
     zoom_playlist: function(playlist, smooth) {
         var self = this;
 
-        self.start = moment.unix(playlist.get("start"));
-        self.end = moment.unix(playlist.get("end"));
-        var new_span = self.end.diff(self.start)
-        var new_scale = 1 / (new_span / self.axis_span);
-        var ty = self.zoom_obj.translate()[1],
-            sReal = new_scale / self.scale,
-            dty = self.height / 2 * (1 - sReal),
-            tyNew = sReal * ty + dty;
+        // Calculate new start and end based on playlist data
+        var pl_start = moment.unix(playlist.get("start"));
+        var pl_end = moment.unix(playlist.get("end"));
+        var gap = pl_start.diff(pl_end) * 0.025;
 
+        // Assign new values
+        self.start = pl_start.add(gap);
+        self.end = pl_end.subtract(gap);
         self.axis_span = self.end.diff(self.start);
+        self.scale_factor = self.orig_axis_span / self.axis_span;
 
+        // Update axis
         self.time_scale.domain([self.start, self.end]);
         self.g_axis.transition().duration(500)
             .call(self.axis);
 
-
-        self.vis.transition().duration(500).attr("transform", "translate(" + self.padding[0] + ",0)");
-
-        self.zoom_obj.translate([self.padding[0], 0]);
-
-        self.redraw(true);
-
-
+        // Redraw
+        self.redraw(smooth);
+        self.draw_now_indicator();
+        self.timeline.draw_highlights(smooth);
     },
 
     redraw: function(smooth) {
         var self = this;
 
-        var quota = self.end.diff(self.start) / self.drawing_width;
+        var quota = self.axis_span / self.drawing_width;
 
         var rects = self.vis.selectAll("rect");
 
@@ -605,6 +661,7 @@ PlayoutTimelinePanel.prototype = {
         updated_set
             .attr("style", function(d) { return "fill: #F80;"; }) //((d.get("cid").indexOf("-") == -1) ? "fill: black;" : "fill: red;"); })
             .on("click", function(d) {
+                // Focus on click
                 self.timeline.focus_playlist(d);
             })
 
@@ -613,13 +670,17 @@ PlayoutTimelinePanel.prototype = {
             .exit()
             .remove();
 
-
     },
 
     draw_now_indicator: function(now) {
         var self = this;
 
-        var quota = self.end.diff(self.start) / self.drawing_width;
+        // In case now is not defined
+        if (now === undefined) {
+            now = moment();
+        }
+
+        var quota = self.axis_span / self.drawing_width;
 
         // Adjust metrics to layout
         var line_metrics;
@@ -663,6 +724,7 @@ PlayoutTimelinePanel.prototype = {
 
     pixelsToTime: function(pixels) {
         var self = this;
+
         // Calculate screen displacement quota
         var quota = pixels / self.drawing_width;
         // Translate quota to time
@@ -676,7 +738,6 @@ PlayoutTimelinePanel.prototype = {
 
         // Translate time to quota
         var quota = time / self.end.diff(self.start);
-
         // Calculate screen displacement quota
         var pixels = quota * self.drawing_width;
 

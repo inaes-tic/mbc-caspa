@@ -254,14 +254,21 @@ legend {
   margin: 5px;
 }
 
-svg .axis path,
-svg .axis line {
+div#svg svg .axis path,
+div#svg svg .axis line {
     fill: none;
     stroke: black;
     shape-rendering: crispEdges;
 }
 
-svg .axis text {
+div#svg svg .axis text {
     font-family: sans-serif;
     font-size: 11px;
+}
+
+div#svg svg .highlight {
+    fill: yellow;
+    opacity: 0.3;
+    //stroke: black;
+    //stroke-width: 1px;
 }
