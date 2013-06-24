@@ -253,17 +253,9 @@ PlayoutTimelinePanel.prototype = {
             .on("dblclick.zoom", null);
 
         // Add transparent background (for clicking purposes)
-        // TODO: is there a better way?
-        self.svg
-            .append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", self.width)
-                .attr("height", self.height)
-                .attr("fill", "transparent")
-                .attr("stroke", "none")
+        self.make_fully_clickable();
 
-        // Draw gray background // TODO: remove border and draw border at last
+        // Draw gray background
         self.draw_background();
 
         // Setup visualization
@@ -304,32 +296,50 @@ PlayoutTimelinePanel.prototype = {
 
         // Add highlight
         if (config.highlight) {
-            var hl_span = self.timeToPixels(config.highlight);
-
-            // Adjust metrics to layout
-            var hl_metrics;
-            switch(self.timeline.layout) {
-                case PlayoutTimeline.HORIZONTAL:
-                    hl_metrics = [Math.floor(self.drawing_width / 2 - hl_span / 2), 0, Math.floor(hl_span), self.height - self.padding[3]];
-                break;
-                case PlayoutTimeline.VERTICAL:
-                    hl_metrics = [0 + self.padding[0], Math.floor(self.drawing_width / 2 - hl_span / 2), self.width - self.padding[2], Math.floor(hl_span)];
-                break;
-            }
-
-            self.svg
-                .append("rect")
-                    .attr("x", hl_metrics[0])
-                    .attr("y", hl_metrics[1])
-                    .attr("width", hl_metrics[2])
-                    .attr("height", hl_metrics[3])
-                    .attr("fill", "yellow")
-                    .attr("opacity", 0.3)
-                    .style("pointer-events", "none")
+            self.draw_highlight(config.highlight);
         }
 
         // Draw Shades
         self.draw_shade();
+
+        // Draw graphic border
+        self.draw_border();
+    },
+
+    draw_highlight: function(time_span, smooth) {
+        var self = this;
+
+        var hl_span = self.timeToPixels(time_span);
+
+        // Adjust metrics to layout
+        var hl_metrics;
+        switch(self.timeline.layout) {
+            case PlayoutTimeline.HORIZONTAL:
+                hl_metrics = [Math.floor(self.drawing_width / 2 - hl_span / 2), 0, Math.floor(hl_span), self.height - self.padding[3]];
+            break;
+            case PlayoutTimeline.VERTICAL:
+                hl_metrics = [0 + self.padding[0], Math.floor(self.drawing_width / 2 - hl_span / 2), self.width - self.padding[2], Math.floor(hl_span)];
+            break;
+        }
+
+        // Select or insert highlight element
+        var hl = self.svg.select("rect.highlight");
+        if (hl.empty()) {
+            hl = self.svg.append("rect");
+        }
+
+        // Smooth if required
+        if (smooth) {
+            hl = hl.transition().duration(500);
+        }
+
+        hl
+            .attr("class", "highlight")
+            .attr("x", hl_metrics[0])
+            .attr("y", hl_metrics[1])
+            .attr("width", hl_metrics[2])
+            .attr("height", hl_metrics[3])
+            .style("pointer-events", "none");
     },
 
     configure_events: function() {
@@ -347,6 +357,20 @@ PlayoutTimelinePanel.prototype = {
             .on("touchend.zoom", null);
     },
 
+    make_fully_clickable: function() {
+        // TODO: is there a better way?
+        var self = this;
+
+        self.svg
+            .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", self.width)
+                .attr("height", self.height)
+                .attr("fill", "transparent")
+                .attr("stroke", "none")
+    },
+
     draw_background: function() {
         var self = this;
 
@@ -356,9 +380,22 @@ PlayoutTimelinePanel.prototype = {
             .attr("y", self.padding[1] + self.rect_adjust[1])
             .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
             .attr("height", self.height - self.padding[3] + self.rect_adjust[3])
-            .attr("fill", "lightgray")
+            .attr("fill", "lightgray");
+    },
+
+    draw_border: function() {
+        var self = this;
+
+        // Add graph background
+        self.svg.append("rect")
+            .attr("x", self.padding[0] + self.rect_adjust[0])
+            .attr("y", self.padding[1] + self.rect_adjust[1])
+            .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
+            .attr("height", self.height - self.padding[3] + self.rect_adjust[3])
+            .attr("fill", "transparent")
             .attr("stroke", "black")
-            .attr("stroke-width", "1px");
+            .attr("stroke-width", "1px")
+            .style("pointer-events", "none");
     },
 
     draw_shade: function() {
