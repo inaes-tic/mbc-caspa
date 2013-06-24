@@ -487,10 +487,10 @@ PlayoutTimelinePanel.prototype = {
         var quota = position / self.drawing_width;
 
         // New scale factor
-        self.scale_factor = Math.pow(2, d3.event.wheelDelta * .002) * self.scale_factor;
+        var factor = Math.pow(2, d3.event.wheelDelta * .002) * self.scale_factor;
 
         // Scale
-        self.scale(self.scale_factor, quota);
+        self.scale(factor, quota);
         d3.event.preventDefault();
     },
 
@@ -505,8 +505,9 @@ PlayoutTimelinePanel.prototype = {
         self.start.subtract(span_diff / 2 * quota);
         self.end.add(span_diff / 2 * (1 - quota));
 
-        // Fix axis span
+        // Fix axis span and factor
         self.axis_span = self.end.diff(self.start);
+        self.scale_factor = factor;
 
         // Redraw
         self.timeline.centerTime(moment(self.start).add(self.axis_span / 2));
