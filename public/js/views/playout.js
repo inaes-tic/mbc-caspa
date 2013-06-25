@@ -220,6 +220,8 @@ PlayoutTimelinePanel.prototype = {
         self.scale_factor = 1;
         self.translate = 0;
 
+        self.color_scale = d3.scale.category10();
+
         // Adjust metrics to layout
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
@@ -660,7 +662,7 @@ PlayoutTimelinePanel.prototype = {
             break;
         }
         updated_set
-            .attr("style", function(d) { return "fill: #F80;"; }) //((d.get("cid").indexOf("-") == -1) ? "fill: black;" : "fill: red;"); })
+            .attr("style", function(d, i) { return "fill: " + self.color_scale(i); })//return "fill: #F80;"; }) //((d.get("cid").indexOf("-") == -1) ? "fill: black;" : "fill: red;"); })
             .on("click", function(d) {
                 // Focus on click
                 self.timeline.focus_playlist(d);
