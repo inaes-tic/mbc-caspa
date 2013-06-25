@@ -53,7 +53,7 @@ PlayoutTimeline.prototype = {
         window.setInterval(function() {
             var now = self.draw_now_indicator.call(self);
             if (self.config.follow) {
-                self.pan.call(self, moment.duration(self.panels[self.panels.length - 1].start.diff(now) + self.panels[self.panels.length - 1].axis_span.asMilliseconds() / 2));
+                self.centerTime.call(self, now);
             }
         }, 200);
 
