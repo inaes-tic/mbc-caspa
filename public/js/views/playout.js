@@ -928,9 +928,6 @@ window.PlayoutView = Backbone.View.extend({
             }*/],
         });
 
-        for (var i = 0, li = this.timeline.panels.length; i < li; ++i) {
-            this.timeline.panels[i].updateData(this.collection.models);
-        }
 
         self.collection.bind('add reset remove change', function(elem) {
             self.view_model.update(self.collection);
@@ -945,7 +942,7 @@ window.PlayoutView = Backbone.View.extend({
             console.log("PlayoutView > container > event:resize");
         });
 
-        //this.render();
+        this.render();
 
         ko.applyBindings(this.view_model, this.el);
     },
