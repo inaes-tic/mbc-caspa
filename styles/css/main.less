@@ -271,21 +271,32 @@ legend {
   margin: 5px;
 }
 
-div#svg svg .axis path,
-div#svg svg .axis line {
+div#svg svg .Axis path,
+div#svg svg .Axis line {
     fill: none;
     stroke: black;
     shape-rendering: crispEdges;
 }
 
-div#svg svg .axis text {
+div#svg svg .Axis text {
     font-family: sans-serif;
     font-size: 11px;
 }
 
-div#svg svg .highlight {
+div#svg svg .Highlight {
     fill: yellow;
     opacity: 0.3;
     //stroke: black;
     //stroke-width: 1px;
 }
+
+div#svg svg rect.Background {
+    fill: lightgray;
+}
+
+div#svg svg rect.Border {
+    fill: transparent;
+    stroke: black;
+    stroke-width: 1px;
+}
+

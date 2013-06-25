@@ -23,10 +23,12 @@ PlayoutTimeline.prototype = {
         // Select or insert svg object
         self.svg = self.container.select("svg");
         if (self.svg.empty()) {
-            self.svg = self.container.append("svg:svg")
-                .attr("height", self.height)
-                .attr("width", self.width)
+            self.svg = self.container.append("svg:svg");
         }
+        self.svg
+            .attr("class", "Timeline")
+            .attr("height", self.height)
+            .attr("width", self.width);
 
         // Shades
         self.configure_shades();
@@ -40,7 +42,7 @@ PlayoutTimeline.prototype = {
         for (var i = 0, li = config.panels.length; i < li; ++i) {
             config.panels[i].total_span = total_span;
             config.panels[i].actual_span = actual_span;
-            config.panels[i].panel = i;
+            config.panels[i].panel_ord = i;
             if (i < li - 1) {
                 config.panels[i].highlight = config.panels[i+1].axis.span;
             }
@@ -121,6 +123,21 @@ PlayoutTimeline.prototype = {
                 callback = _.bind(panel.zoom_playlist, panel, playlist, true);
             }
             panel.centerTime(center, true, callback);
+        }
+    },
+
+    resize: function(width, height) {
+        var self = this;
+
+        self.width = width;
+        self.height = height;
+
+        self.svg
+            .attr("height", self.height)
+            .attr("width", self.width);
+
+        for (var i = 0, li = self.panels.length; i < li; ++i) {
+            self.panels[i].resize();
         }
     },
 
@@ -213,6 +230,7 @@ PlayoutTimelinePanel.prototype = {
     init: function(timeline, config) {
         var self = this;
 
+        // Panel Setup
         self.timeline = timeline;
         self.config = config;
         self.data = [];
@@ -222,13 +240,93 @@ PlayoutTimelinePanel.prototype = {
 
         self.color_scale = d3.scale.category10();
 
-        // Adjust metrics to layout
+        self.calculate_metrics();
+
+        // Draw main svg panel
+        self.svg = self.timeline.svg.select("svg#Panel-" + self.config.panel_ord);
+        if (self.svg.empty()) {
+            self.svg = self.timeline.svg.append("svg");
+            self.svg.attr("id", "Panel-" + self.config.panel_ord);
+        }
+        self.svg.on("dblclick.zoom", null);
+
+        // Add transparent background (for clicking purposes)
+        self.draw_click_area();
+
+        // Draw background
+        self.background = self.svg.select("rect.Background");
+        if (self.background.empty()) {
+            self.background = self.svg.append("rect");
+            self.background.attr("class", "Background");
+        }
+
+        // Draw visualization
+        self.vis = self.svg.select("g.Visualization");
+        if (self.vis.empty()) {
+            self.vis = self.svg.append("svg:g");
+            self.vis.attr("class", "Visualization");
+        }
+
+        // Configure zooming events
+        self.zoom_obj = d3.behavior.zoom();
+        if (!self.config.zoomable) {
+            self.zoom_obj.scaleExtent([1, 1]);
+        }
+        if (!self.timeline.config.follow) {
+            self.configure_events();
+        }
+
+        // Setup Axis
+        self.axis_span = self.config.axis.span;
+        self.orig_axis_span = self.config.axis.span;
+        self.start = moment().subtract("milliseconds", self.axis_span.asMilliseconds() / 2);
+        self.end = moment(self.start).add(self.axis_span);
+
+        self.time_scale = d3.time.scale();
+
+        self.axis = d3.svg.axis();
+        self.axis.tickSubdivide(1);
+        if (self.config.axis.ticks !== undefined) {
+            self.axis.ticks(self.config.axis.ticks);
+        }
+
+        // Draw axis
+        self.g_axis = self.svg.select("g.Axis");
+        if (self.g_axis.empty()) {
+            self.g_axis = self.svg.append("g");
+            self.g_axis.attr("class", "Axis");
+        }
+
+        // Add highlight
+        if (config.highlight) {
+            self.draw_highlight(config.highlight);
+        }
+
+        // Draw Shades
+        self.draw_shade();
+
+        // Draw graphic border
+        self.border = self.svg.select("rect.Border");
+        if (self.border.empty()) {
+            self.border = self.svg.append("rect");
+            self.border.attr("class", "Border");
+        }
+        self.border.style("pointer-events", "none");
+
+        // Apply metrics to all drawn elements
+        self.apply_metrics();
+    },
+
+    calculate_metrics: function() {
+        var self = this;
+
+        // Calculate metrics depending on layout
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                self.height = Math.floor(config.span / config.total_span * self.timeline.height);
+                self.height = Math.floor(self.config.span / self.config.total_span * self.timeline.height);
                 self.width = self.timeline.width - 0.5;
                 self.x = 0.5;
-                self.y = self.timeline.height - Math.floor(config.actual_span / config.total_span * self.timeline.height) - self.height + 0.5;
+                self.y = self.timeline.height - Math.floor(self.config.actual_span / self.config.total_span * self.timeline.height) - self.height + 0.5;
 
                 self.padding = [0, 0, 0, 35];
                 self.orient = "bottom";
@@ -240,8 +338,8 @@ PlayoutTimelinePanel.prototype = {
             break;
             case PlayoutTimeline.VERTICAL:
                 self.height = self.timeline.height;
-                self.width = Math.floor(config.span / config.total_span * self.timeline.width);
-                self.x = Math.floor(config.actual_span / config.total_span * self.timeline.width) - 0.5;
+                self.width = Math.floor(self.config.span / self.config.total_span * self.timeline.width);
+                self.x = Math.floor(self.config.actual_span / self.config.total_span * self.timeline.width) - 0.5;
                 self.y = -0.5;
 
                 self.padding = [65, 0, 65, 0];
@@ -253,69 +351,51 @@ PlayoutTimelinePanel.prototype = {
                 self.axis_adjust = [self.padding[0], self.padding[1] + 0.5];
             break;
         }
+    },
 
-        // Setup svg panel
-        self.svg = self.timeline.svg.append("svg");
+    apply_metrics: function() {
+        var self = this;
+
+        // Panel main SVG
         self.svg
             .attr("x", self.x)
             .attr("y", self.y)
             .attr("width", self.width)
-            .attr("height", self.height)
-            .on("dblclick.zoom", null);
+            .attr("height", self.height);
 
-        // Add transparent background (for clicking purposes)
-        self.make_fully_clickable();
+        // Background
+        self.background
+            .attr("x", self.padding[0] + self.rect_adjust[0])
+            .attr("y", self.padding[1] + self.rect_adjust[1])
+            .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
+            .attr("height", self.height - self.padding[3] + self.rect_adjust[3]);
 
-        // Draw gray background
-        self.draw_background();
-
-        // Setup visualization
-        self.vis = self.svg.append("svg:g")
+        // Visualization
+        self.vis
             .attr("transform", "translate(" + self.padding[0] + "," + self.padding[1] + ")");
 
-        // Configure zooming events
-        self.zoom_obj = d3.behavior.zoom();
-        if (!config.zoomable) {
-            self.zoom_obj.scaleExtent([1, 1]);
-        }
-        if (!self.timeline.config.follow) {
-            self.configure_events();
-        }
-
-        // Setup Axis
-        self.axis_span = config.axis.span;
-        self.orig_axis_span = config.axis.span;
-        self.start = moment().subtract("milliseconds", self.axis_span.asMilliseconds() / 2);
-        self.end = moment(self.start).add(self.axis_span);
-
-        self.time_scale = d3.time.scale()
+        // Time Scale
+        self.time_scale
             .range([0, self.drawing_width - 1])
             .domain([self.start, self.end]);
-        self.axis = d3.svg.axis()
+
+        // Axis
+        self.axis
             .scale(self.time_scale)
             .orient(self.orient)
-            .tickSubdivide(1)
-            .tickSize(-self.drawing_height, 6, -self.drawing_height)
+            .tickSize(-self.drawing_height, 6, -self.drawing_height);
 
-        if (config.axis.ticks !== undefined) {
-            self.axis.ticks(config.axis.ticks);
-        }
+        // Graphical Axis
+        self.g_axis
+            .attr("transform", "translate(" + self.axis_adjust[0] + "," + self.axis_adjust[1] + ")")
+            .call(self.axis);
 
-        self.g_axis = self.svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(" + self.axis_adjust[0] + "," + self.axis_adjust[1] + ")");
-        self.g_axis.call(self.axis);
-
-        // Add highlight
-        if (config.highlight) {
-            self.draw_highlight(config.highlight);
-        }
-
-        // Draw Shades
-        self.draw_shade();
-
-        // Draw graphic border
-        self.draw_border();
+        // Border
+        self.border
+            .attr("x", self.padding[0] + self.rect_adjust[0])
+            .attr("y", self.padding[1] + self.rect_adjust[1])
+            .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
+            .attr("height", self.height - self.padding[3] + self.rect_adjust[3]);
     },
 
     draw_highlight: function(time_span, smooth) {
@@ -335,7 +415,7 @@ PlayoutTimelinePanel.prototype = {
         }
 
         // Select or insert highlight element
-        var hl = self.svg.select("rect.highlight");
+        var hl = self.svg.select("rect.Highlight");
         if (hl.empty()) {
             hl = self.svg.append("rect");
         }
@@ -346,7 +426,7 @@ PlayoutTimelinePanel.prototype = {
         }
 
         hl
-            .attr("class", "highlight")
+            .attr("class", "Highlight")
             .attr("x", hl_metrics[0])
             .attr("y", hl_metrics[1])
             .attr("width", hl_metrics[2])
@@ -376,45 +456,25 @@ PlayoutTimelinePanel.prototype = {
             .on("touchend.zoom", null);
     },
 
-    make_fully_clickable: function() {
-        // TODO: is there a better way?
-        var self = this;
+    resize: function() {
+        this.calculate_metrics();
+        this.apply_metrics();
+        this.timeline.draw_highlights();
+        this.draw_shade();
+        this.redraw();
+    },
 
-        self.svg
+    draw_click_area: function() {
+        // TODO: is there a better way?
+        this.svg
             .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("width", self.width)
-                .attr("height", self.height)
+                .attr("width", "100%")
+                .attr("height", "100%")
                 .attr("fill", "transparent")
                 .attr("stroke", "none")
-    },
-
-    draw_background: function() {
-        var self = this;
-
-        // Add graph background
-        self.svg.append("rect")
-            .attr("x", self.padding[0] + self.rect_adjust[0])
-            .attr("y", self.padding[1] + self.rect_adjust[1])
-            .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
-            .attr("height", self.height - self.padding[3] + self.rect_adjust[3])
-            .attr("fill", "lightgray");
-    },
-
-    draw_border: function() {
-        var self = this;
-
-        // Add graph background
-        self.svg.append("rect")
-            .attr("x", self.padding[0] + self.rect_adjust[0])
-            .attr("y", self.padding[1] + self.rect_adjust[1])
-            .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
-            .attr("height", self.height - self.padding[3] + self.rect_adjust[3])
-            .attr("fill", "transparent")
-            .attr("stroke", "black")
-            .attr("stroke-width", "1px")
-            .style("pointer-events", "none");
+                .attr("class", "ClickArea");
     },
 
     draw_shade: function() {
@@ -471,7 +531,13 @@ PlayoutTimelinePanel.prototype = {
         }
 
         for (var i = 0, li = shade_config.length; i < li; ++i) {
-            self.svg.append("rect")
+            var shade = self.svg.select("rect#Shade-" + i);
+            if (shade.empty()) {
+                shade = self.svg.append("rect");
+                shade.attr("id", "Shade-" + i);
+            }
+
+            shade
                 .attr("x", shade_config[i][0])
                 .attr("y", shade_config[i][1])
                 .attr("width", shade_config[i][2])
@@ -636,7 +702,7 @@ PlayoutTimelinePanel.prototype = {
         // Add elements
         updated_set
             .enter()
-            .append("svg:rect")
+            .append("svg:rect");
 
         // Update attributes (depending on smooth)
         var target = updated_set;
@@ -696,6 +762,7 @@ PlayoutTimelinePanel.prototype = {
             break;
         }
 
+        // Draw
         var line = self.vis.selectAll("line#now").data([now]);
         line.enter()
             .append("line");
