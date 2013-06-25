@@ -742,7 +742,7 @@ PlayoutTimelinePanel.prototype = {
         // Calculate screen displacement quota
         var quota = pixels / self.drawing_width;
         // Translate quota to time
-        var amount = self.end.diff(self.start) * quota;
+        var amount = self.axis_span * quota;
 
         return amount;
     },
@@ -751,7 +751,7 @@ PlayoutTimelinePanel.prototype = {
         var self = this;
 
         // Translate time to quota
-        var quota = time / self.end.diff(self.start);
+        var quota = time / self.axis_span;
         // Calculate screen displacement quota
         var pixels = quota * self.drawing_width;
 
