@@ -739,6 +739,8 @@ PlayoutTimelinePanel.prototype = {
             .exit()
             .remove();
 
+        self.reposition_now_indicator();
+
     },
 
     draw_now_indicator: function(now) {
@@ -776,6 +778,18 @@ PlayoutTimelinePanel.prototype = {
             .attr("stroke", "red")
             .attr("stroke-width", "1px")
 
+    },
+
+    reposition_now_indicator: function() {
+        // Slight hack to make the now indicator be drawn on top
+        // of the rest of the elements
+        var last_child = $(this.vis[0]).children(":last-child");
+
+        if (!last_child.is("line#now")) {
+            var line = $(this.vis[0]).find("line#now");
+            line.detach();
+            line.appendTo(this.vis[0]);
+        }
     },
 
     updateData: function(new_data, no_redraw) {
