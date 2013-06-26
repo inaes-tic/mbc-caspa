@@ -29,6 +29,11 @@ window.ScheduleView = Backbone.View.extend({
     make_event: function(occurrence) {
         // make a Media.Occurrence into a fullCalendar event
         var attribs = _(occurrence.attributes).clone();
+
+        // Fullcalendar needs unix timestamp for rendering
+        attribs.start = moment(attribs.start).unix();
+        attribs.end = moment(attribs.end).unix();
+
         attribs.model = occurrence;
         return attribs;
     },
