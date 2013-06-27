@@ -729,6 +729,7 @@ PlayoutTimelinePanel.prototype = {
         }
         updated_set
             .attr("style", function(d, i) { return "fill: " + self.color_scale(i); })//return "fill: #F80;"; }) //((d.get("cid").indexOf("-") == -1) ? "fill: black;" : "fill: red;"); })
+            .attr("class", "Playlist")
             .on("click", function(d) {
                 // Focus on click
                 self.timeline.focus_playlist(d);
