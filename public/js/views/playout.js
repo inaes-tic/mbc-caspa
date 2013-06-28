@@ -51,13 +51,20 @@ PlayoutTimeline.prototype = {
         }
 
         // Configure timer for now indicator
-        self.draw_now_indicator();
-        window.setInterval(function() {
-            var now = self.draw_now_indicator.call(self);
-            if (self.config.follow) {
-                self.centerTime.call(self, now);
-            }
-        }, 200);
+        if (self.config.follow) {
+            (function follow() {
+                var now = self.draw_now_indicator();
+                if (self.config.follow) {
+                    self.centerTime.call(self, now);
+                }
+                window.requestAnimationFrame(follow);
+            })();
+        } else {
+            (function animate_now_indicator() {
+                self.draw_now_indicator();
+                window.requestAnimationFrame(animate_now_indicator);
+            })();
+        }
 
     },
 
@@ -75,7 +82,7 @@ PlayoutTimeline.prototype = {
         }
     },
 
-    draw_now_indicator: function(now) {
+    draw_now_indicator: function() {
         var self = this;
 
         var now = moment();
