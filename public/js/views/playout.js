@@ -765,10 +765,10 @@ PlayoutTimelinePanel.prototype = {
         var line_metrics;
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                line_metrics = [Math.floor(now.diff(self.start) / quota), Math.floor(now.diff(self.start) / quota), 0, self.height - self.padding[3]];
+                line_metrics = [now.diff(self.start) / quota, now.diff(self.start) / quota, 0, self.height - self.padding[3]];
             break;
             case PlayoutTimeline.VERTICAL:
-                line_metrics = [0, self.width - self.padding[2], Math.floor(now.diff(self.start) / quota), Math.floor(now.diff(self.start) / quota)];
+                line_metrics = [0, self.width - self.padding[2], now.diff(self.start) / quota, now.diff(self.start) / quota];
             break;
         }
 
