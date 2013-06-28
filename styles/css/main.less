@@ -271,6 +271,14 @@ legend {
   margin: 5px;
 }
 
+div#svg svg .Axis {
+    pointer-events: none;
+}
+
+div#svg svg .Axis .major line {
+    opacity: 0.2;
+}
+
 div#svg svg .Axis path,
 div#svg svg .Axis line {
     fill: none;
@@ -300,6 +308,6 @@ div#svg svg rect.Border {
     stroke-width: 1px;
 }
 
-div#svg svg rect.Playlist {
+div#svg svg.Playlist {
     cursor: pointer;
 }
