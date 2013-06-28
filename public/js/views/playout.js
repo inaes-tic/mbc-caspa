@@ -756,17 +756,21 @@ PlayoutTimelinePanel.prototype = {
             // Setup playlist text
             var plist_text = new_plist.append("text")
                 .text(function(d) { return d.get("title"); })
+                .attr("font-size", 26)
+                .style("stroke", "none")
+                .style("fill", "white")
+                .style("fill-opacity", 0.9)
                 .on("click", function() { event.preventDefault(); });
 
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
                     plist_text
-                        .attr("y", 12)
-                        .attr("x", 3)
+                        .attr("y", function(d) { return $(this).height(); })
+                        .attr("x", 5)
                 break;
                 case PlayoutTimeline.VERTICAL:
                     plist_text
-                        .attr("y", 12)
+                        .attr("y", function(d) { return $(this).height(); })
                         .attr("x", function(d) { return -($(this).width() + 5); })
                         .attr("transform", "rotate(-90)")
                 break;
@@ -798,7 +802,7 @@ PlayoutTimelinePanel.prototype = {
                         }
                         return sum * 100 / length + "%";
                     })
-                    .attr(attr_sel[1], "5%")
+                    .attr(attr_sel[1], "40")
                     .attr(attr_sel[2], function(d, i, j) {
                         var length = playlist_length(self.data[j]);
                         var my_length = length_to_duration(d.get("durationraw"));
@@ -806,25 +810,28 @@ PlayoutTimelinePanel.prototype = {
                     });
             clip.append("svg:rect")
                 .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
-                .style("opacity", 0.3)
-                .style("fill", function(d, i) { return i % 2 ? "black" : "white"; });
+                .style("opacity", function(d, i) { return i % 2 ? 0.3 : 0.2; })
+                .style("fill", "black");
 
             // Setup clip text
             var clip_text = clip.append("text")
                 .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
+                .attr("font-size", 14)
+                .style("stroke", "none")
+                .style("fill", "white")
                 .on("click", function() { event.preventDefault(); });
 
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
                     clip_text
-                        .attr("y", 12)
+                        .attr("y", function(d) { return $(this).height(); })
                         .attr("x", function(d) { return -($(this).width() + 5); })
                         .attr("transform", "rotate(-90)")
                 break;
                 case PlayoutTimeline.VERTICAL:
                     clip_text
-                        .attr("y", 12)
-                        .attr("x", 3);
+                        .attr("y", function(d) { return $(this).height(); })
+                        .attr("x", 5);
                 break;
             }
 
