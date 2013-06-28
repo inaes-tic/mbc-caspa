@@ -32,7 +32,7 @@
               .control-group
                 label.control-label(for="mediaName")= i18n.gettext('Name') + ': '
                 .controls
-                    input.input-block-level#mediaName(name="Name",type="text", data-bind="value: name, valueUpdate: 'keyup'")
+                    input.input-block-level#mediaName(name="Name",type="text", data-bind="value: name, valueUpdate: 'keyup', addOnEnter: save")
         .row
           .span6
             .control-group
@@ -50,7 +50,7 @@
             .control-group
                 label.control-label(for="description")= i18n.gettext('Notes') + ': '
                 .controls
-                    textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description, data-bind="value: notes")
+                    textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description, data-bind="value: notes, addOnEnter: save")
   
           .span6
               .well.droparea.image-droparea
