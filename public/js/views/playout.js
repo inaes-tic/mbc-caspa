@@ -695,7 +695,7 @@ PlayoutTimelinePanel.prototype = {
 
         var quota = self.axis_span / self.drawing_width;
 
-        var rects = self.vis.selectAll("rect");
+        var rects = self.vis.selectAll("svg.Playlist");
 
         // Setup comparison function
         var comparator = undefined;
@@ -707,9 +707,137 @@ PlayoutTimelinePanel.prototype = {
         var updated_set = rects.data(self.data, comparator);
 
         // Add elements
-        updated_set
-            .enter()
-            .append("svg:rect");
+        var new_plist = updated_set.enter()
+            .append("svg:svg")
+                .attr("class", "Playlist");
+
+        // Add background to new element
+        new_plist
+            .append("svg:rect")
+                .attr("style", function(d, i) { return "fill: " + self.color_scale(i); })//return "fill: #F80;"; }) //((d.get("cid").indexOf("-") == -1) ? "fill: black;" : "fill: red;"); })
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("height", "100%")
+                .attr("width", "100%")
+
+
+        // On zoomable panels: clip resolution
+        if (self.config.zoomable) {
+
+            // Draw clips only when playlist is visible
+            function playlist_visible(plist) {
+                return (
+                    moment.unix(plist.get("start")) < self.end &&
+                    moment.unix(plist.get("end")) > self.start
+                );
+            }
+
+            var second_level = updated_set.selectAll("svg.Clip").data(function(d) {
+                return playlist_visible(d) ? Universe.get(d.get("list")).get("models") : [];
+            });
+
+            function length_to_duration(val) {
+                var tmp = val.split(".");
+                var ms = tmp[1] * 10;
+                tmp = tmp[0].split(":");
+
+                return moment.duration({
+                    hours: tmp[0],
+                    minutes: tmp[1],
+                    seconds: tmp[2],
+                    milliseconds: ms,
+                });
+            }
+
+            function playlist_length(plist) {
+                return moment.unix(plist.get("end")).diff(moment.unix(plist.get("start")));
+            }
+
+            // Setup playlist text
+            var plist_text = new_plist.append("text")
+                .text(function(d) { return d.get("title"); })
+                .on("click", function() { event.preventDefault(); });
+
+            switch(self.timeline.layout) {
+                case PlayoutTimeline.HORIZONTAL:
+                    plist_text
+                        .attr("y", 12)
+                        .attr("x", 3)
+                break;
+                case PlayoutTimeline.VERTICAL:
+                    plist_text
+                        .attr("y", 12)
+                        .attr("x", function(d) { return -($(this).width() + 5); })
+                        .attr("transform", "rotate(-90)")
+                break;
+            }
+
+            // Setup clip metrics
+            var attr_sel;
+            switch(self.timeline.layout) {
+                case PlayoutTimeline.HORIZONTAL:
+                    attr_sel = ["x", "y", "width"];
+                break;
+                case PlayoutTimeline.VERTICAL:
+                    attr_sel = ["y", "x", "height"];
+                break;
+            }
+
+            var clip = second_level
+                .enter()
+                .append("svg:svg")
+                    .attr("class", "Clip")
+                    .attr("start", function(d, i, j) {
+                    })
+                    .attr(attr_sel[0], function(d, i, j) {
+                        var length = playlist_length(self.data[j]);
+                        var list = d.collection.models;
+                        var sum = 0;
+                        for (var k = 0; k < i; ++k) {
+                            sum += length_to_duration(list[k].get("durationraw")).valueOf();
+                        }
+                        return sum * 100 / length + "%";
+                    })
+                    .attr(attr_sel[1], "5%")
+                    .attr(attr_sel[2], function(d, i, j) {
+                        var length = playlist_length(self.data[j]);
+                        var my_length = length_to_duration(d.get("durationraw"));
+                        return my_length * 100 / length + "%";
+                    });
+            clip.append("svg:rect")
+                .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
+                .style("opacity", 0.3)
+                .style("fill", function(d, i) { return i % 2 ? "black" : "white"; });
+
+            // Setup clip text
+            var clip_text = clip.append("text")
+                .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
+                .on("click", function() { event.preventDefault(); });
+
+            switch(self.timeline.layout) {
+                case PlayoutTimeline.HORIZONTAL:
+                    clip_text
+                        .attr("y", 12)
+                        .attr("x", function(d) { return -($(this).width() + 5); })
+                        .attr("transform", "rotate(-90)")
+                break;
+                case PlayoutTimeline.VERTICAL:
+                    clip_text
+                        .attr("y", 12)
+                        .attr("x", 3);
+                break;
+            }
+
+            // Remove elements that are not being showed
+            second_level.exit().remove();
+
+        } else {
+            new_plist
+                .append("text")
+                    .text(function(d) { return d.get("title") ; })
+                    .attr("y", 12)
+                    .attr("x", 3);
+        }
 
         // Update attributes (depending on smooth)
         var target = updated_set;
@@ -735,8 +863,6 @@ PlayoutTimelinePanel.prototype = {
             break;
         }
         updated_set
-            .attr("style", function(d, i) { return "fill: " + self.color_scale(i); })//return "fill: #F80;"; }) //((d.get("cid").indexOf("-") == -1) ? "fill: black;" : "fill: red;"); })
-            .attr("class", "Playlist")
             .on("click", function(d) {
                 // Focus on click
                 self.timeline.focus_playlist(d);
