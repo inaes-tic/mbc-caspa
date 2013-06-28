@@ -722,7 +722,7 @@ PlayoutTimelinePanel.prototype = {
                     .attr("y", 1.5)
                     .attr("height", self.drawing_height - 1.5)
                 target
-                    .attr("x", function(d) { return Math.floor(moment.unix(d.get("start")).diff(self.start) / quota);})//function(d) {return d.x;})
+                    .attr("x", function(d) { return moment.unix(d.get("start")).diff(self.start) / quota;})//function(d) {return d.x;})
                     .attr("width", function(d) { return moment.unix(d.get("end")).diff(moment.unix(d.get("start"))) / quota; });//function(d) {return d.r;})
             break;
             case PlayoutTimeline.VERTICAL:
@@ -730,7 +730,7 @@ PlayoutTimelinePanel.prototype = {
                     .attr("x", 0)//function(d) {return d.x;})
                     .attr("width", self.drawing_height - 0.5)//function(d) {return d.r;})
                 target
-                    .attr("y", function(d) { return Math.floor(moment.unix(d.get("start")).diff(self.start) / quota);})
+                    .attr("y", function(d) { return moment.unix(d.get("start")).diff(self.start) / quota;})
                     .attr("height", function(d) { return moment.unix(d.get("end")).diff(moment.unix(d.get("start"))) / quota; });
             break;
         }
