@@ -50,7 +50,7 @@
             .control-group
                 label.control-label(for="description")= i18n.gettext('Notes') + ': '
                 .controls
-                    textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description, data-bind="value: notes, addOnEnter: save")
+                    textarea#description(name="description",style="width: 90%;",rows="6",placeholder=description, data-bind="value: notes, valueUpdate: 'keyup', addOnEnter: save")
 
           .span6
               .well.droparea.image-droparea
