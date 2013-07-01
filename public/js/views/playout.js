@@ -545,6 +545,7 @@ PlayoutTimelinePanel.prototype = {
             self.background = self.svg.append("rect");
             self.background.attr("class", "Background");
         }
+        self.background.style("pointer-events", "none");
 
         // Draw visualization
         self.vis = self.svg.select("g.Visualization");
@@ -720,24 +721,28 @@ PlayoutTimelinePanel.prototype = {
         var self = this;
 
         self.zoom_obj.on("zoom", _.bind(self.handlePanningEvent, self));
-        self.svg.call(self.zoom_obj);
+        self.click_area.call(self.zoom_obj);
 
         if (self.config.zoomable) {
             self.svg.on("mousewheel.zoom", _.bind(self.handleMouseWheel, self));
+            self.click_area.on("mousewheel.zoom", null);
         } else {
             self.svg.on("mousewheel.zoom", null);
+            self.click_area.on("mousewheel.zoom", null);
         }
         self.svg.on("dblclick.zoom", null);
     },
 
     release_events: function() {
-        this.svg
+        this.click_area
             .on("mousedown.zoom", null)
             .on("mousewheel.zoom", null)
             .on("touchstart.zoom", null)
             .on("touchmove.zoom", null)
             .on("dblclick.zoom", null)
             .on("touchend.zoom", null);
+        this.svg
+            .on("mousewheel.zoom", null);
     },
 
     resize: function(smooth) {
@@ -750,7 +755,7 @@ PlayoutTimelinePanel.prototype = {
 
     draw_click_area: function() {
         // TODO: is there a better way?
-        this.svg
+        this.click_area = this.svg
             .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
