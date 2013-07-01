@@ -255,7 +255,6 @@ PlayoutTimelinePanel.prototype = {
             self.svg = self.timeline.svg.append("svg");
             self.svg.attr("id", "Panel-" + self.config.panel_ord);
         }
-        self.svg.on("dblclick.zoom", null);
 
         // Add transparent background (for clicking purposes)
         self.draw_click_area();
@@ -452,6 +451,7 @@ PlayoutTimelinePanel.prototype = {
         } else {
             self.svg.on("mousewheel.zoom", null);
         }
+        self.svg.on("dblclick.zoom", null);
     },
 
     release_events: function() {
@@ -460,6 +460,7 @@ PlayoutTimelinePanel.prototype = {
             .on("mousewheel.zoom", null)
             .on("touchstart.zoom", null)
             .on("touchmove.zoom", null)
+            .on("dblclick.zoom", null)
             .on("touchend.zoom", null);
     },
 
