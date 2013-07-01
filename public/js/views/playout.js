@@ -149,8 +149,8 @@ PlayoutTimeline.prototype = {
     },
 
     get_playlist_central_time: function(playlist) {
-        var start = moment.unix(playlist.get("start"));
-        var diff = start.diff(moment.unix(playlist.get("end")));
+        var start = moment(playlist.get("start"));
+        var diff = start.diff(moment(playlist.get("end")));
         return start.subtract("milliseconds", diff / 2);
     },
 
@@ -670,8 +670,8 @@ PlayoutTimelinePanel.prototype = {
         var self = this;
 
         // Calculate new start and end based on playlist data
-        var pl_start = moment.unix(playlist.get("start"));
-        var pl_end = moment.unix(playlist.get("end"));
+        var pl_start = moment(playlist.get("start"));
+        var pl_end = moment(playlist.get("end"));
         var gap = pl_start.diff(pl_end) * 0.025;
 
         // Assign new values
@@ -728,8 +728,8 @@ PlayoutTimelinePanel.prototype = {
             // Draw clips only when playlist is visible
             function playlist_visible(plist) {
                 return (
-                    moment.unix(plist.get("start")) < self.end &&
-                    moment.unix(plist.get("end")) > self.start
+                    moment(plist.get("start")) < self.end &&
+                    moment(plist.get("end")) > self.start
                 );
             }
 
@@ -751,7 +751,7 @@ PlayoutTimelinePanel.prototype = {
             }
 
             function playlist_length(plist) {
-                return moment.unix(plist.get("end")).diff(moment.unix(plist.get("start")));
+                return moment(plist.get("end")).diff(moment(plist.get("start")));
             }
 
             // Setup playlist text
@@ -856,16 +856,16 @@ PlayoutTimelinePanel.prototype = {
                     .attr("y", 1.5)
                     .attr("height", self.drawing_height - 1.5)
                 target
-                    .attr("x", function(d) { return moment.unix(d.get("start")).diff(self.start) / quota;})//function(d) {return d.x;})
-                    .attr("width", function(d) { return moment.unix(d.get("end")).diff(moment.unix(d.get("start"))) / quota; });//function(d) {return d.r;})
+                    .attr("x", function(d) { return moment(d.get("start")).diff(self.start) / quota;})//function(d) {return d.x;})
+                    .attr("width", function(d) { return moment(d.get("end")).diff(moment(d.get("start"))) / quota; });//function(d) {return d.r;})
             break;
             case PlayoutTimeline.VERTICAL:
                 updated_set
                     .attr("x", 0)//function(d) {return d.x;})
                     .attr("width", self.drawing_height - 0.5)//function(d) {return d.r;})
                 target
-                    .attr("y", function(d) { return moment.unix(d.get("start")).diff(self.start) / quota;})
-                    .attr("height", function(d) { return moment.unix(d.get("end")).diff(moment.unix(d.get("start"))) / quota; });
+                    .attr("y", function(d) { return moment(d.get("start")).diff(self.start) / quota;})
+                    .attr("height", function(d) { return moment(d.get("end")).diff(moment(d.get("start"))) / quota; });
             break;
         }
         updated_set
@@ -953,8 +953,8 @@ PlayoutTimelinePanel.prototype = {
 
         return self.data.filter(function(elem) {
             return (
-                moment.unix(elem.get("start")) < self.end &&
-                moment.unix(elem.get("end")) > self.start
+                moment(elem.get("start")) < self.end &&
+                moment(elem.get("end")) > self.start
             );
         });
     },
