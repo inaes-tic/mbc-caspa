@@ -60,10 +60,18 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        _([appCollection, mediaList, Universe, Schedule, pieceList, transformList]).each( function (col) {
-            console.log ('fetching', col);
-            col.fetch();
-        });
+        appCollection.fetch({success: function() {
+            mediaList.fetch({success: function() {
+                transformList.fetch({success: function() {
+                    pieceList.fetch({success: function() {
+                        Universe.fetch({success: function() {
+                            Schedule.fetch({success: function() {
+                            }});
+                        }});
+                    }});
+                }});
+            }});
+        }});
 
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
     },
