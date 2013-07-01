@@ -760,8 +760,7 @@ PlayoutTimelinePanel.prototype = {
                 .attr("font-size", 26)
                 .style("stroke", "none")
                 .style("fill", "white")
-                .style("fill-opacity", 0.9)
-                .on("click", function() { event.preventDefault(); });
+                .style("fill-opacity", 0.9);
 
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
@@ -819,8 +818,7 @@ PlayoutTimelinePanel.prototype = {
                 .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
                 .attr("font-size", 14)
                 .style("stroke", "none")
-                .style("fill", "white")
-                .on("click", function() { event.preventDefault(); });
+                .style("fill", "white");
 
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
@@ -873,7 +871,9 @@ PlayoutTimelinePanel.prototype = {
         updated_set
             .on("click", function(d) {
                 // Focus on click
-                self.timeline.focus_playlist(d);
+                if (!d3.event.defaultPrevented) {
+                    self.timeline.focus_playlist(d);
+                }
             })
 
         // Remove elements that exited
