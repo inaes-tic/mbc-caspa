@@ -33,6 +33,7 @@ app.configure(function () {
     app.set('views', conf.Dirs.views);
     app.set('view engine', 'jade');
     app.use(express.logger('dev'));
+    app.use(express.compress('production'));
 /*    app.use('/uploads', upload({
         tmpDir:    conf.Dirs.uploads + '/incoming',
         uploadDir: conf.Dirs.upolads,
