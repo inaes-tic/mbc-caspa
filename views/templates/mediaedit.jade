@@ -15,6 +15,10 @@ block content
           button.close(type='button', data-dismiss='alert') ×
           h4= i18n.gettext('Add some media !')
           p=  i18n.gettext('You need to add some media before you can save a playlist, drag some rows from the left pane to start adding')
+        .alert.alert-block.alert-has-occurrences(style='display:none')
+          button.close(type='button', data-dismiss='alert') ×
+          h4= i18n.gettext('Can\'t delete or change Playlist!')
+          p=  i18n.gettext('You are currently editing a  scheduled playlist. Create a new one.')
         .btn.btn-block.btn-primary.save=  i18n.gettext('Save')
         .btn.btn-block.btn-danger.delete= i18n.gettext('Delete')
       .alert.alert-block.no-playlist-alert
