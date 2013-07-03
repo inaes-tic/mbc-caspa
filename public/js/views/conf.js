@@ -8,7 +8,6 @@ window.ConfView = Backbone.View.extend({
     render: function () {
             $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
             $(this.el).html(template.confview({ config: this.collection.toJSON() }));
-            $('.bs-docs-sidenav').affix();
             $('body').scrollspy('refresh');
             return this;
     },
