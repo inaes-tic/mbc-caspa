@@ -66,10 +66,12 @@ window.EditView = Backbone.View.extend({
         var medias = this.editview.model.get('pieces');
         var name   = this.editview.model.get('name');
         var id     = this.editview.model.get('_id');
+        var occurrences = this.editview.model.get('occurrences');
 
         console.log ("i want to save", this.editview.model, medias, id);
         $('.alert-empty-playlist', this.el).hide();
         $('.alert-unnamed-playlist', this.el).hide();
+        $('.alert-has-occurrences', this.el).hide();
         if (! medias.length) {
             console.log ("noooo medias");
             $('.alert-empty-playlist', this.el).show();
@@ -79,6 +81,11 @@ window.EditView = Backbone.View.extend({
             console.log ("noooo ");
             this.editview.editListName();
             $('.alert-unnamed-playlist', this.el).show();
+            return;
+        }
+        if (occurrences.length) {
+            console.log ("Playlist has schedules");
+            $('.alert-has-occurrences', this.el).show();
             return;
         }
 
@@ -104,6 +111,15 @@ window.EditView = Backbone.View.extend({
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
         var id = this.editview.model.get('_id');
+        var occurrences =  this.editview.model.get('occurrences');
+
+        $('.alert-has-occurrences', this.el).hide();
+        if (occurrences.length) {
+            console.log ("Playlist has schedules");
+            $('.alert-has-occurrences', this.el).show();
+            return;
+        }
+
         if (id) {
             this.editview.destroy();
             Universe.remove (id);
