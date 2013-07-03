@@ -72,13 +72,20 @@ window.HeaderView = function (options) {
     var toggle = function(e) {
         var panel = self.el;
         var content = $('#content');
+
+        // Make it smooth
+        content.addClass("trans");
+
         if (panel.position().top != $(window).scrollTop()) {
-            panel.animate({top: 0});
-            content.animate({'padding-top': '+=105'});
+            // Expanded header
+            $("body").removeClass("Comp");
         } else {
-            panel.animate({top: -105})
-            content.animate({'padding-top': '-=105'});
+            // Compact header
+            $("body").addClass("Comp");
         };
+
+        // Js Events
+        $(window).resize();
     };
     $('#toggle-header').click(toggle);
 }

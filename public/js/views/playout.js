@@ -998,6 +998,7 @@ window.PlayoutView = Backbone.View.extend({
     initialize: function() {
         var self = this;
         self.ratio = 25;
+        self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
         var OccurrenceViewModel = function(model) {
@@ -1108,7 +1109,18 @@ window.PlayoutView = Backbone.View.extend({
         });
 
         $(window).resize(function() {
-            self.timeline.resize(self.$el.width(), self.$el.height());
+            if (self.$el.hasClass("trans")) {
+                if ($("body").hasClass("Comp")) {
+                    self.timeline.resize(self.$el.width(), self.$el.height() + 105, true);
+                } else {
+                    self.timeline.resize(self.$el.width(), self.$el.height() - 105, true);
+                }
+                window.setTimeout(function() {
+                    self.$el.removeClass("trans");
+                }, 400);
+            } else {
+                self.timeline.resize(self.$el.width(), self.$el.height());
+            }
         });
 
         this.render();
