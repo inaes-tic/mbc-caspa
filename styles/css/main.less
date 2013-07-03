@@ -265,8 +265,9 @@ legend {
     visibility: visible;
   }
 
-.bs-docs-sidenav.affix {
-    top: 154px;
+.bs-docs-sidenav {
+    margin: 0px;
+    position: fixed;
 }
 
 #overlapping-alert {
@@ -302,10 +303,19 @@ legend {
     width: 70%;
 }
 
+#Caspa.anchor-offset {
+    position: absolute;
+    top: 0px;
+}
+
 .anchor-offset {
     display: block;
     position: relative;
-    top: -(@header-height + 20px);
+    top: -(@header-height + 15px);
+}
+
+body.Comp .anchor-offset {
+    top: -(@header-height - 90px);
 }
 
 
