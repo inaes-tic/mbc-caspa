@@ -133,18 +133,18 @@ PlayoutTimeline.prototype = {
         }
     },
 
-    resize: function(width, height) {
+    resize: function(width, height, smooth) {
         var self = this;
 
         self.width = width;
         self.height = height;
 
-        self.svg
+        self.smoothify(self.svg, smooth)
             .attr("height", self.height)
             .attr("width", self.width);
 
         for (var i = 0, li = self.panels.length; i < li; ++i) {
-            self.panels[i].resize();
+            self.panels[i].resize(smooth);
         }
     },
 
@@ -223,6 +223,14 @@ PlayoutTimeline.prototype = {
                 .attr("stop-color", "#000")
                 .attr("stop-opacity", thin_stops[i][1]);
         }
+    },
+
+    smoothify: function(elem, smooth) {
+        var target = elem;
+        if (smooth) {
+            target = target.transition().duration(500);
+        }
+        return target;
     },
 };
 
@@ -359,25 +367,25 @@ PlayoutTimelinePanel.prototype = {
         }
     },
 
-    apply_metrics: function() {
+    apply_metrics: function(smooth) {
         var self = this;
 
         // Panel main SVG
-        self.svg
+        self.smoothify(self.svg, smooth)
             .attr("x", self.x)
             .attr("y", self.y)
             .attr("width", self.width)
             .attr("height", self.height);
 
         // Background
-        self.background
+        self.smoothify(self.background, smooth)
             .attr("x", self.padding[0] + self.rect_adjust[0])
             .attr("y", self.padding[1] + self.rect_adjust[1])
             .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
             .attr("height", self.height - self.padding[3] + self.rect_adjust[3]);
 
         // Visualization
-        self.vis
+        self.smoothify(self.vis, smooth)
             .attr("transform", "translate(" + self.padding[0] + "," + self.padding[1] + ")");
 
         // Time Scale
@@ -392,12 +400,12 @@ PlayoutTimelinePanel.prototype = {
             .tickSize(-self.drawing_height, 6, -self.drawing_height);
 
         // Graphical Axis
-        self.g_axis
+        self.smoothify(self.g_axis, smooth)
             .attr("transform", "translate(" + self.axis_adjust[0] + "," + self.axis_adjust[1] + ")")
             .call(self.axis);
 
         // Border
-        self.border
+        self.smoothify(self.border, smooth)
             .attr("x", self.padding[0] + self.rect_adjust[0])
             .attr("y", self.padding[1] + self.rect_adjust[1])
             .attr("width", self.width - self.padding[2] + self.rect_adjust[2])
@@ -427,11 +435,7 @@ PlayoutTimelinePanel.prototype = {
         }
 
         // Smooth if required
-        if (smooth) {
-            hl = hl.transition().duration(500);
-        }
-
-        hl
+        self.smoothify(hl, smooth)
             .attr("class", "Highlight")
             .attr("x", hl_metrics[0])
             .attr("y", hl_metrics[1])
@@ -464,12 +468,12 @@ PlayoutTimelinePanel.prototype = {
             .on("touchend.zoom", null);
     },
 
-    resize: function() {
+    resize: function(smooth) {
         this.calculate_metrics();
-        this.apply_metrics();
-        this.timeline.draw_highlights();
-        this.draw_shade();
-        this.redraw();
+        this.apply_metrics(smooth);
+        this.timeline.draw_highlights(smooth);
+        this.draw_shade(smooth);
+        this.redraw(smooth);
     },
 
     draw_click_area: function() {
@@ -485,7 +489,7 @@ PlayoutTimelinePanel.prototype = {
                 .attr("class", "ClickArea");
     },
 
-    draw_shade: function() {
+    draw_shade: function(smooth) {
         var self = this;
 
         var shade_config;
@@ -545,7 +549,7 @@ PlayoutTimelinePanel.prototype = {
                 shade.attr("id", "Shade-" + i);
             }
 
-            shade
+            self.smoothify(shade, smooth)
                 .attr("x", shade_config[i][0])
                 .attr("y", shade_config[i][1])
                 .attr("width", shade_config[i][2])
@@ -682,7 +686,7 @@ PlayoutTimelinePanel.prototype = {
 
         // Update axis
         self.time_scale.domain([self.start, self.end]);
-        self.g_axis.transition().duration(500)
+        self.smoothify(self.g_axis, smooth)
             .call(self.axis);
 
         // Redraw
@@ -846,10 +850,7 @@ PlayoutTimelinePanel.prototype = {
         }
 
         // Update attributes (depending on smooth)
-        var target = updated_set;
-        if (smooth) {
-            target = target.transition().duration(500);
-        }
+        var target = self.smoothify(updated_set, smooth);
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
                 updated_set
@@ -980,6 +981,14 @@ PlayoutTimelinePanel.prototype = {
 
         return pixels;
     },
+
+    smoothify: function(elem, smooth) {
+        var target = elem;
+        if (smooth) {
+            target = target.transition().duration(500);
+        }
+        return target;
+    },
 };
 
 
@@ -1045,8 +1054,8 @@ window.PlayoutView = Backbone.View.extend({
         this.timeline = new PlayoutTimeline({
             container: "#playout #svg",
             unique_id: "cid",
-            width: 1560,
-            height: 650,
+            width: this.$el.width(),
+            height: this.$el.height(),
             layout: PlayoutTimeline.VERTICAL,
             //follow: true,
             panels: [{
@@ -1096,6 +1105,10 @@ window.PlayoutView = Backbone.View.extend({
 
         this.$el.resize(function() {
             console.log("PlayoutView > container > event:resize");
+        });
+
+        $(window).resize(function() {
+            self.timeline.resize(self.$el.width(), self.$el.height());
         });
 
         this.render();
