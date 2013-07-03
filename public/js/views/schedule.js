@@ -86,6 +86,7 @@ window.ScheduleView = Backbone.View.extend({
         var self = this;
         self.collection = this.get_collection();
 
+        $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
         $(this.el).html(this.get_templateHTML());
 
         new UniverseListView({

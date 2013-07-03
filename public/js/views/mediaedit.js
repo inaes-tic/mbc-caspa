@@ -12,6 +12,7 @@ window.EditView = Backbone.View.extend({
         this.render();
     },
     render: function () {
+        $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
         $(this.el).html(template.mediaedit());
         new UniverseListView({
             collection: this.collection,
