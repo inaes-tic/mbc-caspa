@@ -206,7 +206,7 @@ mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
 
 _([mediabackend, listbackend, appbackend]).each (debug_backend);
 
-backboneio.listen(app.listen(app.get('port'), function(){
+var io = backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 }), { mediabackend: mediabackend,
       blockbackend: blockbackend,
@@ -216,6 +216,12 @@ backboneio.listen(app.listen(app.get('port'), function(){
       framebackend: framebackend,
       appbackend: appbackend
     });
+
+io.configure('production', function(){
+    io.enable('browser client minification');  // send minified client
+    io.enable('browser client etag');          // apply etag caching logic based on version number
+    io.enable('browser client gzip');          // gzip the file
+});
 
 var utils = require('./utils');
 
