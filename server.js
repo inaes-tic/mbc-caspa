@@ -7,7 +7,8 @@ var express = require('express'),
     mbc = require('mbc-common'),
     conf = require('mbc-common').config.Caspa,
     moment = require('moment'),
-    App = require("mbc-common/models/App")
+    App = require("mbc-common/models/App"),
+    maxage = 365 * 24 * 60 * 60 * 1000
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -53,9 +54,9 @@ app.configure(function () {
         dest: conf.Dirs.pub,
         compress: true}
     ));
-    app.use(express.static(conf.Dirs.pub));
-    app.use('/models', express.static(conf.Dirs.models));
-    app.use('/lib',    express.static(conf.Dirs.vendor));
+    app.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
+    app.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
+    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
 });
 
 app.configure('development', function(){
