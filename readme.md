@@ -48,10 +48,15 @@ AGPL v3.
    apt-get install redis-server
 ```
 
++ ffmpeg
+```shell
+   apt-get install ffmpeg
+```
+
 + todo junto
 
 ```shell
-   sudo apt-get install gettext npm nodejs mongodb redis-server
+   sudo apt-get install gettext npm nodejs mongodb redis-server ffmpeg
 ```
 
 # Instalación #
