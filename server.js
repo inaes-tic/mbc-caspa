@@ -7,7 +7,8 @@ var express = require('express'),
     mbc = require('mbc-common'),
     conf = require('mbc-common').config.Caspa,
     moment = require('moment'),
-    App = require("mbc-common/models/App")
+    App = require("mbc-common/models/App"),
+    maxage = 365 * 24 * 60 * 60 * 1000
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -53,9 +54,9 @@ app.configure(function () {
         dest: conf.Dirs.pub,
         compress: true}
     ));
-    app.use(express.static(conf.Dirs.pub));
-    app.use('/models', express.static(conf.Dirs.models));
-    app.use('/lib',    express.static(conf.Dirs.vendor));
+    app.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
+    app.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
+    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
 });
 
 app.configure('development', function(){
@@ -206,7 +207,7 @@ mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
 
 _([mediabackend, listbackend, appbackend]).each (debug_backend);
 
-backboneio.listen(app.listen(app.get('port'), function(){
+var io = backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 }), { mediabackend: mediabackend,
       blockbackend: blockbackend,
@@ -216,6 +217,12 @@ backboneio.listen(app.listen(app.get('port'), function(){
       framebackend: framebackend,
       appbackend: appbackend
     });
+
+io.configure('production', function(){
+    io.enable('browser client minification');  // send minified client
+    io.enable('browser client etag');          // apply etag caching logic based on version number
+    io.enable('browser client gzip');          // gzip the file
+});
 
 var utils = require('./utils');
 
