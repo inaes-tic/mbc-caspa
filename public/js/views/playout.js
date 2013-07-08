@@ -1359,60 +1359,9 @@ window.PlayoutView = Backbone.View.extend({
     el: '#content',
     initialize: function() {
         var self = this;
-        self.ratio = 25;
         self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
-        var OccurrenceViewModel = function(model) {
-            this.cid = model.cid;
-            this.classes = 'well';
-            this.start = kb.observable(model, 'start');
-            this.end = kb.observable(model, 'end');
-            this.title = kb.observable(model, 'title');
-            this.height = ko.computed(function() {
-                return (this.end() - this.start()) / self.ratio + "px";
-            }, this);
-            this.model = model;
-            this.list = Universe.get(model.get('list'));
-        };
-        /*
-        var EmptySpace = function(start, end, cid) {
-            this.classes = 'well alert-error';
-            this.title = function() { return "" };
-            this.start = function() { return start; };
-            this.end = function() { return end; };
-            this.cid = cid;
-            this.height = ko.computed(function() {
-                return (this.end - this.start) / self.ratio + "px";
-            }, this);
-        };
-        */
-
-        var ScheduleViewModel = function(collection) {
-            this.occurs = ko.observableArray();
-            //this.occurs = [];
-            this.update(collection);
-        };
-
-        ScheduleViewModel.prototype.update = function(collection) {
-            if (this.occurs().length > 0) {
-                this.occurs.removeAll();
-            }
-            //this.occurs.length = 0;
-            for (i = 0; i < collection.length; i++) {
-                var cur = collection.models[i];
-                //var next = collection.models[i+1];
-                this.occurs.push(new OccurrenceViewModel(cur));
-                /*
-                if (next && cur.get('end') != next.get('start')) {
-                    this.occurs.push(new EmptySpace(cur.get('end'), next.get('start'), cur.cid + "-" + next.cid))
-                };
-                */
-            }
-        };
-
-
-        this.view_model = new ScheduleViewModel(self.collection);
 
         this.timeline = new PlayoutTimeline({
             container: "#playout #svg",
@@ -1457,8 +1406,8 @@ window.PlayoutView = Backbone.View.extend({
         });
 
 
-        self.collection.bind('add reset remove change', function(elem) {
-            self.view_model.update(self.collection);
+        // Event listeners
+        self.collection.bind('sync', function(elem) {
             self.render();
         }, this);
 
@@ -1487,7 +1436,6 @@ window.PlayoutView = Backbone.View.extend({
 
         this.render();
 
-        ko.applyBindings(this.view_model, this.el);
     },
 
     render: function() {
