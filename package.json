@@ -35,6 +35,7 @@
         "knockback" : "0.17.x",
         "knockout-client" : "2.2.x",
         "i18n-abide"    : "0.0.8beta4",
+        "async"         : "0.2.x",
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git",

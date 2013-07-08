@@ -45,4 +45,7 @@ serve_noweb:
 serve_debug:
 	node --debug-brk server.js
 
+populate_db:
+	node test/populate_db.js
+
 .PHONY: npm submodules serve sparkmd5 bootstrap test test_debug serve_noweb serve_debug
