@@ -68,6 +68,14 @@ PlayoutTimeline.prototype = {
 
     },
 
+    update_data: function(new_data, no_redraw) {
+        this.data = new_data;
+
+        if (!no_redraw) {
+            this.redraw();
+        }
+    },
+
     panTime: function(time, smooth) {
         var self = this;
         for (var i = 0, li = self.panels.length; i < li; ++i) {
@@ -145,6 +153,12 @@ PlayoutTimeline.prototype = {
 
         for (var i = 0, li = self.panels.length; i < li; ++i) {
             self.panels[i].resize(smooth);
+        }
+    },
+
+    redraw: function(smooth) {
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            this.panels[i].redraw(smooth);
         }
     },
 
@@ -248,7 +262,6 @@ PlayoutTimelinePanel.prototype = {
         // Panel Setup
         self.timeline = timeline;
         self.config = config;
-        self.data = [];
 
         self.scale_factor = 1;
         self.translate = 0;
@@ -709,7 +722,6 @@ PlayoutTimelinePanel.prototype = {
                 return d[self.unique_id];
             };
         }
-        var updated_set = rects.data(self.data, comparator);
 
         // Add elements
         var new_plist = updated_set.enter()
@@ -724,6 +736,7 @@ PlayoutTimelinePanel.prototype = {
                 .attr("y", 0)
                 .attr("height", "100%")
                 .attr("width", "100%")
+        var updated_set = rects.data(self.timeline.data, comparator);
 
 
         // On zoomable panels: clip resolution
@@ -798,7 +811,7 @@ PlayoutTimelinePanel.prototype = {
                     .attr("start", function(d, i, j) {
                     })
                     .attr(attr_sel[0], function(d, i, j) {
-                        var length = playlist_length(self.data[j]);
+                        var length = playlist_length(self.timeline.data[j]);
                         var list = d.collection.models;
                         var sum = 0;
                         for (var k = 0; k < i; ++k) {
@@ -808,7 +821,7 @@ PlayoutTimelinePanel.prototype = {
                     })
                     .attr(attr_sel[1], "40")
                     .attr(attr_sel[2], function(d, i, j) {
-                        var length = playlist_length(self.data[j]);
+                        var length = playlist_length(self.timeline.data[j]);
                         var my_length = length_to_duration(d.get("durationraw"));
                         return my_length * 100 / length + "%";
                     });
@@ -935,24 +948,10 @@ PlayoutTimelinePanel.prototype = {
         }
     },
 
-    updateData: function(new_data, no_redraw) {
-        var self = this;
-
-        self.data = new_data;
-
-        if (new_data.length > 0) {
-            self.ref = new_data[0].get("start");
-        }
-
-        if (!no_redraw) {
-            self.redraw();
-        }
-    },
-
     filtered_data: function() {
         var self = this;
 
-        return self.data.filter(function(elem) {
+        return self.timeline.data.filter(function(elem) {
             return (
                 moment(elem.get("start")) < self.end &&
                 moment(elem.get("end")) > self.start
@@ -1129,12 +1128,8 @@ window.PlayoutView = Backbone.View.extend({
     },
 
     render: function() {
-        var self = this;
+        this.timeline.update_data(this.collection.models);
 
-        //this.timeline.updateData(this.view_model.occurs());
-        for (var i = 0, li = this.timeline.panels.length; i < li; ++i) {
-            this.timeline.panels[i].updateData(this.collection.models);
-        }
     },
 
 });
