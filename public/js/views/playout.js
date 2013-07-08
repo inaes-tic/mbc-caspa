@@ -1362,12 +1362,13 @@ window.PlayoutView = Backbone.View.extend({
         self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
+        this.svg = this.$el.find("#playout #svg");
 
         this.timeline = new PlayoutTimeline({
             container: "#playout #svg",
-            width: this.$el.width(),
-            height: this.$el.height(),
             unique_id: "_id",
+            width: this.svg.width(),
+            height: this.svg.height(),
             layout: PlayoutTimeline.VERTICAL,
             //follow: true,
             panels: [{
@@ -1390,10 +1391,19 @@ window.PlayoutView = Backbone.View.extend({
             }],
         });
 
+        this.universe_view = new UniverseListView({
+            collection: Universe,
+            el: $("#universe"),
+            draggable: true,
+        });
 
         // Event listeners
         self.collection.bind('sync', function(elem) {
             self.render();
+        }, this);
+
+        Universe.bind('sync', function(elem) {
+            this.update_drag();
         }, this);
 
         self.collection.bind('all', function (e, a) {
@@ -1403,25 +1413,77 @@ window.PlayoutView = Backbone.View.extend({
         $(window).resize(function() {
             if (self.$el.hasClass("trans")) {
                 if ($("body").hasClass("Comp")) {
-                    self.timeline.resize(self.$el.width(), self.$el.height() + 105, true);
+                    self.timeline.resize(self.svg.width(), self.svg.height() + 105, true);
                 } else {
-                    self.timeline.resize(self.$el.width(), self.$el.height() - 105, true);
+                    self.timeline.resize(self.svg.width(), self.svg.height() - 105, true);
                 }
                 window.setTimeout(function() {
                     self.$el.removeClass("trans");
                 }, 400);
             } else {
-                self.timeline.resize(self.$el.width(), self.$el.height());
+                self.timeline.resize(self.svg.width(), self.svg.height());
+            }
+        });
+
+        // Config Drag Events
+        self.external_drag = d3.behavior.drag();
+        self.external_drag.on("dragstart", function() {
+            self.drag_elem = $(event.target).closest("li.playlist-name");
+            if (self.drag_elem.length == 1) {
+                self.drag_origin = Universe.get(self.drag_elem.attr("id"));
+            } else {
+                self.drag_elem = undefined;
+                self.drag_origin = undefined;
+            }
+        }).on("drag", function() {
+            var draw = false;
+
+            var maybe_panel = $(event.target).closest("svg.Panel");
+            if (maybe_panel.length == 1) {
+                draw = self.timeline.drag_move(self.drag_origin, maybe_panel.attr("id").split("-")[1]);
+            } else {
+                self.timeline.drag_clear();
+            }
+
+            if (draw) {
+                self.drag_elem.siblings(".ui-draggable-dragging").css("display", "none");
+            } else {
+                self.drag_elem.siblings(".ui-draggable-dragging").css("display", "");
+            }
+        }).on("dragend", function() {
+            var create;
+
+            var maybe_panel = $(event.target).closest("svg.Panel");
+            if (maybe_panel.length == 1) {
+                create = self.timeline.drag_end(self.drag_origin, maybe_panel.attr("id").split("-")[1], event);
+            }
+
+            if (create) {
+                var start = moment(create).valueOf();
+                var end = start + self.drag_origin.get("duration");
+
+                var occurrence = {
+                    title:  self.drag_origin.get('name'),
+                    list:   self.drag_origin.get('_id'),
+                    start:  start,
+                    end: end,
+                    allDay: false,
+                };
+
+                self.collection.create(occurrence);
             }
         });
 
         this.render();
-
+        this.update_drag();
     },
 
     render: function() {
         this.timeline.update_data(this.collection.models);
+    },
 
+    update_drag: function() {
+        d3.selectAll("#universe ul#playlists li").call(this.external_drag);
     },
 
 });

@@ -320,9 +320,35 @@ body.Comp .anchor-offset {
 
 
 /* Playout View */
-#playout li {
-  display: block;
-  margin: 5px;
+
+#playout #svg {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+#playout.Exp #svg {
+    width: 80%;
+}
+
+#playout #universe {
+    position: absolute;
+    width: 300px;
+    top: 0px;
+    bottom: 0px;
+    left: -300px;
+
+    -webkit-transition: left 400ms ease-in-out;
+    transition: left 400ms ease-in-out;
+}
+
+#playout.Exp #universe {
+    left: 0px;
+
+    -webkit-transition: left 400ms ease-in-out;
+    transition: left 400ms ease-in-out;
 }
 
 div#svg svg .Axis {
@@ -370,4 +396,16 @@ div#svg svg.Playlist text.Name {
     stroke: none;
     fill: #ffffff;
     fill-opacity: 0.9;
+}
+
+.ui-draggable-dragging {
+    pointer-events: none;
+}
+
+div#svg svg.DragShadow {
+    pointer-events: none;
+}
+
+div#svg svg.DragShadow rect {
+    fill-opacity: 0.4;
 }
