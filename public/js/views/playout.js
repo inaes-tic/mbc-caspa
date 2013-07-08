@@ -1316,8 +1316,8 @@ PlayoutTimelinePanel.prototype = {
 
         return self.timeline.data.filter(function(elem) {
             return (
-                moment(elem.get("start")) < self.end &&
-                moment(elem.get("end")) > self.start
+                elem.get("start") < self.end &&
+                elem.get("end") > self.start
             );
         });
     },
@@ -1387,22 +1387,7 @@ window.PlayoutView = Backbone.View.extend({
                     span: moment.duration(90, "minutes"),
                 },
                 zoomable: true,
-            }/*, {
-                span: 1,
-                axis: {
-                    span: moment.duration(1350, "seconds"),
-                }
-            }, {
-                span: 1,
-                axis: {
-                    span: moment.duration(337500, "milliseconds"),
-                }
-            }, {
-                span: 1,
-                axis: {
-                    span: moment.duration(84375, "milliseconds"),
-                }
-            }*/],
+            }],
         });
 
 
@@ -1414,10 +1399,6 @@ window.PlayoutView = Backbone.View.extend({
         self.collection.bind('all', function (e, a) {
             console.log("PlayoutView > event:" + e + " > ", a);
         }, this);
-
-        this.$el.resize(function() {
-            console.log("PlayoutView > container > event:resize");
-        });
 
         $(window).resize(function() {
             if (self.$el.hasClass("trans")) {
