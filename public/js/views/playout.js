@@ -86,14 +86,50 @@ PlayoutTimeline.prototype = {
         }
     },
 
+    get_filtered_data: function(force_filter) {
+        var self = this;
+
+        var filter_bounds = self.get_max_bounds();
+
+        if (force_filter || filter_bounds.start != self.filter_bounds || filter_bounds.end != self.filter_bounds) {
+            self.filter_bounds = filter_bounds;
+
+            self.filtered_data = self.data.filter(function(elem) {
+                return (
+                    elem.get("start") < self.filter_bounds.end &&
+                    elem.get("end") > self.filter_bounds.start
+                );
+            });
+        }
+
+        return self.filtered_data;
+    },
+
+    get_max_bounds: function() {
+        var span;
+        var panel;
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            if (span === undefined || this.panels[i].drawing_width > span) {
+                span = this.panels[i].drawing_width;
+                panel = i;
+            }
+        }
+        return {
+            start: this.panels[panel].start,
+            end: this.panels[panel].end,
+        };
+    },
+
     update_empty_spaces: function() {
         var self = this;
 
         var start_list = [];
         var end_list = [];
 
-        for (var i = 0, li = self.data.length; i < li; ++i) {
-            var pl = self.data[i];
+        var filtered_data = self.get_filtered_data(true);
+
+        for (var i = 0, li = filtered_data; i < li; ++i) {
+            var pl = filtered_data[i];
             var tmp_start = pl.get("start");
 
             var is_end = _.indexOf(end_list, tmp_start, true);
@@ -798,9 +834,10 @@ PlayoutTimelinePanel.prototype = {
 
         var rects = self.vis.selectAll("svg.Playlist");
 
+        var filtered_data = self.timeline.get_filtered_data();
 
         // Playlist data
-        var updated_set = rects.data(self.timeline.data, self.timeline.comparator);
+        var updated_set = rects.data(filtered_data, self.timeline.comparator);
 
         var new_plist = self.draw_playlists(updated_set, smooth);
 
@@ -874,7 +911,7 @@ PlayoutTimelinePanel.prototype = {
                     .attr("start", function(d, i, j) {
                     })
                     .attr(attr_sel[0], function(d, i, j) {
-                        var length = playlist_length(self.timeline.data[j]);
+                        var length = playlist_length(filtered_data[j]);
                         var list = d.collection.models;
                         var sum = 0;
                         for (var k = 0; k < i; ++k) {
@@ -884,7 +921,7 @@ PlayoutTimelinePanel.prototype = {
                     })
                     .attr(attr_sel[1], "40")
                     .attr(attr_sel[2], function(d, i, j) {
-                        var length = playlist_length(self.timeline.data[j]);
+                        var length = playlist_length(filtered_data[j]);
                         var my_length = length_to_duration(d.get("durationraw"));
                         return my_length * 100 / length + "%";
                     })
@@ -1309,17 +1346,6 @@ PlayoutTimelinePanel.prototype = {
             line.detach();
             line.appendTo(this.vis[0]);
         }
-    },
-
-    filtered_data: function() {
-        var self = this;
-
-        return self.timeline.data.filter(function(elem) {
-            return (
-                elem.get("start") < self.end &&
-                elem.get("end") > self.start
-            );
-        });
     },
 
     pixelsToTime: function(pixels) {
