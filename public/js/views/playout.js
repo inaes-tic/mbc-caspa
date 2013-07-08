@@ -1365,9 +1365,9 @@ window.PlayoutView = Backbone.View.extend({
 
         this.timeline = new PlayoutTimeline({
             container: "#playout #svg",
-            unique_id: "cid",
             width: this.$el.width(),
             height: this.$el.height(),
+            unique_id: "_id",
             layout: PlayoutTimeline.VERTICAL,
             //follow: true,
             panels: [{
