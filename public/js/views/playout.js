@@ -266,6 +266,9 @@ PlayoutTimelinePanel.prototype = {
         self.scale_factor = 1;
         self.translate = 0;
 
+        self.axis_span = self.config.axis.span;
+        self.orig_axis_span = self.config.axis.span;
+
         self.color_scale = d3.scale.category10();
 
         self.calculate_metrics();
@@ -304,8 +307,6 @@ PlayoutTimelinePanel.prototype = {
         }
 
         // Setup Axis
-        self.axis_span = self.config.axis.span;
-        self.orig_axis_span = self.config.axis.span;
         self.start = moment().subtract("milliseconds", self.axis_span.asMilliseconds() / 2);
         self.end = moment(self.start).add(self.axis_span);
 
@@ -359,6 +360,7 @@ PlayoutTimelinePanel.prototype = {
                 self.orient = "bottom";
                 self.drawing_width = self.width - self.padding[2];
                 self.drawing_height = self.height - self.padding[3];
+                self.drawing_quota = self.axis_span / self.drawing_width;
 
                 self.rect_adjust = [0.5, 1, -0.5, -1];
                 self.axis_adjust = [self.padding[0] + 0.5, (self.height - self.padding[3])];
@@ -373,6 +375,7 @@ PlayoutTimelinePanel.prototype = {
                 self.orient = "left";
                 self.drawing_width = self.height - self.padding[3];
                 self.drawing_height = self.width - self.padding[2];
+                self.drawing_quota = self.axis_span / self.drawing_width;
 
                 self.rect_adjust = [0, 0.5, 0, -0.5];
                 self.axis_adjust = [self.padding[0], self.padding[1] + 0.5];
@@ -600,6 +603,7 @@ PlayoutTimelinePanel.prototype = {
 
         // Fix axis span and factor
         self.axis_span = self.end.diff(self.start);
+        self.drawing_quota = self.axis_span / self.drawing_width;
         self.scale_factor = factor;
 
         // Redraw
@@ -695,6 +699,7 @@ PlayoutTimelinePanel.prototype = {
         self.start = pl_start.add(gap);
         self.end = pl_end.subtract(gap);
         self.axis_span = self.end.diff(self.start);
+        self.drawing_quota = self.axis_span / self.drawing_width;
         self.scale_factor = self.orig_axis_span / self.axis_span;
 
         // Update axis
@@ -710,8 +715,6 @@ PlayoutTimelinePanel.prototype = {
 
     redraw: function(smooth) {
         var self = this;
-
-        var quota = self.axis_span / self.drawing_width;
 
         var rects = self.vis.selectAll("svg.Playlist");
 
@@ -870,16 +873,16 @@ PlayoutTimelinePanel.prototype = {
                     .attr("y", 1.5)
                     .attr("height", self.drawing_height - 1.5)
                 target
-                    .attr("x", function(d) { return moment(d.get("start")).diff(self.start) / quota;})//function(d) {return d.x;})
-                    .attr("width", function(d) { return moment(d.get("end")).diff(moment(d.get("start"))) / quota; });//function(d) {return d.r;})
+                    .attr("x", function(d) { return (d.get("start") - self.start) / self.drawing_quota; })
+                    .attr("width", function(d) { return (d.get("end") - d.get("start")) / self.drawing_quota; });
             break;
             case PlayoutTimeline.VERTICAL:
                 updated_set
                     .attr("x", 0)//function(d) {return d.x;})
                     .attr("width", self.drawing_height - 0.5)//function(d) {return d.r;})
                 target
-                    .attr("y", function(d) { return moment(d.get("start")).diff(self.start) / quota;})
-                    .attr("height", function(d) { return moment(d.get("end")).diff(moment(d.get("start"))) / quota; });
+                    .attr("y", function(d) { return (d.get("start") - self.start) / self.drawing_quota; })
+                    .attr("height", function(d) { return (d.get("end") - d.get("start")) / self.drawing_quota; });
             break;
         }
         updated_set
@@ -907,16 +910,14 @@ PlayoutTimelinePanel.prototype = {
             now = moment();
         }
 
-        var quota = self.axis_span / self.drawing_width;
-
         // Adjust metrics to layout
         var line_metrics;
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                line_metrics = [now.diff(self.start) / quota, now.diff(self.start) / quota, 0, self.height - self.padding[3]];
+                line_metrics = [now.diff(self.start) / self.drawing_quota, now.diff(self.start) / self.drawing_quota, 0, self.height - self.padding[3]];
             break;
             case PlayoutTimeline.VERTICAL:
-                line_metrics = [0, self.width - self.padding[2], now.diff(self.start) / quota, now.diff(self.start) / quota];
+                line_metrics = [0, self.width - self.padding[2], now.diff(self.start) / self.drawing_quota, now.diff(self.start) / self.drawing_quota];
             break;
         }
 
