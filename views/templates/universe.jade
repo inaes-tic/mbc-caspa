@@ -6,8 +6,8 @@ block content
   #playlist-search
   .total-time-div
   ul#playlists.nav.nav-pills(data-bind="foreach: playlists")
-      li(data-bind=inndbind).playlist-name.well
-        h1(data-bind="text: name")
+      li(data-bind=inndbind).playlist-name.well.well-small
+        h5(data-bind="text: name")
         span.label.label-warning.format
           i.icon-time.icon-white
           span= ' '
