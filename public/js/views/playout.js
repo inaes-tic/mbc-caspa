@@ -14,6 +14,13 @@ PlayoutTimeline.prototype = {
 
         self.unique_id = config.unique_id;
 
+        // Setup comparison function
+        if (self.unique_id !== undefined) {
+            self.comparator = function(d) {
+                return d.get(self.unique_id);
+            };
+        }
+
         // Select container from config
         self.container = d3.select(config.container);
         if (self.container.empty()) {
@@ -791,16 +798,9 @@ PlayoutTimelinePanel.prototype = {
 
         var rects = self.vis.selectAll("svg.Playlist");
 
-        // Setup comparison function
-        var comparator = undefined;
-        if (self.unique_id !== undefined) {
-            comparator = function(d, i) {
-                return d[self.unique_id];
-            };
-        }
 
         // Playlist data
-        var updated_set = rects.data(self.timeline.data, comparator);
+        var updated_set = rects.data(self.timeline.data, self.timeline.comparator);
 
         var new_plist = self.draw_playlists(updated_set, smooth);
 
