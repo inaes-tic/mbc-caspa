@@ -26,6 +26,7 @@ PlayoutTimeline.prototype = {
             self.svg = self.container.append("svg:svg");
         }
         self.svg
+            .attr("id", "Timeline")
             .attr("class", "Timeline")
             .attr("height", self.height)
             .attr("width", self.width);
@@ -278,6 +279,7 @@ PlayoutTimelinePanel.prototype = {
         if (self.svg.empty()) {
             self.svg = self.timeline.svg.append("svg");
             self.svg.attr("id", "Panel-" + self.config.panel_ord);
+            self.svg.attr("class", "Panel");
         }
 
         // Add transparent background (for clicking purposes)
@@ -777,10 +779,8 @@ PlayoutTimelinePanel.prototype = {
             // Setup playlist text
             var plist_text = new_plist.append("text")
                 .text(function(d) { return d.get("title"); })
-                .attr("font-size", 26)
-                .style("stroke", "none")
-                .style("fill", "white")
-                .style("fill-opacity", 0.9);
+                .attr("class", "Name")
+                .attr("font-size", 26);
 
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
@@ -827,7 +827,8 @@ PlayoutTimelinePanel.prototype = {
                         var length = playlist_length(self.timeline.data[j]);
                         var my_length = length_to_duration(d.get("durationraw"));
                         return my_length * 100 / length + "%";
-                    });
+                    })
+
             clip.append("svg:rect")
                 .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
                 .style("opacity", function(d, i) { return i % 2 ? 0.3 : 0.2; })
@@ -861,6 +862,7 @@ PlayoutTimelinePanel.prototype = {
             new_plist
                 .append("text")
                     .text(function(d) { return d.get("title") ; })
+                    .attr("class", "Name")
                     .attr("y", 12)
                     .attr("x", 3);
         }
@@ -878,8 +880,8 @@ PlayoutTimelinePanel.prototype = {
             break;
             case PlayoutTimeline.VERTICAL:
                 updated_set
-                    .attr("x", 0)//function(d) {return d.x;})
-                    .attr("width", self.drawing_height - 0.5)//function(d) {return d.r;})
+                    .attr("x", 0)
+                    .attr("width", self.drawing_height - 0.5)
                 target
                     .attr("y", function(d) { return (d.get("start") - self.start) / self.drawing_quota; })
                     .attr("height", function(d) { return (d.get("end") - d.get("start")) / self.drawing_quota; });
