@@ -728,21 +728,10 @@ PlayoutTimelinePanel.prototype = {
             };
         }
 
-        // Add elements
-        var new_plist = updated_set.enter()
-            .append("svg:svg")
-                .attr("class", "Playlist");
-
-        // Add background to new element
-        new_plist
-            .append("svg:rect")
-                .attr("style", function(d, i) { return "fill: " + self.color_scale(i); })//return "fill: #F80;"; }) //((d.get("cid").indexOf("-") == -1) ? "fill: black;" : "fill: red;"); })
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("height", "100%")
-                .attr("width", "100%")
+        // Playlist data
         var updated_set = rects.data(self.timeline.data, comparator);
 
+        var new_plist = self.draw_playlists(updated_set, smooth);
 
         // On zoomable panels: clip resolution
         if (self.config.zoomable) {
@@ -867,11 +856,39 @@ PlayoutTimelinePanel.prototype = {
                     .attr("x", 3);
         }
 
+        self.reposition_now_indicator();
+    },
+
+    draw_playlists: function(selection, smooth, class_name, color) {
+        var self = this;
+
+        // Setup
+        if (class_name === undefined) {
+            class_name = "Playlist";
+        }
+
+        // Add elements
+        var new_plist = selection.enter()
+            .append("svg:svg")
+                .attr("class", class_name);
+
+        // Add background to new element
+        new_plist
+            .append("svg:rect")
+                .style("fill", function(d, i) {
+                    return color ? color : self.color_scale(d.get("_id"));
+                })
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("height", "100%")
+                .attr("width", "100%")
+
+
         // Update attributes (depending on smooth)
-        var target = self.smoothify(updated_set, smooth);
+        var target = self.smoothify(selection, smooth);
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                updated_set
+                selection
                     .attr("y", 1.5)
                     .attr("height", self.drawing_height - 1.5)
                 target
@@ -879,7 +896,7 @@ PlayoutTimelinePanel.prototype = {
                     .attr("width", function(d) { return (d.get("end") - d.get("start")) / self.drawing_quota; });
             break;
             case PlayoutTimeline.VERTICAL:
-                updated_set
+                selection
                     .attr("x", 0)
                     .attr("width", self.drawing_height - 0.5)
                 target
@@ -887,7 +904,7 @@ PlayoutTimelinePanel.prototype = {
                     .attr("height", function(d) { return (d.get("end") - d.get("start")) / self.drawing_quota; });
             break;
         }
-        updated_set
+        selection
             .on("click", function(d) {
                 // Focus on click
                 if (!d3.event.defaultPrevented) {
@@ -896,11 +913,11 @@ PlayoutTimelinePanel.prototype = {
             })
 
         // Remove elements that exited
-        updated_set
+        selection
             .exit()
             .remove();
 
-        self.reposition_now_indicator();
+        return new_plist;
 
     },
 
