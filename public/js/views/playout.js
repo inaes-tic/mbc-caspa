@@ -72,9 +72,58 @@ PlayoutTimeline.prototype = {
     update_data: function(new_data, no_redraw) {
         this.data = new_data;
 
+        this.update_empty_spaces();
+
         if (!no_redraw) {
             this.redraw();
         }
+    },
+
+    update_empty_spaces: function() {
+        var self = this;
+
+        var start_list = [];
+        var end_list = [];
+
+        for (var i = 0, li = self.data.length; i < li; ++i) {
+            var pl = self.data[i];
+            var tmp_start = pl.get("start");
+
+            var is_end = _.indexOf(end_list, tmp_start, true);
+            if (is_end > -1) {
+                end_list.splice(is_end, 1);
+            } else {
+                start_list.splice(_.sortedIndex(start_list, tmp_start), 0, tmp_start);
+            }
+
+            var tmp_end = pl.get("end");
+            var tmp_diff_end = Math.abs(tmp_end - time);
+
+            var is_start = _.indexOf(start_list, tmp_end, true);
+            if (is_start > -1) {
+                start_list.splice(is_start, 1);
+            } else {
+                end_list.splice(_.sortedIndex(end_list, tmp_end), 0, tmp_end);
+            }
+        }
+
+        self.empty_spaces = [];
+        var carry = -Infinity;
+        for (var i = 0, li = start_list.length; i < li; ++i) {
+            self.empty_spaces.push({
+                start: carry,
+                end: start_list[i],
+                duration: start_list[i] - carry,
+                get: function(key) { return this[key]; },
+            });
+            carry = end_list[i];
+        }
+        self.empty_spaces.push({
+            start: carry,
+            end: Infinity,
+            duration: Infinity - carry,
+            get: function(key) { return this[key]; },
+        });
     },
 
     panTime: function(time, smooth) {
@@ -246,6 +295,28 @@ PlayoutTimeline.prototype = {
             target = target.transition().duration(500);
         }
         return target;
+    },
+
+    drag_move: function(plist, panel) {
+        var draw = false;
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            draw = draw || this.panels[i].drag_move(plist);
+        }
+        return draw;
+    },
+
+    drag_clear: function() {
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            this.panels[i].drag_clear();
+        }
+    },
+
+    drag_end: function(plist, panel, event) {
+        var create = false;
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            create = create || this.panels[i].drag_end(plist, event);
+        }
+        return create;
     },
 };
 
@@ -856,7 +927,13 @@ PlayoutTimelinePanel.prototype = {
                     .attr("x", 3);
         }
 
+
+        if (self.dragging_playlist !== undefined) {
+            self.drag_move(self.dragging_playlist);
+        }
+
         self.reposition_now_indicator();
+
     },
 
     draw_playlists: function(selection, smooth, class_name, color) {
@@ -918,7 +995,273 @@ PlayoutTimelinePanel.prototype = {
             .remove();
 
         return new_plist;
+    },
 
+    drag_move: function(plist) {
+        var self = this;
+
+        self.dragging_playlist = plist;
+
+        var data = [];
+
+        // Position
+        var x, y, width, height;
+        switch(self.timeline.layout) {
+            case PlayoutTimeline.HORIZONTAL:
+                y = event.offsetX - self.svg.attr("x") - self.padding[0];
+                x = event.offsetY - self.svg.attr("y") - self.padding[1];
+                height = self.width - self.padding[2];
+                width = self.height - self.padding[3];
+            break;
+            case PlayoutTimeline.VERTICAL:
+                x = event.offsetX - self.svg.attr("x") - self.padding[0];
+                y = event.offsetY - self.svg.attr("y") - self.padding[1];
+                width = self.width - self.padding[2];
+                height = self.height - self.padding[3];
+            break;
+        }
+
+        // Check bounds
+        if ( x > 0 && y > 0 && x <= width && y <= height) {
+            // Calculate new event time
+            var mode = "axis";
+            if (event.ctrlKey) {
+                //mode = "exact";
+            } else if (event.shiftKey) {
+                mode = "snap";
+            }
+            var time = self.get_pos_time(y, mode, plist);
+
+            // Setup new occurrence
+            var occurence = {
+                name: plist.get("name"),
+                start: time,
+                end: moment(time) + plist.get("duration"),
+                get: function(key) { return this[key]; },
+            };
+
+            // Event time inside window
+            if (occurence.start < self.end && occurence.end > self.start) {
+                data.push(occurence);
+            }
+        }
+
+        var drsh = self.vis.selectAll("svg.DragShadow").data(data);
+
+        var new_plist = self.draw_playlists(drsh, false, "DragShadow", "black");
+
+        // Text container (for relative sizing)
+        var txt_cont = drsh.select("svg");
+        if (txt_cont.empty()) {
+            txt_cont = drsh.append("svg:svg");
+            txt_cont.attr("viewBox", "0 0 100 100");
+            txt_cont = txt_cont.append("svg:g");
+        }
+
+        // Text rotation
+        if (self.timeline.layout == PlayoutTimeline.HORIZONTAL) {
+            txt_cont.attr("transform", "rotate(-90 50 50)");
+        }
+
+        // Title
+        var text = txt_cont.select("text.Title");
+        if (text.empty()) {
+            text = txt_cont.append("svg:text")
+                .text(function(d) {
+                    return d.name;
+                })
+                .attr("x", "50%")
+                .attr("y", "75%")
+                .attr("class", "Title")
+                .style({
+                    "stroke": "none",
+                    "fill": "white",
+                    "alignment-baseline": "middle",
+                    "text-anchor": "middle",
+                    "pointer-events": "none",
+                    "font-size": "25",
+                });
+        }
+
+        // Text time description
+        var text = txt_cont.select("text.Time");
+        if (text.empty()) {
+            text = txt_cont.append("svg:text")
+                .text("00:00:00.000")
+                .attr("x", "50%")
+                .attr("y", "25%")
+                .attr("class", "Time")
+                .style({
+                    "stroke": "none",
+                    "fill": "white",
+                    "alignment-baseline": "middle",
+                    "text-anchor": "middle",
+                    "pointer-events": "none",
+                    "font-size": "25",
+                });
+        }
+        text.text(function(d) { return moment(d.start).format("HH:mm:ss.SSS"); });
+
+        drsh.exit().remove();
+
+        return data.length > 0;
+    },
+
+    drag_clear: function() {
+        this.svg.selectAll("svg.DragShadow").remove();
+        this.dragging_playlist = undefined;
+    },
+
+    drag_end: function(plist, event) {
+        var self = this;
+        var create = false;
+
+        // Position
+        var x, y, width, height;
+        switch(self.timeline.layout) {
+            case PlayoutTimeline.HORIZONTAL:
+                y = event.offsetX - self.svg.attr("x") - self.padding[0];
+                x = event.offsetY - self.svg.attr("y") - self.padding[1];
+                height = self.width - self.padding[2];
+                width = self.height - self.padding[3];
+            break;
+            case PlayoutTimeline.VERTICAL:
+                x = event.offsetX - self.svg.attr("x") - self.padding[0];
+                y = event.offsetY - self.svg.attr("y") - self.padding[1];
+                width = self.width - self.padding[2];
+                height = self.height - self.padding[3];
+            break;
+        }
+
+        // Check bounds
+        if ( x > 0 && y > 0 && x <= width && y <= height) {
+            // Calculate new event time
+            var mode = "axis";
+            if (event.ctrlKey) {
+                //mode = "exact";
+            } else if (event.shiftKey) {
+                mode = "snap";
+            }
+            create = self.get_pos_time(y, mode, plist);
+        }
+
+        // Not inside time window
+        if (create >= self.end || create + plist.get("duration") <= self.start) {
+            create = false;
+        }
+
+        this.timeline.drag_clear();
+        return create;
+    },
+
+    get_pos_time: function(pos, mode, playlist) {
+        // Setup duration
+        var duration = 0;
+        if (playlist) {
+            duration = playlist.get("duration");
+        }
+
+        // Setup start time
+        var start = this.start + this.pixelsToTime(pos);
+
+        var time;
+        switch(mode) {
+            case "axis":
+                time = this.get_snap_time(start, duration, this.get_nearest_empty_space(start, duration, this.divide_empty_spaces()));
+            break;
+            case "snap":
+                time = this.get_snap_time(start, duration, this.get_nearest_empty_space(start, duration));
+            break;
+            case "exact":
+                time = this.start + this.pixelsToTime(pos) - duration / 2;
+            break;
+        }
+        return time;
+    },
+
+    get_snap_time: function(time, duration, empty_space) {
+        var ret;
+        var tmp_diff_start = Math.abs(empty_space.get("start") - (time - duration / 2));
+        var tmp_diff_end = Math.abs(empty_space.get("end") - (time + duration / 2));
+        if (tmp_diff_start < tmp_diff_end) {
+            ret = empty_space.get("start");
+        } else {
+            ret = empty_space.get("end") - duration;
+        }
+        return ret;
+    },
+
+    get_nearest_empty_space: function(time, duration, empty_spaces) {
+        if (empty_spaces === undefined) {
+            empty_spaces = this.timeline.empty_spaces;
+        }
+
+        var ret;
+        var min_diff;
+        for (var i = 0, li = empty_spaces.length; i < li; ++i) {
+            var e_s = empty_spaces[i];
+
+            if (e_s.get("duration") >= duration) {
+                var tmp_diff_start = Math.abs(e_s.get("start") - (time - duration / 2));
+                var tmp_diff_end = Math.abs(e_s.get("end") - (time + duration / 2));
+                var tmp_min_diff = Math.min(tmp_diff_start, tmp_diff_end);
+
+                if (min_diff === undefined || tmp_min_diff < min_diff) {
+                    min_diff = tmp_min_diff;
+                    ret = e_s;
+                }
+            }
+        }
+
+        if (ret === undefined) {
+            ret = {
+                start: -Infinity,
+                end: Infinity,
+                duration: Infinity,
+                get: function(key) { return this[key]; },
+            };
+        }
+
+        return ret;
+    },
+
+    divide_empty_spaces: function(empty_spaces) {
+        var self = this;
+
+        if (empty_spaces === undefined) {
+            empty_spaces = self.timeline.empty_spaces;
+        }
+
+        times = self.time_scale.ticks(self.axis.ticks());
+
+        var partition = [];
+        for (var i = 0, li = empty_spaces.length; i < li; ++i) {
+            var e_s = empty_spaces[i];
+            partition.push(e_s);
+
+            var start = e_s.get("start");
+            var end = e_s.get("end");
+
+            for (var j = 0, lj = times.length; j < lj; ++j) {
+                var time = times[j];
+                if (time > start && time < end) {
+                    partition.push({
+                        start: start,
+                        end: time,
+                        duration: time - start,
+                        get: function(key) { return this[key]; },
+                    });
+                    partition.push({
+                        start: time,
+                        end: end,
+                        duration: end - time,
+                        get: function(key) { return this[key]; },
+                    });
+                }
+            }
+        }
+
+        return partition;
     },
 
     draw_now_indicator: function(now) {
