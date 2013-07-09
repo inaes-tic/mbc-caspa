@@ -17,7 +17,7 @@
         "express": "3.x",
         "mongoskin": "0.4.x",
         "socket.io": "0.9.x",
-        "backbone": "1.0.0",
+        "backbone": "1.x.x",
         "jade": "0.30.x",
         "folio": "git://github.com/inaes-tic/folio.git#newer_uglify",
         "less-middleware": "0.1.12",
