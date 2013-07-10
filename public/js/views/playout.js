@@ -1389,14 +1389,16 @@ PlayoutTimelinePanel.prototype = {
             now = moment();
         }
 
+        var diff = now.diff(self.start);
+
         // Adjust metrics to layout
         var line_metrics;
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                line_metrics = [now.diff(self.start) / self.drawing_quota, now.diff(self.start) / self.drawing_quota, 0, self.height - self.padding[3]];
+                line_metrics = [diff / self.drawing_quota, diff / self.drawing_quota, 0, self.height - self.padding[3]];
             break;
             case PlayoutTimeline.VERTICAL:
-                line_metrics = [0, self.width - self.padding[2], now.diff(self.start) / self.drawing_quota, now.diff(self.start) / self.drawing_quota];
+                line_metrics = [0, self.width - self.padding[2], diff / self.drawing_quota, diff / self.drawing_quota];
             break;
         }
 
