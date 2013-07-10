@@ -906,8 +906,6 @@ PlayoutTimelinePanel.prototype = {
                 .enter()
                 .append("svg:svg")
                     .attr("class", "Clip")
-                    .attr("start", function(d, i, j) {
-                    })
                     .attr(attr_sel[0], function(d, i, j) {
                         var length = playlist_length(filtered_data[j]);
                         var list = d.collection.models;
