@@ -384,8 +384,6 @@ PlayoutTimelinePanel.prototype = {
         self.axis_span = self.config.axis.span;
         self.orig_axis_span = self.config.axis.span;
 
-        self.color_scale = d3.scale.category10();
-
         self.calculate_metrics();
 
         // Draw main svg panel
@@ -990,7 +988,7 @@ PlayoutTimelinePanel.prototype = {
         new_plist
             .append("svg:rect")
                 .style("fill", function(d, i) {
-                    return color ? color : self.color_scale(d.get("_id"));
+                    return color ? color : utils.color_scale(d.get("_id"));
                 })
                 .attr("x", 0)
                 .attr("y", 0)
