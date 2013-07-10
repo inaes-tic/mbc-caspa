@@ -1,3 +1,8 @@
+if (! window.requestAnimationFrame) {
+    if (window.mozRequestAnimationFrame) {
+        window.requestAnimationFrame = window.mozRequestAnimationFrame;
+    }
+}
 
 function PlayoutTimeline(config) {
     this.init.call(this, config);
