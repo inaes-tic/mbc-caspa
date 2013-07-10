@@ -33,6 +33,7 @@ window.ScheduleView = Backbone.View.extend({
         // Fullcalendar needs unix timestamp for rendering
         attribs.start = moment(attribs.start).unix();
         attribs.end = moment(attribs.end).unix();
+        attribs.color = utils.color_scale(occurrence.get("_id"));
 
         attribs.model = occurrence;
         return attribs;
