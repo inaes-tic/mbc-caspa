@@ -85,6 +85,7 @@ PlayoutTimeline.prototype = {
         this.data = new_data;
 
         this.update_empty_spaces();
+        this.bounds = this.cache_bounds ();
 
         if (!no_redraw) {
             this.redraw();
@@ -94,7 +95,7 @@ PlayoutTimeline.prototype = {
     get_filtered_data: function(force_filter) {
         var self = this;
 
-        var filter_bounds = self.get_max_bounds();
+        var filter_bounds = self.bounds;
 
         if (force_filter || filter_bounds.start != self.filter_bounds || filter_bounds.end != self.filter_bounds) {
             self.filter_bounds = filter_bounds;
@@ -110,7 +111,7 @@ PlayoutTimeline.prototype = {
         return self.filtered_data;
     },
 
-    get_max_bounds: function() {
+    cache_bounds: function() {
         var start = this.panels[0].start,
             end   = this.panels[0].end;
 
