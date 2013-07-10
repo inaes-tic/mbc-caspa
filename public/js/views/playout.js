@@ -109,8 +109,8 @@ PlayoutTimeline.prototype = {
         var span;
         var panel;
         for (var i = 0, li = this.panels.length; i < li; ++i) {
-            if (span === undefined || this.panels[i].drawing_width > span) {
-                span = this.panels[i].drawing_width;
+            if (span === undefined || this.panels[i].axis_span > span) {
+                span = this.panels[i].axis_span;
                 panel = i;
             }
         }
