@@ -1,3 +1,8 @@
+if (! window.requestAnimationFrame) {
+    if (window.mozRequestAnimationFrame) {
+        window.requestAnimationFrame = window.mozRequestAnimationFrame;
+    }
+}
 
 function PlayoutTimeline(config) {
     this.init.call(this, config);
@@ -80,6 +85,7 @@ PlayoutTimeline.prototype = {
         this.data = new_data;
 
         this.update_empty_spaces();
+        this.bounds = this.cache_bounds ();
 
         if (!no_redraw) {
             this.redraw();
@@ -89,7 +95,7 @@ PlayoutTimeline.prototype = {
     get_filtered_data: function(force_filter) {
         var self = this;
 
-        var filter_bounds = self.get_max_bounds();
+        var filter_bounds = self.bounds;
 
         if (force_filter || filter_bounds.start != self.filter_bounds || filter_bounds.end != self.filter_bounds) {
             self.filter_bounds = filter_bounds;
@@ -105,18 +111,17 @@ PlayoutTimeline.prototype = {
         return self.filtered_data;
     },
 
-    get_max_bounds: function() {
-        var span;
-        var panel;
+    cache_bounds: function() {
+        var start = this.panels[0].start,
+            end   = this.panels[0].end;
+
         for (var i = 0, li = this.panels.length; i < li; ++i) {
-            if (span === undefined || this.panels[i].drawing_width > span) {
-                span = this.panels[i].drawing_width;
-                panel = i;
-            }
+            start = start.isBefore(this.panels[i].start) ? start : this.panels[i].start;
+            end   =   end.isAfter (this.panels[i].end)   ? end   : this.panels[i].end;
         }
         return {
-            start: this.panels[panel].start,
-            end: this.panels[panel].end,
+            start: start,
+            end: end,
         };
     },
 
@@ -1307,14 +1312,16 @@ PlayoutTimelinePanel.prototype = {
             now = moment();
         }
 
+        var diff = now.diff(self.start);
+
         // Adjust metrics to layout
         var line_metrics;
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                line_metrics = [now.diff(self.start) / self.drawing_quota, now.diff(self.start) / self.drawing_quota, 0, self.height - self.padding[3]];
+                line_metrics = [diff / self.drawing_quota, diff / self.drawing_quota, 0, self.height - self.padding[3]];
             break;
             case PlayoutTimeline.VERTICAL:
-                line_metrics = [0, self.width - self.padding[2], now.diff(self.start) / self.drawing_quota, now.diff(self.start) / self.drawing_quota];
+                line_metrics = [0, self.width - self.padding[2], diff / self.drawing_quota, diff / self.drawing_quota];
             break;
         }
 
