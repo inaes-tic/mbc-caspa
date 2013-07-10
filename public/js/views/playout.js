@@ -108,15 +108,16 @@ PlayoutTimeline.prototype = {
     get_max_bounds: function() {
         var span;
         var panel;
+        var start = this.panels[0].start,
+            end   = this.panels[0].end;
+
         for (var i = 0, li = this.panels.length; i < li; ++i) {
-            if (span === undefined || this.panels[i].drawing_width > span) {
-                span = this.panels[i].drawing_width;
-                panel = i;
-            }
+            start = start.isBefore(this.panels[i].start) ? start : this.panels[i].start;
+            end   =   end.isAfter (this.panels[i].end)   ? end   : this.panels[i].end;
         }
         return {
-            start: this.panels[panel].start,
-            end: this.panels[panel].end,
+            start: start,
+            end: end,
         };
     },
 
