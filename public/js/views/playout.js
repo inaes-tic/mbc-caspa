@@ -128,7 +128,7 @@ PlayoutTimeline.prototype = {
 
         var filtered_data = self.get_filtered_data(true);
 
-        for (var i = 0, li = filtered_data; i < li; ++i) {
+        for (var i = 0, li = filtered_data.length; i < li; ++i) {
             var pl = filtered_data[i];
             var tmp_start = pl.get("start");
 
