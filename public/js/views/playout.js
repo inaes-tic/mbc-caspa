@@ -106,8 +106,6 @@ PlayoutTimeline.prototype = {
     },
 
     get_max_bounds: function() {
-        var span;
-        var panel;
         var start = this.panels[0].start,
             end   = this.panels[0].end;
 
