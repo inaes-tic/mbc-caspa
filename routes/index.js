@@ -73,6 +73,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'knockout-drag-binding.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
         require.resolve('node-uuid'),
+        require.resolve('backbone-pageable/lib/backbone-pageable.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express

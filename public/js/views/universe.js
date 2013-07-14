@@ -8,6 +8,8 @@ window.UniverseListView = function(options){
     this.collection = collection;
     this.el = el;
 
+    var pagination = 'traditional';
+
     el.html(template.universe({draggable: draggable}));
     console.log('UV2');
 
@@ -46,7 +48,7 @@ window.UniverseListView = function(options){
         }
     });
 
-    new SearchView({el: $('#playlist-search',el), type: 'playlist' });
+    new SearchView({el: $('#playlist-search',el), collection: this.collection, type: 'playlist', pagination: pagination });
     this.view_model = new UniverseListViewModel(this.collection);
 
     this.destroy = function () {
