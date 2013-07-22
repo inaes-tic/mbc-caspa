@@ -60,11 +60,6 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        _([appCollection, mediaList, Universe, Schedule]).each( function (col) {
-            console.log ('fetching', col);
-            col.fetch();
-        });
-
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
     },
 
@@ -132,6 +127,14 @@ $.ajax({
     async: false
 });
 
+appCollection.fetch({success: function() {
+    mediaList.fetch({success: function() {
+        Universe.fetch({success: function() {
+            Schedule.fetch({success: function() {
+                app = new AppRouter();
+                Backbone.history.start();
+            }});
+        }});
+    }});
+}});
 
-    app = new AppRouter();
-    Backbone.history.start();
