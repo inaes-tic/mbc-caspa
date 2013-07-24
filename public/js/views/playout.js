@@ -116,8 +116,8 @@ PlayoutTimeline.prototype = {
             }
         }
         return {
-            start: this.panels[panel].start,
-            end: this.panels[panel].end,
+            start: moment(this.panels[panel].start),
+            end: moment(this.panels[panel].end),
         };
     },
 
