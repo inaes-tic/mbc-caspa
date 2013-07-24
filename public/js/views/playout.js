@@ -11,6 +11,7 @@ PlayoutTimeline.prototype = {
         self.width = config.width;
         self.height = config.height;
         self.layout = config.layout;
+        self.shades = config.shades;
 
         self.unique_id = config.unique_id;
 
@@ -263,6 +264,10 @@ PlayoutTimeline.prototype = {
 
     configure_shades: function() {
         var self = this;
+
+        if (!self.shades) {
+            return false;
+        }
 
         var gross_v = self.svg
             .append("linearGradient")
@@ -621,6 +626,10 @@ PlayoutTimelinePanel.prototype = {
 
     draw_shade: function(smooth) {
         var self = this;
+
+        if (!self.timeline.shades) {
+            return false;
+        }
 
         var shade_config;
         switch(self.timeline.layout) {
@@ -1393,6 +1402,7 @@ window.PlayoutView = Backbone.View.extend({
             height: this.svg.height(),
             layout: PlayoutTimeline.VERTICAL,
             //follow: true,
+            shades: true,
             panels: [{
                 span: 1,
                 axis: {
