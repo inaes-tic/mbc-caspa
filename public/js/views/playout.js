@@ -14,6 +14,7 @@ PlayoutTimeline.prototype = {
         self.shades = config.shades;
 
         self.unique_id = config.unique_id;
+        self.filter_bounds = {};
 
         // Setup comparison function
         if (self.unique_id !== undefined) {
@@ -80,19 +81,19 @@ PlayoutTimeline.prototype = {
     update_data: function(new_data, no_redraw) {
         this.data = new_data;
 
-        this.update_empty_spaces();
+        this.cache_filtered_data(true);
 
         if (!no_redraw) {
             this.redraw();
         }
     },
 
-    get_filtered_data: function(force_filter) {
+    cache_filtered_data: function(force_filter) {
         var self = this;
 
         var filter_bounds = self.get_max_bounds();
 
-        if (force_filter || filter_bounds.start != self.filter_bounds || filter_bounds.end != self.filter_bounds) {
+        if (force_filter || filter_bounds.start != self.filter_bounds.start || filter_bounds.end != self.filter_bounds.end) {
             self.filter_bounds = filter_bounds;
 
             self.filtered_data = self.data.filter(function(elem) {
@@ -101,6 +102,8 @@ PlayoutTimeline.prototype = {
                     elem.get("end") > self.filter_bounds.start
                 );
             });
+
+            this.update_empty_spaces();
         }
 
         return self.filtered_data;
@@ -127,10 +130,8 @@ PlayoutTimeline.prototype = {
         var start_list = [];
         var end_list = [];
 
-        var filtered_data = self.get_filtered_data(true);
-
-        for (var i = 0, li = filtered_data.length; i < li; ++i) {
-            var pl = filtered_data[i];
+        for (var i = 0, li = self.filtered_data.length; i < li; ++i) {
+            var pl = self.filtered_data[i];
             var tmp_start = pl.get("start");
 
             var is_end = _.indexOf(end_list, tmp_start, true);
@@ -841,7 +842,7 @@ PlayoutTimelinePanel.prototype = {
 
         var rects = self.vis.selectAll("svg.Playlist");
 
-        var filtered_data = self.timeline.get_filtered_data();
+        var filtered_data = self.timeline.cache_filtered_data();
 
         // Playlist data
         var updated_set = rects.data(filtered_data, self.timeline.comparator);
