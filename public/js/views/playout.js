@@ -183,6 +183,10 @@ PlayoutTimeline.prototype = {
         for (var i = 0, li = self.panels.length; i < li; ++i) {
             self.panels[i].centerTime(time, smooth);
         }
+
+        if (this.dragging_playlist !== undefined) {
+            this.drag_move(this.dragging_playlist);
+        }
     },
 
     draw_now_indicator: function() {
@@ -254,6 +258,10 @@ PlayoutTimeline.prototype = {
     redraw: function(smooth) {
         for (var i = 0, li = this.panels.length; i < li; ++i) {
             this.panels[i].redraw(smooth);
+        }
+
+        if (this.dragging_playlist !== undefined) {
+            this.drag_move(this.dragging_playlist);
         }
     },
 
@@ -346,11 +354,27 @@ PlayoutTimeline.prototype = {
         return target;
     },
 
+    drag_get_time: function(plist) {
+        var time;
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            time = time || this.panels[i].drag_get_time(plist);
+        }
+        return time;
+    },
+
     drag_move: function(plist, panel) {
         var draw = false;
-        for (var i = 0, li = this.panels.length; i < li; ++i) {
-            draw = draw || this.panels[i].drag_move(plist);
+        var time = this.drag_get_time(plist);
+
+        if (time) {
+            this.dragging_playlist = plist;
         }
+
+        var tmp_draw;
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            draw |= this.panels[i].drag_move(plist, time);
+        }
+
         return draw;
     },
 
@@ -358,14 +382,18 @@ PlayoutTimeline.prototype = {
         for (var i = 0, li = this.panels.length; i < li; ++i) {
             this.panels[i].drag_clear();
         }
+        this.dragging_playlist = undefined;
     },
 
-    drag_end: function(plist, panel, event) {
+    drag_end: function(plist, panel) {
         var create = false;
+        var time = this.drag_get_time(plist);
         for (var i = 0, li = this.panels.length; i < li; ++i) {
-            create = create || this.panels[i].drag_end(plist, event);
+            create = create || this.panels[i].drag_end(plist, time);
         }
-        return create;
+        this.drag_clear();
+
+        return (create ? time : undefined);
     },
 };
 
@@ -970,11 +998,6 @@ PlayoutTimelinePanel.prototype = {
                     .attr("x", 3);
         }
 
-
-        if (self.dragging_playlist !== undefined) {
-            self.drag_move(self.dragging_playlist);
-        }
-
         self.reposition_now_indicator();
 
     },
@@ -1040,12 +1063,8 @@ PlayoutTimelinePanel.prototype = {
         return new_plist;
     },
 
-    drag_move: function(plist) {
+    drag_get_time: function(plist) {
         var self = this;
-
-        self.dragging_playlist = plist;
-
-        var data = [];
 
         // Position
         var x, y, width, height;
@@ -1065,6 +1084,7 @@ PlayoutTimelinePanel.prototype = {
         }
 
         // Check bounds
+        var time;
         if ( x > 0 && y > 0 && x <= width && y <= height) {
             // Calculate new event time
             var mode = "axis";
@@ -1073,13 +1093,23 @@ PlayoutTimelinePanel.prototype = {
             } else if (event.shiftKey) {
                 mode = "snap";
             }
-            var time = self.get_pos_time(y, mode, plist);
+            time = self.get_pos_time(y, mode, plist);
+        }
 
+        return time;
+    },
+
+    drag_move: function(plist, time) {
+        var self = this;
+
+        var data = [];
+
+        if (time) {
             // Setup new occurrence
             var occurence = {
                 name: plist.get("name"),
                 start: time,
-                end: moment(time) + plist.get("duration"),
+                end: time + plist.get("duration"),
                 get: function(key) { return this[key]; },
             };
 
@@ -1152,48 +1182,17 @@ PlayoutTimelinePanel.prototype = {
 
     drag_clear: function() {
         this.svg.selectAll("svg.DragShadow").remove();
-        this.dragging_playlist = undefined;
     },
 
-    drag_end: function(plist, event) {
+    drag_end: function(plist, time) {
         var self = this;
         var create = false;
 
-        // Position
-        var x, y, width, height;
-        switch(self.timeline.layout) {
-            case PlayoutTimeline.HORIZONTAL:
-                y = event.offsetX - self.svg.attr("x") - self.padding[0];
-                x = event.offsetY - self.svg.attr("y") - self.padding[1];
-                height = self.width - self.padding[2];
-                width = self.height - self.padding[3];
-            break;
-            case PlayoutTimeline.VERTICAL:
-                x = event.offsetX - self.svg.attr("x") - self.padding[0];
-                y = event.offsetY - self.svg.attr("y") - self.padding[1];
-                width = self.width - self.padding[2];
-                height = self.height - self.padding[3];
-            break;
+        // Time defined and inside time window
+        if (time && (time < self.end || time + plist.get("duration") > self.start)) {
+            create = true;
         }
 
-        // Check bounds
-        if ( x > 0 && y > 0 && x <= width && y <= height) {
-            // Calculate new event time
-            var mode = "axis";
-            if (event.ctrlKey) {
-                //mode = "exact";
-            } else if (event.shiftKey) {
-                mode = "snap";
-            }
-            create = self.get_pos_time(y, mode, plist);
-        }
-
-        // Not inside time window
-        if (create >= self.end || create + plist.get("duration") <= self.start) {
-            create = false;
-        }
-
-        this.timeline.drag_clear();
         return create;
     },
 
@@ -1227,7 +1226,7 @@ PlayoutTimelinePanel.prototype = {
         var tmp_diff_start = Math.abs(empty_space.get("start") - (time - duration / 2));
         var tmp_diff_end = Math.abs(empty_space.get("end") - (time + duration / 2));
         if (tmp_diff_start < tmp_diff_end) {
-            ret = empty_space.get("start");
+            ret = empty_space.get("start").valueOf();
         } else {
             ret = empty_space.get("end") - duration;
         }
