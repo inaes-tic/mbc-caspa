@@ -17,10 +17,14 @@ window.MediaListView = function(options){
     var type = 'type' in options ? options['type'] : default_type;
 
     var default_pagination = false;
-    var pagination = (type != 'playlist-sortable') ? 'traditional' : false;
+    var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
+
+    var facets = ['title', 'name'];
+    var search_type = 'server';
 
     if (type.match(/sortable/)){
         allow_drop = true;
+        search_type = 'client';
     }
 
     el.html(template.medialist({type: type}));
@@ -76,7 +80,14 @@ window.MediaListView = function(options){
         },
     });
 
-    new SearchView({el: $('#media-search',el), collection: collection, type: 'media' , pagination: pagination});
+    new SearchView({
+        el: $('#media-search',el),
+        collection: collection,
+        type: search_type,
+        pagination: pagination,
+        facets: facets
+    });
+
     this.view_model = new MediaListViewModel(model);
 
     this.editListName = function () {

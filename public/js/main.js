@@ -69,7 +69,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     list: function() {
-        new MediaListView({model: mediaDB});
+        new MediaListView({model: mediaDB, pagination: 'endless'});
         this.headerView.selectMenuItem('list-menu');
     },
 

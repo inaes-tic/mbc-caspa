@@ -1,12 +1,8 @@
 block content
-case type
-    when 'playlist'
-        - input_txt= i18n.gettext('Search Playlists')
-    when 'media'
-        - input_txt= i18n.gettext('Search Medias')
-    default
-        - input_txt= i18n.gettext('Search')
 
+- var input_txt = i18n.gettext('Search')
+
+- if (type == 'client')
   .form-search
     .input-prepend
         button.btn(type="submit")
@@ -17,5 +13,9 @@ case type
           data-items="4",
           placeholder= input_txt,
           data-bind="value: filter, valueUpdate: 'keyup'")
+- else
+  .visual_search
 
-  .pagination
+- if (pagination == 'traditional')
+    .pagination
+
