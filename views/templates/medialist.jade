@@ -16,7 +16,7 @@ block content
 
 - if (type.match(/draggable/))
   - dbind = 'foreach: collection';
-  - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 } }';
+  - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 }, drag: function(event,ui) { ui.helper.css("width","39%") }  }';
 
 - if (type.match(/sortable/))
   - dbind = 'sortable: { data: collection , allowDrop: allowDrop, dragged: dragHandler}';
@@ -31,6 +31,9 @@ block content
   - readonly = true;
   - dbind = 'foreach: collection';
   - inndbind = '';
+
+- var thumbnail = i18n.gettext('Thumbnail')
+- var media_info = i18n.gettext('Media info')
 
 .well#media-list
   - if (!fixed)
@@ -63,12 +66,12 @@ block content
       table.table.table-bordered.table-striped.table-condensed#table
             thead
               tr
-                th= i18n.gettext('Thumbnail')
-                th= i18n.gettext('Media info')
+                th.thumbnail= thumbnail
+                th.description= media_info
 
             tbody.tbody#media-view(data-bind=dbind,class='tbody')
               tr(data-bind=inndbind)
-                td
+                td.center
                   - if (!is_playlist)
                     - var target = "attr:{href: '#media/'+checksum().split('-')[0]}";
                   a.plain(data-bind=target)
