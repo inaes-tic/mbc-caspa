@@ -8,8 +8,11 @@ window.UniverseListView = function(options){
     this.collection = collection;
     this.el = el;
 
-    var search_type = 'client';
-    var pagination = 'traditional';
+    var default_pagination = 'endless';
+    var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
+
+    var default_search_type = 'server';
+    var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
 
     el.html(template.universe({draggable: draggable}));
     console.log('UV2');

@@ -16,11 +16,12 @@ window.MediaListView = function(options){
     var default_type = 'playlist-searchable-fixed';
     var type = 'type' in options ? options['type'] : default_type;
 
-    var default_pagination = false;
+    var default_pagination = 'endless';
     var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
 
     var facets = ['title', 'name'];
-    var search_type = 'server';
+    var default_search_type = 'server';
+    var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
 
     if (type.match(/sortable/)){
         allow_drop = true;
