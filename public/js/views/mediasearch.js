@@ -37,39 +37,45 @@ window.SearchView = function(options) {
         default:
     }
 
-    var visualSearch = VS.init({
-        container : $('.visual_search'),
-        query     : '',
-        showFacets: true,
-        callbacks : {
-            clearSearch: function(clear_cb) {
-                clear_cb();
-                query_obj = {};
-                searchOnServer();
-            },
-            search: function(query, searchCollection) {
-                query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
-                searchOnServer();
-            },
-            facetMatches : function(callback) {
-                callback(facets);
-            },
-            valueMatches : function(facet, searchTerm, callback) {
-                Backbone.sync('read', collection, {
-                    silent: true,
-                    data: { fields: facets },
-                    success: function(res) {
-                        var f = _.compact(_.uniq(_.pluck(res[1], facet)));
-                        callback(f);
+    switch(type) {
+        case 'server':
+            var visualSearch = VS.init({
+                container : $('.visual_search'),
+                query     : '',
+                showFacets: true,
+                callbacks : {
+                    clearSearch: function(clear_cb) {
+                        clear_cb();
+                        query_obj = {};
+                        searchOnServer();
+                    },
+                    search: function(query, searchCollection) {
+                        query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
+                        searchOnServer();
+                    },
+                    facetMatches : function(callback) {
+                        callback(facets);
+                    },
+                    valueMatches : function(facet, searchTerm, callback) {
+                        Backbone.sync('read', collection, {
+                            silent: true,
+                            data: { fields: facets },
+                            success: function(res) {
+                                var f = _.compact(_.uniq(_.pluck(res[1], facet)));
+                                callback(f);
+                            }
+                        });
+                    },
+                    focus: function() {
+                    },
+                    blur: function() {
                     }
-                });
-            },
-            focus: function() {
-            },
-            blur: function() {
-            }
-        }
-    });
+                }
+            });
+            break;
+        case 'client': break;
+        default:
+    }
 
     function renderBootstrapPaginator() {
         $(".pagination", el).html("");
