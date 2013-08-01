@@ -74,8 +74,8 @@ a.plain:hover {
 
 h5 {
     width: 100%;
-    white-space: nowrap;
     margin-bottom: 4px;
+    word-wrap: break-word;
 }
 
 .thumbnail {
@@ -160,7 +160,7 @@ legend {
 
 .delete-drop {
     width: 100%;
-    height: 0%; // we animate this 
+    height: 0%; // we animate this
     position: fixed;
     top: 0;
     left: 0;
@@ -207,7 +207,7 @@ legend {
     text-rendering: optimizelegibility;
 }
 
-/* Calendar delete button */    
+/* Calendar delete button */
 .fc-event-closebutton {
     position: absolute;
     right: 2px;
@@ -239,6 +239,22 @@ legend {
 
 .playlist-name {
     margin: 10px;
+}
+
+#playlist-table #table {
+    table-layout: fixed;
+}
+
+#playlist-table #table td.center {
+    text-align: center;
+}
+
+#playlist-table #table th.thumbnail {
+    width: 30%;
+}
+
+#playlist-table #table th.description {
+    width: 70%;
 }
 
 .anchor-offset {
