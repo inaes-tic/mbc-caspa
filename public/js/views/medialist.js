@@ -19,7 +19,10 @@ window.MediaListView = function(options){
     var default_pagination = 'endless';
     var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
 
-    var facets = ['title', 'name'];
+    var config = 0;
+    var default_facets = appCollection.at(config).get('Search').Medias.facets;
+    var facets = 'facets' in options ? options['facets'] : default_facets;
+
     var default_search_type = 'server';
     var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
 

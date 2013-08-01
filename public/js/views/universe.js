@@ -14,6 +14,10 @@ window.UniverseListView = function(options){
     var default_search_type = 'server';
     var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
 
+    var config = 0;
+    var default_facets = appCollection.at(config).get('Search').Lists.facets;
+    var facets = 'facets' in options ? options['facets'] : default_facets;
+
     el.html(template.universe({draggable: draggable}));
     console.log('UV2');
 
@@ -56,7 +60,8 @@ window.UniverseListView = function(options){
         el: $('#playlist-search',el),
         collection: this.collection,
         type: search_type,
-        pagination: pagination
+        pagination: pagination,
+        facets: facets
     });
 
     this.view_model = new UniverseListViewModel(this.collection);
