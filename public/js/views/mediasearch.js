@@ -8,6 +8,10 @@ window.SearchView = function(options) {
     var facets = options['facets'] || [];
     var query_obj = {};
 
+    var parseFacets = function (loaded_facets, facet) {
+        return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
+    }
+
     el.html(template.mediasearch({type: type, pagination: pagination}));
     console.log('Render: SearchView');
 
@@ -39,10 +43,13 @@ window.SearchView = function(options) {
 
     switch(type) {
         case 'server':
+            var loaded_facets = {};
+            var searchBox = $('.visual_search', el);
             var visualSearch = VS.init({
-                container : $('.visual_search'),
+                container : searchBox,
                 query     : '',
                 showFacets: true,
+                placeholder: '',
                 callbacks : {
                     clearSearch: function(clear_cb) {
                         clear_cb();
@@ -57,14 +64,21 @@ window.SearchView = function(options) {
                         callback(facets);
                     },
                     valueMatches : function(facet, searchTerm, callback) {
-                        Backbone.sync('read', collection, {
-                            silent: true,
-                            data: { fields: facets },
-                            success: function(res) {
-                                var f = _.compact(_.uniq(_.pluck(res[1], facet)));
-                                callback(f);
-                            }
-                        });
+                        var options = {preserveOrder: true};
+                        if (!loaded_facets.length) {
+                            Backbone.sync('read', collection, {
+                                silent: true,
+                                data: { fields: facets },
+                                success: function(res) {
+                                    loaded_facets = res[1];
+                                    var f = parseFacets(loaded_facets, facet);
+                                    callback(f, options);
+                                }
+                            });
+                        } else {
+                            var f = parseFacets(loaded_facets, facet);
+                            callback(f, options);
+                        }
                     },
                     focus: function() {
                     },
