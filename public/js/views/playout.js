@@ -101,6 +101,7 @@ PlayoutTimeline.prototype = {
             });
 
             this.update_empty_spaces();
+            this.update_start_places();
         }
 
         return self.filtered_data;
@@ -165,6 +166,14 @@ PlayoutTimeline.prototype = {
             end: Infinity,
             duration: Infinity - carry,
             get: function(key) { return this[key]; },
+        });
+    },
+
+    update_start_places: function() {
+        var self = this;
+
+        self.start_places = self.filtered_data.map(function(elem) {
+            return elem.get("start");
         });
     },
 
@@ -252,12 +261,12 @@ PlayoutTimeline.prototype = {
         }
     },
 
-    redraw: function(smooth) {
+    redraw: function(smooth, ignore_drag) {
         for (var i = 0, li = this.panels.length; i < li; ++i) {
             this.panels[i].redraw(smooth);
         }
 
-        if (this.dragging_playlist !== undefined) {
+        if (!ignore_drag && this.dragging_playlist !== undefined) {
             this.drag_move(this.dragging_playlist);
         }
     },
@@ -361,17 +370,45 @@ PlayoutTimeline.prototype = {
 
     drag_move: function(plist, panel) {
         var draw = false;
+        var occurrence;
+
+        // Get drag position time
         var time = this.drag_get_time(plist);
 
         if (time) {
             this.dragging_playlist = plist;
+
+            // Setup temporal occurrence
+            occurrence = {
+                name: plist.get("name"),
+                start: time,
+                end: time + plist.get("duration"),
+                get: function(key) { return this[key]; },
+                set: function(key, value) { this[key] = value; },
+            };
+
+            if (event.ctrlKey) {
+                // Call external push down
+                this.update_data(this.callbacks.fix_overlap(occurrence));
+                this.redraw(this.config.smooth_drag, true);
+                this.update_data(this.callbacks.restore_overlap());
+            } else {
+                // Call external revert
+                this.update_data(this.callbacks.restore_overlap());
+                this.redraw(this.config.smooth_drag, true);
+            }
+        } else {
+            // Call external revert
+            this.update_data(this.callbacks.restore_overlap());
+            this.redraw(this.config.smooth_drag, true);
         }
 
         var tmp_draw;
         for (var i = 0, li = this.panels.length; i < li; ++i) {
-            draw |= this.panels[i].drag_move(plist, time);
+            draw |= this.panels[i].drag_move(plist, occurrence);
         }
 
+        // True if something has been drawn
         return draw;
     },
 
@@ -380,6 +417,10 @@ PlayoutTimeline.prototype = {
             this.panels[i].drag_clear();
         }
         this.dragging_playlist = undefined;
+
+        // Call external revert
+        this.update_data(this.callbacks.restore_overlap());
+        this.redraw(this.config.smooth_drag, true);
     },
 
     drag_end: function(plist, panel) {
@@ -388,7 +429,6 @@ PlayoutTimeline.prototype = {
         for (var i = 0, li = this.panels.length; i < li; ++i) {
             create = create || this.panels[i].drag_end(plist, time);
         }
-        this.drag_clear();
 
         return (create ? time : undefined);
     },
@@ -1087,6 +1127,7 @@ PlayoutTimelinePanel.prototype = {
             var mode = "axis";
             if (event.ctrlKey) {
                 //mode = "exact";
+                mode = "push";
             } else if (event.shiftKey) {
                 mode = "snap";
             }
@@ -1096,25 +1137,10 @@ PlayoutTimelinePanel.prototype = {
         return time;
     },
 
-    drag_move: function(plist, time) {
+    drag_move: function(plist, occurrence) {
         var self = this;
 
-        var data = [];
-
-        if (time) {
-            // Setup new occurrence
-            var occurence = {
-                name: plist.get("name"),
-                start: time,
-                end: time + plist.get("duration"),
-                get: function(key) { return this[key]; },
-            };
-
-            // Event time inside window
-            if (occurence.start < self.end && occurence.end > self.start) {
-                data.push(occurence);
-            }
-        }
+        var data = (occurrence ? [occurrence] : []);
 
         var drsh = self.vis.selectAll("svg.DragShadow").data(data);
 
@@ -1174,7 +1200,8 @@ PlayoutTimelinePanel.prototype = {
 
         drsh.exit().remove();
 
-        return data.length > 0;
+        // True if occurrence inside time window
+        return (occurrence && occurrence.start < self.end && occurrence.end > self.start);
     },
 
     drag_clear: function() {
@@ -1213,6 +1240,9 @@ PlayoutTimelinePanel.prototype = {
             break;
             case "exact":
                 time = this.start + this.pixelsToTime(pos) - duration / 2;
+            break;
+            case "push":
+                time = this.get_nearest_start(start);
             break;
         }
         return time;
@@ -1259,6 +1289,27 @@ PlayoutTimelinePanel.prototype = {
                 duration: Infinity,
                 get: function(key) { return this[key]; },
             };
+        }
+
+        return ret;
+    },
+
+    get_nearest_start: function(time, start_places) {
+        if (start_places === undefined) {
+            start_places = this.timeline.start_places;
+        }
+
+        var ret;
+        var min_diff;
+        for (var i = 0, li = start_places.length; i < li; ++i) {
+            var start = start_places[i];
+
+            var tmp_diff = Math.abs(start - time);
+
+            if (min_diff === undefined || tmp_diff < min_diff) {
+                min_diff = tmp_diff;
+                ret = start;
+            }
         }
 
         return ret;
@@ -1456,6 +1507,21 @@ window.PlayoutView = Backbone.View.extend({
         });
 
         // Config Drag Events
+        function fixOverlap(occurrence) {
+            this.collection.memento.store();
+            this.collection.simulateOverlap(occurrence);
+            return this.collection.models;
+        }
+
+        function restoreOverlap() {
+            this.collection.memento.restore();
+            return this.collection.models;
+        }
+
+        this.timeline.callbacks = this.timeline.callbacks || {};
+        this.timeline.callbacks.fix_overlap = _.bind(fixOverlap, this);
+        this.timeline.callbacks.restore_overlap = _.bind(restoreOverlap, this);
+
         self.external_drag = d3.behavior.drag();
         self.external_drag.on("dragstart", function() {
             self.drag_elem = $(event.target).closest("li.playlist-name");
@@ -1498,10 +1564,22 @@ window.PlayoutView = Backbone.View.extend({
                     start:  start,
                     end: end,
                     allDay: false,
+                    get: function(key) { return this[key]; },
+                    set: function(key, value) { this[key] = value; },
                 };
 
+                // Push down mode
+                if (event.ctrlKey) {
+                    // simulateOverlap saving changes
+                    self.collection.simulateOverlap(occurrence, true);
+                    self.collection.start_memento();
+                }
+
+                // Insert new occurrence
                 self.collection.create(occurrence);
             }
+
+            self.timeline.drag_clear();
         });
 
         this.render();
