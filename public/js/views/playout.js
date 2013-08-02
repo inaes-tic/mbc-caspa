@@ -1118,7 +1118,7 @@ PlayoutTimelinePanel.prototype = {
 
         var drsh = self.vis.selectAll("svg.DragShadow").data(data);
 
-        var new_plist = self.draw_playlists(drsh, false, "DragShadow", "black");
+        var new_plist = self.draw_playlists(drsh, this.timeline.config.smooth_drag, "DragShadow", "black");
 
         // Text container (for relative sizing)
         var txt_cont = drsh.select("svg");
@@ -1398,6 +1398,7 @@ window.PlayoutView = Backbone.View.extend({
             width: this.svg.width(),
             height: this.svg.height(),
             layout: PlayoutTimeline.VERTICAL,
+            //smooth_drag: true,
             //follow: true,
             shades: true,
             panels: [{
