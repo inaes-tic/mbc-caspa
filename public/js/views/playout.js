@@ -78,14 +78,11 @@ PlayoutTimeline.prototype = {
 
     },
 
-    update_data: function(new_data, no_redraw) {
+    update_data: function(new_data) {
         this.data = new_data;
 
+        // Filter data
         this.cache_filtered_data(true);
-
-        if (!no_redraw) {
-            this.redraw();
-        }
     },
 
     cache_filtered_data: function(force_filter) {
@@ -1512,6 +1509,7 @@ window.PlayoutView = Backbone.View.extend({
 
     render: function() {
         this.timeline.update_data(this.collection.models);
+        this.timeline.redraw();
     },
 
     update_drag: function() {
