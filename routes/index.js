@@ -74,6 +74,8 @@ module.exports = function(app) {
         path.join(lib_dir, 'knockout-common-binding.js'),
         require.resolve('node-uuid'),
         require.resolve('backbone-pageable/lib/backbone-pageable.js'),
+        path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
+        path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
