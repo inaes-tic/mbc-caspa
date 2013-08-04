@@ -48,7 +48,7 @@ window.SearchView = function(options) {
             var visualSearch = VS.init({
                 container : searchBox,
                 query     : '',
-                showFacets: true,
+                showFacets: false,
                 placeholder: '',
                 callbacks : {
                     clearSearch: function(clear_cb) {
@@ -86,6 +86,7 @@ window.SearchView = function(options) {
                     }
                 }
             });
+            searchBox.find('input').focus();
             break;
         case 'client': break;
         default:
