@@ -15,7 +15,9 @@ window.EditView = Backbone.View.extend({
         $(this.el).html(template.mediaedit());
         new UniverseListView({
             collection: this.collection,
-            el: $("#universe")});
+            el: $("#universe"),
+            pagination: false,
+            search_type: 'client' });
         new MediaListView({
             model: mediaDB,
             el: $("#left-pane"),
@@ -52,6 +54,8 @@ window.EditView = Backbone.View.extend({
             model: list,
             el: $("#right-pane"),
             type: 'playlist-sortable',
+            pagination: false,
+            search_type: 'client',
         });
 
         console.log ('show edit view', this.editview, list);

@@ -7,3 +7,9 @@
 [submodule "vendor/knockout-sortable"]
 	path = vendor/knockout-sortable
 	url = git://github.com/rniemeyer/knockout-sortable.git
+[submodule "vendor/bootstrap-paginator"]
+	path = vendor/bootstrap-paginator
+	url = https://github.com/lyonlai/bootstrap-paginator
+[submodule "vendor/visualsearch"]
+	path = vendor/visualsearch
+	url = https://github.com/inaes-tic/visualsearch.git

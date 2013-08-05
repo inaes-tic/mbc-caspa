@@ -6,6 +6,7 @@ var express = require('express'),
     backboneio = require('backbone.io'),
     mbc = require('mbc-common'),
     conf = require('mbc-common').config.Caspa,
+    search_options = require('mbc-common').config.Search,
     moment = require('moment'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000
@@ -90,13 +91,13 @@ var publisher = mbc.pubsub();
 var listener = mbc.pubsub();
 
 var mediabackend = backboneio.createBackend();
-mediabackend.use(backboneio.middleware.mongoStore(db, 'medias'));
+mediabackend.use(backboneio.middleware.mongoStore(db, 'medias', { search: search_options.Medias }));
 
 var blockbackend = backboneio.createBackend();
 blockbackend.use(backboneio.middleware.memoryStore(db, 'blocks'));
 
 var listbackend = backboneio.createBackend();
-listbackend.use(backboneio.middleware.mongoStore (db, 'lists'));
+listbackend.use(backboneio.middleware.mongoStore (db, 'lists', { search: search_options.Lists }));
 
 function id_middleware(req, res, next) {
     if( req.method == 'create' && req.model._id === undefined) {
@@ -112,7 +113,7 @@ schedbackend.use(function (req, res, next) {
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
-schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds'));
+schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds', {}));
 
 var statusbackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, status) {
@@ -171,7 +172,7 @@ listener.on('JSONmessage', function(chan, status) {
     });
 });
 listener.subscribe('mostoStatus');
-statusbackend.use(backboneio.middleware.mongoStore(db, 'status'));
+statusbackend.use(backboneio.middleware.mongoStore(db, 'status', {}));
 
 var framebackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, msg) {
@@ -182,7 +183,7 @@ listener.on('JSONmessage', function(chan, msg) {
     framebackend.emit('updated', status);
 });
 listener.subscribe('mostoStatus.progress');
-framebackend.use(backboneio.middleware.memoryStore(db, 'progress'));
+framebackend.use(backboneio.middleware.memoryStore(db, 'progress', {}));
 
 var appbackend = backboneio.createBackend();
 appbackend.use(backboneio.middleware.configStore());
@@ -203,7 +204,7 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
     }
 });
 listener.psubscribe('mostoMessage*');
-mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages'));
+mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages', {}));
 
 _([mediabackend, listbackend, appbackend]).each (debug_backend);
 

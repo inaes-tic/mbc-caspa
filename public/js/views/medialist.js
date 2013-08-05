@@ -12,10 +12,23 @@ window.MediaListView = function(options){
     this.has_dummy_row = false;
 
     var allow_drop = false;
-    var type = 'type' in options ? options['type'] : 'playlist-searchable-fixed';
+
+    var default_type = 'playlist-searchable-fixed';
+    var type = 'type' in options ? options['type'] : default_type;
+
+    var default_pagination = 'endless';
+    var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
+
+    var config = 0;
+    var default_facets = appCollection.at(config).get('Search').Medias.facets;
+    var facets = 'facets' in options ? options['facets'] : default_facets;
+
+    var default_search_type = 'server';
+    var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
 
     if (type.match(/sortable/)){
         allow_drop = true;
+        search_type = 'client';
     }
 
     el.html(template.medialist({type: type}));
@@ -59,7 +72,6 @@ window.MediaListView = function(options){
                 var x = self.collection();
                 return model.pretty_duration();
             }, model);
-
         },
 
         allowDrop: allow_drop,
@@ -72,7 +84,14 @@ window.MediaListView = function(options){
         },
     });
 
-    new SearchView({el: $('#media-search',el), type: 'media' });
+    new SearchView({
+        el: $('#media-search',el),
+        collection: collection,
+        type: search_type,
+        pagination: pagination,
+        facets: facets
+    });
+
     this.view_model = new MediaListViewModel(model);
 
     this.editListName = function () {
