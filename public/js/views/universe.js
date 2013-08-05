@@ -8,6 +8,16 @@ window.UniverseListView = function(options){
     this.collection = collection;
     this.el = el;
 
+    var default_pagination = 'endless';
+    var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
+
+    var default_search_type = 'server';
+    var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
+
+    var config = 0;
+    var default_facets = appCollection.at(config).get('Search').Lists.facets;
+    var facets = 'facets' in options ? options['facets'] : default_facets;
+
     el.html(template.universe({draggable: draggable}));
     console.log('UV2');
 
@@ -46,7 +56,14 @@ window.UniverseListView = function(options){
         }
     });
 
-    new SearchView({el: $('#playlist-search',el), type: 'playlist' });
+    new SearchView({
+        el: $('#playlist-search',el),
+        collection: this.collection,
+        type: search_type,
+        pagination: pagination,
+        facets: facets
+    });
+
     this.view_model = new UniverseListViewModel(this.collection);
 
     this.destroy = function () {

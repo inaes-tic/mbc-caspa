@@ -5,7 +5,7 @@
   .span3.bs-docs-sidebar
     ul.nav.nav-list.bs-docs-sidenav
       each v, k in config[data]
-        - if (k!= 'type') {
+        - if (k!= 'type' && k!='Search') {
         li
           a(href='#' + k)
             i.icon-cheveron-right
@@ -17,7 +17,7 @@
   .span9.well
     form.form-horizontal
       each v, k in config[data]
-          - if (k!='type') {
+          - if (k!='type' && k!='Search') {
           .page-header
             a(id=k, class='anchor-offset')
             - var k_desc = config[descriptions]['properties'][k]

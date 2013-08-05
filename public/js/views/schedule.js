@@ -92,6 +92,8 @@ window.ScheduleView = Backbone.View.extend({
             collection: Universe,
             el: $('#universe', this.el),
             draggable: true,
+            pagination: false,
+            search_type: 'client'
         });
 
         this.render();
