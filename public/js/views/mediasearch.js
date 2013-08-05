@@ -1,8 +1,120 @@
 window.SearchView = function(options) {
     var el = options['el'];
-    var type = options['type'];
-    el.html(template.mediasearch({type: type}));
+    var type = 'type' in options ? options['type'] : 'server';
+    var pagination = 'pagination' in options ? options['pagination'] : false;
+    var collection = options['collection'];
+    var page_size = options['page_size'] || 10;
+    var type = 'type' in options ? options['type'] : 'server';
+    var facets = options['facets'] || [];
+    var query_obj = {};
+
+    var parseFacets = function (loaded_facets, facet) {
+        return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
+    }
+
+    el.html(template.mediasearch({type: type, pagination: pagination}));
     console.log('Render: SearchView');
+
+    switch(pagination) {
+        case 'traditional':
+            collection.switchMode('server', {fetch: false});
+            collection.setPageSize(page_size,{fetch:false, first: true});
+            renderBootstrapPaginator();
+            break;
+        case 'endless':
+            var offset = 100;
+            var wait = 100;
+            collection.switchMode('endless', {fetch: false});
+            collection.setPageSize(page_size,{fetch: false, first: true});
+            var scroll_callback = function () {
+                if ($(window).scrollTop() >= ( $(document).height() - $(window).height() - offset)
+                     && collection.hasNext() ){
+                    collection.getNextPage();
+                }
+            };
+
+            var throttled = _.throttle(scroll_callback, wait);
+            $(window).scroll(throttled);
+            break;
+
+        case false: break;
+        default:
+    }
+
+    switch(type) {
+        case 'server':
+            var loaded_facets = {};
+            var searchBox = $('.visual_search', el);
+            var visualSearch = VS.init({
+                container : searchBox,
+                query     : '',
+                showFacets: false,
+                placeholder: '',
+                callbacks : {
+                    clearSearch: function(clear_cb) {
+                        clear_cb();
+                        query_obj = {};
+                        searchOnServer();
+                    },
+                    search: function(query, searchCollection) {
+                        query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
+                        searchOnServer();
+                    },
+                    facetMatches : function(callback) {
+                        callback(facets);
+                    },
+                    valueMatches : function(facet, searchTerm, callback) {
+                        var options = {preserveOrder: true};
+                        if (!loaded_facets.length) {
+                            Backbone.sync('read', collection, {
+                                silent: true,
+                                data: { fields: facets },
+                                success: function(res) {
+                                    loaded_facets = res[1];
+                                    var f = parseFacets(loaded_facets, facet);
+                                    callback(f, options);
+                                }
+                            });
+                        } else {
+                            var f = parseFacets(loaded_facets, facet);
+                            callback(f, options);
+                        }
+                    },
+                    focus: function() {
+                    },
+                    blur: function() {
+                    }
+                }
+            });
+            searchBox.find('input').focus();
+            break;
+        case 'client': break;
+        default:
+    }
+
+    function renderBootstrapPaginator() {
+        $(".pagination", el).html("");
+        if(collection.state.totalPages > 1) {
+            var pag_options = { currentPage: 1,
+                totalPages: collection.state.totalPages ,
+                size: 'mini',
+                onPageClicked: function(e, originalEvent, type, page) {
+                    collection.getPage((page-1));
+                }
+            };
+            $(".pagination", el).bootstrapPaginator(pag_options);
+        }
+    }
+
+    function searchOnServer() {
+        collection.setQuery(query_obj, page_size);
+        collection.fetch({ success: function() {
+            if( pagination == 'traditional') {
+                renderBootstrapPaginator();
+            }
+        }});
+    }
+
     return;
 }
 
