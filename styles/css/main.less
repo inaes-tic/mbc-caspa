@@ -199,9 +199,31 @@ legend {
 }
 
 /* Uploader: Drag & Drop */
-.resumable-error {display:none; font-size:14px; font-style:italic;}
-.resumable-drop {padding:15px; font-size:13px; text-align:center; color:#666; font-weight:bold;background-color:#eee; border:2px dashed #aaa; border-radius:10px; margin-top:40px; z-index:9999; display:none;}
-.resumable-dragover {padding:30px; color:#555; background-color:#ddd; border:1px solid #999;}
+.resumable-error {
+	display:none; 
+	font-size:14px; 
+	font-style:italic;
+}
+
+.resumable-drop {
+	padding:15px;
+	font-size:13px;
+	text-align:center;
+	color:#666;
+	font-weight:bold;
+	background-color:#eee;
+	border:2px dashed #aaa;
+	border-radius:10px;
+	margin-top:40px;
+	z-index:9999;
+	display:none;
+}
+.resumable-dragover {
+	padding:30px;
+	color:#555;
+	background-color:#ddd;
+	border:1px solid #999;
+}
 
 .delete-drop {
     width: 100%;
@@ -240,17 +262,32 @@ legend {
     border: solid 1px #ddd;
 }
 
+.editable-list-name {
+    border: solid 1px #ddd;
+    margin: -6px 29px 9px 0px;
+    height: 35px!important;
+    font-size: 28px!important;
+    line-height: 30px;
+}
+
+.list-name {
+    margin: 0px 0px 11px 0px;
+	font-size: 30px!important;
+}
+
 .input-list-name {
 
-    height: 62px!important;
-    font-size: 36px!important;
-    line-height: 40px;
-    margin: -20px 0;
+    height: 35px!important;
+    font-size: 28px!important;
+    line-height: 30px;
+    width:100%;
     font-family: inherit;
     font-weight: bold;
     color: inherit;
     text-rendering: optimizelegibility;
 }
+
+
 
 /* Calendar delete button */
 .fc-event-closebutton {
@@ -280,7 +317,7 @@ legend {
 
 #playlists {
     margin-left: -10px;
-    margin-right: -10px;
+    margin-right: 30px;
 }
 
 .playlist-name {
@@ -408,4 +445,30 @@ div#svg svg.DragShadow {
 
 div#svg svg.DragShadow rect {
     fill-opacity: 0.4;
+}
+
+
+/* MEDIAEDIT */
+
+.nav-pills li {
+	width: 100%;
+}
+	
+.nav-pills li h5 {
+	margin: 3px 0px 3px 0px;
+}
+
+.form-actions{
+	border: 1px solid #E3E3E3;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+
+#media-search{
+	width:199px;
+}
+
+.onePlaylist {
+	margin: 0px -20px;
 }
