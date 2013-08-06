@@ -48,6 +48,7 @@ window.utils = {
 
     hideAlert: function() {
         $('.alert').hide();
-    }
+    },
 
+    color_scale: d3.scale.category10()
 };

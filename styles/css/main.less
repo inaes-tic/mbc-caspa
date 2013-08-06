@@ -13,15 +13,59 @@
 
 @header-height: 139px;
 
+body {
+    position: relative;
+}
+
 #Panel {
     position: fixed;
     width: 100%;
     z-index: 999;
     top: 0;
+    -webkit-transition: top 400ms ease-in-out;
+    transition: top 400ms ease-in-out;
+}
+
+body.Comp #Panel {
+    top: -105px;
+    -webkit-transition: top 400ms ease-in-out;
+    transition: top 400ms ease-in-out;
 }
 
 #content {
+    top: @header-height + 15px;
     padding-top: @header-height + 15px;
+}
+
+body.Comp #content.no-Pov {
+    top: @header-height - 90px;
+    padding-top: @header-height - 90px;
+}
+
+#content.Pov {
+    position: absolute;
+    padding-top: 0px;
+    right: 20px;
+    bottom: 20px;
+    left: 20px;
+
+    overflow: hidden;
+
+    top: @header-height + 15px;
+}
+
+body.Comp #content.Pov {
+    top: @header-height - 90px;
+}
+
+#content.Pov.trans {
+    -webkit-transition: top 400ms ease-in-out;
+    transition: top 400ms ease-in-out;
+}
+
+#content.no-Pov.trans {
+    -webkit-transition: padding-top 400ms ease-in-out;
+    transition: padding-top 400ms ease-in-out;
 }
 
 h1, h2, h3, h4, h5 {
@@ -221,8 +265,9 @@ legend {
     visibility: visible;
   }
 
-.bs-docs-sidenav.affix {
-    top: 154px;
+.bs-docs-sidenav {
+    margin: 0px;
+    position: fixed;
 }
 
 #overlapping-alert {
@@ -258,8 +303,109 @@ legend {
     width: 70%;
 }
 
+#Caspa.anchor-offset {
+    position: absolute;
+    top: 0px;
+}
+
 .anchor-offset {
     display: block;
     position: relative;
-    top: -(@header-height + 20px);
+    top: -(@header-height + 15px);
+}
+
+body.Comp .anchor-offset {
+    top: -(@header-height - 90px);
+}
+
+
+/* Playout View */
+
+#playout #svg {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+#playout.Exp #svg {
+    width: 80%;
+}
+
+#playout #universe {
+    position: absolute;
+    width: 300px;
+    top: 0px;
+    bottom: 0px;
+    left: -300px;
+
+    -webkit-transition: left 400ms ease-in-out;
+    transition: left 400ms ease-in-out;
+}
+
+#playout.Exp #universe {
+    left: 0px;
+
+    -webkit-transition: left 400ms ease-in-out;
+    transition: left 400ms ease-in-out;
+}
+
+div#svg svg .Axis {
+    pointer-events: none;
+}
+
+div#svg svg .Axis .major line {
+    opacity: 0.2;
+}
+
+div#svg svg .Axis path,
+div#svg svg .Axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+div#svg svg .Axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+div#svg svg .Highlight {
+    fill: white;
+    opacity: 0.3;
+    //stroke: black;
+    //stroke-width: 1px;
+}
+
+div#svg svg rect.Background {
+    fill: lightgray;
+}
+
+div#svg svg rect.Border {
+    fill: transparent;
+    stroke: black;
+    stroke-width: 1px;
+}
+
+div#svg svg.Playlist {
+    cursor: pointer;
+}
+
+div#svg svg.Playlist text.Name {
+    stroke: none;
+    fill: #ffffff;
+    fill-opacity: 0.9;
+}
+
+.ui-draggable-dragging {
+    pointer-events: none;
+}
+
+div#svg svg.DragShadow {
+    pointer-events: none;
+}
+
+div#svg svg.DragShadow rect {
+    fill-opacity: 0.4;
 }
