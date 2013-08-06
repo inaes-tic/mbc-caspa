@@ -65,8 +65,15 @@ var AppRouter = Backbone.Router.extend({
     },
     
     playout: function() {
-        new PlayoutView({collection: Schedule});
-        this.headerView.selectMenuItem('playout-menu')
+        var self = this;
+        Universe.setQuery({});
+        Schedule.setQuery({});
+        Universe.fetch({success: function() {
+            Schedule.fetch({success: function() {
+                new PlayoutView({collection: Schedule});
+                self.headerView.selectMenuItem('playout-menu')
+            }});
+        }});
     },
 
     schedule: function() {
