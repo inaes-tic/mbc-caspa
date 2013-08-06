@@ -1503,6 +1503,7 @@ window.PlayoutView = Backbone.View.extend({
             collection: Universe,
             el: $("#universe"),
             draggable: true,
+            search_type: 'client',
         });
 
         // Event listeners
