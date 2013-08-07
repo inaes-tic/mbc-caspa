@@ -3,5 +3,7 @@
 Procfile
 .gitignore
 *.mo
+*.swp
+Session.vim
 
 public/sc

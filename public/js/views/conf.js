@@ -6,8 +6,8 @@ window.ConfView = Backbone.View.extend({
         this.defaultModel = this.collection.findWhere({ type: 'defaults' });
     },
     render: function () {
+            $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
             $(this.el).html(template.confview({ config: this.collection.toJSON() }));
-            $('.bs-docs-sidenav').affix();
             $('body').scrollspy('refresh');
             return this;
     },

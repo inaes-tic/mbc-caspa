@@ -33,6 +33,7 @@ window.ScheduleView = Backbone.View.extend({
         // Fullcalendar needs unix timestamp for rendering
         attribs.start = moment(attribs.start).unix();
         attribs.end = moment(attribs.end).unix();
+        attribs.color = utils.color_scale(occurrence.get("_id"));
 
         attribs.model = occurrence;
         return attribs;
@@ -86,6 +87,7 @@ window.ScheduleView = Backbone.View.extend({
         var self = this;
         self.collection = this.get_collection();
 
+        $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
         $(this.el).html(this.get_templateHTML());
 
         new UniverseListView({
@@ -241,7 +243,7 @@ window.ScheduleView = Backbone.View.extend({
                                 .fullCalendar(opt)
                                 .fullCalendar( 'gotoDate', date );
 
-                            /** TODO: save view config 
+                            /** TODO: save view config
                              *
                             //save slotMin value to db
                             var url = '/Schedule/set-time-interval/format/json';
@@ -352,7 +354,6 @@ window.ScheduleView = Backbone.View.extend({
                     },
                 });
             }
-            });
                                              */
 
         self.collection.bind('add reset remove change', this.reload, this);

@@ -67,6 +67,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'sprintf/sprintf.js'),
         path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
         path.join(lib_dir, 'airtime/common.js'),
+        path.join(lib_dir, 'backbone.memento/backbone.memento.js'),
         require.resolve('knockout-client/knockout.js'),
         require.resolve('knockback/knockback-core.js'),
         path.join(lib_dir, 'knockout-sortable/build/knockout-sortable.js'),
@@ -76,6 +77,7 @@ module.exports = function(app) {
         require.resolve('backbone-pageable/lib/backbone-pageable.js'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
         path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
+        require.resolve('d3/d3.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
@@ -94,6 +96,7 @@ module.exports = function(app) {
                  'mediadetails',
                  'mediasearch',
                  'mediaedit',
+                 'playout',
                  'programlist',
                  'conf',
                  'upload-resumable',
@@ -142,6 +145,7 @@ module.exports = function(app) {
                      'mediaview',
                      'mediasearch',
                      'mediaedit',
+                     'playout',
                      'confview',
                      'upload',
                      'universe',
@@ -153,18 +157,21 @@ module.exports = function(app) {
                      'sourceinfo'
                     ];
 
+    var getFileName = function (e) {
+                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
+            };
+
     var templateJs = new folio.Glossary([
         require.resolve('jade/runtime.js'),
         path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            templates.map (function (e) {
-                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
-            })
+            templates.map (getFileName)
         ),
         {
         compilers: {
             jade: function (name, source) {
                 return 'template[\'' + name + '\'] = ' +
                     jade.compile(source, {
+                        filename: getFileName(name),
                         client: true,
                         compileDebug: false
                     }) + ';';
