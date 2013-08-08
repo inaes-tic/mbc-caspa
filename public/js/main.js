@@ -63,7 +63,7 @@ var AppRouter = Backbone.Router.extend({
 
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
     },
-    
+
     playout: function() {
         var self = this;
         Universe.setQuery({});
