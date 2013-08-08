@@ -1777,7 +1777,12 @@ window.PlayoutView = PanelView.extend({
                 // Push down mode
                 if (event.ctrlKey) {
                     // simulateOverlap saving changes
-                    self.collection.simulateOverlap(occurrence, true);
+                    self.collection.simulateOverlap(occurrence);
+                    self.collection.forEach(function(elem) {
+                        if (elem.hasChanged()) {
+                            elem.save();
+                        }
+                    });
                     self.collection.start_memento();
                 }
 
