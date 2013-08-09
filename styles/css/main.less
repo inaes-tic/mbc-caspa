@@ -17,6 +17,7 @@ body {
     position: relative;
 }
 
+/*/////: HEADER ://///*/
 #Panel {
     position: fixed;
     width: 100%;
@@ -26,20 +27,56 @@ body {
     transition: top 400ms ease-in-out;
 }
 
-body.Comp #Panel {
-    top: -105px;
-    -webkit-transition: top 400ms ease-in-out;
-    transition: top 400ms ease-in-out;
+
+#nav { 
+	li {
+		a.top_link {
+			padding: 2px 7px 3px 7px;
+		}
+		&:hover {
+			a.top_link{
+				background-color:#444;
+			}
+		}
+		.active {
+			a.top_link{
+				background-color:#222;
+			}
+		}
+	}
 }
+
+.icon-edit, .icon-list, .icon-plus, .icon-tasks, .icon-globe, .icon-wrench {
+	margin: -1px 0px 0px -6px;	
+}
+
+.icon-resize-vertical{
+	margin: -1px 0px 0px 0px;	
+}
+
+/*/////: BODY - MORE THAN 1 SECTION ://///*/
 
 #content {
     top: @header-height + 15px;
     padding-top: @header-height + 15px;
 }
 
-body.Comp #content.no-Pov {
-    top: @header-height - 90px;
-    padding-top: @header-height - 90px;
+body.Comp {
+	#content.no-Pov {
+    	top: @header-height - 90px;
+    	padding-top: @header-height - 90px;
+	}
+	#content.Pov {
+    	top: @header-height - 90px;
+	}
+	.anchor-offset {
+    	top: -(@header-height - 90px);
+	}
+	#Panel {
+    	top: -105px;
+    	-webkit-transition: top 400ms ease-in-out;
+    	transition: top 400ms ease-in-out;
+	}
 }
 
 #content.Pov {
@@ -54,10 +91,6 @@ body.Comp #content.no-Pov {
     top: @header-height + 15px;
 }
 
-body.Comp #content.Pov {
-    top: @header-height - 90px;
-}
-
 #content.Pov.trans {
     -webkit-transition: top 400ms ease-in-out;
     transition: top 400ms ease-in-out;
@@ -70,30 +103,36 @@ body.Comp #content.Pov {
 
 h1, h2, h3, h4, h5 {
     line-height: 1;
+    
+}
+
+h5 {
+    width: 100%;
+    margin-bottom: 4px;
+    word-wrap: break-word;
 }
 
 .brand {
     font-family: 'Arvo';
 }
 
-a.plain:link {
-    color: #333;
-    text-decoration: none;
-}
-
-a.plain:active {
-    color: #333;
-    text-decoration: none;
-}
-
-a.plain:visited {
-    color: #333;
-    text-decoration: none;
-}
-
-a.plain:hover {
-    color: #333;
-    text-decoration: none;
+a.plain {
+	&:link {
+    	color: #333;
+    	text-decoration: none;
+	}
+	&:active {
+	    color: #333;
+	    text-decoration: none;
+	}
+	&:visited {
+	    color: #333;
+	    text-decoration: none;
+	}
+	&:hover {
+	    color: #333;
+	    text-decoration: none;
+	}
 }
 
 .status-bar {
@@ -105,97 +144,26 @@ a.plain:hover {
     margin-right: 12px;
 }
 
-.footer {
-    margin-top: 30px;
-    padding-top: 10px;
-    color: #999;
-    border-top: solid 1px #ddd;
-}
-
-.footer > p {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-}
-
-h5 {
-    width: 100%;
-    margin-bottom: 4px;
-    word-wrap: break-word;
-}
-
 .thumbnail {
     min-width: 260px;
 }
 
-.thumbnails li {
-    margin-left: 0px !important;
-    margin-right: 20px !important;
+.thumbnails {
+	li {
+    	margin-left: 0px !important;
+    	margin-right: 20px !important;
+	}
 }
 
 legend {
     font-family: 'Andika';
 }
 
-.home-hero {
-    font-family: "Andika";
-    font-size: 36;
-    color: white;
-    background-image: url('img/bg.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    margin-top: -19px;
-    padding: 180px;
-    text-align : center;
-    text-shadow: 1px 1px 1px #000;
-}
-
-@media only screen and ( max-width : 1000px ) {
-    .home-hero {
-        padding:100px;
-    }
-}
-
-@media only screen and ( max-width : 480px ) {
-    .home-hero {
-        padding:32px;
-    }
-}
-
-
-.home-hero .btn {
-    font-family: "arvo";
-    width: 160px;
-    margin: 10px 4px;
-}
-
-/* Social proof buttons from GitHub & Twitter */
-.bs-docs-social {
-    padding: 15px 0;
-    text-align: center;
-    background-color: #f5f5f5;
-    border-top: 1px solid #fff;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Quick links on Home */
-.bs-docs-social-buttons {
-    margin-left: 0;
-    margin-bottom: 0;
-    padding-left: 0;
-    list-style: none;
-}
-
-.bs-docs-social-buttons li {
-    display: inline-block;
-    padding: 5px 8px;
-    line-height: 1;
-    *display: inline;
-    *zoom: 1;
-}
-
-.well h3 {
-    margin-top: 0px;
-    margin-bottom: 0px;
+.well {
+	h3 {
+    	margin-top: 0px;
+    	margin-bottom: 0px;
+	}
 }
 
 /* Uploader: Drag & Drop */
@@ -218,6 +186,7 @@ legend {
 	z-index:9999;
 	display:none;
 }
+
 .resumable-dragover {
 	padding:30px;
 	color:#555;
@@ -258,8 +227,10 @@ legend {
     left: 0;
 }
 
-.editable-list-name:hover {
-    border: solid 1px #ddd;
+.editable-list-name{
+	&:hover {
+    	border: solid 1px #ddd;
+	}
 }
 
 .editable-list-name {
@@ -276,7 +247,6 @@ legend {
 }
 
 .input-list-name {
-
     height: 35px!important;
     font-size: 28px!important;
     line-height: 30px;
@@ -287,20 +257,7 @@ legend {
     text-rendering: optimizelegibility;
 }
 
-
-
-/* Calendar delete button */
-.fc-event-closebutton {
-    position: absolute;
-    right: 2px;
-    top: 0;
-    visibility: hidden;
-    font-size: 20px !important;
-  }
-
-.fc-event:hover .fc-event-closebutton {
-    visibility: visible;
-  }
+/**/ 
 
 .bs-docs-sidenav {
     margin: 0px;
@@ -324,20 +281,19 @@ legend {
     margin: 10px;
 }
 
-#playlist-table #table {
-    table-layout: fixed;
-}
-
-#playlist-table #table td.center {
-    text-align: center;
-}
-
-#playlist-table #table th.thumbnail {
-    width: 30%;
-}
-
-#playlist-table #table th.description {
-    width: 70%;
+#playlist-table { 
+	#table {
+    	table-layout: fixed;
+		td.center {
+    		text-align: center;
+		}
+		th.thumbnail {
+		    width: 30%;
+		}
+		th.description {
+		    width: 70%;
+		}
+	}
 }
 
 #Caspa.anchor-offset {
@@ -351,113 +307,49 @@ legend {
     top: -(@header-height + 15px);
 }
 
-body.Comp .anchor-offset {
-    top: -(@header-height - 90px);
+/*: Home :*/
+.home-hero {
+    font-family: "Andika";
+    font-size: 36;
+    color: white;
+    background-image: url('img/bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin-top: -19px;
+    padding: 180px;
+    text-align : center;
+    text-shadow: 1px 1px 1px #000;
+    .btn {
+	    font-family: "arvo";
+	    width: 160px;
+	    margin: 10px 4px;
+	}
 }
 
-
-/* Playout View */
-
-#playout #svg {
-    position: absolute;
-    width: 100%;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
+@media only screen and ( max-width : 1000px ) {
+    .home-hero {
+        padding:100px;
+    }
 }
 
-#playout.Exp #svg {
-    width: 80%;
+@media only screen and ( max-width : 480px ) {
+    .home-hero {
+        padding:32px;
+    }
 }
 
-#playout #universe {
-    position: absolute;
-    width: 300px;
-    top: 0px;
-    bottom: 0px;
-    left: -300px;
+/*: Browse media :*/
 
-    -webkit-transition: left 400ms ease-in-out;
-    transition: left 400ms ease-in-out;
-}
-
-#playout.Exp #universe {
-    left: 0px;
-
-    -webkit-transition: left 400ms ease-in-out;
-    transition: left 400ms ease-in-out;
-}
-
-div#svg svg .Axis {
-    pointer-events: none;
-}
-
-div#svg svg .Axis .major line {
-    opacity: 0.2;
-}
-
-div#svg svg .Axis path,
-div#svg svg .Axis line {
-    fill: none;
-    stroke: black;
-    shape-rendering: crispEdges;
-}
-
-div#svg svg .Axis text {
-    font-family: sans-serif;
-    font-size: 11px;
-}
-
-div#svg svg .Highlight {
-    fill: white;
-    opacity: 0.3;
-    //stroke: black;
-    //stroke-width: 1px;
-}
-
-div#svg svg rect.Background {
-    fill: lightgray;
-}
-
-div#svg svg rect.Border {
-    fill: transparent;
-    stroke: black;
-    stroke-width: 1px;
-}
-
-div#svg svg.Playlist {
-    cursor: pointer;
-}
-
-div#svg svg.Playlist text.Name {
-    stroke: none;
-    fill: #ffffff;
-    fill-opacity: 0.9;
-}
-
-.ui-draggable-dragging {
-    pointer-events: none;
-}
-
-div#svg svg.DragShadow {
-    pointer-events: none;
-}
-
-div#svg svg.DragShadow rect {
-    fill-opacity: 0.4;
-}
-
-
-/* MEDIAEDIT */
-
-.nav-pills li {
-	width: 100%;
+/*: Edit playlists :*/
+.nav-pills {
+	li {
+		width: 100%;
+		h5 {
+			margin: 3px 0px 3px 0px;
+		}
+	}
 }
 	
-.nav-pills li h5 {
-	margin: 3px 0px 3px 0px;
-}
-
 .form-actions{
 	border: 1px solid #E3E3E3;
 	-webkit-border-radius: 4px;
@@ -473,22 +365,160 @@ div#svg svg.DragShadow rect {
 	margin: 0px -20px;
 }
 
-#nav li a.top_link,
-#nav li:hover a.top_link, 
-#nav li.active a.top_link, 
-#nav li.active:hover a.top_link {
-	padding: 2px 7px 3px 7px;
+/*#playlists-list {
+	position: fixed;
+	height: 500px;
+	#playlists {
+		position: fixed;
+		overflow: scroll;
+		max-height: 300px;
+		max-width: 300px;
+	}
+}*/
+
+/*: Add medias :*/
+
+/*: Playout :*/
+#playout { 
+	#svg {
+	    position: absolute;
+	    width: 100%;
+	    top: 0px;
+	    right: 0px;
+	    bottom: 0px;
+	}
+	#universe {
+	    position: absolute;
+	    width: 300px;
+	    top: 0px;
+	    bottom: 0px;
+	    left: -300px;
+	
+	    -webkit-transition: left 400ms ease-in-out;
+	    transition: left 400ms ease-in-out;
+	}
+	&.Exp {
+		#svg {
+	    	width: 80%;
+		}
+		#universe {
+		    left: 0px;
+		
+		    -webkit-transition: left 400ms ease-in-out;
+		    transition: left 400ms ease-in-out;
+		}
+	}
 }
 
-.icon-edit,
-.icon-list,
-.icon-plus,
-.icon-tasks,
-.icon-globe,
-.icon-wrench{
-	margin: -1px 0px 0px -6px;	
+div#svg {
+	svg {
+		.Axis {
+    		pointer-events: none;
+    		.major line {
+		    	opacity: 0.2;
+			}
+			path, line {
+			    fill: none;
+			    stroke: black;
+			    shape-rendering: crispEdges;
+			}
+			text {
+			    font-family: sans-serif;
+			    font-size: 11px;
+			}
+		}
+		.Highlight {
+		    fill: white;
+		    opacity: 0.3;
+		}
+		rect {
+			&.Background {
+			    fill: lightgray;
+			}
+			&.Border {
+			    fill: transparent;
+			    stroke: black;
+			    stroke-width: 1px;
+			}
+		}
+		&.Playlist {
+		    cursor: pointer;
+		    text.Name {
+			    stroke: none;
+			    fill: #ffffff;
+			    fill-opacity: 0.9;
+			}
+		}
+		&.DragShadow {
+    	pointer-events: none;
+    		rect {
+			    fill-opacity: 0.4;
+			}
+		}
+	}
 }
 
-.icon-resize-vertical{
-	margin: -1px 0px 0px 0px;	
+.ui-draggable-dragging {
+    pointer-events: none;
+}
+
+
+/*: Schedule :*/
+//Delete button
+.fc-event-closebutton {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    visibility: hidden;
+    font-size: 20px !important;
+}
+
+.fc-event {
+	&:hover {
+		.fc-event-closebutton {
+			visibility: visible;
+		}
+	}
+}
+
+/*: Configure :*/
+
+/*/////: FOOTER ://///*/
+.footer {
+    margin-top: 30px;
+    padding-top: 10px;
+    color: #999;
+    border-top: solid 1px #ddd;
+}
+
+.footer > p {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+//Social proof buttons from GitHub & Twitter
+.bs-docs-social {
+    padding: 15px 0;
+    text-align: center;
+    background-color: #f5f5f5;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+//Quick links on Home
+.bs-docs-social-buttons {
+    margin-left: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.bs-docs-social-buttons {
+	li {
+	    display: inline-block;
+	    padding: 5px 8px;
+	    line-height: 1;
+	    *display: inline;
+	    *zoom: 1;
+	}
 }
