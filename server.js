@@ -113,7 +113,7 @@ schedbackend.use(function (req, res, next) {
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
-schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds', {}));
+schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds',  { search: search_options.Scheds }));
 
 var statusbackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, status) {
