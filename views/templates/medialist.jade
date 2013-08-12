@@ -16,7 +16,7 @@ block content
 
 - if (type.match(/draggable/))
   - dbind = 'foreach: collection';
-  - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 }, drag: function(event,ui) { ui.helper.css("width","39%") }  }';
+  - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 }, drag: function(event,ui) { if(ui.helper.parent().id != "media-list") { ui.helper.detach().appendTo("#media-list");}; ui.helper.css("width","39%") } }';
 
 - if (type.match(/sortable/))
   - dbind = 'sortable: { data: collection , allowDrop: allowDrop, dragged: dragHandler}';
@@ -36,10 +36,9 @@ block content
 - var media_info = i18n.gettext('Media info')
 
 #media-list
-  .listHeader
-    - if (!fixed)
-       button.close.kill-media-list(type='button', data-dismiss='alert') ×
-  
+  - if (!fixed)
+    button.close.kill-media-list(type='button', data-dismiss='alert') ×
+  .listHeader  
     .editable-list-name(
           data-trigger= 'hover'
           data-placement= 'left'
