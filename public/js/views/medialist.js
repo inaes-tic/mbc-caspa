@@ -36,7 +36,7 @@ window.MediaListView = function(options){
         search_type = 'client';
     }
 
-    el.removeClass("trans Pov").addClass("container-fluid no-Pov");
+    //el.removeClass("trans Pov").addClass("container-fluid no-Pov");
     el.html(template.medialist({type: type}));
     console.log('ML2');
 

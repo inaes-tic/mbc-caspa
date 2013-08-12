@@ -78,10 +78,10 @@ window.HeaderView = function (options) {
 
         if (panel.position().top != $(window).scrollTop()) {
             // Expanded header
-            $("body").removeClass("Comp");
+            $("body").removeClass("folded");
         } else {
             // Compact header
-            $("body").addClass("Comp");
+            $("body").addClass("folded");
         };
 
         // Js Events

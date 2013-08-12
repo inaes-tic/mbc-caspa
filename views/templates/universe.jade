@@ -8,11 +8,11 @@ block content
 - if (!fixed)
   - var fixed = false
 
-  .well#playlists-list
-    .fixed
+  .listHeader
     h1.list-name= name
     #playlist-search
     .total-time-div
+  .scrollable  
     ul#playlists.nav.nav-pills(data-bind="foreach: playlists")
         li(data-bind=inndbind).playlist-name.well.well-small
           h5(data-bind="text: name")

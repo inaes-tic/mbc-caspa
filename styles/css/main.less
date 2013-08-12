@@ -12,6 +12,8 @@
 @import 'font-Arvo.less';
 
 @header-height: 139px;
+@universe-width: 251px;
+@height_listHeader:100px;
 
 body {
     position: relative;
@@ -57,48 +59,34 @@ body {
 /*/////: BODY - MORE THAN 1 SECTION ://///*/
 
 #content {
-    top: @header-height + 15px;
-    padding-top: @header-height + 15px;
+	    position: absolute;
+	    right: 0px;
+	    bottom: 0px;
+	    left: 0px;
+	    top: @header-height;
+		  overflow: hidden;
+	    
+	    &.trans {
+		    -webkit-transition: top 400ms ease-in-out;
+		    transition: top 400ms ease-in-out;
+		}
 }
 
-body.Comp {
-	#content.no-Pov {
-    	top: @header-height - 90px;
-    	padding-top: @header-height - 90px;
-	}
-	#content.Pov {
-    	top: @header-height - 90px;
-	}
-	.anchor-offset {
-    	top: -(@header-height - 90px);
-	}
+// Body with folded header
+body.folded {
 	#Panel {
     	top: -105px;
     	-webkit-transition: top 400ms ease-in-out;
     	transition: top 400ms ease-in-out;
 	}
-}
+	
+	#content {
+    	top: @header-height - 105px;
+	}
 
-#content.Pov {
-    position: absolute;
-    padding-top: 0px;
-    right: 20px;
-    bottom: 20px;
-    left: 20px;
-
-    overflow: hidden;
-
-    top: @header-height + 15px;
-}
-
-#content.Pov.trans {
-    -webkit-transition: top 400ms ease-in-out;
-    transition: top 400ms ease-in-out;
-}
-
-#content.no-Pov.trans {
-    -webkit-transition: padding-top 400ms ease-in-out;
-    transition: padding-top 400ms ease-in-out;
+	.anchor-offset {
+    	top: -(@header-height - 105px);
+	}
 }
 
 h1, h2, h3, h4, h5 {
@@ -235,7 +223,7 @@ legend {
 
 .editable-list-name {
     border: solid 1px #ddd;
-    margin: -6px 29px 9px 0px;
+    margin: 0px 29px 4px 0px;
     height: 35px!important;
     font-size: 28px!important;
     line-height: 30px;
@@ -340,7 +328,175 @@ legend {
 
 /*: Browse media :*/
 
+#media-list { 
+  position: absolute;
+  top: 15px;
+  bottom: 15px;
+  right: 15px;
+  left: 15px;
+  
+  background-color:#FFF;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+
+  -webkit-transition: left 400ms ease-in-out;
+  transition: left 400ms ease-in-out;
+  
+  .listHeader {
+  	position: fixed;
+  	width:@universe-width;
+	  height:@height_listHeader;
+	  padding: 15px 12px;
+  }
+  .scrollable {
+  	position: absolute;
+  	top:@height_listHeader;
+  	left:0px;
+  	bottom:12px;
+  	overflow: scroll;
+  	overflow-x:hidden;
+  	right:0px;
+	  left:0px;
+  	padding: 0px 12px 0px 12px;
+  }
+}
+
 /*: Edit playlists :*/
+#media-edit { 
+  #universe {
+	    position: absolute;
+	    width: @universe-width;
+	    top: 15px;
+	    bottom: 15px;
+	    left: 0px;
+	    
+	    background-color:#FFF;
+	    -webkit-border-radius: 0px 5px 5px 0px;
+		  border-radius: 0px 5px 5px 0px;
+		  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+		  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+
+	    -webkit-transition: left 400ms ease-in-out;
+	    transition: left 400ms ease-in-out;
+	    
+	    .listHeader {
+	    	position: fixed;
+	    	width:@universe-width;
+			  height:@height_listHeader;
+			  padding: 15px 12px;
+	    }
+	    .scrollable {
+	    	position: absolute;
+	    	top:@height_listHeader;
+	    	left:0px;
+	    	bottom:12px;
+	    	overflow: scroll;
+	    	overflow-x:hidden;
+	    	right:0px;
+    	  left:0px;
+	    	padding: 0px 12px 0px 12px;
+	    }
+	}
+	#lists-panel {
+	    position: absolute;
+	    top: 15px;
+	    right: 15px;
+	    bottom: 15px;
+	    left: @universe-width + 20px;
+	    
+	    #left-pane{
+	       position:absolute;
+         top:0px;
+         bottom:0px;
+         left:0px;
+         width:50%;
+         
+         #media-list {
+             position:absolute;
+             left:0px;
+             right:15px;
+             top:0px;
+             bottom:0px;
+            
+             background-color:#FFF;
+        	   -webkit-border-radius: 5px;
+      		   border-radius: 5px;
+      		   -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+      		   box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+   
+    		    .listHeader {
+      	    	position: fixed;
+      	    	width:25%;
+      			  height:@height_listHeader;
+      			  padding: 15px 12px;
+      	    }
+      	    
+      	    .scrollable {
+      	    	position: absolute;
+      	    	top:@height_listHeader;
+      	    	right:0px;
+      	    	left:0px;
+      	    	bottom:12px;
+      	    	overflow: scroll;
+      	    	overflow-x:hidden;
+      	    	padding: 0px 12px 0px 12px;
+      	    }
+         }
+	    }
+	    
+	    #right-pane{
+	       position:absolute;
+         top: 0px;
+         bottom:0px;
+         right:0px;
+         width:50%;
+         margin-left: 5px;
+         
+         #media-list {
+             position:absolute;
+             left:0px;
+             right:0px;
+             top:0px;
+             bottom:0px;
+            
+             background-color:#FFF;
+        	   -webkit-border-radius: 5px;
+      		   border-radius: 5px;
+      		   -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+      		   box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+   
+    		    .listHeader {
+      	    	position: fixed;
+      	    	width:25%;
+      			  height:@height_listHeader;
+      			  padding: 15px 12px;
+      	    }
+      	    
+      	    .scrollable {
+      	    	position: absolute;
+      	    	top:@height_listHeader;
+      	    	right:0px;
+      	    	left:0px;
+      	    	bottom:12px;
+      	    	overflow: scroll;
+      	    	overflow-x:hidden;
+      	    	padding: 0px 12px 0px 12px;
+      	    }
+         }
+	    }
+	}
+	&.folded {
+		#universe {
+		    left: -300px;
+		}
+		#lists-panel {
+	    	width: 100%;
+		}
+	}
+}
+
 .nav-pills {
 	li {
 		width: 100%;
@@ -357,55 +513,65 @@ legend {
 	border-radius: 4px;
 }
 
-#media-search.input-large.search-query{
+#media-search.input-large.search-query {
 	width:160px;
 }
-
-.onePlaylist {
-	margin: 0px -20px;
-}
-
-/*#playlists-list {
-	position: fixed;
-	height: 500px;
-	#playlists {
-		position: fixed;
-		overflow: scroll;
-		max-height: 300px;
-		max-width: 300px;
-	}
-}*/
 
 /*: Add medias :*/
 
 /*: Playout :*/
 #playout { 
-	#svg {
-	    position: absolute;
-	    width: 100%;
-	    top: 0px;
-	    right: 0px;
-	    bottom: 0px;
-	}
 	#universe {
 	    position: absolute;
-	    width: 300px;
-	    top: 0px;
-	    bottom: 0px;
-	    left: -300px;
+	    width: @universe-width;
+	    top: 15px;
+	    bottom: 15px;
+	    left: 0px;
 	
 	    -webkit-transition: left 400ms ease-in-out;
 	    transition: left 400ms ease-in-out;
+	    
+	    background-color:#FFF;
+	    -webkit-border-radius: 0px 5px 5px 0px;
+		  border-radius: 0px 5px 5px 0px;
+		  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+		  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+
+	    -webkit-transition: left 400ms ease-in-out;
+	    transition: left 400ms ease-in-out;
+	    
+	    .listHeader {
+	    	position: fixed;
+	    	width:@universe-width;
+			  height:@height_listHeader;
+			  padding: 15px 12px;
+	    }
+	    .scrollable {
+	    	position: absolute;
+	    	top:@height_listHeader;
+	    	left:0px;
+	    	bottom:12px;
+	    	overflow: scroll;
+	    	overflow-x:hidden;
+	    	right:0px;
+    	  left:0px;
+	    	padding: 0px 12px 0px 12px;
+	    }
 	}
-	&.Exp {
-		#svg {
-	    	width: 80%;
-		}
+	div#svg {
+	    position: absolute;
+	    //width: 80%;
+	    top: 15px;
+	    right: 15px;
+	    bottom: 15px;
+	    left: @universe-width + 20px;
+	}
+	&.folded {
 		#universe {
-		    left: 0px;
-		
-		    -webkit-transition: left 400ms ease-in-out;
-		    transition: left 400ms ease-in-out;
+		    left: -300px;
+		}
+		#svg {
+	    	width: 100%;
 		}
 	}
 }
@@ -464,6 +630,71 @@ div#svg {
 
 
 /*: Schedule :*/
+
+#schedule { 
+	#universe {
+	    position: absolute;
+	    width: @universe-width;
+	    top: 15px;
+	    bottom: 15px;
+	    left: 0px;
+	
+	    -webkit-transition: left 400ms ease-in-out;
+	    transition: left 400ms ease-in-out;
+
+	    background-color:#FFF;
+	    -webkit-border-radius: 0px 5px 5px 0px;
+		  border-radius: 0px 5px 5px 0px;
+		  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+		  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+
+	    -webkit-transition: left 400ms ease-in-out;
+	    transition: left 400ms ease-in-out;
+	    
+	    .listHeader {
+	    	position: fixed;
+	    	width:@universe-width;
+			  height:@height_listHeader;
+			  padding: 15px 12px;
+	    }
+	    .scrollable {
+	    	position: absolute;
+	    	top:@height_listHeader;
+	    	left:0px;
+	    	bottom:12px;
+	    	overflow: scroll;
+	    	overflow-x:hidden;
+	    	right:0px;
+    	  left:0px;
+	    	padding: 0px 12px 0px 12px;
+	    }
+	}
+	#calendar {
+	    position: absolute;
+	    //width: 70%;
+	    top: 15px;
+	    right: 15px;
+	    bottom: 0px;
+	    left: @universe-width + 20px;
+	}
+	&.folded {
+		#universe {
+		    left: -300px;
+		}
+		#calendar {
+	    	width: 100%;
+		}
+	}
+}
+
+/*#schedule_calendar {
+ position: absolute;
+ bottom:15px;
+ top:15px;
+ left:0px;
+ right:0px;
+}*/
+
 //Delete button
 .fc-event-closebutton {
     position: absolute;
@@ -482,6 +713,35 @@ div#svg {
 }
 
 /*: Configure :*/
+#configure { 
+	#menu {
+	    position: absolute;
+	    width: @universe-width;
+	    top: 0px;
+	    bottom: 0px;
+	    left: 0px;
+	
+	    -webkit-transition: left 400ms ease-in-out;
+	    transition: left 400ms ease-in-out;
+	}
+	#info {
+	    position: absolute;
+	    //width: 70%;
+	    top: 0px;
+	    right: 0px;
+	    bottom: 0px;
+	    left: @universe-width + 20px;
+	}
+	&.folded {
+		#menu {
+		    left: -300px;
+		}
+		#info {
+	    	width: 100%;
+		}
+	}
+}
+
 
 /*/////: FOOTER ://///*/
 .footer {

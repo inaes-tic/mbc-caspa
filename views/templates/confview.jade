@@ -1,8 +1,8 @@
 - var data = 0
 - var defaults = 1
 - var descriptions = 2
-.row
-  .span3.bs-docs-sidebar
+#configure
+  #menu
     ul.nav.nav-list.bs-docs-sidenav
       each v, k in config[data]
         - if (k!= 'type' && k!='Search') {
@@ -14,7 +14,7 @@
       .form-actions.well(style='margin: 0;')
         a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
         a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
-  .span9.well
+  #info
     form.form-horizontal
       each v, k in config[data]
           - if (k!='type' && k!='Search') {

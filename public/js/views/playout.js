@@ -1594,7 +1594,7 @@ window.PlayoutView = Backbone.View.extend({
     el: '#content',
     initialize: function() {
         var self = this;
-        self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
+       // self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
         this.collection = this.options.schedule;
