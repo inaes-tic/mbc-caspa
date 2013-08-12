@@ -247,6 +247,17 @@ legend {
 
 /**/ 
 
+.ui-draggable-dragging {
+    pointer-events: none;
+    background-color:#FFF;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 0px 9px 1px rgba(0, 0, 0, .35);
+    box-shadow: 0px 0px 9px 1px rgba(0, 0, 0, .35);
+}
+
+/**/
+
 .bs-docs-sidenav {
     margin: 0px;
     position: fixed;
@@ -385,7 +396,7 @@ legend {
 	    	position: fixed;
 	    	width:@universe-width;
 			  height:@height_listHeader;
-			  padding: 15px 12px;
+			  padding: 15px 12px;			   
 	    }
 	    .scrollable {
 	    	position: absolute;
@@ -624,11 +635,6 @@ div#svg {
 	}
 }
 
-.ui-draggable-dragging {
-    pointer-events: none;
-}
-
-
 /*: Schedule :*/
 
 #schedule { 
@@ -687,14 +693,6 @@ div#svg {
 	}
 }
 
-/*#schedule_calendar {
- position: absolute;
- bottom:15px;
- top:15px;
- left:0px;
- right:0px;
-}*/
-
 //Delete button
 .fc-event-closebutton {
     position: absolute;
@@ -714,23 +712,79 @@ div#svg {
 
 /*: Configure :*/
 #configure { 
-	#menu {
+  #menu {
 	    position: absolute;
 	    width: @universe-width;
-	    top: 0px;
-	    bottom: 0px;
+	    top: 15px;
+	    bottom: 15px;
 	    left: 0px;
-	
+	    
+	    background-color:#FFF;
+	    -webkit-border-radius: 0px 5px 5px 0px;
+		  border-radius: 0px 5px 5px 0px;
+		  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+		  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+
 	    -webkit-transition: left 400ms ease-in-out;
 	    transition: left 400ms ease-in-out;
+	    
+	    .listHeader {
+	    	position: fixed;
+	    	width:@universe-width;
+			  height:@height_listHeader;
+			  padding: 10px 0px;
+			  
+			  ul.nav.nav-list {
+		     .form-actions {
+		         border:none;
+		         background-color:transparent;
+		         padding:0px;
+		         
+		         /*position: absolute;
+             bottom: 0px;
+             left: 15px;
+             right: 15px;
+             margin:0px;*/
+		         
+		         .save_conf {
+  			        float:left;
+  			     }
+  			     .delete_conf {
+  			        float:right;
+  			     }
+		      }
+			  }
+	    }
+	    
 	}
 	#info {
 	    position: absolute;
 	    //width: 70%;
-	    top: 0px;
-	    right: 0px;
-	    bottom: 0px;
+	    top: 15px;
+	    right: 15px;
+	    bottom: 15px;
 	    left: @universe-width + 20px;
+	    
+	    background-color:#FFF;
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+      box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+      
+     .scrollable {
+	    	position: absolute;
+	    	top:15px;
+	    	left:0px;
+	    	bottom:12px;
+	    	overflow: scroll;
+	    	overflow-x:hidden;
+	    	right:0px;
+    	  left:0px;
+	    	padding: 0px 12px 0px 12px;
+	    	.page-header {
+          margin: -10px 0px 30px 5px;
+        }    	
+	    }
 	}
 	&.folded {
 		#menu {
@@ -741,7 +795,6 @@ div#svg {
 		}
 	}
 }
-
 
 /*/////: FOOTER ://///*/
 .footer {
