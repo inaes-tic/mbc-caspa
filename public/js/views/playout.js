@@ -40,6 +40,8 @@ PlayoutTimeline.prototype = {
         self.layout = config.layout;
         self.shades = config.shades;
 
+        self.callbacks = config.callbacks || {};
+
         self.unique_id = config.unique_id;
         self.filter_bounds = {};
 
@@ -416,17 +418,17 @@ PlayoutTimeline.prototype = {
 
             if (event.ctrlKey) {
                 // Call external push down
-                this.update_data(this.callbacks.fix_overlap(occurrence));
+                this.update_data(this.callback("fix_overlap", [occurrence]));
                 this.redraw(this.config.smooth_drag, true);
-                this.update_data(this.callbacks.restore_overlap());
+                this.update_data(this.callback("restore_overlap"));
             } else {
                 // Call external revert
-                this.update_data(this.callbacks.restore_overlap());
+                this.update_data(this.callback("restore_overlap"));
                 this.redraw(this.config.smooth_drag, true);
             }
         } else {
             // Call external revert
-            this.update_data(this.callbacks.restore_overlap());
+            this.update_data(this.callback("restore_overlap"));
             this.redraw(this.config.smooth_drag, true);
         }
 
@@ -446,7 +448,7 @@ PlayoutTimeline.prototype = {
         this.dragging_playlist = undefined;
 
         // Call external revert
-        this.update_data(this.callbacks.restore_overlap());
+        this.update_data(this.callback("restore_overlap"));
         this.redraw(this.config.smooth_drag, true);
     },
 
@@ -458,6 +460,16 @@ PlayoutTimeline.prototype = {
         }
 
         return (create ? time : undefined);
+    },
+
+    bind_callback: function(name, callback) {
+        return this.callbacks[name] = callback;
+    },
+
+    callback: function(name, args) {
+        if (this.callbacks[name]) {
+            return this.callbacks[name].apply(this, args);
+        }
     },
 };
 
@@ -1555,9 +1567,8 @@ window.PlayoutView = Backbone.View.extend({
             return this.collection.models;
         }
 
-        this.timeline.callbacks = this.timeline.callbacks || {};
-        this.timeline.callbacks.fix_overlap = _.bind(fixOverlap, this);
-        this.timeline.callbacks.restore_overlap = _.bind(restoreOverlap, this);
+        this.timeline.bind_callback("fix_overlap", _.bind(fixOverlap, this));
+        this.timeline.bind_callback("restore_overlap", _.bind(restoreOverlap, this));
 
         self.external_drag = d3.behavior.drag();
         self.external_drag.on("dragstart", function() {
