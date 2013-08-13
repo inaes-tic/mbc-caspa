@@ -12,7 +12,6 @@ window.EditView = Backbone.View.extend({
         this.render();
     },
     render: function () {
-        //$(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
         $(this.el).html(template.mediaedit());
         new UniverseListView({
             collection: this.collection,
@@ -54,7 +53,7 @@ window.EditView = Backbone.View.extend({
         this.editview = new MediaListView({
             sortable: true,
             model: list,
-            el: $("#right-pane"),
+            el: $("#new-playlist"),
             type: 'playlist-sortable',
             pagination: false,
             search_type: 'client',
