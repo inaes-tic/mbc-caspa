@@ -11,7 +11,8 @@ var express = require('express'),
     moment = require('moment'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000,
-    uuid = require('node-uuid')
+    uuid = require('node-uuid'),
+    logger = mbc.logger().addLogger('caspa_server')
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -19,7 +20,7 @@ for (d in conf.Dirs) {
     /* HACK: but I'm not going to waist time writing mkdir -p */
     exec ('mkdir -p ' + conf.Dirs[d], function (error, stdout, stderr) {
         if (error !== null) {
-            console.log('exec error: ' + error);
+            logger.error('exec error: ' + error);
         }
     });
 }
@@ -78,11 +79,11 @@ var appModel = require('./routes')(app);
 //var media = require('./routes/media')(app);
 
 function debug_backend (backend) {
-        console.log ('Debugging backend: ', backend);
+        logger.info("Debugging backend: ", backend);
         backend.use(function(req, res, next) {
-                console.log(req.backend);
-                console.log(req.method);
-                console.log(JSON.stringify(req.model));
+                logger.debug('Backend: ', req.backend);
+                logger.debug('Method: ', req.method);
+                logger.debug('Model: ', JSON.stringify(req.model));
                 next();
         });
 }
@@ -120,7 +121,7 @@ listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, collections.
 var schedbackend = backboneio.createBackend();
 schedbackend.use(id_middleware);
 schedbackend.use(function (req, res, next) {
-    console.log ("schedbackend handler", req);
+    logger.trace("schedbackend handler", req);
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
@@ -135,7 +136,7 @@ listener.on('JSONmessage', function(chan, status) {
     // This receives messages from mosto and propagates the message through
     //  backbone.io
     var emit = _.after(6, function() {
-        console.log('emitting', status);
+        logger.info('emitting', status);
         statusbackend.emit('updated', status)
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
@@ -152,7 +153,7 @@ listener.on('JSONmessage', function(chan, status) {
         db.collection(collections.Pieces).findById(status.piece[pos]._id, function(err, piece) {
             if( err ) {
                 // we still want to call emit() even if there was a DB error
-                console.error(err);
+                logger.error(err);
             }
 
             if( piece ) {
@@ -223,7 +224,7 @@ mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostom
 _([mediabackend, listbackend, appbackend, piecebackend, transformbackend]).each (debug_backend);
 
 var io = backboneio.listen(app.listen(app.get('port'), function(){
-    console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
+    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env);
 }), { mediabackend: mediabackend,
       piecebackend: piecebackend,
       transformbackend: transformbackend,
@@ -247,7 +248,7 @@ if (process.env.MBC_SCRAPE) {
         utils.scrape_files (conf.Dirs.scrape, function (model) {
             db.collection(collections.Medias).insert(model, {safe:true}, function(err, result) {
                 if (err) {
-                    console.error ('error','An error has occurred' + err);
+                    logger.error('error','An error has occurred' + err);
                 } else {
                     mediabackend.emit('created', model);
                 }
@@ -255,5 +256,5 @@ if (process.env.MBC_SCRAPE) {
         });
     }, 300);
 } else {
-    console.log ("not scrapping");
+    logger.info ("not scrapping");
 }
