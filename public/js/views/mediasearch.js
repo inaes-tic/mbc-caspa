@@ -13,7 +13,8 @@ window.SearchView = function(options) {
     var completeList = nest.find('#playlist-table:first');
 
     var parseFacets = function (loaded_facets, facet) {
-        return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
+        var plucked_facet = (loaded_facets instanceof PageableCollection)?loaded_facets.pluck(facet):_.pluck(loaded_facets, facet);
+        return _.map(_.compact(_.uniq(plucked_facet)), function(val) { return String(val); });
     }
 
     el.html(template.mediasearch({type: type, pagination: pagination}));
@@ -65,11 +66,21 @@ window.SearchView = function(options) {
             clearSearch: function(clear_cb) {
                 clear_cb();
                 query_obj = {};
-                searchOnServer();
+                if(type=='server') {
+                    searchOnServer();
+                } else {
+                    console.log('borrar en cli');
+                }
             },
             search: function(query, searchCollection) {
                 query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
-                searchOnServer();
+                if(type == 'server') {
+                    searchOnServer();
+                } else {
+                    console.log(query_obj);
+                    collection.reset(collection.where(query_obj));
+                    console.log('busca en cli');
+                }
             },
             facetMatches : function(callback) {
                 callback(facets);
@@ -77,6 +88,7 @@ window.SearchView = function(options) {
             valueMatches : function(facet, searchTerm, callback) {
                 var options = {preserveOrder: true};
                 if (!loaded_facets.length) {
+                  if(type=='server') {
                     Backbone.sync('read', collection, {
                         silent: true,
                         data: { fields: facets },
@@ -86,6 +98,11 @@ window.SearchView = function(options) {
                             callback(f, options);
                         }
                     });
+                  } else {
+                    loaded_facets = collection;
+                    var f = parseFacets(loaded_facets, facet);
+                    callback(f, options);
+                  }
                 } else {
                     var f = parseFacets(loaded_facets, facet);
                     callback(f, options);
