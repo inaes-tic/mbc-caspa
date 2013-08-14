@@ -65,27 +65,13 @@ var AppRouter = Backbone.Router.extend({
     },
 
     playout: function() {
-        var self = this;
-        Universe.setQuery({});
-        Schedule.setQuery({});
-        Universe.fetch({success: function() {
-            Schedule.fetch({success: function() {
-                new PlayoutView({collection: Schedule});
-                self.headerView.selectMenuItem('playout-menu')
-            }});
-        }});
+        new PlayoutView({collection: Schedule});
+        this.headerView.selectMenuItem('playout-menu')
     },
 
     schedule: function() {
-        var self = this;
-        Universe.setQuery({});
-        Schedule.setQuery({});
-        Universe.fetch({success: function() {
-            Schedule.fetch({success: function() {
-                new ScheduleView({collection: Schedule});
-                self.headerView.selectMenuItem('schedule-menu');
-            }});
-        }});
+        new ScheduleView({collection: Schedule});
+        this.headerView.selectMenuItem('schedule-menu');
     },
 
     list: function() {
@@ -114,15 +100,8 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editMedia: function() {
-        var self = this;
-        mediaList.setQuery({});
-        Universe.setQuery({});
-        mediaList.fetch({success: function() {
-            Universe.fetch({success: function() {
-                new EditView ({el: $("#content"), collection: Universe});
-                self.headerView.selectMenuItem('edit-menu');
-            }});
-        }});
+        new EditView ({el: $("#content"), collection: Universe});
+        this.headerView.selectMenuItem('edit-menu');
     },
 
     about: function () {
