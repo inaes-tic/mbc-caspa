@@ -94,10 +94,10 @@ var mediabackend = backboneio.createBackend();
 mediabackend.use(backboneio.middleware.mongoStore(db, 'medias', { search: search_options.Medias }));
 
 var piecebackend = backboneio.createBackend();
-piecebackend.use(backboneio.middleware.mongoStore(db, 'pieces'));
+piecebackend.use(backboneio.middleware.mongoStore(db, 'pieces', {}));
 
 var transformbackend = backboneio.createBackend();
-transformbackend.use(backboneio.middleware.mongoStore(db, 'transforms'));
+transformbackend.use(backboneio.middleware.mongoStore(db, 'transforms'), {});
 
 var listbackend = backboneio.createBackend();
 listbackend.use(backboneio.middleware.mongoStore (db, 'lists', { search: search_options.Lists }));
