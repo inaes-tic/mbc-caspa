@@ -7,11 +7,11 @@ block content
          #new-playlist
          .form-actions.playlist-button-array(style='display:none;')
            .alert.alert-block.alert-unnamed-playlist(style='display:none')
-               button.close(type='button', data-dismiss='alert') ×
+               button.close.hide-alert(type='button') ×
                h4= i18n.gettext('Set a list name !')
-               p=  i18n.gettext('You are currently editing an un-named playlist\n'+ 'set a name before you can save.')
+               p=  i18n.gettext('You are currently editing an un-named playlist.\n' + 'Set a name before you can save.')
            .alert.alert-block.alert-empty-playlist(style='display:none')
-               button.close(type='button', data-dismiss='alert') ×
+               button.close.hide-alert(type='button') ×
                h4= i18n.gettext('Add some media !')
                p=  i18n.gettext('You need to add some media before you can save a playlist, drag some rows from the left pane to start adding')
            .btn.btn-block.btn-primary.save= i18n.gettext('Save')

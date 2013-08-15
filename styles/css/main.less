@@ -11,8 +11,8 @@
 @import 'font-Andika.less';
 @import 'font-Arvo.less';
 
-@header-height: 139px;
-@universe-width: 251px;
+@header_height: 139px;
+@universe_width: 251px;
 @height_listHeader:100px;
 
 body {
@@ -63,7 +63,7 @@ body {
 	    right: 0px;
 	    bottom: 0px;
 	    left: 0px;
-	    top: @header-height;
+	    top: @header_height;
 		  overflow: hidden;
 	    
 	    &.trans {
@@ -81,11 +81,11 @@ body.folded {
 	}
 	
 	#content {
-    	top: @header-height - 105px;
+    	top: @header_height - 105px;
 	}
 
 	.anchor-offset {
-    	top: -(@header-height - 105px);
+    	top: -(@header_height - 105px);
 	}
 }
 
@@ -303,7 +303,7 @@ legend {
 .anchor-offset {
     display: block;
     position: relative;
-    top: -(@header-height + 15px);
+    top: -(@header_height + 15px);
 }
 
 /*: Home :*/
@@ -357,7 +357,7 @@ legend {
   
   .listHeader {
   	position: fixed;
-  	width:@universe-width;
+  	width:@universe_width;
 	  height:@height_listHeader;
 	  padding: 15px 12px;
   }
@@ -378,7 +378,7 @@ legend {
 #media-edit { 
   #universe {
 	    position: absolute;
-	    width: @universe-width;
+	    width: @universe_width;
 	    top: 15px;
 	    bottom: 15px;
 	    left: 0px;
@@ -394,7 +394,7 @@ legend {
 	    
 	    .listHeader {
 	    	position: fixed;
-	    	width:@universe-width;
+	    	width:@universe_width;
 			  height:@height_listHeader;
 			  padding: 15px 12px;			   
 	    }
@@ -415,7 +415,7 @@ legend {
 	    top: 15px;
 	    right: 15px;
 	    bottom: 15px;
-	    left: @universe-width + 20px;
+	    left: @universe_width + 20px;
 	    
 	    #left-pane{
 	       position:absolute;
@@ -495,7 +495,7 @@ legend {
       	    	top:@height_listHeader;
       	    	right:0px;
       	    	left:0px;
-      	    	bottom:12px;
+      	    	bottom:105px;
       	    	overflow: scroll;
       	    	overflow-x:hidden;
       	    	padding: 0px 12px 0px 12px;
@@ -522,11 +522,40 @@ legend {
 	}
 }
 	
-.form-actions{
-	border: 1px solid #E3E3E3;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
+.form-actions {
+	border: none;
+	background-color:transparent;
+	
+	position:absolute;
+	left:0px;
+	right:0px;
+	bottom:-20px;
+	
+	.alert-unnamed-playlist, .alert-empty-playlist {
+	  position:absolute;
+  	left:15px;
+  	right:15px;
+  	bottom:-3px;
+  	padding:10px;
+  	height:49px;
+  	
+  	.close {
+  	 top: -11px;
+     right: -5px;
+     color:#F00;
+     opacity:.4;
+      &:hover{
+        opacity:.8;
+      }
+  	}
+  	p {
+  	 line-height:13px;
+  	}
+  	h4 {
+  	 line-height:22px;
+  	}
+  	
+	}
 }
 
 #media-search.input-large.search-query {
@@ -539,7 +568,7 @@ legend {
 #playout { 
 	#universe {
 	    position: absolute;
-	    width: @universe-width;
+	    width: @universe_width;
 	    top: 15px;
 	    bottom: 15px;
 	    left: 0px;
@@ -558,7 +587,7 @@ legend {
 	    
 	    .listHeader {
 	    	position: fixed;
-	    	width:@universe-width;
+	    	width:@universe_width;
 			  height:@height_listHeader;
 			  padding: 15px 12px;
 	    }
@@ -580,7 +609,7 @@ legend {
 	    top: 15px;
 	    right: 15px;
 	    bottom: 15px;
-	    left: @universe-width + 20px;
+	    left: @universe_width + 20px;
 	}
 	&.folded {
 		#universe {
@@ -645,7 +674,7 @@ div#svg {
 #schedule { 
 	#universe {
 	    position: absolute;
-	    width: @universe-width;
+	    width: @universe_width;
 	    top: 15px;
 	    bottom: 15px;
 	    left: 0px;
@@ -664,7 +693,7 @@ div#svg {
 	    
 	    .listHeader {
 	    	position: fixed;
-	    	width:@universe-width;
+	    	width:@universe_width;
 			  height:@height_listHeader;
 			  padding: 15px 12px;
 	    }
@@ -686,7 +715,7 @@ div#svg {
 	    top: 15px;
 	    right: 15px;
 	    bottom: 0px;
-	    left: @universe-width + 20px;
+	    left: @universe_width + 20px;
 	}
 	&.folded {
 		#universe {
@@ -719,7 +748,7 @@ div#svg {
 #configure { 
   #menu {
 	    position: absolute;
-	    width: @universe-width;
+	    width: @universe_width;
 	    top: 15px;
 	    bottom: 15px;
 	    left: 0px;
@@ -735,7 +764,7 @@ div#svg {
 	    
 	    .listHeader {
 	    	position: fixed;
-	    	width:@universe-width;
+	    	width:@universe_width;
 			  height:@height_listHeader;
 			  padding: 10px 0px;
 			  
@@ -762,7 +791,7 @@ div#svg {
 	    top: 15px;
 	    right: 15px;
 	    bottom: 15px;
-	    left: @universe-width + 20px;
+	    left: @universe_width + 20px;
 	    
 	    background-color:#FFF;
       -webkit-border-radius: 5px;

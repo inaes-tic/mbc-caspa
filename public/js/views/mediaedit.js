@@ -4,6 +4,7 @@ window.EditView = Backbone.View.extend({
         "click #create-playlist" : "createPlaylist",
         "click #universe li"     : "switchPlaylistEvent",
         "click #right-pane .kill-media-list"  : "killEditList",
+        "click #right-pane .hide-alert"  : "hideAlert",
         "click .playlist-button-array .save"  : "savePlaylist",
         "click .playlist-button-array .delete": "delPlaylist",
     },
@@ -39,6 +40,11 @@ window.EditView = Backbone.View.extend({
         $('.playlist-button-array', this.el).hide();
         $('.no-playlist-alert', this.el).show();
     },
+    hideAlert: function () {
+        console.log ('close alert');
+        $('.alert-empty-playlist', this.el).hide();
+        $('.alert-unnamed-playlist', this.el).hide();
+    },
     switchPlaylistEvent: function (event, a) {
         return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
     },
@@ -73,9 +79,8 @@ window.EditView = Backbone.View.extend({
         var occurrences = this.editview.model.get('occurrences');
 
         console.log ("i want to save", this.editview.model, medias, id);
-        $('.alert-empty-playlist', this.el).hide();
-        $('.alert-unnamed-playlist', this.el).hide();
-        $('.alert-has-occurrences', this.el).hide();
+        //$('.alert-empty-playlist', this.el).hide();
+        //$('.alert-unnamed-playlist', this.el).hide();
         if (! medias.length) {
             console.log ("noooo medias");
             $('.alert-empty-playlist', this.el).show();
