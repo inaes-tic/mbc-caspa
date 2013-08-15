@@ -564,6 +564,46 @@ legend {
 
 /*: Add medias :*/
 
+#add-media { 
+  position: absolute;
+  top: 15px;
+  bottom: 15px;
+  right: 15px;
+  left: 15px;
+  
+  background-color:#FFF;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+
+  -webkit-transition: left 400ms ease-in-out;
+  transition: left 400ms ease-in-out;
+  
+  .listHeader {
+  	position: fixed;
+  	left:15px;
+  	right:15px;
+	  height:@height_listHeader+50;
+	  padding: 15px 12px;
+  }
+  .scrollable {
+  	position: absolute;
+  	top:@height_listHeader+50;
+  	left:0px;
+  	bottom:12px;
+  	overflow: scroll;
+  	overflow-x:hidden;
+  	right:0px;
+	  left:0px;
+  	padding: 0px 12px 0px 12px;
+  }
+}
+
+.pending {
+  margin: 0 0 10px 14px; 
+}
+
 /*: Playout :*/
 #playout { 
 	#universe {
