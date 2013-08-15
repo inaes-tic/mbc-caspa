@@ -604,6 +604,18 @@ legend {
   margin: 0 0 10px 14px; 
 }
 
+.progress { 
+  .bar {
+    &.stopped {
+      background-color:#949494; 
+      &#main-progress {
+        background-image: -webkit-gradient(linear,0 0,0 100%,from(#D5D7D8),to(#858585));
+        background-image: -webkit-linear-gradient(top,#D5D7D8,#858585);
+        background-repeat: repeat-x;
+      }
+    }
+  }
+}
 /*: Playout :*/
 #playout { 
 	#universe {
