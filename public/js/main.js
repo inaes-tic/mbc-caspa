@@ -65,7 +65,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     playout: function() {
-        new PlayoutView({collection: Schedule});
+        new PlayoutView();
         this.headerView.selectMenuItem('playout-menu')
     },
 

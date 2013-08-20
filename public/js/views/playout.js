@@ -1489,6 +1489,9 @@ window.PlayoutView = Backbone.View.extend({
         self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
+        this.collection = this.options.schedule;
+        this.playlists = this.options.universe;
+
         this.svg = this.$el.find("#playout #svg");
 
         this.timeline = new PlayoutTimeline({
@@ -1528,15 +1531,15 @@ window.PlayoutView = Backbone.View.extend({
         });
 
         // Event listeners
-        self.collection.bind('sync', function(elem) {
-            self.render();
+        this.collection.bind('sync', function(elem) {
+            this.render();
         }, this);
 
-        Universe.bind('sync', function(elem) {
+        this.playlists.bind('sync', function(elem) {
             this.update_drag();
         }, this);
 
-        self.collection.bind('all', function (e, a) {
+        this.collection.bind('all', function (e, a) {
             console.log("PlayoutView > event:" + e + " > ", a);
         }, this);
 
@@ -1555,7 +1558,7 @@ window.PlayoutView = Backbone.View.extend({
             }
         });
 
-        // Config Drag Events
+        // Config overlapping handling via callbacks
         function fixOverlap(occurrence) {
             this.collection.memento.store();
             this.collection.simulateOverlap(occurrence);
@@ -1570,11 +1573,12 @@ window.PlayoutView = Backbone.View.extend({
         this.timeline.bind_callback("fix_overlap", _.bind(fixOverlap, this));
         this.timeline.bind_callback("restore_overlap", _.bind(restoreOverlap, this));
 
+        // Config Drag Events
         self.external_drag = d3.behavior.drag();
         self.external_drag.on("dragstart", function() {
             self.drag_elem = $(event.target).closest("li.playlist-name");
             if (self.drag_elem.length == 1) {
-                self.drag_origin = Universe.get(self.drag_elem.attr("id"));
+                self.drag_origin = self.playlists.get(self.drag_elem.attr("id"));
             } else {
                 self.drag_elem = undefined;
                 self.drag_origin = undefined;
