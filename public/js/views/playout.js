@@ -107,8 +107,9 @@ PlayoutTimeline.prototype = {
 
     },
 
-    update_data: function(new_data) {
+    update_data: function(new_data, bounds) {
         this.data = new_data;
+        this.fetched_bounds = bounds || this.fetched_bounds;
 
         // Filter data
         this.cache_filtered_data(true);
@@ -211,6 +212,8 @@ PlayoutTimeline.prototype = {
         for (var i = 0, li = self.panels.length; i < li; ++i) {
             self.panels[i].panTime(time, smooth);
         }
+
+        this.callback("panning", [this.get_max_bounds()]);
     },
 
     centerTime: function(time, smooth) {
@@ -222,6 +225,8 @@ PlayoutTimeline.prototype = {
         if (this.dragging_playlist !== undefined) {
             this.drag_move(this.dragging_playlist);
         }
+
+        this.callback("panning", [this.get_max_bounds()]);
     },
 
     draw_now_indicator: function() {
@@ -1082,7 +1087,7 @@ PlayoutTimelinePanel.prototype = {
         }
 
         self.reposition_now_indicator();
-
+        self.reposition_fetch_bounds(smooth);
     },
 
     draw_playlists: function(selection, smooth, class_name, color) {
@@ -1449,6 +1454,107 @@ PlayoutTimelinePanel.prototype = {
         }
     },
 
+    reposition_fetch_bounds: function(smooth) {
+        var self = this;
+
+        var wait_panel;
+        var bounds = this.timeline.fetched_bounds;
+        if (bounds) {
+            if (bounds.start > self.start) {
+                wait_panel = {
+                    position: "top",
+                    span: bounds.start - self.start,
+                };
+            }
+            if (bounds.end < self.end) {
+                wait_panel = {
+                    position: "bottom",
+                    span: this.end - bounds.end,
+                };
+            }
+        } else {
+            wait_panel = {
+                position: "full",
+            };
+        }
+
+        // Comparison function
+        function compare(elem) {
+            return elem.position;
+        }
+
+        var data = (wait_panel ? [wait_panel] : []);
+
+        // Metrics
+        var metrics = {};
+        switch(self.timeline.layout) {
+            case PlayoutTimeline.HORIZONTAL:
+                metrics["x"] = function(d) {
+                    if (d.position == "bottom") {
+                        return self.timeToPixels(self.end - d.span - self.start);
+                    } else {
+                        return 0;
+                    }
+                };
+                metrics["y"] = self.padding[0];
+
+                metrics["width"] = function(d) {
+                    if (d.position == "full") {
+                        return self.drawing_width;
+                    } else {
+                        return self.timeToPixels(d.span);
+                    }
+                };
+                metrics["height"] = self.drawing_height;
+            break;
+            case PlayoutTimeline.VERTICAL:
+                metrics["y"] = function(d) {
+                    if (d.position == "bottom") {
+                        return self.timeToPixels(self.end - d.span - self.start);
+                    } else {
+                        return 0;
+                    }
+                };
+                metrics["x"] = self.padding[0];
+
+                metrics["height"] = function(d) {
+                    if (d.position == "full") {
+                        return self.drawing_width;
+                    } else {
+                        return self.timeToPixels(d.span);
+                    }
+                };
+                metrics["width"] = self.drawing_height;
+            break;
+        }
+
+        var selection = this.svg.selectAll("svg.WaitPanel").data(data, compare);
+
+        // Add panel
+        var new_panel = selection.enter()
+            .append("svg:svg")
+                .attr("class", "WaitPanel")
+                .append("svg:rect")
+                    .style("fill", "#000")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .style("opacity", 0)
+                    .transition().duration(500)
+                    .style("opacity", 0.5);
+
+        // Add background to new element
+        self.smoothify(selection, smooth)
+            .attr("y", metrics["y"])
+            .attr("x", metrics["x"])
+            .attr("height", metrics["height"])
+            .attr("width", metrics["width"])
+            .style("pointer-events", "none");
+
+        selection.exit().remove();
+    },
+
     pixelsToTime: function(pixels) {
         var self = this;
 
@@ -1634,12 +1740,17 @@ window.PlayoutView = Backbone.View.extend({
             self.timeline.drag_clear();
         });
 
-        this.render();
+        // Config panning events
+        this.timeline.bind_callback("panning", _.bind(this.fetch_occurrences, this));
+
+        // Final startup
         this.update_drag();
+        this.ready_to_fetch = true;
+        this.fetch_occurrences(this.timeline.get_max_bounds());
     },
 
     render: function() {
-        this.timeline.update_data(this.collection.models);
+        this.timeline.update_data(this.collection.models, this.bounds);
         this.timeline.redraw();
     },
 
@@ -1647,4 +1758,33 @@ window.PlayoutView = Backbone.View.extend({
         d3.selectAll("#universe ul#playlists li").call(this.external_drag);
     },
 
+    fetch_occurrences: function(bounds) {
+        // Performance timer
+        if (!this.ready_to_fetch) {
+            this.fetch_requested = true;
+            return false;
+        } else {
+            this.fetch_requested = false;
+            this.ready_to_fetch = false;
+        }
+
+        var self = this;
+
+        // Fetching
+        this.collection.setQuery({criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}});
+        this.collection.fetch({
+            success: function() {
+                self.bounds = bounds;
+            },
+        });
+
+        // Performance timer
+        window.setTimeout(function() {
+            self.ready_to_fetch = true;
+            if (self.fetch_requested) {
+                self.fetch_occurrences(bounds);
+            }
+        }, 500);
+    },
 });
+
