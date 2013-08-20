@@ -1095,18 +1095,16 @@ PlayoutTimelinePanel.prototype = {
         var target = self.smoothify(selection, smooth);
         switch(self.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                selection
+                target
                     .attr("y", 1.5)
                     .attr("height", self.drawing_height - 1.5)
-                target
                     .attr("x", function(d) { return (d.get("start") - self.start) / self.drawing_quota; })
                     .attr("width", function(d) { return (d.get("end") - d.get("start")) / self.drawing_quota; });
             break;
             case PlayoutTimeline.VERTICAL:
-                selection
+                target
                     .attr("x", 0)
                     .attr("width", self.drawing_height - 0.5)
-                target
                     .attr("y", function(d) { return (d.get("start") - self.start) / self.drawing_quota; })
                     .attr("height", function(d) { return (d.get("end") - d.get("start")) / self.drawing_quota; });
             break;
