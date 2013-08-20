@@ -74,9 +74,7 @@ module.exports = function(app) {
         path.join(lib_dir, 'knockout-drag-binding.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
         require.resolve('node-uuid'),
-        require.resolve('backbone-pageable/lib/backbone-pageable.js'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
-        path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
         require.resolve('d3/d3.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
@@ -86,6 +84,8 @@ module.exports = function(app) {
 
     //XXX Hack to include relational after backbone.io
     var vendorOthersJs = new folio.Glossary([
+        path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
+        require.resolve('backbone-pageable/lib/backbone-pageable.js'),
         require.resolve('backbone-relational/backbone-relational.js'),
     ], {minify:app.get('minify')});
 
