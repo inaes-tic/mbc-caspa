@@ -7,6 +7,7 @@ window.EditView = Backbone.View.extend({
         "click #right-pane .hide-alert"  : "hideAlert",
         "click .playlist-button-array .save"  : "savePlaylist",
         "click .playlist-button-array .delete": "delPlaylist",
+        "click #toggle-universe": "toggleSide",
     },
     initialize: function () {
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
@@ -134,5 +135,25 @@ window.EditView = Backbone.View.extend({
             Universe.remove (id);
             this.killEditList();
         }
+    },
+          
+    toggleSide: function () {
+        var universe = $('#universe');
+        var listsPanel = $('#lists-panel');
+        //var toggleUniverse = $('#toggle-universe');
+               
+        if (universe.hasClass('folded')!=false) {
+            // Expanded universe
+            console.log ("Expanded universe");
+            universe.removeClass("folded");
+            listsPanel.removeClass("folded");
+         //   toggleUniverse.removeClass("folded");
+        } else {
+            // Compact universe
+            console.log ("Folded universe");
+            universe.addClass("folded");
+            listsPanel.addClass("folded");
+        //    toggleUniverse.addClass("folded");
+        };
     },
 });

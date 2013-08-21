@@ -377,20 +377,50 @@ legend {
 /*: Edit playlists :*/
 #media-edit { 
   #universe {
-	    position: absolute;
+	    position: absolute; 
 	    width: @universe_width;
 	    top: 15px;
 	    bottom: 15px;
 	    left: 0px;
-	    
+	    -webkit-transition: left 0.7s ease-in-out;
+		  transition: left 0.7s ease-in-out;
+		  	    
 	    background-color:#FFF;
 	    -webkit-border-radius: 0px 5px 5px 0px;
 		  border-radius: 0px 5px 5px 0px;
 		  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
 		  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+      
+	    &.folded {
+	      left:-(@universe_width - 28px);
+	      -webkit-transition: left 0.7s ease-in-out;
+		    transition: left 0.7s ease-in-out;
+	    }
+      	    
+	    #toggle-universe {
+  	     position:absolute;
+  	     width:14px;
+  	     height:14px;
+  	     top: 8px;
+  	     right: 32px;
+  	     background-image: url("../img/glyphicons-halflings.png");
+  	     background-position: -456px -119px;
+  	     font-size: 31px;
+  	     font-weight: bold;
+  	     opacity:.2;
+  	     text-decoration: none;
+  	     -webkit-transition: right 0.7s ease-in-out;
+		     transition: right 0.7s ease-in-out;
 
-	    -webkit-transition: left 400ms ease-in-out;
-	    transition: left 400ms ease-in-out;
+  	     /*&.folded {
+    		    right:31px;
+    		    -webkit-transition: right 0.7s ease-in-out;
+    		    transition: right 0.7s ease-in-out;
+  	     }*/
+  	     
+  	     &:hover{opacity:0.4;}
+  	     
+	    }
 	    
 	    .listHeader {
 	    	position: fixed;
@@ -410,14 +440,23 @@ legend {
 	    	padding: 0px 12px 0px 12px;
 	    }
 	}
+     
 	#lists-panel {
 	    position: absolute;
 	    top: 15px;
 	    right: 15px;
 	    bottom: 15px;
 	    left: @universe_width + 20px;
+	    -webkit-transition: left 0.7s ease-in-out;
+		  transition: left 0.7s ease-in-out;
 	    
-	    #left-pane{
+	    &.folded {
+	      left: 48px;
+	      -webkit-transition: left 0.7s ease-in-out;
+		    transition: left 0.7s ease-in-out;
+	    }
+	    
+	    #left-pane {
 	       position:absolute;
          top:0px;
          bottom:0px;
