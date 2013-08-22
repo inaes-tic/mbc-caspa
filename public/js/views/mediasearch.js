@@ -3,7 +3,7 @@ window.SearchView = function(options) {
     var type = 'type' in options ? options['type'] : 'server';
     var pagination = 'pagination' in options ? options['pagination'] : false;
     var collection = options['collection'];
-    var page_size = options['page_size'] || 10;
+    var page_size = options['page_size'] || collection.state.pageSize;
     var type = 'type' in options ? options['type'] : 'server';
     var facets = options['facets'] || [];
     var query_obj = {};
@@ -17,19 +17,23 @@ window.SearchView = function(options) {
 
     switch(pagination) {
         case 'traditional':
-            collection.switchMode('server', {fetch: false});
-            collection.setPageSize(page_size,{fetch:false, first: true});
+            // XXX WARN: changing page size breaks relations. Just Don't Do It.
+            if (page_size != collection.state.pageSize){
+                collection.setPageSize(page_size,{fetch:false});
+            }
             renderBootstrapPaginator();
             break;
         case 'endless':
             var offset = 100;
             var wait = 100;
-            collection.switchMode('endless', {fetch: false});
-            collection.setPageSize(page_size,{fetch: false, first: true});
+            // XXX WARN: changing page size breaks relations. Just Don't Do It.
+            if (page_size != collection.state.pageSize){
+                collection.setPageSize(page_size,{fetch: false, first: true});
+            }
             var scroll_callback = function () {
                 if ($(window).scrollTop() >= ( $(document).height() - $(window).height() - offset)
                      && collection.hasNext() ){
-                    collection.getNextPage();
+                    collection.getNextPage({remove: false});
                 }
             };
 
