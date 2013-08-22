@@ -953,7 +953,14 @@ PlayoutTimelinePanel.prototype = {
             }
 
             var second_level = updated_set.selectAll("svg.Clip").data(function(d) {
-                return playlist_visible(d) ? Universe.get(d.get("list")).get("models") : [];
+                ret = [];
+                if (playlist_visible(d)) {
+                    pl = d.get('playlist');
+                    if (pl) {
+                        ret = pl.get('pieces').models;
+                    }
+                }
+                return ret;
             });
 
             function length_to_duration(val) {
@@ -1590,7 +1597,7 @@ window.PlayoutView = Backbone.View.extend({
 
                 var occurrence = {
                     title:  self.drag_origin.get('name'),
-                    list:   self.drag_origin.get('_id'),
+                    playlist:   self.drag_origin.get('_id'),
                     start:  start,
                     end: end,
                     allDay: false,
