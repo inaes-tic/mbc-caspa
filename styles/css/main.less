@@ -14,6 +14,12 @@
 @header_height: 139px;
 @universe_width: 251px;
 @height_listHeader:100px;
+@width_streamToAir:287px;
+@color:#A60038;
+@color_light:#F0D4E0;
+@color_dark:#8D4960;
+
+@logo_dimensions:75px;
 
 body {
     position: relative;
@@ -46,6 +52,65 @@ body {
 			}
 		}
 	}
+}
+
+.logo {
+  background-image:url('../img/logoLayout.png'), url('../img/fadeLogoLayout.png');
+  top:15px;
+  right:34px;
+  height:@logo_dimensions;
+  width:@logo_dimensions;
+  background-size: @logo_dimensions @logo_dimensions;
+}
+
+.time-info-block {
+  position:absolute;
+  top:113px;
+  height:20px;
+  right:-20px;
+  z-index:501;
+  
+  span, div {
+    color:#FFF;
+    float:left;
+    margin:0px 0px 0px 15px;
+    text-align:right;
+    
+    &#time {
+      font-size:28px;
+    }
+    &#time-zone {
+      -webkit-transform: rotate(-90deg);
+      transform: rotate(-90deg);
+      font-size:10px;
+      padding:3px 0px 0px 4px;
+    }
+  }
+}
+
+.current-media {
+    position:absolute;
+    left:0px;
+    right:(@logo_dimensions)+@width_streamToAir;
+    .now-playing-block {
+      width:45%;
+    }
+    .show-block {
+      width:45%;
+      float:left;
+    }
+}
+
+.streams-to-air-block {
+  position:absolute;
+  right:@logo_dimensions*1.75;
+  width:@width_streamToAir;
+  
+  .source-switch-button.active {
+    background-color: @color;
+    background-image: -webkit-linear-gradient(top,@color,#64032C);
+    background-image: linear-gradient(to bottom,@color,#64032C);
+  }
 }
 
 .icon-edit, .icon-list, .icon-plus, .icon-tasks, .icon-globe, .icon-wrench {
@@ -88,6 +153,8 @@ body.folded {
     	top: -(@header_height - 105px);
 	}
 }
+/**/
+
 
 h1, h2, h3, h4, h5 {
     line-height: 1;
@@ -152,6 +219,29 @@ legend {
     	margin-top: 0px;
     	margin-bottom: 0px;
 	}
+}
+
+.label-warning, .badge-warning {
+  background-color: @color;
+}
+
+.btn-danger, .btn-danger:hover {
+  background-color: #7C002A;
+  background-image: -webkit-linear-gradient(top,@color,#7C002A);
+  background-image: linear-gradient(top,@color,#7C002A);
+}
+
+.btn-primary, .btn-primary:hover {
+  background-color: #303030;
+  background-image: -webkit-linear-gradient(top,#666,#303030);
+  background-image: linear-gradient(top,#666,#303030);
+}
+
+.browse{
+ color: #F7006C; 
+    &:hover{
+      color:@color;
+    }
 }
 
 /* Uploader: Drag & Drop */
@@ -560,6 +650,12 @@ legend {
 		}
 	}
 }
+
+.alert {
+  color:@color;
+  background-color:@color_light;
+  border: 1px solid @color_dark;
+}
 	
 .form-actions {
 	border: none;
@@ -577,11 +673,12 @@ legend {
   	bottom:-3px;
   	padding:10px;
   	height:49px;
+  	color:@color;
   	
   	.close {
   	 top: -11px;
      right: -5px;
-     color:#F00;
+     color:@color;
      opacity:.4;
       &:hover{
         opacity:.8;
@@ -864,6 +961,7 @@ div#svg {
 		         border:none;
 		         background-color:transparent;
 		         padding:0px;
+		         margin: 0px 10px;
 		         
 		         .save_conf {
   			        float:left;

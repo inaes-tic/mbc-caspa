@@ -8,6 +8,10 @@ window.SearchView = function(options) {
     var facets = options['facets'] || [];
     var query_obj = {};
 
+    var nest = el.parents('.infinit-panel:first');
+    var scrollable = nest.find('.scrollable:first');
+    var completePage = nest.find('#playlist-table:first');
+
     var parseFacets = function (loaded_facets, facet) {
         return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
     }
@@ -31,14 +35,14 @@ window.SearchView = function(options) {
                 collection.setPageSize(page_size,{fetch: false, first: true});
             }
             var scroll_callback = function () {
-                if ($(window).scrollTop() >= ( $(document).height() - $(window).height() - offset)
+                if (scrollable.scrollTop() >= (completeList.height() - scrollable.height() - offset)
                      && collection.hasNext() ){
-                    collection.getNextPage({remove: false});
+                    collection.getNextPage();
                 }
             };
 
             var throttled = _.throttle(scroll_callback, wait);
-            $(window).scroll(throttled);
+            scrollable.scroll(throttled);
             break;
 
         case false: break;

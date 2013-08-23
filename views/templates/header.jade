@@ -1,21 +1,22 @@
 .logo
-#version-diff(style="display:none") 0
-#version-current(style="display:none") 2.2.1
-#version-latest(style="display:none") 2.2.1
-#version-link(style="display:none") http://airtime.sourcefabric.org
-#version-icon.uptodate
+//#version-diff(style="display:none") 0
+//#version-current(style="display:none") 2.2.1
+//#version-latest(style="display:none") 2.2.1
+//#version-link(style="display:none") http://airtime.sourcefabric.org
+//#version-icon.uptodate
 #master-panel
-  .now-playing-block
-  .show-block
+  .current-media
+    .now-playing-block
+    .show-block
   .streams-to-air-block
-  .time-info-block.pull-right
 #jquery_jplayer_1.jp-jplayer(style="width:0px; height:0px;")
+.time-info-block
 .personal-block.solo
-  ul
-    li
-      span.name admin.
-      |
-      a(href="/Login/logout")Logout
+  //ul
+    //li
+      //span.name admin.
+      //|
+      //a(href="/Login/logout")Logout
 ul#nav
         li.top.list-menu
           i#toggle-header.icon-resize-vertical.icon-white
