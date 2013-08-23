@@ -90,6 +90,7 @@ var db = mbc.db();
 var publisher = mbc.pubsub();
 var listener = mbc.pubsub();
 
+// Override mongoStore read method with custom
 var searchWrapper = require('./searchWrapper.js');
 
 var mediabackend = backboneio.createBackend();
