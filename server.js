@@ -96,10 +96,10 @@ var mediabackend = backboneio.createBackend();
 mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'medias', { search: search_options.Medias })));
 
 var piecebackend = backboneio.createBackend();
-piecebackend.use(backboneio.middleware.mongoStore(db, 'pieces', {}));
+piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'pieces', {})));
 
 var transformbackend = backboneio.createBackend();
-transformbackend.use(backboneio.middleware.mongoStore(db, 'transforms'), {});
+transformbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'transforms', {})));
 
 var listbackend = backboneio.createBackend();
 listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, 'lists', { search: search_options.Lists })));
@@ -118,7 +118,7 @@ schedbackend.use(function (req, res, next) {
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
-schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds',  { search: search_options.Scheds }));
+schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'scheds',  { search: search_options.Scheds })));
 
 var statusbackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, status) {
