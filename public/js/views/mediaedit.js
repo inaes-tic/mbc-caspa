@@ -109,7 +109,11 @@ window.EditView = Backbone.View.extend({
             this.collection.create (this.editview.model, {success: afterSync});
             console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);
         } else {
-            this.editview.save();
+            // if we are paginating Universe the model being edited can no longer be inside Universe
+            // so calling .save() on that fails. But, calling .create() and passing an existing model
+            // makes it to the server, updates our Universe and restores relationships. Sometimes we
+            // can have nice things after all.
+            this.collection.create(this.editview.model);
             console.log ('universe knows of us, just saving');
         }
     },
