@@ -278,6 +278,8 @@ PlayoutTimeline.prototype = {
             }
             panel.centerTime(center, true, callback);
         }
+
+        this.callback("panning", [this.get_max_bounds()]);
     },
 
     resize: function(width, height, smooth) {
@@ -1782,7 +1784,7 @@ window.PlayoutView = Backbone.View.extend({
         window.setTimeout(function() {
             self.ready_to_fetch = true;
             if (self.fetch_requested) {
-                self.fetch_occurrences(bounds);
+                self.fetch_occurrences(self.timeline.get_max_bounds());
             }
         }, 500);
     },
