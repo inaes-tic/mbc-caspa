@@ -10,7 +10,7 @@ window.SearchView = function(options) {
 
     var nest = el.parents('.infinit-panel:first');
     var scrollable = nest.find('.scrollable:first');
-    var completePage = nest.find('#playlist-table:first');
+    var completeList = nest.find('#playlist-table:first');
 
     var parseFacets = function (loaded_facets, facet) {
         return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
@@ -38,11 +38,16 @@ window.SearchView = function(options) {
                 if (scrollable.scrollTop() >= (completeList.height() - scrollable.height() - offset)
                      && collection.hasNext() ){
                     collection.getNextPage();
+                    $('.loading').addClass('visible');
                 }
             };
 
             var throttled = _.throttle(scroll_callback, wait);
             scrollable.scroll(throttled);
+
+            collection.bind("sync", function() {
+               $('.loading').removeClass('visible');
+            });
             break;
 
         case false: break;

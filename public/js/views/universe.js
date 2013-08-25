@@ -57,8 +57,8 @@ window.UniverseListView = function(options){
     });
 
     new SearchView({
-        el: $('#playlist-search',el),
-        collection: this.collection,
+        el: $('#media-search',el),
+        collection: collection,
         type: search_type,
         pagination: pagination,
         facets: facets

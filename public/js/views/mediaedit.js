@@ -17,9 +17,8 @@ window.EditView = Backbone.View.extend({
         $(this.el).html(template.mediaedit());
         new UniverseListView({
             collection: this.collection,
-            el: $("#universe"),
-            pagination: false,
-            search_type: 'client' });
+            el: $("#universe") 
+        });
         new MediaListView({
             model: mediaList,
             el: $("#left-pane"),
@@ -140,6 +139,7 @@ window.EditView = Backbone.View.extend({
     toggleSide: function () {
         var universe = $('#universe');
         var listsPanel = $('#lists-panel');
+        var mediaSearch = $('#media-search');
         //var toggleUniverse = $('#toggle-universe');
                
         if (universe.hasClass('folded')!=false) {
@@ -147,12 +147,14 @@ window.EditView = Backbone.View.extend({
             console.log ("Expanded universe");
             universe.removeClass("folded");
             listsPanel.removeClass("folded");
+            mediaSearch.removeClass("folded");
          //   toggleUniverse.removeClass("folded");
         } else {
             // Compact universe
             console.log ("Folded universe");
             universe.addClass("folded");
             listsPanel.addClass("folded");
+            mediaSearch.addClass("folded");
         //    toggleUniverse.addClass("folded");
         };
     },

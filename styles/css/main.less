@@ -499,14 +499,9 @@ legend {
   	     font-weight: bold;
   	     opacity:.2;
   	     text-decoration: none;
+  	     cursor:pointer;
   	     -webkit-transition: right 0.7s ease-in-out;
 		     transition: right 0.7s ease-in-out;
-
-  	     /*&.folded {
-    		    right:31px;
-    		    -webkit-transition: right 0.7s ease-in-out;
-    		    transition: right 0.7s ease-in-out;
-  	     }*/
   	     
   	     &:hover{opacity:0.4;}
   	     
@@ -516,7 +511,22 @@ legend {
 	    	position: fixed;
 	    	width:@universe_width;
 			  height:@height_listHeader;
-			  padding: 15px 12px;			   
+			  padding: 15px 12px;		
+			  
+			  #media-search{
+          position: absolute;
+          right: 52px;
+          left: 12px;
+          -webkit-transition: left 0.7s ease-in-out;
+		      transition: left 0.7s ease-in-out;
+          
+          &.folded {
+    	      left: 0px;
+    	      -webkit-transition: left 0.7s ease-in-out;
+    		    transition: left 0.7s ease-in-out;
+    	    }
+        }
+        	   
 	    }
 	    .scrollable {
 	    	position: absolute;
@@ -571,6 +581,10 @@ legend {
       	    	width:25%;
       			  height:@height_listHeader;
       			  padding: 15px 12px;
+      			  
+      			  #media-search{
+
+              }
       	    }
       	    
       	    .scrollable {
@@ -582,7 +596,33 @@ legend {
       	    	overflow: scroll;
       	    	overflow-x:hidden;
       	    	padding: 0px 12px 0px 12px;
-      	    }
+      	    }      	    	    
+      	    .loading{
+      	      visibility:hidden;
+      	      position:absolute;
+        	    margin:auto;
+        	    bottom:0px;
+        	    left:20%;
+        	    right:20%;
+        	    z-index:504;
+        	    height:26px;
+        	    
+        	    background-color:#FFF;
+        	    background-image:url("../img/small-loading.gif");
+        	    background-repeat: no-repeat;
+        	    background-position: center;
+        	    background-size: 28px 28px;
+              -webkit-border-radius: 5px 5px 0px 0px;
+            	border-radius: 5px 5px 0px 0px;
+      	      
+      	      &.visible {
+        	       visibility:visible;
+      	      }
+      	    }      	    
+         }
+         .floatBox{
+           z-index:500;
+           background-color:#FF0;
          }
 	    }
 	    
@@ -593,7 +633,6 @@ legend {
          right:0px;
          width:50%;
          margin-left: 5px;
-         
                			   
       	 .close.kill-media-list {
       	   margin: 5px 10px;  
@@ -760,24 +799,62 @@ legend {
 	    top: 15px;
 	    bottom: 15px;
 	    left: 0px;
-	
-	    -webkit-transition: left 400ms ease-in-out;
-	    transition: left 400ms ease-in-out;
-	    
+      -webkit-transition: left 0.7s ease-in-out;
+		  transition: left 0.7s ease-in-out;
+		  
 	    background-color:#FFF;
 	    -webkit-border-radius: 0px 5px 5px 0px;
 		  border-radius: 0px 5px 5px 0px;
 		  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
 		  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+		  
+		  &.folded {
+	      left:-(@universe_width - 28px);
+	      -webkit-transition: left 0.7s ease-in-out;
+		    transition: left 0.7s ease-in-out;
+	    }
 
-	    -webkit-transition: left 400ms ease-in-out;
-	    transition: left 400ms ease-in-out;
+	    #toggle-universe {
+  	     position:absolute;
+  	     width:14px;
+  	     height:14px;
+  	     top: 8px;
+  	     right: 32px;
+  	     background-image: url("../img/glyphicons-halflings.png");
+  	     background-position: -456px -119px;
+  	     font-size: 31px;
+  	     font-weight: bold;
+  	     opacity:.2;
+  	     text-decoration: none;
+  	     cursor:pointer;
+  	     -webkit-transition: right 0.7s ease-in-out;
+		     transition: right 0.7s ease-in-out;
+  	     
+  	     &:hover{opacity:0.4;}
+  	     
+	    }
 	    
 	    .listHeader {
 	    	position: fixed;
 	    	width:@universe_width;
 			  height:@height_listHeader;
 			  padding: 15px 12px;
+			  
+			  #media-search{
+          position: absolute;
+          right: 52px;
+          left: 12px;
+          
+          -webkit-transition: left 0.7s ease-in-out;
+		      transition: left 0.7s ease-in-out;
+          
+          &.folded {
+    	      left: 0px;
+    	      -webkit-transition: left 0.7s ease-in-out;
+    		    transition: left 0.7s ease-in-out;
+    	    }
+        }
+        
 	    }
 	    .scrollable {
 	    	position: absolute;
@@ -798,6 +875,14 @@ legend {
 	    right: 15px;
 	    bottom: 15px;
 	    left: @universe_width + 20px;
+	    -webkit-transition: left 0.7s ease-in-out;
+		  transition: left 0.7s ease-in-out;
+		  
+		  &.folded {
+	      left: 48px;
+	      -webkit-transition: left 0.7s ease-in-out;
+		    transition: left 0.7s ease-in-out;
+	    }
 	}
 	&.folded {
 		#universe {
@@ -866,24 +951,61 @@ div#svg {
 	    top: 15px;
 	    bottom: 15px;
 	    left: 0px;
+	    -webkit-transition: left 0.7s ease-in-out;
+		  transition: left 0.7s ease-in-out;
 	
-	    -webkit-transition: left 400ms ease-in-out;
-	    transition: left 400ms ease-in-out;
-
 	    background-color:#FFF;
 	    -webkit-border-radius: 0px 5px 5px 0px;
 		  border-radius: 0px 5px 5px 0px;
 		  -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
 		  box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
-
-	    -webkit-transition: left 400ms ease-in-out;
-	    transition: left 400ms ease-in-out;
+		  
+		  &.folded {
+	      left:-(@universe_width - 28px);
+	      -webkit-transition: left 0.7s ease-in-out;
+		    transition: left 0.7s ease-in-out;
+	    }
+	    
+	    #toggle-universe {
+  	     position:absolute;
+  	     width:14px;
+  	     height:14px;
+  	     top: 8px;
+  	     right: 32px;
+  	     background-image: url("../img/glyphicons-halflings.png");
+  	     background-position: -456px -119px;
+  	     font-size: 31px;
+  	     font-weight: bold;
+  	     opacity:.2;
+  	     text-decoration: none;
+  	     cursor:pointer;
+  	     -webkit-transition: right 0.7s ease-in-out;
+		     transition: right 0.7s ease-in-out;
+  	     
+  	     &:hover{opacity:0.4;}
+  	     
+	    }
 	    
 	    .listHeader {
 	    	position: fixed;
 	    	width:@universe_width;
 			  height:@height_listHeader;
 			  padding: 15px 12px;
+			  
+			  #media-search{
+          position: absolute;
+          right: 52px;
+          left: 12px;
+          
+          -webkit-transition: left 0.7s ease-in-out;
+		      transition: left 0.7s ease-in-out;
+          
+          &.folded {
+    	      left: 0px;
+    	      -webkit-transition: left 0.7s ease-in-out;
+    		    transition: left 0.7s ease-in-out;
+    	    }
+        }
 	    }
 	    .scrollable {
 	    	position: absolute;
@@ -904,6 +1026,14 @@ div#svg {
 	    right: 15px;
 	    bottom: 0px;
 	    left: @universe_width + 20px;
+	    -webkit-transition: left 0.7s ease-in-out;
+		  transition: left 0.7s ease-in-out;
+
+		  &.folded {
+	      left:48px;
+	      -webkit-transition: left 0.7s ease-in-out;
+		    transition: left 0.7s ease-in-out;
+	    }
 	}
 	&.folded {
 		#universe {
