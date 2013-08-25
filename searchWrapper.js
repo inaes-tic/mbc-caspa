@@ -92,16 +92,6 @@ module.exports = function(middleware) {
                         _.extend(query, criteria);
                     }
 
-                    // Creating mongo expression using text search string
-                    if(_.has(data.query,'text')) {
-                        _.forEach(options.search.fulltext, function(field) {
-                            var obj= {};
-                            obj[field] = new RegExp(data.query.text);
-                            expressions.push(obj);
-                        });
-                        _.extend(query, {$or: expressions})
-                    }
-
                     //XXX maybe this is not bests option for all cases
                     //check if value is Numeric to change type for search
                     query = _.object( _.keys(query), _.map(query, function(val) {
@@ -120,16 +110,39 @@ module.exports = function(middleware) {
                     var limit = data.per_page || data.max_items;
                     var skip = data.page * data.per_page;
 
-                    var q = collection.find(query, fields).limit(limit).skip(skip).sort(sort);
-                    q.count(function(err, total) {
-                        if (err) {
-                            res.end({'error':'An error has occurred on count - read ' + err});
+                    var getParameterObj = { getParameter:1, textSearchEnabled:1 };
+
+                    db.admin.command(getParameterObj, function(err, result) {
+                        if(err) res.end({'error':'An error has occurred on read ' + err});
+                        if(result.documents[0].textSearchEnabled && _.has(data.query,'text')) {
+                            db.command({ "text": colname, search: data.query.text, limit: limit, filter: query }, {}, function(err, result) {
+                                if(err) res.end({'error':'An error has occurred on fulltext - txt: ' + data.query.text + ' q:' +query + ' limit:' + limit });
+                                var items = _.pluck(result.results, 'obj');
+                                res.end([ { total_entries: items.length }, items]);
+                            });
                         } else {
-                            q.toArray(function (err, items) {
+                            // Creating mongo expression using text search string
+                            if(_.has(data.query,'text')) {
+                                _.forEach(options.search.fulltext, function(field) {
+                                    var obj= {};
+                                    obj[field] = new RegExp(data.query.text);
+                                    expressions.push(obj);
+                                });
+                                _.extend(query, {$or: expressions})
+                            }
+
+                            var q = collection.find(query, fields).limit(limit).skip(skip).sort(sort);
+                            q.count(function(err, total) {
                                 if (err) {
-                                    res.end({'error':'An error has occurred on read ' + err});
+                                    res.end({'error':'An error has occurred on count - read ' + err});
                                 } else {
-                                    res.end([ { total_entries: total }, items]);
+                                    q.toArray(function (err, items) {
+                                        if (err) {
+                                            res.end({'error':'An error has occurred on read ' + err});
+                                        } else {
+                                            res.end([ { total_entries: total }, items]);
+                                        }
+                                    });
                                 }
                             });
                         }
