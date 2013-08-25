@@ -22,13 +22,13 @@ AGPL v3.
 + gettext
 
 ```shell
-   apt-get install gettext 
+   apt-get install gettext
 ```
 
 + npm
 
 ```shell
-   apt-get install npm  
+   apt-get install npm
 ```
 + node > 0.8
 
