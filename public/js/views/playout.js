@@ -1592,6 +1592,9 @@ PlayoutTimelinePanel.prototype = {
 
 window.PlayoutView = Backbone.View.extend({
     el: '#content',
+    //events: {
+    //    "click #toggle-universe": "toggleSide",
+    //},
     initialize: function() {
         var self = this;
        // self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
@@ -1635,7 +1638,7 @@ window.PlayoutView = Backbone.View.extend({
             collection: Universe,
             el: $("#universe"),
             draggable: true,
-            search_type: 'client',
+          //search_type: 'client',
         });
 
         // Event listeners
@@ -1787,6 +1790,29 @@ window.PlayoutView = Backbone.View.extend({
                 self.fetch_occurrences(self.timeline.get_max_bounds());
             }
         }, 500);
+    },
+
+    toggleSide: function () {
+        var universe = $('#universe');
+        var svg = $('#svg');
+        var mediaSearch = $('#media-search');
+        //var toggleUniverse = $('#toggle-universe');
+
+        if (universe.hasClass('folded')!=false) {
+            // Expanded universe
+            console.log ("Expanded universe");
+            universe.removeClass("folded");
+            svg.removeClass("folded");
+            mediaSearch.removeClass("folded");
+         //   toggleUniverse.removeClass("folded");
+        } else {
+            // Compact universe
+            console.log ("Folded universe");
+            universe.addClass("folded");
+            svg.addClass("folded");
+            mediaSearch.addClass("folded");
+        //    toggleUniverse.addClass("folded");
+        };
     },
 });
 
