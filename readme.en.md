@@ -42,6 +42,13 @@ AGPL v3.
    apt-get install mongodb
 ```
 
+If you want to have mongodb Text Search support, you need mongodb = 2.4 and
+must enable it on config file:
+
+```
+echo "setParameter = textSearchEnabled=true" >> /etc/mongodb.conf
+```
+
 + redis
 
 ```shell
