@@ -5,6 +5,7 @@ module.exports = function(middleware) {
     var collection = middleware.collection;
     var options = middleware.options;
     var db = middleware.db;
+    var colname = middleware.colname;
 
     var query_id = function(id) {
         try {
