@@ -6,9 +6,10 @@ window.EditView = Backbone.View.extend({
         "click #right-pane .kill-media-list"  : "killEditList",
         "click .playlist-button-array .save"  : "savePlaylist",
         "click .playlist-button-array .delete": "delPlaylist",
+        "click #alert-save-close": "closeAlertSave",
     },
     initialize: function () {
-        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
+        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'closeAlertSave');
         this.render();
     },
     render: function () {
@@ -37,6 +38,8 @@ window.EditView = Backbone.View.extend({
     },
     killEditList: function () {
         this.editList = null;
+        this.editview.destroy();
+        this.editview = null;
         $('.playlist-button-array', this.el).hide();
         $('.no-playlist-alert', this.el).show();
     },
@@ -116,6 +119,7 @@ window.EditView = Backbone.View.extend({
             this.collection.create(this.editview.model);
             console.log ('universe knows of us, just saving');
         }
+        this.editview.clearChanges();
     },
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
@@ -133,6 +137,17 @@ window.EditView = Backbone.View.extend({
             this.editview.destroy();
             Universe.remove (id);
             this.killEditList();
+        }
+    },
+    closeAlertSave: function () {
+        $('#alert-save').fadeOut();
+    },
+    canNavigateAway: function (options) {
+        if (this.editview && this.editview.hasChanges()) {
+            $('#alert-save').fadeIn();
+            options['cancel']();
+        } else {
+            options['ok']();
         }
     },
 });
