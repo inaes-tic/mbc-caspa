@@ -73,4 +73,6 @@ window.UniverseListView = function(options){
     }
 
     ko.applyBindings(this.view_model, el[0]);
+
+    this.collection.fetch();
 }
