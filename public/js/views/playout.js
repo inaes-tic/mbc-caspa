@@ -1597,8 +1597,8 @@ window.PlayoutView = Backbone.View.extend({
         self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
-        this.collection = this.options.schedule;
-        this.playlists = this.options.universe;
+        this.collection = new Media.Schedule();
+        this.playlists = new Media.UniversePageable();
 
         this.svg = this.$el.find("#playout #svg");
 
@@ -1632,10 +1632,9 @@ window.PlayoutView = Backbone.View.extend({
         });
 
         this.universe_view = new UniverseListView({
-            collection: Universe,
+            collection: this.playlists,
             el: $("#universe"),
             draggable: true,
-            search_type: 'client',
         });
 
         // Event listeners
