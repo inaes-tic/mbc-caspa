@@ -1066,33 +1066,37 @@ PlayoutTimelinePanel.prototype = {
                 break;
             }
 
-            var clip = second_level
-                .enter()
-                .append("svg:svg")
-                    .attr("class", "Clip")
-                    .attr(attr_sel[0], function(d, i, j) {
-                        var length = playlist_length(filtered_data[j]);
-                        var list = d.collection.models;
-                        var sum = 0;
-                        for (var k = 0; k < i; ++k) {
-                            sum += length_to_duration(list[k].get("durationraw")).valueOf();
-                        }
-                        return sum * 100 / length + "%";
-                    })
-                    .attr(attr_sel[1], "40")
-                    .attr(attr_sel[2], function(d, i, j) {
-                        var length = playlist_length(filtered_data[j]);
-                        var my_length = length_to_duration(d.get("durationraw"));
-                        return my_length * 100 / length + "%";
-                    })
+            // Setup new clips
+            var new_clips = second_level.enter();
+            var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
+            new_svg.append("svg:rect"); // Background
+            new_svg.append("text"); // Text
 
-            clip.append("svg:rect")
+            // Update new and old clips
+            second_level
+                .attr(attr_sel[0], function(d, i, j) {
+                    var length = playlist_length(filtered_data[j]);
+                    var list = d.collection.models;
+                    var sum = 0;
+                    for (var k = 0; k < i; ++k) {
+                        sum += length_to_duration(list[k].get("durationraw"));
+                    }
+                    return sum * 100 / length + "%";
+                })
+                .attr(attr_sel[1], "40")
+                .attr(attr_sel[2], function(d, i, j) {
+                    var length = playlist_length(filtered_data[j]);
+                    var my_length = length_to_duration(d.get("durationraw"));
+                    return my_length * 100 / length + "%";
+                })
+
+            second_level.select("rect")
                 .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
                 .style("opacity", function(d, i) { return i % 2 ? 0.3 : 0.2; })
                 .style("fill", "black");
 
             // Setup clip text
-            var clip_text = clip.append("text")
+            var clip_text = second_level.select("text")
                 .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
                 .attr("font-size", 14)
                 .style("stroke", "none")
