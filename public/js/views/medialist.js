@@ -24,6 +24,8 @@ window.MediaListView = function(options){
     var type = 'type' in options ? options['type'] : 'medialist-searchable-fixed';
 
     if (type.match(/playlist/)) {
+        // In case of playlist, fetch related
+        model.fetchRelated("pieces");
         collection = model.get('pieces');
     } else {
         collection = model;
