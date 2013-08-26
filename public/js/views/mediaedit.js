@@ -14,11 +14,13 @@ window.EditView = Backbone.View.extend({
     render: function () {
         $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
         $(this.el).html(template.mediaedit());
+
+        this.collection = new Media.UniversePageable();
+
         new UniverseListView({
             collection: this.collection,
             el: $("#universe"),
-            pagination: false,
-            search_type: 'client' });
+        });
         new MediaListView({
             model: mediaList,
             el: $("#left-pane"),
@@ -45,9 +47,7 @@ window.EditView = Backbone.View.extend({
     },
     switchPlaylist: function (id) {
         var plid = this.collection.get(id);
-        plid.fetchRelated('pieces');
-        console.log ('switching to', id, '--', plid);
-        this.showPlaylist (plid);
+        this.showPlaylist(plid);
     },
     showPlaylist: function (list) {
         this.editview = new MediaListView({
