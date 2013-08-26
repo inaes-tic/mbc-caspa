@@ -70,7 +70,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     schedule: function() {
-        new ScheduleView({collection: Schedule});
+        new ScheduleView();
         this.headerView.selectMenuItem('schedule-menu');
     },
 
