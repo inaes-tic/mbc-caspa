@@ -972,17 +972,53 @@ PlayoutTimelinePanel.prototype = {
             }
 
             var second_level = updated_set.selectAll("svg.Clip").data(function(d) {
-                ret = [];
+                // FIXME: fetchRelated success callback is almost useless.
+                // This whole function could be tidier without using it.
+                var ret = [];
                 if (playlist_visible(d)) {
-                    pl = d.get('playlist');
-                    if (pl) {
-                        ret = pl.get('pieces').models;
+                    var pl = d.get('playlist');
+                    if (!pl) {
+                        d.fetchRelated("playlist", {
+                            success: function() {
+                                pl.fetchRelated("pieces", {
+                                    success: function() {
+                                        self.redraw(smooth);
+                                    },
+                                    error: function() {
+                                        console.warn("Could not fetch related pieces.");
+                                    },
+                                });
+                            },
+                            error: function() {
+                                console.warn("Could not fetch related playlist.");
+                            },
+                        });
+                    } else {
+                        var pces = pl.get('pieces');
+                        if (!pces || !pces.length) {
+                            pl.fetchRelated("pieces", {
+                                success: function() {
+                                    self.redraw(smooth);
+                                },
+                                error: function() {
+                                    console.warn("Could not fetch related pieces.");
+                                },
+                            });
+                        } else {
+                            // This is in case more pieces were added since we fetchRelated them.
+                            pl.fetchRelated("pieces");
+                            ret = pces.models;
+                        }
                     }
                 }
                 return ret;
             });
 
             function length_to_duration(val) {
+                if (!val) {
+                    return 0;
+                }
+
                 var tmp = val.split(".");
                 var ms = tmp[1] * 10;
                 tmp = tmp[0].split(":");
@@ -992,7 +1028,7 @@ PlayoutTimelinePanel.prototype = {
                     minutes: tmp[1],
                     seconds: tmp[2],
                     milliseconds: ms,
-                });
+                }).valueOf();
             }
 
             function playlist_length(plist) {
