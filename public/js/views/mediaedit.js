@@ -17,7 +17,7 @@ window.EditView = Backbone.View.extend({
         $(this.el).html(template.mediaedit());
         new UniverseListView({
             collection: this.collection,
-            el: $("#universe") 
+            el: $("#universe")
         });
         new MediaListView({
             model: mediaList,
@@ -41,7 +41,6 @@ window.EditView = Backbone.View.extend({
         $('.no-playlist-alert', this.el).show();
     },
     hideAlert: function () {
-        console.log ('close alert');
         $('.alert-empty-playlist', this.el).hide();
         $('.alert-unnamed-playlist', this.el).hide();
     },
@@ -135,27 +134,24 @@ window.EditView = Backbone.View.extend({
             this.killEditList();
         }
     },
-          
+
     toggleSide: function () {
         var universe = $('#universe');
         var listsPanel = $('#lists-panel');
         var mediaSearch = $('#media-search');
-        //var toggleUniverse = $('#toggle-universe');
-               
+
         if (universe.hasClass('folded')!=false) {
             // Expanded universe
             console.log ("Expanded universe");
             universe.removeClass("folded");
             listsPanel.removeClass("folded");
             mediaSearch.removeClass("folded");
-         //   toggleUniverse.removeClass("folded");
         } else {
             // Compact universe
             console.log ("Folded universe");
             universe.addClass("folded");
             listsPanel.addClass("folded");
             mediaSearch.addClass("folded");
-        //    toggleUniverse.addClass("folded");
         };
     },
 });
