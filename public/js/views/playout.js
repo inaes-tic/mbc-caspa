@@ -1776,7 +1776,11 @@ window.PlayoutView = Backbone.View.extend({
         this.collection.setQuery({criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}});
         this.collection.fetch({
             success: function() {
+                // Update bounds, event:sync redraw will do the work.
                 self.bounds = bounds;
+            },
+            error: function(e) {
+                throw new Error("Cannot fetch Schedule.");
             },
         });
 

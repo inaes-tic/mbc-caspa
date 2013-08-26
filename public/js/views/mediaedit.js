@@ -50,7 +50,6 @@ window.EditView = Backbone.View.extend({
         this.showPlaylist (plid);
     },
     showPlaylist: function (list) {
-        console.log ('show edit view', list);
         this.editview = new MediaListView({
             sortable: true,
             model: list,
@@ -59,8 +58,6 @@ window.EditView = Backbone.View.extend({
             pagination: false,
             search_type: 'client',
         });
-
-        console.log ('show edit view', this.editview, list);
 
         $('.alert-empty-playlist', this.el).hide();
         $('.alert-unnamed-playlist', this.el).hide();
