@@ -100,7 +100,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editMedia: function() {
-        new EditView ({el: $("#content"), collection: Universe});
+        new EditView ({collection: Universe});
         this.headerView.selectMenuItem('edit-menu');
     },
 

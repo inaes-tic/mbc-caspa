@@ -18,11 +18,8 @@ window.OccurrenceView = Backbone.View.extend({
     }
 });
 
-window.ScheduleView = Backbone.View.extend({
+window.ScheduleView = PanelView.extend({
     el: $("#content"),
-    //events: {
-    //    "click #toggle-universe": "toggleSide",
-    //},
     get_templateHTML: function () {
         return template.schedule();
     },
@@ -87,10 +84,11 @@ window.ScheduleView = Backbone.View.extend({
         return {start: start, end: end};
     },
     initialize: function () {
+        this.constructor.__super__.initialize.apply(this, arguments);
+
         var self = this;
         self.collection = this.get_collection();
 
-        //$(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
         $(this.el).html(this.get_templateHTML());
 
         new UniverseListView({
@@ -367,28 +365,5 @@ window.ScheduleView = Backbone.View.extend({
         self.collection.bind('overlap', this.displayOverlap, this);
 
         return this;
-    },
-    
-    toggleSide: function () {
-        var universe = $('#universe');
-        var calendar = $('#calendar');
-        var mediaSearch = $('#media-search');
-        //var toggleUniverse = $('#toggle-universe');
-               
-        if (universe.hasClass('folded')!=false) {
-            // Expanded universe
-            console.log ("Expanded universe");
-            universe.removeClass("folded");
-            calendar.removeClass("folded");
-            mediaSearch.removeClass("folded");
-         //   toggleUniverse.removeClass("folded");
-        } else {
-            // Compact universe
-            console.log ("Folded universe");
-            universe.addClass("folded");
-            calendar.addClass("folded");
-            mediaSearch.addClass("folded");
-        //    toggleUniverse.addClass("folded");
-        };
     },
 });

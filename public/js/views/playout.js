@@ -1590,23 +1590,21 @@ PlayoutTimelinePanel.prototype = {
 
 
 
-window.PlayoutView = Backbone.View.extend({
+window.PlayoutView = PanelView.extend({
     el: '#content',
-    //events: {
-    //    "click #toggle-universe": "toggleSide",
-    //},
     initialize: function() {
+        this.constructor.__super__.initialize.apply(this, arguments);
+
         var self = this;
-       // self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
         this.collection = this.options.schedule;
         this.playlists = this.options.universe;
 
-        this.svg = this.$el.find("#playout #svg");
+        this.svg = this.$el.find("#playout");
 
         this.timeline = new PlayoutTimeline({
-            container: "#playout #svg",
+            container: "#playout",
             unique_id: "_id",
             width: this.svg.width(),
             height: this.svg.height(),
@@ -1790,29 +1788,6 @@ window.PlayoutView = Backbone.View.extend({
                 self.fetch_occurrences(self.timeline.get_max_bounds());
             }
         }, 500);
-    },
-
-    toggleSide: function () {
-        var universe = $('#universe');
-        var svg = $('#svg');
-        var mediaSearch = $('#media-search');
-        //var toggleUniverse = $('#toggle-universe');
-
-        if (universe.hasClass('folded')!=false) {
-            // Expanded universe
-            console.log ("Expanded universe");
-            universe.removeClass("folded");
-            svg.removeClass("folded");
-            mediaSearch.removeClass("folded");
-         //   toggleUniverse.removeClass("folded");
-        } else {
-            // Compact universe
-            console.log ("Folded universe");
-            universe.addClass("folded");
-            svg.addClass("folded");
-            mediaSearch.addClass("folded");
-        //    toggleUniverse.addClass("folded");
-        };
     },
 });
 

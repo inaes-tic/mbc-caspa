@@ -1,5 +1,5 @@
-window.EditView = Backbone.View.extend({
-    el: '#content',
+window.EditView = PanelView.extend({
+    el: "#content",
     events: {
         "click #create-playlist" : "createPlaylist",
         "click #universe li"     : "switchPlaylistEvent",
@@ -7,9 +7,9 @@ window.EditView = Backbone.View.extend({
         "click #right-pane .hide-alert"  : "hideAlert",
         "click .playlist-button-array .save"  : "savePlaylist",
         "click .playlist-button-array .delete": "delPlaylist",
-        "click #toggle-universe": "toggleSide",
     },
     initialize: function () {
+        this.constructor.__super__.initialize.apply(this, arguments);
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
         this.render();
     },
@@ -133,25 +133,5 @@ window.EditView = Backbone.View.extend({
             Universe.remove (id);
             this.killEditList();
         }
-    },
-
-    toggleSide: function () {
-        var universe = $('#universe');
-        var listsPanel = $('#lists-panel');
-        var mediaSearch = $('#media-search');
-
-        if (universe.hasClass('folded')!=false) {
-            // Expanded universe
-            console.log ("Expanded universe");
-            universe.removeClass("folded");
-            listsPanel.removeClass("folded");
-            mediaSearch.removeClass("folded");
-        } else {
-            // Compact universe
-            console.log ("Folded universe");
-            universe.addClass("folded");
-            listsPanel.addClass("folded");
-            mediaSearch.addClass("folded");
-        };
     },
 });
