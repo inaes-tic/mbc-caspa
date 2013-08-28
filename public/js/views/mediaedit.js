@@ -15,9 +15,12 @@ window.EditView = PanelView.extend({
     },
     render: function () {
         $(this.el).html(template.mediaedit());
+
+        this.collection = new Media.UniversePageable();
+
         new UniverseListView({
             collection: this.collection,
-            el: $("#universe")
+            el: $("#universe"),
         });
         new MediaListView({
             model: mediaList,
@@ -49,12 +52,9 @@ window.EditView = PanelView.extend({
     },
     switchPlaylist: function (id) {
         var plid = this.collection.get(id);
-        plid.fetchRelated('pieces');
-        console.log ('switching to', id, '--', plid);
-        this.showPlaylist (plid);
+        this.showPlaylist(plid);
     },
     showPlaylist: function (list) {
-        console.log ('show edit view', list);
         this.editview = new MediaListView({
             sortable: true,
             model: list,
@@ -63,8 +63,6 @@ window.EditView = PanelView.extend({
             pagination: false,
             search_type: 'client',
         });
-
-        console.log ('show edit view', this.editview, list);
 
         $('.alert-empty-playlist', this.el).hide();
         $('.alert-unnamed-playlist', this.el).hide();

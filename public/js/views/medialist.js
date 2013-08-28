@@ -1,17 +1,15 @@
 window.MediaListView = function(options){
     var self = this;
 
-    var model = options['model'];
     var collection = null;
 
-    var el = $('#content');
-    if(options['el'])
-        el = options['el'];
-
+    var model = options['model'];
     this.model = model;
-    this.el = el;
-    this.has_dummy_row = false;
 
+    var el = options['el'] || $('#content');
+    this.el = el;
+
+    this.has_dummy_row = false;
     var allow_drop = false;
 
     var default_pagination = 'endless';
@@ -26,6 +24,8 @@ window.MediaListView = function(options){
     var type = 'type' in options ? options['type'] : 'medialist-searchable-fixed';
 
     if (type.match(/playlist/)) {
+        // In case of playlist, fetch related
+        model.fetchRelated("pieces");
         collection = model.get('pieces');
     } else {
         collection = model;

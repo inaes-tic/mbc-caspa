@@ -70,7 +70,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     schedule: function() {
-        new ScheduleView({collection: Schedule});
+        new ScheduleView();
         this.headerView.selectMenuItem('schedule-menu');
     },
 
@@ -100,7 +100,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editMedia: function() {
-        new EditView ({collection: Universe});
+        new EditView ();
         this.headerView.selectMenuItem('edit-menu');
     },
 
@@ -137,14 +137,8 @@ $.ajax({
 appCollection.fetch({success: function() {
     mediaList.fetch({success: function() {
         transformList.fetch({success: function() {
-            pieceList.fetch({success: function() {
-                Universe.fetch({success: function() {
-                    Schedule.fetch({success: function() {
-                        app = new AppRouter();
-                        Backbone.history.start();
-                    }});
-                }});
-            }});
+            app = new AppRouter();
+            Backbone.history.start();
         }});
     }});
 }});

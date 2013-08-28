@@ -87,16 +87,16 @@ window.ScheduleView = PanelView.extend({
         this.constructor.__super__.initialize.apply(this, arguments);
 
         var self = this;
-        self.collection = this.get_collection();
+
+        self.collection = new Media.Schedule();
+        self.playlists = new Media.UniversePageable();
 
         $(this.el).html(this.get_templateHTML());
 
         new UniverseListView({
-            collection: Universe,
+            collection: this.playlists,
             el: $('#universe', this.el),
             draggable: true,
-           //pagination: false,
-           // search_type: 'client'
         });
 
         this.render();
@@ -176,15 +176,19 @@ window.ScheduleView = PanelView.extend({
 
         var calendarEventSources = [
             function(start, end, callback) {
-                console.log(start, end);
-                var unix_start = moment(start).valueOf();
-                var unix_end = moment(end).valueOf();
-                var events = self.get_collection().filter(function(el){
-                    return unix_start <= el.get('end') && unix_end >= el.get('start');
-                }).map(self.make_event);
-                console.log('Returning events #', events.length);
-                callback(events);
-            }
+                self.collection.setQuery({criteria: {in_window: [moment(start).valueOf(), moment(end).valueOf()]}});
+                self.collection.fetch({
+                    success: function() {
+                        console.log("Fetched Schedule!");
+                        var events = self.collection.map(self.make_event);
+                        console.log('Returning events #', events.length);
+                        callback(events)
+                    },
+                    error: function(e) {
+                        throw new Error("Cannot fetch Schedule.");
+                    },
+                });
+            },
         ].concat(self.historical_events);
 
         this.calendar.fullCalendar({
@@ -206,7 +210,7 @@ window.ScheduleView = PanelView.extend({
             },
             contentHeight: mainHeight,
             theme: true,
-            lazyFetching: false,
+            lazyFetching: true,
             serverTimestamp: parseInt(this.opts.timestamp, 10),
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
@@ -318,7 +322,7 @@ window.ScheduleView = PanelView.extend({
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
-                var list  = Universe.get(this.id);
+                var list  = self.playlists.get(this.id);
 
                 console.log ('drop->', self.collection.pluck('end'));
 

@@ -972,17 +972,53 @@ PlayoutTimelinePanel.prototype = {
             }
 
             var second_level = updated_set.selectAll("svg.Clip").data(function(d) {
-                ret = [];
+                // FIXME: fetchRelated success callback is almost useless.
+                // This whole function could be tidier without using it.
+                var ret = [];
                 if (playlist_visible(d)) {
-                    pl = d.get('playlist');
-                    if (pl) {
-                        ret = pl.get('pieces').models;
+                    var pl = d.get('playlist');
+                    if (!pl) {
+                        d.fetchRelated("playlist", {
+                            success: function() {
+                                pl.fetchRelated("pieces", {
+                                    success: function() {
+                                        self.redraw(smooth);
+                                    },
+                                    error: function() {
+                                        console.warn("Could not fetch related pieces.");
+                                    },
+                                });
+                            },
+                            error: function() {
+                                console.warn("Could not fetch related playlist.");
+                            },
+                        });
+                    } else {
+                        var pces = pl.get('pieces');
+                        if (!pces || !pces.length) {
+                            pl.fetchRelated("pieces", {
+                                success: function() {
+                                    self.redraw(smooth);
+                                },
+                                error: function() {
+                                    console.warn("Could not fetch related pieces.");
+                                },
+                            });
+                        } else {
+                            // This is in case more pieces were added since we fetchRelated them.
+                            pl.fetchRelated("pieces");
+                            ret = pces.models;
+                        }
                     }
                 }
                 return ret;
             });
 
             function length_to_duration(val) {
+                if (!val) {
+                    return 0;
+                }
+
                 var tmp = val.split(".");
                 var ms = tmp[1] * 10;
                 tmp = tmp[0].split(":");
@@ -992,7 +1028,7 @@ PlayoutTimelinePanel.prototype = {
                     minutes: tmp[1],
                     seconds: tmp[2],
                     milliseconds: ms,
-                });
+                }).valueOf();
             }
 
             function playlist_length(plist) {
@@ -1030,33 +1066,37 @@ PlayoutTimelinePanel.prototype = {
                 break;
             }
 
-            var clip = second_level
-                .enter()
-                .append("svg:svg")
-                    .attr("class", "Clip")
-                    .attr(attr_sel[0], function(d, i, j) {
-                        var length = playlist_length(filtered_data[j]);
-                        var list = d.collection.models;
-                        var sum = 0;
-                        for (var k = 0; k < i; ++k) {
-                            sum += length_to_duration(list[k].get("durationraw")).valueOf();
-                        }
-                        return sum * 100 / length + "%";
-                    })
-                    .attr(attr_sel[1], "40")
-                    .attr(attr_sel[2], function(d, i, j) {
-                        var length = playlist_length(filtered_data[j]);
-                        var my_length = length_to_duration(d.get("durationraw"));
-                        return my_length * 100 / length + "%";
-                    })
+            // Setup new clips
+            var new_clips = second_level.enter();
+            var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
+            new_svg.append("svg:rect"); // Background
+            new_svg.append("text"); // Text
 
-            clip.append("svg:rect")
+            // Update new and old clips
+            second_level
+                .attr(attr_sel[0], function(d, i, j) {
+                    var length = playlist_length(filtered_data[j]);
+                    var list = d.collection.models;
+                    var sum = 0;
+                    for (var k = 0; k < i; ++k) {
+                        sum += length_to_duration(list[k].get("durationraw"));
+                    }
+                    return sum * 100 / length + "%";
+                })
+                .attr(attr_sel[1], "40")
+                .attr(attr_sel[2], function(d, i, j) {
+                    var length = playlist_length(filtered_data[j]);
+                    var my_length = length_to_duration(d.get("durationraw"));
+                    return my_length * 100 / length + "%";
+                })
+
+            second_level.select("rect")
                 .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
                 .style("opacity", function(d, i) { return i % 2 ? 0.3 : 0.2; })
                 .style("fill", "black");
 
             // Setup clip text
-            var clip_text = clip.append("text")
+            var clip_text = second_level.select("text")
                 .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
                 .attr("font-size", 14)
                 .style("stroke", "none")
@@ -1598,8 +1638,8 @@ window.PlayoutView = PanelView.extend({
         var self = this;
         self.$el.html(template.playout());
 
-        this.collection = this.options.schedule;
-        this.playlists = this.options.universe;
+        this.collection = new Media.Schedule();
+        this.playlists = new Media.UniversePageable();
 
         this.svg = this.$el.find("#playout");
 
@@ -1633,10 +1673,9 @@ window.PlayoutView = PanelView.extend({
         });
 
         this.universe_view = new UniverseListView({
-            collection: Universe,
+            collection: this.playlists,
             el: $("#universe"),
             draggable: true,
-          //search_type: 'client',
         });
 
         // Event listeners
@@ -1777,7 +1816,11 @@ window.PlayoutView = PanelView.extend({
         this.collection.setQuery({criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}});
         this.collection.fetch({
             success: function() {
+                // Update bounds, event:sync redraw will do the work.
                 self.bounds = bounds;
+            },
+            error: function(e) {
+                throw new Error("Cannot fetch Schedule.");
             },
         });
 
