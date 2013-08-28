@@ -72,9 +72,11 @@ window.MediaListView = function(options){
                 },
             });
 
+            this.duration = kb.observable(model, 'duration');
+
             this.total_time = ko.computed(function(){
 //XXX: keep this, it tells KO to update total_time when something happens to the collection
-                var x = self.collection();
+                var x = self.duration();
                 return model.pretty_duration();
             }, model);
         },
