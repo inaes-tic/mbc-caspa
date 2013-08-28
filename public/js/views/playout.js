@@ -1742,9 +1742,9 @@ window.PlayoutView = PanelView.extend({
             }
 
             if (draw) {
-                self.drag_elem.siblings(".ui-draggable-dragging").css("display", "none");
+                $("#content li.ui-draggable-dragging").css("display", "none");
             } else {
-                self.drag_elem.siblings(".ui-draggable-dragging").css("display", "");
+                $("#content li.ui-draggable-dragging").css("display", "");
             }
         }).on("dragend", function() {
             var create;

@@ -185,7 +185,6 @@ body.folded {
 
 h1, h2, h3, h4, h5 {
     line-height: 1;
-
 }
 
 h5 {
@@ -365,6 +364,7 @@ legend {
 /**/
 
 .ui-draggable-dragging {
+    list-style: none;
     pointer-events: none;
     background-color:#FFF;
     -webkit-border-radius: 5px;
@@ -599,6 +599,10 @@ legend {
 
     #media-list {
         .fully-expanded;
+
+        .scrollable {
+            bottom: 105px;
+        }
     }
 }
 
@@ -692,21 +696,21 @@ legend {
         right:0px;
         left:0px;
         padding: 0px 12px 0px 12px;
-
     }
 
-.pending {
-    margin: 0 0 10px 14px;
-}
+    .pending {
+        margin: 0 0 10px 14px;
+    }
 
-.progress {
-    .bar {
-        &.stopped {
-            background-color:#949494;
-            &#main-progress {
-                background-image: -webkit-gradient(linear,0 0,0 100%,from(#D5D7D8),to(#858585));
-                background-image: -webkit-linear-gradient(top,#D5D7D8,#858585);
-                background-repeat: repeat-x;
+    .progress {
+        .bar {
+            &.stopped {
+                background-color:#949494;
+                &#main-progress {
+                    background-image: -webkit-gradient(linear,0 0,0 100%,from(#D5D7D8),to(#858585));
+                    background-image: -webkit-linear-gradient(top,#D5D7D8,#858585);
+                    background-repeat: repeat-x;
+                }
             }
         }
     }
@@ -917,3 +921,4 @@ div#playout {
         *zoom: 1;
     }
 }
+

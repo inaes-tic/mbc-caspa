@@ -10,6 +10,9 @@ window.EditView = PanelView.extend({
     },
     initialize: function () {
         this.constructor.__super__.initialize.apply(this, arguments);
+        this.bind("all", function(e) {
+            console.log("MEDIAEDIT EVENT:", arguments);
+        });
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
         this.render();
     },

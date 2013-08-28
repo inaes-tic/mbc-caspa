@@ -7,7 +7,7 @@ block content
 - var readonly = false;
 - var is_playlist = false;
 - var dbind = 'foreach: collection';
-- var inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 } }';
+- var inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 }, scroll: false, appendTo: "#content",  }';
 - var default_name = '';
 
 - if (type.match(/searchable/))
@@ -16,7 +16,7 @@ block content
 
 - if (type.match(/draggable/))
   - dbind = 'foreach: collection';
-  - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 }, drag: function(event,ui) { if(ui.helper.parent().id != "media-list") { ui.helper.detach().appendTo("#media-list").addClass("floatBox");}; ui.helper.css("width","39%") } }';
+  - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 }, scroll: false, appendTo: "#content"}';
 
 - if (type.match(/sortable/))
   - dbind = 'sortable: { data: collection , allowDrop: allowDrop, dragged: dragHandler}';
@@ -38,7 +38,7 @@ block content
 #media-list.infinit-panel
   - if (!fixed)
     button.close.kill-media-list(type='button', data-dismiss='alert') ×
-  .listHeader  
+  .listHeader
     .editable-list-name(
           data-trigger= 'hover'
           data-placement= 'left'
@@ -46,30 +46,30 @@ block content
           data-content= i18n.gettext('Click here to edit Playlist Name.')
           style= 'border:none;'
       )
-  
+
       .fixed
       - if (is_playlist && !readonly)
           h1.list-name(data-bind="text: name()" + default_name + ", visible: !editingName(), click: nameClick")
           input.input-block-level.input-list-name(data-bind="value: name, visible: editingName, hasfocus: editingName, valueUpdate: 'afterkeydown', addOnEnter: changeFocus", type='text')
       - else
           h1.list-name= name
-  
+
     #media-search
-  .scrollable  
+  .scrollable
     #playlist-table
       .total-time-div
         h1.label.label-inverse.format
             i.icon-time.icon-white
             span= ' '
             span.total-time.label.label-inverse.format(data-bind="text: total_time")
-  
+
       .table-container
         table.table.table-bordered.table-striped.table-condensed#table
               thead
                 tr
                   th.thumbnail= thumbnail
                   th.description= media_info
-  
+
               tbody.tbody#media-view(data-bind=dbind,class='tbody')
                 tr(data-bind=inndbind)
                   td.center
@@ -86,14 +86,14 @@ block content
                           i.icon-time.icon-white
                           span(data-bind="text: durationraw")
                       span='  '
-  
+
                       <!-- ko if: video().container -->
                       span.label.format
                           i.icon-file.icon-white
                           span(data-bind="text: ' '+video().container ")
                       span=' '
                       <!-- /ko -->
-  
+
                       span.label.video
                           i.icon-film.icon-white
                           span(data-bind=" text: ' '+video().codec")
