@@ -140,13 +140,15 @@ listener.on('JSONmessage', function(chan, status) {
             }
             emit();
         });
-        db.collection('lists').findEach({ "models._id": status.piece[pos]._id }, function(err, res) {
+        //db.collection('lists').findEach({ "models._id": status.piece[pos]._id }, function(err, res) {
+        db.collection('pieces').findById(status.piece[pos]._id, function(err, piece) {
             if( err ) {
                 // we still want to call emit() even if there was a DB error
                 console.error(err);
             }
 
-            if( res ) {
+            if( piece ) {
+                /*
                 var piece = _.chain(res.models).filter(function(p) {
                     return p._id == status.piece[pos]._id;
                 }).value();
@@ -163,6 +165,7 @@ listener.on('JSONmessage', function(chan, status) {
                 }
 
                 piece = piece[0];
+                */
                 status.piece[pos] = piece;
                 // default name to id
                 if( !status.piece[pos].name ) {
