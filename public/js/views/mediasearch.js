@@ -37,7 +37,7 @@ window.SearchView = function(options) {
             var scroll_callback = function () {
                 if (scrollable.scrollTop() >= (completeList.height() - scrollable.height() - offset)
                      && collection.hasNext() ){
-                    collection.getNextPage();
+                    collection.getNextPage({remove: false});
                     $('.loading').addClass('visible');
                 }
             };
