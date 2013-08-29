@@ -979,14 +979,20 @@ PlayoutTimelinePanel.prototype = {
                     var pl = d.get('playlist');
                     if (!pl) {
                         d.fetchRelated("playlist", {
-                            success: function() {
-                                pl.fetchRelated("pieces", {
-                                    success: function() {
-                                        self.redraw(smooth);
-                                    },
-                                    error: function() {
-                                        console.warn("Could not fetch related pieces.");
-                                    },
+                            success: function(def_pl) {
+                                def_pl.bind("sync", function() {
+                                    def_pl.unbind("sync");
+                                    def_pl.fetchRelated("pieces", {
+                                        success: function(def_pieces) {
+                                            def_pieces.bind("sync", function() {
+                                                def_pieces.unbind("sync");
+                                                self.redraw(smooth);
+                                            });
+                                        },
+                                        error: function() {
+                                            console.warn("Could not fetch related pieces.");
+                                        },
+                                    });
                                 });
                             },
                             error: function() {
@@ -997,8 +1003,11 @@ PlayoutTimelinePanel.prototype = {
                         var pces = pl.get('pieces');
                         if (!pces || !pces.length) {
                             pl.fetchRelated("pieces", {
-                                success: function() {
-                                    self.redraw(smooth);
+                                success: function(def_pces) {
+                                    def_pces.bind("sync", function() {
+                                        def_pces.unbind("sync");
+                                        self.redraw(smooth);
+                                    });
                                 },
                                 error: function() {
                                     console.warn("Could not fetch related pieces.");
