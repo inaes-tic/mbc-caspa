@@ -9,6 +9,7 @@ window.MediaListView = function(options){
     var el = options['el'] || $('#content');
     this.el = el;
 
+    this._hasChanges = false;
     this.has_dummy_row = false;
     var allow_drop = false;
 
@@ -123,8 +124,10 @@ window.MediaListView = function(options){
         if (newmodel) {
             this.view_model.model(newmodel);
             this.model = newmodel;
+            newmodel.bind('change', this._model_change_cb);
         }
         this.model.save();
+        this._hasChanges = false;
     };
 
     this.addDummyRow = function () {
@@ -142,8 +145,21 @@ window.MediaListView = function(options){
         }
     };
 
-    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'save', 'editListName');
+    this._model_change_cb = function () {
+        this._hasChanges = true;
+    };
+
+    this.clearChanges = function () {
+        this._hasChanges = false;
+    };
+
+    this.hasChanges = function () {
+        return this.model.isNew() || this._hasChanges
+    };
+
+    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges');
     this.view_model.collection.subscribe(this.onCollectionChange);
+    model.bind('change', this._model_change_cb);
 
     ko.applyBindings(this.view_model, el[0]);
 

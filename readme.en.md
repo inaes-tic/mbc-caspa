@@ -22,13 +22,13 @@ AGPL v3.
 + gettext
 
 ```shell
-   apt-get install gettext 
+   apt-get install gettext
 ```
 
 + npm
 
 ```shell
-   apt-get install npm  
+   apt-get install npm
 ```
 + node > 0.8
 
@@ -40,6 +40,13 @@ AGPL v3.
 
 ```shell
    apt-get install mongodb
+```
+
+If you want to have mongodb Text Search support, you need mongodb = 2.4 and
+must enable it on config file:
+
+```
+echo "setParameter = textSearchEnabled=true" >> /etc/mongodb.conf
 ```
 
 + redis

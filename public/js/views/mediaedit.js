@@ -7,13 +7,11 @@ window.EditView = PanelView.extend({
         "click #right-pane .hide-alert"  : "hideAlert",
         "click .playlist-button-array .save"  : "savePlaylist",
         "click .playlist-button-array .delete": "delPlaylist",
+        "click #alert-save-close": "closeAlertSave",
     },
     initialize: function () {
         this.constructor.__super__.initialize.apply(this, arguments);
-        this.bind("all", function(e) {
-            console.log("MEDIAEDIT EVENT:", arguments);
-        });
-        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
+        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'closeAlertSave');
         this.render();
     },
     render: function () {
@@ -43,6 +41,8 @@ window.EditView = PanelView.extend({
     },
     killEditList: function () {
         this.editList = null;
+        this.editview.destroy();
+        this.editview = null;
         $('.playlist-button-array', this.el).hide();
         $('.no-playlist-alert', this.el).show();
     },
@@ -113,9 +113,14 @@ window.EditView = PanelView.extend({
             this.collection.create (this.editview.model, {success: afterSync});
             console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);
         } else {
-            this.editview.save();
+            // if we are paginating Universe the model being edited can no longer be inside Universe
+            // so calling .save() on that fails. But, calling .create() and passing an existing model
+            // makes it to the server, updates our Universe and restores relationships. Sometimes we
+            // can have nice things after all.
+            this.collection.create(this.editview.model);
             console.log ('universe knows of us, just saving');
         }
+        this.editview.clearChanges();
     },
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
@@ -133,6 +138,17 @@ window.EditView = PanelView.extend({
             this.editview.destroy();
             Universe.remove (id);
             this.killEditList();
+        }
+    },
+    closeAlertSave: function () {
+        $('#alert-save').fadeOut();
+    },
+    canNavigateAway: function (options) {
+        if (this.editview && this.editview.hasChanges()) {
+            $('#alert-save').fadeIn();
+            options['cancel']();
+        } else {
+            options['ok']();
         }
     },
 });

@@ -42,7 +42,7 @@ window.framestatus = new App.ProgressStatus();
 var AppRouter = Backbone.Router.extend({
 
     routes: {
-        "media"	: "list",
+        "media"             : "list",
         "universe"          : "universe",
         "media/add"         : "upload",
         "media/edit"        : "editMedia",
@@ -61,47 +61,60 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
+        this.currentView = null;
+        this.currentHash = Backbone.history.getHash();
+
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
+
+        this.on('route', function(route) {
+            menuItem = {
+                playout: 'playout-menu',
+                schedule: 'schedule-menu',
+                list: 'list-menu',
+                mediaDetails: 'list-menu',
+                upload: 'add-menu',
+                addMedia: 'add-menu',
+                editMedia: 'edit-menu',
+                about: 'about-menu',
+                conf: 'conf-menu'
+            }[route];
+            if (menuItem) {
+                this.headerView.selectMenuItem(menuItem)
+            }
+        });
     },
 
     playout: function() {
-        new PlayoutView();
-        this.headerView.selectMenuItem('playout-menu')
+        return new PlayoutView();
     },
 
     schedule: function() {
-        new ScheduleView();
-        this.headerView.selectMenuItem('schedule-menu');
+        return new ScheduleView();
     },
 
     list: function() {
-        new MediaListView({model: mediaList});
-        this.headerView.selectMenuItem('list-menu');
+        return new MediaListView({model: mediaList});
     },
 
     universe: function () {
-        new UniverseListView({collection: Universe});
+        return new UniverseListView({collection: Universe});
     },
 
     mediaDetails: function (id) {
-        new MediaView({model: mediaList.get(id)});
-        this.headerView.selectMenuItem('list-menu');
+        return new MediaView({model: mediaList.get(id)});
     },
 
     upload: function () {
-        new UploadView ({collection: appCollection});
-        this.headerView.selectMenuItem('add-menu');
+        return new UploadView ({collection: appCollection});
     },
 
     addMedia: function() {
         var media = new Media.Model();
-        new MediaView({model: media});
-        this.headerView.selectMenuItem('add-menu');
+        return new MediaView({model: media});
     },
 
     editMedia: function() {
-        new EditView ();
-        this.headerView.selectMenuItem('edit-menu');
+        return new EditView();
     },
 
     about: function () {
@@ -109,11 +122,55 @@ var AppRouter = Backbone.Router.extend({
             this.aboutView = new AboutView();
         }
         $('#content').html(this.aboutView.el);
-        this.headerView.selectMenuItem('about-menu');
+        return this.aboutView
     },
     conf: function () {
-        new ConfView({collection: appCollection});
-        this.headerView.selectMenuItem('conf-menu');
+        return new ConfView({collection: appCollection});
+    },
+
+    // Manually bind a single named route to a callback. For example:
+    //
+    //     this.route('search/:query/p:num', 'search', function(query, num) {
+    //       ...
+    //     });
+    //
+    route: function(route, name, callback) {
+        if (!_.isRegExp(route)) route = this._routeToRegExp(route);
+        if (_.isFunction(name)) {
+          callback = name;
+          name = '';
+        }
+        if (!callback) callback = this[name];
+        var router = this;
+        Backbone.history.route(route, function(fragment) {
+            var args = router._extractParameters(route, fragment);
+
+            var ok = function() {
+                if (callback) {
+                    router.currentView = callback.apply(router, args);
+                }
+                router.trigger.apply(router, ['route:' + name].concat(args));
+                router.trigger('route', name, args);
+                Backbone.history.trigger('route', router, name, args);
+                router.currentHash = Backbone.history.getHash();
+            };
+
+            var cancel = function() {
+                // XXX: keep this, otherwise the browser url will point somewhere else.
+                // we need to set the history fragment to the (now) previous location
+                // to avoid re-creating the current view when we change the browser url.
+                // router.currentHash is updated by us after a successfull route change.
+                Backbone.history.fragment = router.currentHash;
+                location.hash = router.currentHash;
+            };
+
+            if (router.currentView && router.currentView.canNavigateAway) {
+                router.currentView.canNavigateAway({ok: ok, cancel: cancel});
+            } else {
+                ok();
+            }
+        });
+        return this;
     },
 });
 
