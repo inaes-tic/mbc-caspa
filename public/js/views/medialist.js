@@ -109,15 +109,19 @@ window.MediaListView = function(options){
         this.view_model.editingName(true);
     };
 
-    this.destroy = function () {
+    this.destroyView = function () {
         kb.release(this.view_model);
+        ko.removeNode(this.el);
+        this.el.html('');
+    };
+
+    this.deleteModel = function () {
+        this.destroyView();
         var pieces = this.model.get('pieces');
         for( i=pieces.length-1; i>=0; i--) {
             pieces.at(i).destroy();
         }
         this.model.destroy();
-        ko.cleanNode(this.el);
-        this.el.html('');
     };
 
     this.save = function (newmodel) {
@@ -157,7 +161,7 @@ window.MediaListView = function(options){
         return this.model.isNew() || this._hasChanges
     };
 
-    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroy', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges');
+    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroyView', 'deleteModel', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges');
     this.view_model.collection.subscribe(this.onCollectionChange);
     model.bind('change', this._model_change_cb);
 
