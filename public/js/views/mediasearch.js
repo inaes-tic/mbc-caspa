@@ -13,7 +13,19 @@ window.SearchView = function(options) {
     var completeList = nest.find('#playlist-table:first');
 
     var parseFacets = function (loaded_facets, facet) {
-        var plucked_facet = (loaded_facets instanceof PageableCollection)?loaded_facets.pluck(facet):_.pluck(loaded_facets, facet);
+        var plucked_facet = [];
+        if (loaded_facets instanceof PageableCollection) {
+            if (facet.indexOf('.') === -1) {
+                plucked_facet = loaded_facets.pluck(facet)
+            } else {
+                facets = facet.split('.');
+                first = facets.shift();
+                remainder = facets.join('.');
+                plucked_facet = _.pluck(loaded_facets.pluck(first), remainder);
+            }
+        } else {
+            plucked_facet = _.pluck(loaded_facets, facet);
+        }
         return _.map(_.compact(_.uniq(plucked_facet)), function(val) { return String(val); });
     }
 
@@ -78,7 +90,7 @@ window.SearchView = function(options) {
                     searchOnServer();
                 } else {
                     console.log(query_obj);
-                    collection.reset(collection.where(query_obj));
+                    collection.trigger('filter', query_obj);
                     console.log('busca en cli');
                 }
             },
