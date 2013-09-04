@@ -41,7 +41,7 @@ window.EditView = PanelView.extend({
     },
     killEditList: function () {
         this.editList = null;
-        this.editview.destroy();
+        this.editview.destroyView();
         this.editview = null;
         $('.playlist-button-array', this.el).hide();
         $('.no-playlist-alert', this.el).show();
@@ -124,7 +124,6 @@ window.EditView = PanelView.extend({
     },
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
-        var id = this.editview.model.get('_id');
         var occurrences =  this.editview.model.get('occurrences');
 
         $('.alert-has-occurrences', this.el).hide();
@@ -134,11 +133,8 @@ window.EditView = PanelView.extend({
             return;
         }
 
-        if (id) {
-            this.editview.destroy();
-            Universe.remove (id);
-            this.killEditList();
-        }
+        this.editview.deleteModel();
+        this.killEditList();
     },
     closeAlertSave: function () {
         $('#alert-save').fadeOut();
