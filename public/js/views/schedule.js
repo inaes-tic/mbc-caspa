@@ -176,7 +176,7 @@ window.ScheduleView = PanelView.extend({
 
         var calendarEventSources = [
             function(start, end, callback) {
-                self.collection.setQuery({criteria: {in_window: [moment(start).valueOf(), moment(end).valueOf()]}});
+                var query_obj = {criteria: {in_window: [moment(start).valueOf(), moment(end).valueOf()]}};
                 self.collection.fetch({
                     success: function() {
                         console.log("Fetched Schedule!");
@@ -187,6 +187,9 @@ window.ScheduleView = PanelView.extend({
                     error: function(e) {
                         throw new Error("Cannot fetch Schedule.");
                     },
+                    data: {
+                        query: query_obj,
+                    }
                 });
             },
         ].concat(self.historical_events);
