@@ -111,8 +111,16 @@ window.MediaListView = function(options){
             this.duration = kb.observable(model, 'duration');
 
             this.total_time = ko.computed(function(){
-//XXX: keep this, it tells KO to update total_time when something happens to the collection
+//XXX: keep this, it tells KO to update total_time when something happens to the model.
+// For Media.Playlist we look for changes in the duration field, as the pieces may arrive with incomplete
+// information when we do a fetchRelated(). We take care of that inside the model and update duration when
+// everything is ready.
+// If we are rendering a Media.Collection we don't have a duration attribute and so we add a dependency to
+// the collection itself.
                 var x = self.duration();
+                if (x === null) {
+                    x = self.collection();
+                }
                 return model.pretty_duration();
             }, model);
         },
