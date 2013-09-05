@@ -18,16 +18,22 @@ window.EditView = PanelView.extend({
         $(this.el).html(template.mediaedit());
 
         this.collection = new Media.UniversePageable();
-
         new UniverseListView({
             collection: this.collection,
             el: $("#universe"),
         });
-        new MediaListView({
-            model: mediaList,
-            el: $("#left-pane"),
-            type: 'medialist-draggable-fixed',
+
+        var mediaListPageable = new Media.CollectionPageable();
+        mediaListPageable.fetch({
+            success: function() {
+                new MediaListView({
+                    model: mediaListPageable,
+                    el: $("#left-pane"),
+                    type: 'medialist-draggable-fixed',
+                });
+            },
         });
+
         if (this.editList)
             this.showPlaylist(this.editList);
 
