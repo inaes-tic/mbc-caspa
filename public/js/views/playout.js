@@ -107,9 +107,9 @@ PlayoutTimeline.prototype = {
 
     },
 
-    update_data: function(new_data, bounds) {
+    update_data: function(new_data, fetched_bounds) {
         this.data = new_data;
-        this.fetched_bounds = bounds || this.fetched_bounds;
+        this.fetched_bounds = fetched_bounds || this.fetched_bounds;
 
         // Filter data
         this.cache_filtered_data(true);
@@ -1801,7 +1801,7 @@ window.PlayoutView = PanelView.extend({
     },
 
     render: function() {
-        this.timeline.update_data(this.collection.models, this.bounds);
+        this.timeline.update_data(this.collection.models, this.fetched_bounds);
         this.timeline.redraw();
     },
 
@@ -1809,37 +1809,33 @@ window.PlayoutView = PanelView.extend({
         d3.selectAll("#universe ul#playlists li").call(this.external_drag);
     },
 
-    fetch_occurrences: function(bounds) {
-        // Performance timer
-        if (!this.ready_to_fetch) {
-            this.fetch_requested = true;
-            return false;
-        } else {
-            this.fetch_requested = false;
-            this.ready_to_fetch = false;
-        }
-
+    fetch_occurrences: _.throttle(function(bounds) {
         var self = this;
 
-        // Fetching
-        this.collection.setQuery({criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}});
-        this.collection.fetch({
-            success: function() {
-                // Update bounds, event:sync redraw will do the work.
-                self.bounds = bounds;
-            },
-            error: function(e) {
-                throw new Error("Cannot fetch Schedule.");
-            },
-        });
+        // Get window size
+        var window_size = bounds.end - bounds.start;
 
-        // Performance timer
-        window.setTimeout(function() {
-            self.ready_to_fetch = true;
-            if (self.fetch_requested) {
-                self.fetch_occurrences(self.timeline.get_max_bounds());
-            }
-        }, 500);
-    },
+        // Expand the window both sides by it's size
+        bounds.start.subtract(window_size);
+        bounds.end.add(window_size);
+
+        // Calculate threshold
+        var threshold = window_size / 2;
+
+        // Only fetch if threshold has been passed or no fetched bounds are registered
+        if (!self.fetched_bounds || Math.abs(bounds.start - self.fetched_bounds.start) > threshold) {
+            // Fetching
+            this.collection.setQuery({criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}});
+            this.collection.fetch({
+                success: function() {
+                    // Update bounds, event:sync redraw will do the work.
+                    self.fetched_bounds = bounds;
+                },
+                error: function(e) {
+                    throw new Error("Cannot fetch Schedule.");
+                },
+            });
+        }
+    }, 1000, {leading: false}),
 });
 
