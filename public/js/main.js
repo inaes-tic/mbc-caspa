@@ -97,7 +97,8 @@ var AppRouter = Backbone.Router.extend({
     },
 
     universe: function () {
-        return new UniverseListView({collection: Universe});
+        var playlists = new Media.UniversePageable();
+        return new UniverseListView({collection: playlists});
     },
 
     mediaDetails: function (id) {
