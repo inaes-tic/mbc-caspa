@@ -56,7 +56,6 @@ window.SearchView = function(options) {
 
     switch(type) {
         case 'server':
-            var loaded_facets = {};
             var searchBox = $('.visual_search', el);
             var visualSearch = VS.init({
                 container : searchBox,
@@ -78,20 +77,17 @@ window.SearchView = function(options) {
                     },
                     valueMatches : function(facet, searchTerm, callback) {
                         var options = {preserveOrder: true};
-                        if (!loaded_facets.length) {
-                            Backbone.sync('read', collection, {
-                                silent: true,
-                                data: { fields: facets },
-                                success: function(res) {
-                                    loaded_facets = res[1];
-                                    var f = parseFacets(loaded_facets, facet);
-                                    callback(f, options);
-                                }
-                            });
-                        } else {
-                            var f = parseFacets(loaded_facets, facet);
-                            callback(f, options);
-                        }
+                        Backbone.sync('read', collection, {
+                            silent: true,
+                            data: {
+                                fields: [ facet ],
+                                query: query_obj,
+                            },
+                            success: function(res) {
+                                var f = parseFacets(res[1], facet);
+                                callback(f, options);
+                            }
+                        });
                     },
                     focus: function() {
                     },
