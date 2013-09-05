@@ -1,6 +1,5 @@
-var transformList = new Media.TransformCollection();
-var mediaList = new Media.Collection();
-var pieceList = new Media.PieceCollection();
+var mediaList = new Media.CollectionPageable();
+var pieceList = new Media.PieceCollectionPageable();
 var appCollection = new App.Collection();
 
 window.appCollection = appCollection;
@@ -162,9 +161,7 @@ $.ajax({
 
 appCollection.fetch({success: function() {
     mediaList.fetch({success: function() {
-        transformList.fetch({success: function() {
-            app = new AppRouter();
-            Backbone.history.start();
-        }});
+        app = new AppRouter();
+        Backbone.history.start();
     }});
 }});
