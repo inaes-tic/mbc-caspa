@@ -14,7 +14,7 @@ window.SearchView = function(options) {
 
     var parseFacets = function (loaded_facets, facet) {
         var plucked_facet = [];
-        if (loaded_facets instanceof PageableCollection) {
+        if (loaded_facets instanceof PageableCollection || loaded_facets instanceof Backbone.Collection) {
             if (facet.indexOf('.') === -1) {
                 plucked_facet = loaded_facets.pluck(facet)
             } else {
