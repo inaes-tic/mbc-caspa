@@ -13,7 +13,7 @@ window.SearchView = function(options) {
     var completeList = nest.find('#playlist-table:first');
 
     var parseFacets = function (loaded_facets, facet) {
-        return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
+        return _.map(_.compact(loaded_facets), function(val) { return String(val); });
     }
 
     el.html(template.mediasearch({type: type, pagination: pagination}));
@@ -80,7 +80,7 @@ window.SearchView = function(options) {
                         Backbone.sync('read', collection, {
                             silent: true,
                             data: {
-                                fields: [ facet ],
+                                distinct: facet,
                                 query: query_obj,
                             },
                             success: function(res) {
