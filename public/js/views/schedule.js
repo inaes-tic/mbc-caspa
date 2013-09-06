@@ -6,12 +6,14 @@ window.OccurrenceView = Backbone.View.extend({
       this.calendar = this.options.calendar;
     },
     deleteOcurrence: function(sth) {
+      var list = this.model.get('playlist');
       var overlapped = this.model.overlapsWith;
-      var options = {success: function() {
+      var options = {success: function(list) {
         overlapped.forEach(function(o) {
           o.save();
           });
-        }
+        list.save();
+        }.bind(this, list)
       };
       this.$el.fadeOut(400, this.model.destroy.bind(this.model, options));
       console.log("Deleting ocurrence", this.model);
@@ -346,6 +348,7 @@ window.ScheduleView = PanelView.extend({
                 console.log ('to save', event);
                 self.collection.create (event, {success: function(model) {
                     console.log ('Schedule: saved OK: ', self, list, event, model);
+                    list.save();
                     self.calendar.fullCalendar('renderEvent', self.make_event(model));
                 }
                 });
