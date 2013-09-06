@@ -978,7 +978,8 @@ PlayoutTimelinePanel.prototype = {
                 if (playlist_visible(d)) {
                     var pl = d.get('playlist');
                     if (!pl) {
-                        d.fetchRelated("playlist", {
+                        d.fetchRelated("playlist");
+                        d.fetch({
                             success: function(def_pl) {
                                 def_pl.bind("sync", function() {
                                     def_pl.unbind("sync");
@@ -1002,12 +1003,14 @@ PlayoutTimelinePanel.prototype = {
                     } else {
                         var pces = pl.get('pieces');
                         if (!pces || !pces.length) {
-                            pl.fetchRelated("pieces", {
+                            pl.fetchRelated("pieces");
+                            pl.fetch({
                                 success: function(def_pces) {
-                                    def_pces.bind("sync", function() {
-                                        def_pces.unbind("sync");
-                                        self.redraw(smooth);
-                                    });
+                                    self.redraw(smooth);
+                                    //def_pces.bind("sync", function() {
+                                    //    def_pces.unbind("sync");
+                                    //    self.redraw(smooth);
+                                    //});
                                 },
                                 error: function() {
                                     console.warn("Could not fetch related pieces.");
