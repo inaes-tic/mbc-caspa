@@ -344,8 +344,11 @@ window.ScheduleView = PanelView.extend({
                 };
 
                 console.log ('to save', event);
-                var item = self.collection.create (event);
-                console.log (this, list, event, item);
+                self.collection.create (event, {success: function(model) {
+                    console.log ('Schedule: saved OK: ', self, list, event, model);
+                    self.calendar.fullCalendar('renderEvent', self.make_event(model));
+                }
+                });
             }
         });
 
@@ -367,9 +370,21 @@ window.ScheduleView = PanelView.extend({
             }
                                              */
 
-        self.collection.bind('add reset remove change', this.reload, this);
-        self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
+        self.collection.bind('all',   function (e, a) {console.log('SCHEDULE got: ' + e, a);}, this);
         self.collection.bind('overlap', this.displayOverlap, this);
+
+        self.collection.bind('backend', this.reload, this);
+        self.collection.bind('destroy',   function (model) {
+            self.calendar.fullCalendar('removeEvents', model.id);
+        });
+        self.collection.bind('change',   function (model) {
+            var fcEvent = self.calendar.fullCalendar('clientEvents', model.id)[0];
+            current = self.make_event(model);
+            if (current && fcEvent) {
+                _.extend(fcEvent, current);
+                self.calendar.fullCalendar('updateEvent', fcEvent);
+            }
+        });
 
         return this;
     },
