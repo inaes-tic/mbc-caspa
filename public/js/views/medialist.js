@@ -3,6 +3,7 @@ window.MediaListView = function(options){
 
     var collection = null;
 
+    var pieceList = options['pieceList'] || new Media.PieceCollection();
     var model = options['model'];
     this.model = model;
 

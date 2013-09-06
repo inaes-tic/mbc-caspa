@@ -10,6 +10,7 @@ window.EditView = PanelView.extend({
         "click #alert-save-close": "closeAlertSave",
     },
     initialize: function () {
+        this.pieceList = new Media.PieceCollection();
         this.constructor.__super__.initialize.apply(this, arguments);
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'closeAlertSave');
         this.render();
@@ -64,19 +65,24 @@ window.EditView = PanelView.extend({
         this.showPlaylist(plid);
     },
     showPlaylist: function (list) {
-        this.editview = new MediaListView({
-            sortable: true,
-            model: list,
-            el: $("#new-playlist"),
-            type: 'playlist-sortable',
-            pagination: false,
-            search_type: 'client',
-        });
+        var self = this;
+        list.fetchRelated('pieces');
+        list.fetch({success: function() {
+            self.editview = new MediaListView({
+                sortable: true,
+                model: list,
+                pieceList: self.pieceList,
+                el: $("#new-playlist"),
+                type: 'playlist-sortable',
+                pagination: false,
+                search_type: 'client',
+            });
 
-        $('.alert-empty-playlist', this.el).hide();
-        $('.alert-unnamed-playlist', this.el).hide();
-        $('.no-playlist-alert',     this.el).hide();
-        $('.playlist-button-array', this.el).show();
+            $('.alert-empty-playlist', self.el).hide();
+            $('.alert-unnamed-playlist', self.el).hide();
+            $('.no-playlist-alert',     self.el).hide();
+            $('.playlist-button-array', self.el).show();
+        }});
     },
     savePlaylist: function (event) {
         var medias = this.editview.model.get('pieces');

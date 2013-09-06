@@ -1,5 +1,4 @@
 var mediaList = new Media.CollectionPageable();
-var pieceList = new Media.PieceCollectionPageable();
 var appCollection = new App.Collection();
 
 window.appCollection = appCollection;
