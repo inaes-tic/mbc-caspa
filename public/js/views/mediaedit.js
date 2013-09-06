@@ -11,6 +11,8 @@ window.EditView = PanelView.extend({
     },
     initialize: function () {
         this.pieceList = new Media.PieceCollection();
+        this.Schedule = new Media.Schedule();
+
         this.constructor.__super__.initialize.apply(this, arguments);
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'closeAlertSave');
         this.render();
@@ -67,6 +69,7 @@ window.EditView = PanelView.extend({
     showPlaylist: function (list) {
         var self = this;
         list.fetchRelated('pieces');
+        list.fetchRelated('occurrences');
         list.fetch({success: function() {
             self.editview = new MediaListView({
                 sortable: true,
