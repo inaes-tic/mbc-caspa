@@ -1,38 +1,4 @@
-var transformList = new Media.TransformCollection();
-var mediaList = new Media.Collection();
-var pieceList = new Media.PieceCollection();
-var Universe  = new Media.Universe();
-var Schedule  = new Media.Schedule();
-
-var DEBUG = false;
-if (DEBUG) {
-    var i = 0;
-    cols = [mediaList, Universe, Schedule];
-    setInterval (function () {
-        for (col in cols) {
-            c = cols[col];
-            c.create({name: i++, file: 'file' + i, duration: 293829829});
-            console.log ('hello, ' + col + ' : ', c.models.length,
-                         _.zip(c.pluck('file'), c.pluck('name'), c.pluck('_id')));
-        }
-    }, 5000);
-}
-
-
-Universe.bind ('all', function (arg) {
-    console.log ('UNIVERSE:' , arg);
-});
-
-Universe.bind ('add', function (arg) {
-    console.log('something happened in the universe',Universe, 'ADD', arg);
-    console.trace ();
-});
-
-Universe.bind ('create', function (arg) {
-    console.log('something happened in the universe',Universe, 'CREATE', arg);
-    console.trace ();
-});
-
+var mediaList = new Media.CollectionPageable();
 var appCollection = new App.Collection();
 
 window.appCollection = appCollection;
@@ -97,7 +63,8 @@ var AppRouter = Backbone.Router.extend({
     },
 
     universe: function () {
-        return new UniverseListView({collection: Universe});
+        var playlists = new Media.UniversePageable();
+        return new UniverseListView({collection: playlists});
     },
 
     mediaDetails: function (id) {
@@ -193,9 +160,7 @@ $.ajax({
 
 appCollection.fetch({success: function() {
     mediaList.fetch({success: function() {
-        transformList.fetch({success: function() {
-            app = new AppRouter();
-            Backbone.history.start();
-        }});
+        app = new AppRouter();
+        Backbone.history.start();
     }});
 }});

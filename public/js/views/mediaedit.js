@@ -10,6 +10,9 @@ window.EditView = PanelView.extend({
         "click #alert-save-close": "closeAlertSave",
     },
     initialize: function () {
+        this.pieceList = new Media.PieceCollection();
+        this.Schedule = new Media.Schedule();
+
         this.constructor.__super__.initialize.apply(this, arguments);
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'closeAlertSave');
         this.render();
@@ -18,16 +21,22 @@ window.EditView = PanelView.extend({
         $(this.el).html(template.mediaedit());
 
         this.collection = new Media.UniversePageable();
-
         new UniverseListView({
             collection: this.collection,
             el: $("#universe"),
         });
-        new MediaListView({
-            model: mediaList,
-            el: $("#left-pane"),
-            type: 'medialist-draggable-fixed',
+
+        var mediaListPageable = new Media.CollectionPageable();
+        mediaListPageable.fetch({
+            success: function() {
+                new MediaListView({
+                    model: mediaListPageable,
+                    el: $("#left-pane"),
+                    type: 'medialist-draggable-fixed',
+                });
+            },
         });
+
         if (this.editList)
             this.showPlaylist(this.editList);
 
@@ -58,19 +67,30 @@ window.EditView = PanelView.extend({
         this.showPlaylist(plid);
     },
     showPlaylist: function (list) {
-        this.editview = new MediaListView({
-            sortable: true,
-            model: list,
-            el: $("#new-playlist"),
-            type: 'playlist-sortable',
-            pagination: false,
-            search_type: 'client',
-        });
+        var self = this;
+        var success = function() {
+            self.editview = new MediaListView({
+                sortable: true,
+                model: list,
+                pieceList: self.pieceList,
+                el: $("#new-playlist"),
+                type: 'playlist-sortable',
+                pagination: false,
+                search_type: 'client',
+            });
+            $('.alert-empty-playlist', self.el).hide();
+            $('.alert-unnamed-playlist', self.el).hide();
+            $('.no-playlist-alert',     self.el).hide();
+            $('.playlist-button-array', self.el).show();
+        };
+        if (list.isNew()) {
+            success();
+        } else {
+            list.fetchRelated('pieces');
+            list.fetchRelated('occurrences');
+            list.fetch({success: success});
+        }
 
-        $('.alert-empty-playlist', this.el).hide();
-        $('.alert-unnamed-playlist', this.el).hide();
-        $('.no-playlist-alert',     this.el).hide();
-        $('.playlist-button-array', this.el).show();
     },
     savePlaylist: function (event) {
         var medias = this.editview.model.get('pieces');

@@ -978,7 +978,8 @@ PlayoutTimelinePanel.prototype = {
                 if (playlist_visible(d)) {
                     var pl = d.get('playlist');
                     if (!pl) {
-                        d.fetchRelated("playlist", {
+                        d.fetchRelated("playlist");
+                        d.fetch({
                             success: function(def_pl) {
                                 def_pl.bind("sync", function() {
                                     def_pl.unbind("sync");
@@ -1002,12 +1003,14 @@ PlayoutTimelinePanel.prototype = {
                     } else {
                         var pces = pl.get('pieces');
                         if (!pces || !pces.length) {
-                            pl.fetchRelated("pieces", {
+                            pl.fetchRelated("pieces");
+                            pl.fetch({
                                 success: function(def_pces) {
-                                    def_pces.bind("sync", function() {
-                                        def_pces.unbind("sync");
-                                        self.redraw(smooth);
-                                    });
+                                    self.redraw(smooth);
+                                    //def_pces.bind("sync", function() {
+                                    //    def_pces.unbind("sync");
+                                    //    self.redraw(smooth);
+                                    //});
                                 },
                                 error: function() {
                                     console.warn("Could not fetch related pieces.");
@@ -1822,7 +1825,7 @@ window.PlayoutView = PanelView.extend({
         var self = this;
 
         // Fetching
-        this.collection.setQuery({criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}});
+        var query_obj = {criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}};
         this.collection.fetch({
             success: function() {
                 // Update bounds, event:sync redraw will do the work.
@@ -1831,6 +1834,9 @@ window.PlayoutView = PanelView.extend({
             error: function(e) {
                 throw new Error("Cannot fetch Schedule.");
             },
+            data: {
+                query: query_obj
+            }
         });
 
         // Performance timer

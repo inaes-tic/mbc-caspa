@@ -6,12 +6,14 @@ window.OccurrenceView = Backbone.View.extend({
       this.calendar = this.options.calendar;
     },
     deleteOcurrence: function(sth) {
+      var list = this.model.get('playlist');
       var overlapped = this.model.overlapsWith;
-      var options = {success: function() {
+      var options = {success: function(list) {
         overlapped.forEach(function(o) {
           o.save();
           });
-        }
+        list.save();
+        }.bind(this, list)
       };
       this.$el.fadeOut(400, this.model.destroy.bind(this.model, options));
       console.log("Deleting ocurrence", this.model);
@@ -176,7 +178,7 @@ window.ScheduleView = PanelView.extend({
 
         var calendarEventSources = [
             function(start, end, callback) {
-                self.collection.setQuery({criteria: {in_window: [moment(start).valueOf(), moment(end).valueOf()]}});
+                var query_obj = {criteria: {in_window: [moment(start).valueOf(), moment(end).valueOf()]}};
                 self.collection.fetch({
                     success: function() {
                         console.log("Fetched Schedule!");
@@ -187,6 +189,9 @@ window.ScheduleView = PanelView.extend({
                     error: function(e) {
                         throw new Error("Cannot fetch Schedule.");
                     },
+                    data: {
+                        query: query_obj,
+                    }
                 });
             },
         ].concat(self.historical_events);
@@ -341,8 +346,12 @@ window.ScheduleView = PanelView.extend({
                 };
 
                 console.log ('to save', event);
-                var item = self.collection.create (event);
-                console.log (this, list, event, item);
+                self.collection.create (event, {success: function(model) {
+                    console.log ('Schedule: saved OK: ', self, list, event, model);
+                    list.save();
+                    self.calendar.fullCalendar('renderEvent', self.make_event(model));
+                }
+                });
             }
         });
 
@@ -364,9 +373,21 @@ window.ScheduleView = PanelView.extend({
             }
                                              */
 
-        self.collection.bind('add reset remove change', this.reload, this);
-        self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
+        self.collection.bind('all',   function (e, a) {console.log('SCHEDULE got: ' + e, a);}, this);
         self.collection.bind('overlap', this.displayOverlap, this);
+
+        self.collection.bind('backend', this.reload, this);
+        self.collection.bind('destroy',   function (model) {
+            self.calendar.fullCalendar('removeEvents', model.id);
+        });
+        self.collection.bind('change',   function (model) {
+            var fcEvent = self.calendar.fullCalendar('clientEvents', model.id)[0];
+            current = self.make_event(model);
+            if (current && fcEvent) {
+                _.extend(fcEvent, current);
+                self.calendar.fullCalendar('updateEvent', fcEvent);
+            }
+        });
 
         return this;
     },
