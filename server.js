@@ -7,6 +7,7 @@ var express = require('express'),
     mbc = require('mbc-common'),
     conf = require('mbc-common').config.Caspa,
     search_options = require('mbc-common').config.Search,
+    collections = require('mbc-common').config.Common.Collections,
     moment = require('moment'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000
@@ -94,16 +95,16 @@ var listener = mbc.pubsub();
 var searchWrapper = require('./searchWrapper.js');
 
 var mediabackend = backboneio.createBackend();
-mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'medias', { search: search_options.Medias })));
+mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Medias, { search: search_options.Medias })));
 
 var piecebackend = backboneio.createBackend();
-piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'pieces', {})));
+piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Pieces, { search: search_options.Pieces })));
 
 var transformbackend = backboneio.createBackend();
-transformbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'transforms', {})));
+transformbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Transforms, { search: search_options.Transforms })));
 
 var listbackend = backboneio.createBackend();
-listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, 'lists', { search: search_options.Lists })));
+listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, collections.Lists, { search: search_options.Lists })));
 
 function id_middleware(req, res, next) {
     if( req.method == 'create' && req.model._id === undefined) {
@@ -119,7 +120,7 @@ schedbackend.use(function (req, res, next) {
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
-schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, 'scheds',  { search: search_options.Scheds })));
+schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Scheds, { search: search_options.Scheds })));
 
 var statusbackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, status) {
@@ -134,7 +135,7 @@ listener.on('JSONmessage', function(chan, status) {
         statusbackend.emit('updated', status)
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
-        db.collection('scheds').findEach({ _id: status.show[pos]._id }, function(err, res) {
+        db.collection(collections.Scheds).findEach({ _id: status.show[pos]._id }, function(err, res) {
             if( res ) {
                 status.show[pos] = {
                     name: res.title,
@@ -144,7 +145,7 @@ listener.on('JSONmessage', function(chan, status) {
             emit();
         });
         //db.collection('lists').findEach({ "models._id": status.piece[pos]._id }, function(err, res) {
-        db.collection('pieces').findById(status.piece[pos]._id, function(err, piece) {
+        db.collection(collections.Pieces).findById(status.piece[pos]._id, function(err, piece) {
             if( err ) {
                 // we still want to call emit() even if there was a DB error
                 console.error(err);
@@ -181,7 +182,7 @@ listener.on('JSONmessage', function(chan, status) {
     });
 });
 listener.subscribe('mostoStatus');
-statusbackend.use(backboneio.middleware.mongoStore(db, 'status', {}));
+statusbackend.use(backboneio.middleware.mongoStore(db, collections.Status, { search: search_options.Status }));
 
 var framebackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, msg) {
@@ -213,7 +214,7 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
     }
 });
 listener.psubscribe('mostoMessage*');
-mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages', {}));
+mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
 
 _([mediabackend, listbackend, appbackend, piecebackend, transformbackend]).each (debug_backend);
 
