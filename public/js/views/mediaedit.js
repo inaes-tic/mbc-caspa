@@ -7,14 +7,15 @@ window.EditView = PanelView.extend({
         "click #right-pane .hide-alert"  : "hideAlert",
         "click .playlist-button-array .save"  : "savePlaylist",
         "click .playlist-button-array .delete": "delPlaylist",
-        "click #alert-save-close": "closeAlertSave",
     },
     initialize: function () {
+        // Parent initialize
+        PanelView.prototype.initialize.apply(this, arguments);
+
         this.pieceList = new Media.PieceCollection();
         this.Schedule = new Media.Schedule();
 
-        this.constructor.__super__.initialize.apply(this, arguments);
-        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'closeAlertSave');
+        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
         this.render();
     },
     render: function () {
@@ -37,8 +38,12 @@ window.EditView = PanelView.extend({
             },
         });
 
-        if (this.editList)
+        if (this.editList) {
             this.showPlaylist(this.editList);
+        }
+
+        // Parent render
+        PanelView.prototype.render.apply(this, arguments);
 
         return this;
     },
@@ -156,12 +161,9 @@ window.EditView = PanelView.extend({
         this.editview.deleteModel();
         this.killEditList();
     },
-    closeAlertSave: function () {
-        $('#alert-save').fadeOut();
-    },
     canNavigateAway: function (options) {
         if (this.editview && this.editview.hasChanges()) {
-            $('#alert-save').fadeIn();
+            this.alert_dialog.dialog("open");
             options['cancel']();
         } else {
             options['ok']();
