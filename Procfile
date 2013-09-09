@@ -1,1 +1,1 @@
-web: node serverwithanalytics.js
+web: node server.js
