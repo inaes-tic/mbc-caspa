@@ -1788,7 +1788,11 @@ window.PlayoutView = PanelView.extend({
                 }
 
                 // Insert new occurrence
-                self.collection.create(occurrence);
+                self.collection.create(occurrence, {
+                    success: function() {
+                        self.playlists.get(self.drag_origin.get('_id')).save();
+                    },
+                });
             }
 
             self.timeline.drag_clear();
