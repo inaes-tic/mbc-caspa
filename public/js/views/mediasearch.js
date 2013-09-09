@@ -24,9 +24,9 @@ window.SearchView = function(options) {
                 plucked_facet = _.pluck(loaded_facets.pluck(first), remainder);
             }
         } else {
-            plucked_facet = _.pluck(loaded_facets, facet);
+            plucked_facet = loaded_facets;
         }
-        return _.map(_.compact(_.uniq(plucked_facet)), function(val) { return String(val); });
+        return _.map(_.uniq(_.compact(plucked_facet)), function(val) { return String(val); });
     }
 
     el.html(template.mediasearch({type: type, pagination: pagination}));
@@ -67,7 +67,6 @@ window.SearchView = function(options) {
         default:
     }
 
-    var loaded_facets = {};
     var searchBox = $('.visual_search', el);
     var visualSearch = VS.init({
         container : searchBox,
@@ -78,10 +77,8 @@ window.SearchView = function(options) {
             clearSearch: function(clear_cb) {
                 clear_cb();
                 query_obj = {};
-                if(type=='server') {
+                if (type == 'server') {
                     searchOnServer();
-                } else {
-                    console.log('borrar en cli');
                 }
             },
             search: function(query, searchCollection) {
@@ -89,9 +86,7 @@ window.SearchView = function(options) {
                 if(type == 'server') {
                     searchOnServer();
                 } else {
-                    console.log(query_obj);
                     collection.trigger('filter', query_obj);
-                    console.log('busca en cli');
                 }
             },
             facetMatches : function(callback) {
@@ -99,24 +94,20 @@ window.SearchView = function(options) {
             },
             valueMatches : function(facet, searchTerm, callback) {
                 var options = {preserveOrder: true};
-                if (!loaded_facets.length) {
-                  if(type=='server') {
+                if (type=='server') {
                     Backbone.sync('read', collection, {
                         silent: true,
-                        data: { fields: facets },
+                        data: {
+                            distinct: facet,
+                            query: query_obj,
+                        },
                         success: function(res) {
-                            loaded_facets = res[1];
-                            var f = parseFacets(loaded_facets, facet);
+                            var f = parseFacets(res[1], facet);
                             callback(f, options);
                         }
                     });
-                  } else {
-                    loaded_facets = collection;
-                    var f = parseFacets(loaded_facets, facet);
-                    callback(f, options);
-                  }
                 } else {
-                    var f = parseFacets(loaded_facets, facet);
+                    var f = parseFacets(collection, facet);
                     callback(f, options);
                 }
             },

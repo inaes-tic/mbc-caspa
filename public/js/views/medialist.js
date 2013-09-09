@@ -107,7 +107,6 @@ window.MediaListView = function(options){
                 view_model: kb.ViewModel,
             });
             collection.bind('filter', self.filter);
-            collection.bind('filter', function(){ console.log('FILTER EN VISTA KB', self.filter())});
 
             this.duration = kb.observable(model, 'duration');
 

@@ -33,6 +33,7 @@ module.exports = function(middleware) {
                         order: '',
                         fields: {},
                         criteria: {},
+                        distinct: '',
                         max_items: 100
                     };
                     var query = {};
@@ -115,7 +116,7 @@ module.exports = function(middleware) {
                     db.admin.command(getParameterObj, function(err, result) {
                         if(err) res.end({'error':'An error has occurred on read ' + err});
                         if(result.documents[0].textSearchEnabled && _.has(data.query,'text')) {
-                            db.command({ "text": colname, search: data.query.text, limit: limit, filter: query }, {}, function(err, result) {
+                            db.command({ "text": colname, search: data.query.text, limit: limit, filter: query, project: fields }, {}, function(err, result) {
                                 if(err) res.end({'error':'An error has occurred on fulltext - txt: ' + data.query.text + ' q:' +query + ' limit:' + limit });
                                 var items = _.pluck(result.results, 'obj');
                                 res.end([ { total_entries: items.length }, items]);
@@ -131,20 +132,42 @@ module.exports = function(middleware) {
                                 _.extend(query, {$or: expressions})
                             }
 
-                            var q = collection.find(query, fields).limit(limit).skip(skip).sort(sort);
-                            q.count(function(err, total) {
-                                if (err) {
-                                    res.end({'error':'An error has occurred on count - read ' + err});
-                                } else {
-                                    q.toArray(function (err, items) {
-                                        if (err) {
-                                            res.end({'error':'An error has occurred on read ' + err});
-                                        } else {
-                                            res.end([ { total_entries: total }, items]);
-                                        }
-                                    });
-                                }
-                            });
+                            if(data.distinct) {
+                                // aggregation for distinct sorted by occurrence
+                                var group_id = "$"+data.distinct
+                                var aggregation = [
+                                    { $match: query },
+                                    { $group: {
+                                        _id: group_id,
+                                        qty:{ $sum: 1 },
+                                    }},
+                                    {  $sort:
+                                        { qty: -1 }
+                                    },
+                                    { $limit: limit },
+                                    { $skip: skip },
+                                ];
+                                collection.aggregate(aggregation, function(err,results) {
+                                    if(err) res.end({'error':'An error has occurred on distinct - read ' + err});
+                                    var items = _.pluck(results,'_id');
+                                    res.end([ { total_entries: items.length }, items]);
+                                });
+                            } else {
+                                var q = collection.find(query, fields).limit(limit).skip(skip).sort(sort);
+                                q.count(function(err, total) {
+                                    if (err) {
+                                        res.end({'error':'An error has occurred on count - read ' + err});
+                                    } else {
+                                        q.toArray(function (err, items) {
+                                            if (err) {
+                                                res.end({'error':'An error has occurred on read ' + err});
+                                            } else {
+                                                res.end([ { total_entries: total }, items]);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
                         }
                     });
                 }
