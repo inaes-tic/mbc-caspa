@@ -19,6 +19,7 @@ window.MediaListView = function(options){
 
     var config = 0;
     var default_facets = appCollection.at(config).get('Search').Medias.facets;
+    var fulltext_fields = appCollection.at(config).get('Search').Medias.fulltext;
     var facets = 'facets' in options ? options['facets'] : default_facets;
 
     var default_search_type = 'server';
@@ -60,19 +61,53 @@ window.MediaListView = function(options){
                 self.collection.remove(item);
             }
 
-            this.filter = ko.observable('');
+            this.filter = ko.computed({
+                write: function(query) {
+                    filters = [];
+                    if (!query) {
+                        self.collection.filters(filters);
+                        return;
+                    }
+                    var deep_get = function(model, prop) {
+                        var value = '';
+                        attrs = prop.split(".");
+                        value = model.get(attrs.shift());
+                        while (attrs.length) {
+                            value = value[attrs.shift()];
+                        }
+                        return value;
+                    }
+                    _.each(query, function(target, prop) {
+                        var flt = function(model) {
+                            var re = new RegExp(target, "i");
+                            if (prop != "text") {
+                                value = deep_get(model, prop);
+                                // returning true here tells KO to skip that model from the display list.
+                                return String(value).search(re) < 0;
+                            } else {
+                                var fields = _.clone(fulltext_fields);
+                                var results = [];
+                                while (fields.length) {
+                                    value = deep_get(model, fields.shift());
+                                    results.push( String(value).search(re) < 0 );
+                                }
+                                return _.every(results);
+                            }
+                        }
+                        filters.push(flt);
+                    });
+                    self.collection.filters(filters);
+                },
+
+                read: function() {
+                    return {}
+                }
+            });
             this.collection =  kb.collectionObservable(collection, {
                 view_model: kb.ViewModel,
-                filters: function(model) {
-                    var filter;
-                    filter = self.filter();
-                    if (!filter) return false;
-                    var re = new RegExp(filter,"i");
-                    return ( model.get('file').search(re) < 0 &&
-                             model.get('name').search(re) < 0
-                    );
-                },
             });
+            collection.bind('filter', self.filter);
+            collection.bind('filter', function(){ console.log('FILTER EN VISTA KB', self.filter())});
 
             this.duration = kb.observable(model, 'duration');
 

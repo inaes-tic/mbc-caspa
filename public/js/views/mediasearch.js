@@ -13,7 +13,20 @@ window.SearchView = function(options) {
     var completeList = nest.find('#playlist-table:first');
 
     var parseFacets = function (loaded_facets, facet) {
-        return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
+        var plucked_facet = [];
+        if (loaded_facets instanceof PageableCollection || loaded_facets instanceof Backbone.Collection) {
+            if (facet.indexOf('.') === -1) {
+                plucked_facet = loaded_facets.pluck(facet)
+            } else {
+                facets = facet.split('.');
+                first = facets.shift();
+                remainder = facets.join('.');
+                plucked_facet = _.pluck(loaded_facets.pluck(first), remainder);
+            }
+        } else {
+            plucked_facet = _.pluck(loaded_facets, facet);
+        }
+        return _.map(_.compact(_.uniq(plucked_facet)), function(val) { return String(val); });
     }
 
     el.html(template.mediasearch({type: type, pagination: pagination}));
@@ -54,56 +67,66 @@ window.SearchView = function(options) {
         default:
     }
 
-    switch(type) {
-        case 'server':
-            var loaded_facets = {};
-            var searchBox = $('.visual_search', el);
-            var visualSearch = VS.init({
-                container : searchBox,
-                query     : '',
-                showFacets: false,
-                placeholder: '',
-                callbacks : {
-                    clearSearch: function(clear_cb) {
-                        clear_cb();
-                        query_obj = {};
-                        searchOnServer();
-                    },
-                    search: function(query, searchCollection) {
-                        query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
-                        searchOnServer();
-                    },
-                    facetMatches : function(callback) {
-                        callback(facets);
-                    },
-                    valueMatches : function(facet, searchTerm, callback) {
-                        var options = {preserveOrder: true};
-                        if (!loaded_facets.length) {
-                            Backbone.sync('read', collection, {
-                                silent: true,
-                                data: { fields: facets },
-                                success: function(res) {
-                                    loaded_facets = res[1];
-                                    var f = parseFacets(loaded_facets, facet);
-                                    callback(f, options);
-                                }
-                            });
-                        } else {
+    var loaded_facets = {};
+    var searchBox = $('.visual_search', el);
+    var visualSearch = VS.init({
+        container : searchBox,
+        query     : '',
+        showFacets: false,
+        placeholder: '',
+        callbacks : {
+            clearSearch: function(clear_cb) {
+                clear_cb();
+                query_obj = {};
+                if(type=='server') {
+                    searchOnServer();
+                } else {
+                    console.log('borrar en cli');
+                }
+            },
+            search: function(query, searchCollection) {
+                query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
+                if(type == 'server') {
+                    searchOnServer();
+                } else {
+                    console.log(query_obj);
+                    collection.trigger('filter', query_obj);
+                    console.log('busca en cli');
+                }
+            },
+            facetMatches : function(callback) {
+                callback(facets);
+            },
+            valueMatches : function(facet, searchTerm, callback) {
+                var options = {preserveOrder: true};
+                if (!loaded_facets.length) {
+                  if(type=='server') {
+                    Backbone.sync('read', collection, {
+                        silent: true,
+                        data: { fields: facets },
+                        success: function(res) {
+                            loaded_facets = res[1];
                             var f = parseFacets(loaded_facets, facet);
                             callback(f, options);
                         }
-                    },
-                    focus: function() {
-                    },
-                    blur: function() {
-                    }
+                    });
+                  } else {
+                    loaded_facets = collection;
+                    var f = parseFacets(loaded_facets, facet);
+                    callback(f, options);
+                  }
+                } else {
+                    var f = parseFacets(loaded_facets, facet);
+                    callback(f, options);
                 }
-            });
-            searchBox.find('input').focus();
-            break;
-        case 'client': break;
-        default:
-    }
+            },
+            focus: function() {
+            },
+            blur: function() {
+            }
+        }
+    });
+    searchBox.find('input').focus();
 
     function renderBootstrapPaginator() {
         $(".pagination", el).html("");
