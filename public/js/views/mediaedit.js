@@ -71,6 +71,7 @@ window.EditView = PanelView.extend({
     hideAlert: function () {
         $('.alert-empty-playlist', this.el).hide();
         $('.alert-unnamed-playlist', this.el).hide();
+        $('.alert-has-occurrences', this.el).hide();
     },
     switchPlaylistEvent: function (event, a) {
         return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
@@ -100,6 +101,7 @@ window.EditView = PanelView.extend({
 
             $('.alert-empty-playlist', self.el).hide();
             $('.alert-unnamed-playlist', self.el).hide();
+            $('.alert-has-occurrences', this.el).hide();
             $('.no-playlist-alert',     self.el).hide();
             $('.playlist-button-array', self.el).show();
         };
