@@ -1,5 +1,7 @@
 block content
+  - var title = i18n.gettext("Unsaved changes")
+  - var message = i18n.gettext("Please save or discard your changes before leaving")
     // Include here elements common to all views
-    #alert-save(style='display: none;',title="Unsaved changes")
-        p Please save or discard your changes before leaving
+    #alert-save(style='display: none;',title= title )
+        p= message
 
