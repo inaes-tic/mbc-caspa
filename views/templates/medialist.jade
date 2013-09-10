@@ -55,21 +55,21 @@ block content
           h1.list-name= name
 
     #media-search
-  .scrollable
-    #playlist-table
-      .total-time-div
+    .total-time-div
         h1.label.label-inverse.format
             i.icon-time.icon-white
             span= ' '
             span.total-time.label.label-inverse.format(data-bind="text: total_time")
-
+    .table-container
+        table.table.table-bordered.table-striped.table-condensed#table
+            thead
+            tr
+                th.thumbnail= thumbnail
+                th.description= media_info
+  .scrollable
+    #playlist-table
       .table-container
         table.table.table-bordered.table-striped.table-condensed#table
-              thead
-                tr
-                  th.thumbnail= thumbnail
-                  th.description= media_info
-
               tbody.tbody#media-view(data-bind=dbind,class='tbody')
                 tr(data-bind=inndbind)
                   td.center
