@@ -32,6 +32,7 @@ window.MediaListView = function(options){
         collection = model.get('pieces');
     } else {
         collection = model;
+        collection.fetch();
     }
 
     if (type.match(/sortable/)){
@@ -217,5 +218,10 @@ window.MediaListView = function(options){
     if (0 == collection.length){
         this.addDummyRow();
     }
+
+    this.canNavigateAway = function(options) {
+        this.destroyView();
+        options["ok"]();
+    };
 }
 

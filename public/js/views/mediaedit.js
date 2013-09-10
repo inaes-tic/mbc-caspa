@@ -23,15 +23,11 @@ window.EditView = PanelView.extend({
             el: $("#universe"),
         });
 
-        var mediaListPageable = new Media.CollectionPageable();
-        mediaListPageable.fetch({
-            success: function() {
-                new MediaListView({
-                    model: mediaListPageable,
-                    el: $("#left-pane"),
-                    type: 'medialist-draggable-fixed',
-                });
-            },
+        this.mediacollection = new Media.CollectionPageable();
+        this.medialist = new MediaListView({
+            model: this.mediacollection,
+            el: $("#left-pane"),
+            type: 'medialist-draggable-fixed',
         });
 
         if (this.editList) {
@@ -186,6 +182,7 @@ window.EditView = PanelView.extend({
     },
     viewCleanup: function() {
         this.universe_view.destroy();
+        this.medialist.destroyView();
         this.killEditList();
         this.unbind();
     },
