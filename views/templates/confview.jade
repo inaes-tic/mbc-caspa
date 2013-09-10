@@ -16,7 +16,7 @@
           a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
           a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
   #info
-    .scrollable 
+    .scrollable
       form.form-horizontal
         each v, k in config[data]
             - if (k!='type' && k!='Search') {
