@@ -59,5 +59,9 @@ window.ConfView = Backbone.View.extend({
             $('input#'+selector, this.el).val(default_model[res[0]][res[1]][res[2]]);
         }
         return false;
-    }
+    },
+    canNavigateAway: function(options) {
+        $(".scrollable").unbind("scroll"); // Disables scrollspy
+        this.unbind();
+    },
 });

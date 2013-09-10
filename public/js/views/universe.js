@@ -56,7 +56,7 @@ window.UniverseListView = function(options){
         }
     });
 
-    new SearchView({
+    this.search_view = new SearchView({
         el: $('#media-search',el),
         collection: collection,
         type: search_type,
@@ -67,6 +67,7 @@ window.UniverseListView = function(options){
     this.view_model = new UniverseListViewModel(this.collection);
 
     this.destroy = function () {
+        this.search_view.destroy();
         kb.release(this.view_model);
         ko.cleanNode(this.el);
         this.el.html('');

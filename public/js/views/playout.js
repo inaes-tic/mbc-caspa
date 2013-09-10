@@ -478,6 +478,10 @@ PlayoutTimeline.prototype = {
             return this.callbacks[name].apply(this, args);
         }
     },
+
+    unbind_all: function() {
+        this.callbacks = {};
+    },
 };
 
 PlayoutTimeline.HORIZONTAL = 0;
@@ -1816,6 +1820,10 @@ window.PlayoutView = PanelView.extend({
         d3.selectAll("#universe ul#playlists li").call(this.external_drag);
     },
 
+    remove_drag: function() {
+        $("#universe ul#playlists li").off();
+    },
+
     fetch_occurrences: _.throttle(function(bounds) {
         var self = this;
 
@@ -1846,5 +1854,20 @@ window.PlayoutView = PanelView.extend({
             });
         }
     }, 1000, {leading: false}),
+
+    canNavigateAway: function(options) {
+        // Release resources before navigating away
+        this.universe_view.destroy();
+        this.collection.unbind("sync");
+        this.playlists.unbind("sync");
+        this.collection.unbind("all");
+        $(window).off("resize");
+        this.remove_drag() // removes effect of external_drag
+        this.timeline.unbind_all();
+        this.unbind();
+
+        // Router callback
+        options["ok"]();
+    },
 });
 

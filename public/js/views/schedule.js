@@ -95,7 +95,7 @@ window.ScheduleView = PanelView.extend({
 
         $(this.el).html(this.get_templateHTML());
 
-        new UniverseListView({
+        this.universe_view = new UniverseListView({
             collection: this.playlists,
             el: $('#universe', this.el),
             draggable: true,
@@ -390,5 +390,11 @@ window.ScheduleView = PanelView.extend({
         });
 
         return this;
+    },
+
+    destroyView: function() {
+        self.universe_view.destroy();
+        self.collection.off("overlap backend destroy change");
+        self.collection.off("all");
     },
 });

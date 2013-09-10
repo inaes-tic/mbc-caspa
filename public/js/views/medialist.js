@@ -138,7 +138,7 @@ window.MediaListView = function(options){
         },
     });
 
-    new SearchView({
+    this.search_view = new SearchView({
         el: $('#media-search',el),
         collection: collection,
         type: search_type,
@@ -153,6 +153,11 @@ window.MediaListView = function(options){
     };
 
     this.destroyView = function () {
+        // Release resources
+        collection.off("filter");
+        this.model.off("change");
+        this.search_view.destroy();
+
         kb.release(this.view_model);
         ko.removeNode(this.el);
         this.el.html('');

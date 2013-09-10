@@ -5,8 +5,6 @@ window.EditView = PanelView.extend({
         "click #universe li"     : "switchPlaylistEvent",
         "click #right-pane .kill-media-list"  : "killEditList",
         "click #right-pane .hide-alert"  : "hideAlert",
-        "click .playlist-button-array .save"  : "savePlaylist",
-        "click .playlist-button-array .delete": "delPlaylist",
     },
     initialize: function () {
         // Parent initialize
@@ -22,7 +20,7 @@ window.EditView = PanelView.extend({
         $(this.el).html(template.mediaedit());
 
         this.collection = new Media.UniversePageable();
-        new UniverseListView({
+        this.universe_view = new UniverseListView({
             collection: this.collection,
             el: $("#universe"),
         });
@@ -48,6 +46,9 @@ window.EditView = PanelView.extend({
         return this;
     },
     createPlaylist: function () {
+        // Just in case
+        this.killEditList();
+
         console.log ("re-instanciating editList");
         this.editList = new Media.Playlist({published: false});
 
@@ -55,8 +56,15 @@ window.EditView = PanelView.extend({
     },
     killEditList: function () {
         this.editList = null;
-        this.editview.destroyView();
-        this.editview = null;
+        if (this.editview) {
+            this.editview.destroyView();
+            this.editview = null;
+        }
+
+        // Unbind save and delete buttons
+        $(".playlist-button-array .save").unbind("click");
+        $(".playlist-button-array .delete").unbind("click");
+
         $('.playlist-button-array', this.el).hide();
         $('.no-playlist-alert', this.el).show();
     },
@@ -68,6 +76,8 @@ window.EditView = PanelView.extend({
         return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
     },
     switchPlaylist: function (id) {
+        this.killEditList();
+
         var plid = this.collection.get(id);
         this.showPlaylist(plid);
     },
@@ -83,6 +93,11 @@ window.EditView = PanelView.extend({
                 pagination: false,
                 search_type: 'client',
             });
+
+            // Bind save and delete buttons
+            $(".playlist-button-array .save").bind("click", _.bind(self.savePlaylist, self));
+            $(".playlist-button-array .delete").bind("click", _.bind(self.delPlaylist, self));
+
             $('.alert-empty-playlist', self.el).hide();
             $('.alert-unnamed-playlist', self.el).hide();
             $('.no-playlist-alert',     self.el).hide();
@@ -166,7 +181,13 @@ window.EditView = PanelView.extend({
             this.alert_dialog.dialog("open");
             options['cancel']();
         } else {
+            this.viewCleanup();
             options['ok']();
         }
+    },
+    viewCleanup: function() {
+        this.universe_view.destroy();
+        this.killEditList();
+        this.unbind();
     },
 });

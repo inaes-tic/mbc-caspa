@@ -142,6 +142,10 @@ window.SearchView = function(options) {
         }});
     }
 
-    return;
+    this.destroy = function() {
+        collection.unbind("sync");
+    };
+
+    return this;
 }
 
