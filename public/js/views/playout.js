@@ -1709,7 +1709,7 @@ window.PlayoutView = PanelView.extend({
 
         $(window).resize(function() {
             if (self.$el.hasClass("trans")) {
-                if ($("body").hasClass("Comp")) {
+                if ($("body").hasClass("folded")) {
                     self.timeline.resize(self.svg.width(), self.svg.height() + 105, true);
                 } else {
                     self.timeline.resize(self.svg.width(), self.svg.height() - 105, true);
