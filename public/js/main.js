@@ -1,4 +1,3 @@
-var mediaList = new Media.CollectionPageable();
 var appCollection = new App.Collection();
 
 window.appCollection = appCollection;
@@ -59,7 +58,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     list: function() {
-        return new MediaListView({model: mediaList});
+        return new MediaListView();
     },
 
     universe: function () {
@@ -68,7 +67,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     mediaDetails: function (id) {
-        return new MediaView({model: mediaList.get(id)});
+        return new MediaView({id: id});
     },
 
     upload: function () {
@@ -159,8 +158,6 @@ $.ajax({
 
 
 appCollection.fetch({success: function() {
-    mediaList.fetch({success: function() {
-        app = new AppRouter();
-        Backbone.history.start();
-    }});
+    app = new AppRouter();
+    Backbone.history.start();
 }});

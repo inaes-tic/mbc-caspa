@@ -1,21 +1,31 @@
 window.MediaView = function (options) {
-    var model = options['model'];
-    var el = $('#content');
+    var self = this;
+    options = options || {};
 
-    el.html(template.mediaview(model.toJSON()));
-    console.log('MediaView 2');
+    this.el = $('#content');
 
-    view_model = kb.viewModel(model);
+    this.render = function() {
+        self.el.html(template.mediaview(self.model.toJSON()));
 
-    view_model.save = function (viewmodel) {
-        console.log('MV save()');
-        if (viewmodel) {
-            console.log(viewmodel);
-            viewmodel.model().save();
-        }
-    };
+        self.view_model = kb.viewModel(self.model);
 
-    ko.applyBindings(view_model, el[0]);
+        self.view_model.save = function(viewmodel) {
+            if (viewmodel) {
+                viewmodel.model().save();
+            }
+        };
 
+        ko.applyBindings(self.view_model, self.el[0]);
+    }
+
+    this.model = options['model'];
+    if (this.model !== undefined) {
+        this.render();
+    } else {
+        this.model = Media.Model.findOrCreate({ _id: options["id"], });
+        this.model.fetch({
+            success: this.render,
+        });
+    }
 }
 

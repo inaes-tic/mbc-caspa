@@ -10,7 +10,6 @@ window.EditView = PanelView.extend({
         // Parent initialize
         PanelView.prototype.initialize.apply(this, arguments);
 
-
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'switchPlaylistEvent');
         this.render();
     },

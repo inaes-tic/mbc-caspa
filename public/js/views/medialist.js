@@ -1,11 +1,11 @@
 window.MediaListView = function(options){
     var self = this;
 
-    var collection = null;
+    options = options || {};
 
     var pieceList = options['pieceList'] || new Media.PieceCollection();
+
     var model = options['model'];
-    this.model = model;
 
     var el = options['el'] || $('#content');
     this.el = el;
@@ -26,14 +26,24 @@ window.MediaListView = function(options){
     var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
     var type = 'type' in options ? options['type'] : 'medialist-searchable-fixed';
 
+    var collection;
     if (type.match(/playlist/)) {
         // In case of playlist, fetch related
         model.fetchRelated("pieces");
         collection = model.get('pieces');
     } else {
-        collection = model;
+        if (model !== undefined) {
+            // Use provided model
+            collection = model;
+        } else {
+            // Or use default collection type
+            collection = new Media.CollectionPageable();
+            model = collection;
+        }
         collection.fetch();
     }
+
+    this.model = model;
 
     if (type.match(/sortable/)){
         allow_drop = true;
