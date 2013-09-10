@@ -985,19 +985,14 @@ PlayoutTimelinePanel.prototype = {
                         d.fetchRelated("playlist");
                         d.fetch({
                             success: function(def_pl) {
-                                def_pl.bind("sync", function() {
-                                    def_pl.unbind("sync");
-                                    def_pl.fetchRelated("pieces", {
-                                        success: function(def_pieces) {
-                                            def_pieces.bind("sync", function() {
-                                                def_pieces.unbind("sync");
-                                                self.redraw(smooth);
-                                            });
-                                        },
-                                        error: function() {
-                                            console.warn("Could not fetch related pieces.");
-                                        },
-                                    });
+                                def_pl.fetchRelated("pieces");
+                                def_pl.fetch({
+                                    success: function() {
+                                        self.redraw(smooth);
+                                    },
+                                    error: function() {
+                                        console.warn("Could not fetch related pieces.");
+                                    },
                                 });
                             },
                             error: function() {
@@ -1011,18 +1006,13 @@ PlayoutTimelinePanel.prototype = {
                             pl.fetch({
                                 success: function(def_pces) {
                                     self.redraw(smooth);
-                                    //def_pces.bind("sync", function() {
-                                    //    def_pces.unbind("sync");
-                                    //    self.redraw(smooth);
-                                    //});
                                 },
                                 error: function() {
                                     console.warn("Could not fetch related pieces.");
                                 },
                             });
                         } else {
-                            // This is in case more pieces were added since we fetchRelated them.
-                            pl.fetchRelated("pieces");
+                            // TODO: guess what to do in case more pieces were added since we fetchRelated them.
                             ret = pces.models;
                         }
                     }
