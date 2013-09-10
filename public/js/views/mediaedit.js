@@ -10,8 +10,6 @@ window.EditView = PanelView.extend({
         // Parent initialize
         PanelView.prototype.initialize.apply(this, arguments);
 
-        this.pieceList = new Media.PieceCollection();
-        this.Schedule = new Media.Schedule();
 
         _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
         this.render();
@@ -52,7 +50,7 @@ window.EditView = PanelView.extend({
         console.log ("re-instanciating editList");
         this.editList = new Media.Playlist({published: false});
 
-        this.showPlaylist (this.editList)
+        this.showPlaylist(this.editList)
     },
     killEditList: function () {
         this.editList = null;
@@ -88,7 +86,6 @@ window.EditView = PanelView.extend({
             self.editview = new MediaListView({
                 sortable: true,
                 model: list,
-                pieceList: self.pieceList,
                 el: $("#new-playlist"),
                 type: 'playlist-sortable',
                 pagination: false,

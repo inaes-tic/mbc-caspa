@@ -40,7 +40,6 @@ window.MediaListView = function(options){
     }
 
     el.html(template.medialist({type: type}));
-    console.log('ML2');
 
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {

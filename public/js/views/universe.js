@@ -19,7 +19,6 @@ window.UniverseListView = function(options){
     var facets = 'facets' in options ? options['facets'] : default_facets;
 
     el.html(template.universe({draggable: draggable}));
-    console.log('UV2');
 
     var UniItemViewModel = kb.ViewModel.extend({
         constructor: function(model) {
