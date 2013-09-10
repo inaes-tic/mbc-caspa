@@ -1649,7 +1649,7 @@ PlayoutTimelinePanel.prototype = {
 window.PlayoutView = PanelView.extend({
     el: '#content',
     initialize: function() {
-        this.constructor.__super__.initialize.apply(this, arguments);
+        PanelView.prototype.initialize.apply(this, arguments);
 
         var self = this;
         self.$el.html(template.playout());
@@ -1809,6 +1809,8 @@ window.PlayoutView = PanelView.extend({
         this.update_drag();
         this.ready_to_fetch = true;
         this.fetch_occurrences(this.timeline.get_max_bounds());
+
+        PanelView.prototype.render.apply(this, arguments);
     },
 
     render: function() {

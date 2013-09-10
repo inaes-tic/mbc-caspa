@@ -86,7 +86,7 @@ window.ScheduleView = PanelView.extend({
         return {start: start, end: end};
     },
     initialize: function () {
-        this.constructor.__super__.initialize.apply(this, arguments);
+        PanelView.prototype.initialize.apply(this, arguments);
 
         var self = this;
 
@@ -388,6 +388,9 @@ window.ScheduleView = PanelView.extend({
                 self.calendar.fullCalendar('updateEvent', fcEvent);
             }
         });
+
+        // Call parent render
+        PanelView.prototype.render.apply(this, arguments);
 
         return this;
     },
