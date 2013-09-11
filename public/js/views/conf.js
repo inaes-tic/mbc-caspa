@@ -6,9 +6,9 @@ window.ConfView = Backbone.View.extend({
         this.defaultModel = this.collection.findWhere({ type: 'defaults' });
     },
     render: function () {
-            $(this.el).html(template.confview({ config: this.collection.toJSON() }));
-            $('.scrollable').scrollspy('refresh');
-            return this;
+        $(this.el).html(template.confview({ config: this.collection.toJSON() }));
+        $('.scrollable').scrollspy('refresh');
+        return this;
     },
     events: {
         "change"        : "change",
