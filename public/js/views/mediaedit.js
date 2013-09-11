@@ -49,18 +49,26 @@ window.EditView = PanelView.extend({
         this.showPlaylist(this.editList)
     },
     killEditList: function () {
-        this.editList = null;
+        this.releaseEditList();
+
         if (this.editview) {
-            this.editview.destroyView();
+            this.editview.removeView();
             this.editview = null;
+        }
+
+        $('.playlist-button-array', this.el).hide();
+        $('.no-playlist-alert', this.el).show();
+    },
+    releaseEditList: function() {
+        this.editList = null;
+
+        if (this.editview) {
+            this.editview.releaseView();
         }
 
         // Unbind save and delete buttons
         $(".playlist-button-array .save").unbind("click");
         $(".playlist-button-array .delete").unbind("click");
-
-        $('.playlist-button-array', this.el).hide();
-        $('.no-playlist-alert', this.el).show();
     },
     hideAlert: function () {
         $('.alert-empty-playlist', this.el).hide();
@@ -71,7 +79,7 @@ window.EditView = PanelView.extend({
         return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
     },
     switchPlaylist: function (id) {
-        this.killEditList();
+        this.releaseEditList();
 
         var plid = this.collection.get(id);
         this.showPlaylist(plid);

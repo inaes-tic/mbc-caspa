@@ -152,15 +152,23 @@ window.MediaListView = function(options){
         this.view_model.editingName(true);
     };
 
-    this.destroyView = function () {
+    this.releaseView = function() {
         // Release resources
         collection.off("filter");
         this.model.off("change");
         this.search_view.destroy();
-
         kb.release(this.view_model);
+    };
+
+    this.removeView = function() {
+        // Clear element
         ko.removeNode(this.el);
         this.el.html('');
+    };
+
+    this.destroyView = function() {
+        this.releaseView();
+        this.removeView();
     };
 
     this.deleteModel = function () {
