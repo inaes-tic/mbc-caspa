@@ -63,5 +63,6 @@ window.ConfView = Backbone.View.extend({
     canNavigateAway: function(options) {
         $(".scrollable").unbind("scroll"); // Disables scrollspy
         this.unbind();
+        options["ok"]();
     },
 });
