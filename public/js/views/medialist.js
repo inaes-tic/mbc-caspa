@@ -55,11 +55,26 @@ window.MediaListView = function(options){
     el.html(template.medialist({type: type}));
 
     $("#media-view", el).on("dragstart", function() {
-        self.trigger('dragstart')
+        self.trigger('dragstart');
     });
 
     $("#media-view", el).on("dragstop", function() {
-        self.trigger('dragstop')
+        self.trigger('dragstop');
+    });
+
+    var PieceViewModel = kb.ViewModel.extend({
+        constructor: function(model, options, view_model) {
+            kb.ViewModel.prototype.constructor.apply(this, arguments);
+            var self = this;
+
+            self.isReady = ko.computed(function(){
+                if (!self.checksum()) {
+                    return false;
+                }
+
+                return true;
+            });
+        },
     });
 
     var MediaListViewModel = kb.ViewModel.extend({
@@ -134,7 +149,7 @@ window.MediaListView = function(options){
                 },
             });
             this.collection =  kb.collectionObservable(collection, {
-                view_model: kb.ViewModel,
+                view_model: PieceViewModel,
             });
             collection.bind('filter', self.filter);
 

@@ -83,6 +83,7 @@ block content
         table.table.table-bordered.table-striped.table-condensed#table
               tbody.tbody#media-view(data-bind=dbind,class='tbody')
                 tr(data-bind=inndbind)
+                  <!-- ko if: isReady() -->
                   td.center
                     - if (!is_playlist)
                       - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
@@ -113,5 +114,6 @@ block content
                           i.icon-volume-up.icon-white
                           span(data-bind=" text: ' '+audio().codec")
                           span=' '
+                  <!-- /ko -->
   .loading
   <!-- /ko -->
