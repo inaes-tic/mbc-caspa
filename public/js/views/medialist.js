@@ -29,7 +29,10 @@ window.MediaListView = function(options){
     var collection;
     if (type.match(/playlist/)) {
         // In case of playlist, fetch related
-        model.fetchRelated("pieces");
+        if (!model.isNew()) {
+            model.fetchRelated("pieces");
+            model.fetch();
+        }
         collection = model.get('pieces');
     } else {
         if (model !== undefined) {

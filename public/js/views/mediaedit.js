@@ -85,33 +85,25 @@ window.EditView = PanelView.extend({
     },
     showPlaylist: function (list) {
         var self = this;
-        var success = function() {
-            self.editview = new MediaListView({
-                sortable: true,
-                model: list,
-                el: $("#new-playlist"),
-                type: 'playlist-sortable',
-                pagination: false,
-                search_type: 'client',
-            });
 
-            // Bind save and delete buttons
-            $(".playlist-button-array .save").bind("click", _.bind(self.savePlaylist, self));
-            $(".playlist-button-array .delete").bind("click", _.bind(self.delPlaylist, self));
+        self.editview = new MediaListView({
+            sortable: true,
+            model: list,
+            el: $("#new-playlist"),
+            type: 'playlist-sortable',
+            pagination: false,
+            search_type: 'client',
+        });
 
-            $('.alert-empty-playlist', self.el).hide();
-            $('.alert-unnamed-playlist', self.el).hide();
-            $('.alert-has-occurrences', this.el).hide();
-            $('.no-playlist-alert',     self.el).hide();
-            $('.playlist-button-array', self.el).show();
-        };
-        if (list.isNew()) {
-            success();
-        } else {
-            list.fetchRelated('pieces');
-            list.fetchRelated('occurrences');
-            list.fetch({success: success});
-        }
+        // Bind save and delete buttons
+        $(".playlist-button-array .save").bind("click", _.bind(self.savePlaylist, self));
+        $(".playlist-button-array .delete").bind("click", _.bind(self.delPlaylist, self));
+
+        $('.alert-empty-playlist', self.el).hide();
+        $('.alert-unnamed-playlist', self.el).hide();
+        $('.alert-has-occurrences', this.el).hide();
+        $('.no-playlist-alert',     self.el).hide();
+        $('.playlist-button-array', self.el).show();
 
     },
     savePlaylist: function (event) {
