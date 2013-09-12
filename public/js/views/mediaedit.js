@@ -180,9 +180,10 @@ window.EditView = PanelView.extend({
         }
     },
     viewCleanup: function() {
+        PanelView.prototype.destroyView.apply(this, arguments);
         this.universe_view.destroy();
         this.medialist.destroyView();
         this.killEditList();
-        this.unbind();
+        this.undelegateEvents();
     },
 });

@@ -1854,6 +1854,7 @@ window.PlayoutView = PanelView.extend({
 
     canNavigateAway: function(options) {
         // Release resources before navigating away
+        PanelView.prototype.destroyView.apply(this, arguments);
         this.universe_view.destroy();
         this.collection.unbind("sync");
         this.playlists.unbind("sync");
@@ -1861,7 +1862,7 @@ window.PlayoutView = PanelView.extend({
         $(window).off("resize");
         this.remove_drag() // removes effect of external_drag
         this.timeline.unbind_all();
-        this.unbind();
+        this.undelegateEvents();
 
         // Router callback
         options["ok"]();

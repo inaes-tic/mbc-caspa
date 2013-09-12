@@ -19,8 +19,14 @@ window.PanelView = MasterView.extend({
         MasterView.prototype.render.apply(this, arguments);
     },
 
-    toggleSide: function () {
+    toggleSide: function() {
         var self = this;
         this.$el.find(".panel-view").toggleClass("folded");
+    },
+
+    destroyView: function() {
+        MasterView.prototype.destroyView.apply(this, arguments);
+
+        this.undelegateEvents();
     },
 });

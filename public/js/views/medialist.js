@@ -31,6 +31,7 @@ window.MediaListView = function(options){
         // In case of playlist, fetch related
         if (!model.isNew()) {
             model.fetchRelated("pieces");
+            model.fetchRelated("occurrences");
             model.fetch();
         }
         collection = model.get('pieces');

@@ -396,8 +396,15 @@ window.ScheduleView = PanelView.extend({
     },
 
     destroyView: function() {
-        self.universe_view.destroy();
-        self.collection.off("overlap backend destroy change");
-        self.collection.off("all");
+        PanelView.prototype.destroyView.apply(this, arguments);
+        this.universe_view.destroy();
+        this.collection.off("overlap backend destroy change");
+        this.collection.off("all");
+        this.undelegateEvents();
+    },
+
+    canNavigateAway: function(options) {
+        this.destroyView();
+        options["ok"]();
     },
 });

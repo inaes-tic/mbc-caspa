@@ -28,4 +28,8 @@ window.MasterView = Backbone.View.extend({
             },
         });
     },
+
+    destroyView: function() {
+        this.undelegateEvents();
+    },
 });
