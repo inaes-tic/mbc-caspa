@@ -240,6 +240,12 @@ io.configure('production', function(){
     io.enable('browser client gzip');          // gzip the file
 });
 
+io.configure(function () {
+    io.set("transports", ["xhr-polling"]);
+    io.set("polling duration", 10);
+});
+
+
 var utils = require('./utils');
 
 if (process.env.MBC_SCRAPE) {
