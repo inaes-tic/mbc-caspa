@@ -89,6 +89,14 @@ PlayoutTimeline.prototype = {
             actual_span += config.panels[i].span;
         }
 
+        this.start_animation();
+    },
+
+    start_animation: function() {
+        var self = this;
+
+        this.animate = true;
+
         // Configure timer for now indicator
         if (self.config.follow) {
             (function follow() {
@@ -96,15 +104,22 @@ PlayoutTimeline.prototype = {
                 if (self.config.follow) {
                     self.centerTime.call(self, now);
                 }
-                window.requestAnimationFrame(follow);
+                if (self.animate) {
+                    window.requestAnimationFrame(follow);
+                }
             })();
         } else {
             (function animate_now_indicator() {
                 self.draw_now_indicator();
-                window.requestAnimationFrame(animate_now_indicator);
+                if (self.animate) {
+                    window.requestAnimationFrame(animate_now_indicator);
+                }
             })();
         }
+    },
 
+    stop_animation: function() {
+        this.animate = false;
     },
 
     update_data: function(new_data, fetched_bounds) {
@@ -1454,40 +1469,37 @@ PlayoutTimelinePanel.prototype = {
     },
 
     draw_now_indicator: function(now) {
-        var self = this;
-
         // In case now is not defined
         if (now === undefined) {
             now = moment();
         }
 
-        var diff = now.diff(self.start);
+        var pos = Math.floor((now - this.start) / this.drawing_quota);
 
         // Adjust metrics to layout
         var line_metrics;
-        switch(self.timeline.layout) {
+        switch(this.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                line_metrics = [diff / self.drawing_quota, diff / self.drawing_quota, 0, self.height - self.padding[3]];
+                line_metrics = [pos, pos, 0, this.height - this.padding[3]];
             break;
             case PlayoutTimeline.VERTICAL:
-                line_metrics = [0, self.width - self.padding[2], diff / self.drawing_quota, diff / self.drawing_quota];
+                line_metrics = [0, this.width - this.padding[2], pos, pos];
             break;
         }
 
         // Draw
-        var line = self.vis.selectAll("line#now").data([now]);
+        var line = this.vis.selectAll("line#now").data([now]);
         line.enter()
-            .append("line");
+            .append("line")
+                .attr("id", "now")
+                .attr("stroke", "red")
+                .attr("stroke-width", "1px");
 
         line
-            .attr("id", "now")
             .attr("x1", line_metrics[0])
             .attr("x2", line_metrics[1])
             .attr("y1", line_metrics[2])
-            .attr("y2", line_metrics[3])
-            .attr("stroke", "red")
-            .attr("stroke-width", "1px")
-
+            .attr("y2", line_metrics[3]);
     },
 
     reposition_now_indicator: function() {
@@ -1862,6 +1874,7 @@ window.PlayoutView = PanelView.extend({
         $(window).off("resize");
         this.remove_drag() // removes effect of external_drag
         this.timeline.unbind_all();
+        this.timeline.stop_animation();
         this.undelegateEvents();
 
         // Router callback
