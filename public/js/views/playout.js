@@ -255,6 +255,12 @@ PlayoutTimeline.prototype = {
         return now;
     },
 
+    clear_now_indicator: function() {
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            this.panels[i].clear_now_indicator();
+        }
+    },
+
     configure_events: function() {
         for (var i = 0, li = this.panels.length; i < li; ++i) {
             this.panels[i].configure_events();
@@ -1500,6 +1506,10 @@ PlayoutTimelinePanel.prototype = {
             .attr("x2", line_metrics[1])
             .attr("y1", line_metrics[2])
             .attr("y2", line_metrics[3]);
+    },
+
+    clear_now_indicator: function() {
+        this.vis.selectAll("line#now").remove();
     },
 
     reposition_now_indicator: function() {
