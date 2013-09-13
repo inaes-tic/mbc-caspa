@@ -10,7 +10,7 @@ window.EditView = PanelView.extend({
         // Parent initialize
         PanelView.prototype.initialize.apply(this, arguments);
 
-        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'switchPlaylistEvent');
+        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
         this.render();
     },
     render: function () {
@@ -155,6 +155,7 @@ window.EditView = PanelView.extend({
             console.log ('universe knows of us, just saving');
         }
         this.editview.clearChanges();
+        this.delegateEvents();
     },
     delPlaylist: function () {
         console.log ("i want to delete", this.editview.model);
