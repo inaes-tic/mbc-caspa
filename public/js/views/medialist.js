@@ -1,5 +1,6 @@
 window.MediaListView = function(options){
     var self = this;
+    _.extend(self, Backbone.Events);
 
     options = options || {};
 
@@ -55,6 +56,14 @@ window.MediaListView = function(options){
 
     el.html(template.medialist({type: type}));
 
+    $("#media-view", el).on("dragstart", function() {
+        self.trigger('dragstart')
+    });
+
+    $("#media-view", el).on("dragstop", function() {
+        self.trigger('dragstop')
+    });
+
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
@@ -74,11 +83,17 @@ window.MediaListView = function(options){
                 self.collection.remove(item);
             }
 
+
+            this.__filters = ko.observable();
             this.filter = ko.computed({
+                read: function() {
+                    return self.__filters();
+                },
                 write: function(query) {
                     filters = [];
                     if (!query) {
                         self.collection.filters(filters);
+                        self.__filters(filters);
                         return;
                     }
                     var deep_get = function(model, prop) {
@@ -109,12 +124,9 @@ window.MediaListView = function(options){
                         }
                         filters.push(flt);
                     });
+                    self.__filters(query);
                     self.collection.filters(filters);
                 },
-
-                read: function() {
-                    return {}
-                }
             });
             this.collection =  kb.collectionObservable(collection, {
                 view_model: kb.ViewModel,
@@ -160,6 +172,11 @@ window.MediaListView = function(options){
     });
 
     this.view_model = new MediaListViewModel(model);
+
+    this.searchFilter = this.view_model.filter;
+    this.getSearchFilter = function() {
+        return this.view_model.__filters;
+    };
 
     this.editListName = function () {
         this.view_model.editingName(true);
