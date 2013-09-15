@@ -74,9 +74,9 @@ block content
                 tr(data-bind=inndbind)
                   td.center
                     - if (!is_playlist)
-                      - var target = "attr:{href: '#media/'+checksum().split('-')[0]}";
+                      - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
                     a.plain(data-bind=target)
-                      img(width="150",height="100",data-bind="attr:{ src: checksum() ?  'sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
+                      img(width="150",height="100",data-bind="attr:{ src: checksum() ?  '/sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                   td
                       - if (is_playlist)
                         button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×

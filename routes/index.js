@@ -16,17 +16,6 @@ module.exports = function(app) {
         });
     });
 
-    /*
-     * GET home page.
-     */
-    app.get('/',  function(req, res) {
-        res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
-    });
-
-    app.get('/app/:id', function (req, res) {
-
-    });
-
     app.get('/po/:id', function (req, res) {
         var lang = req.params.id;
         var locale = i18n.localeFrom(lang);
@@ -192,6 +181,10 @@ module.exports = function(app) {
 
     // serve using express
     app.get('/js/templates.js', folio.serve(templateJs));
+
+    app.get('*',  function(req, res) {
+        res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
+    });
 
     return appCollection;
 }
