@@ -68,6 +68,8 @@ window.MediaListView = function(options){
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var self = this;
+            _.extend(self, Backbone.Events);
+
             this.editingName = ko.observable(false);
             this.nameClick = function () {
                 this.editingName(true);
@@ -150,7 +152,7 @@ window.MediaListView = function(options){
             }, model);
         },
 
-        allowDrop: allow_drop,
+        allowDrop: ko.observable(allow_drop),
 
         dragHandler: function(item, event, ui){
             var attrs = _.clone(item.model().attributes);
@@ -171,12 +173,24 @@ window.MediaListView = function(options){
         facets: facets
     });
 
+    if (type.match(/playlist/)) {
+        self.search_view.on('doSearch', function(query) {
+            if (!_.isEmpty(query)) {
+                $('#media-view', self.el).sortable('disable')
+            } else {
+                $('#media-view', self.el).sortable('enable')
+            }
+        });
+
+        self.search_view.on('clearSearch', function() {
+            $('#media-view', self.el).sortable('enable')
+        });
+    }
+
     this.view_model = new MediaListViewModel(model);
 
+
     this.searchFilter = this.view_model.filter;
-    this.getSearchFilter = function() {
-        return this.view_model.__filters;
-    };
 
     this.editListName = function () {
         this.view_model.editingName(true);
