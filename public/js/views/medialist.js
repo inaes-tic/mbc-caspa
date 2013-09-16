@@ -82,7 +82,10 @@ window.MediaListView = function(options){
             }
 
             this.removeItem = function (item) {
+                var filters = self.filter();
+                self.filter(null);
                 self.collection.remove(item);
+                self.filter(filters);
             }
 
 
