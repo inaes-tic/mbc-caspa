@@ -55,6 +55,7 @@ block content
           h1.list-name= name
 
     #media-search
+    <!-- ko if: playlist_or_notempty -->
     .total-time-div
         h1.label.label-inverse.format
             i.icon-time.icon-white
@@ -66,6 +67,16 @@ block content
             tr
                 th.thumbnail= thumbnail
                 th.description= media_info
+    <!-- /ko -->
+
+    - if (!is_playlist)
+       <!-- ko ifnot: collection().length -->
+       .alert.alert-block.no-items
+         h4= i18n.gettext('Oops!')
+         p=  i18n.gettext('No items found')
+       <!-- /ko -->
+
+  <!-- ko if: playlist_or_notempty() -->
   .scrollable
     #playlist-table
       .table-container
@@ -103,3 +114,4 @@ block content
                           span(data-bind=" text: ' '+audio().codec")
                           span=' '
   .loading
+  <!-- /ko -->

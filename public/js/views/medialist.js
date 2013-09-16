@@ -122,6 +122,12 @@ window.MediaListView = function(options){
             });
             collection.bind('filter', self.filter);
 
+            this.playlist_or_notempty = ko.computed({
+                read: function () {
+                    return (!self.collection.length || type.match(/playlist/));
+                }
+            });
+
             this.duration = kb.observable(model, 'duration');
 
             this.total_time = ko.computed(function(){

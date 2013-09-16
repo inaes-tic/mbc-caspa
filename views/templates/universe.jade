@@ -16,6 +16,7 @@ block content
         .total-time-div
     .scroll-container
         .scrollable.no-time
+            <!-- ko if: playlists().length -->
             ul#playlists.nav.nav-pills(data-bind="foreach: playlists")
                 li(data-bind=inndbind).playlist-name.well.well-small
                     h5(data-bind="text: name")
@@ -23,3 +24,9 @@ block content
                         i.icon-time.icon-white
                         span= ' '
                         span(data-bind="text: total_time")
+            <!-- /ko -->
+            <!-- ko ifnot: playlists().length -->
+            .alert.alert-block.no-items
+                h4= i18n.gettext('Oops!')
+                p=  i18n.gettext('No playlist found')
+            <!-- /ko -->
