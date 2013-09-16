@@ -167,9 +167,7 @@ $(document).on("click", "a[href^='/']", function(event) {
     href = $(event.currentTarget).attr('href');
     if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
         event.preventDefault();
-        console.log("---------------------------->", href);
         url = href.replace(/^\//, '').replace('\#\!\/', '');
-        console.log("---------------------------->", url);
         app.navigate(url, {trigger: true});
         return false;
     }
