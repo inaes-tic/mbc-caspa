@@ -36,7 +36,7 @@ app.configure(function () {
     app.set('views', conf.Dirs.views);
     app.set('view engine', 'jade');
     app.use(express.logger('dev'));
-    app.use(express.compress('production'));
+    app.use(express.compress());
 /*    app.use('/uploads', upload({
         tmpDir:    conf.Dirs.uploads + '/incoming',
         uploadDir: conf.Dirs.upolads,
@@ -46,7 +46,7 @@ app.configure(function () {
     app.use(express.bodyParser({
             uploadDir: conf.Dirs.uploads,
             maxFieldsSize: 10 * 1024 * 1024
-    })); /* */
+    }));
     app.use(express.methodOverride());
     app.use(express.cookieParser('your secret here'));
     app.use(express.session());
