@@ -7,15 +7,6 @@ module.exports = function(middleware) {
     var db = middleware.db;
     var colname = middleware.colname;
 
-    var query_id = function(id) {
-        try {
-            return {$in: [id, mongo.ObjectID(id)]};
-        }
-        catch (e) {
-            return id;
-        }
-    };
-
     var ret = function(req, res, next) {
         var crud = {
             read: function() {
