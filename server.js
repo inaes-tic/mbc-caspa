@@ -48,8 +48,8 @@ app.configure(function () {
             maxFieldsSize: 10 * 1024 * 1024
     }));
     app.use(express.methodOverride());
-    app.use(express.cookieParser('your secret here'));
-    app.use(express.session());
+    app.use(express.cookieParser());
+    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: maxage }}));
     app.use(app.router);
     app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
