@@ -11,7 +11,6 @@ window.MediaListView = function(options){
     this.el = el;
 
     this._hasChanges = false;
-    this.has_dummy_row = false;
     var allow_drop = false;
 
     var default_pagination = 'endless';
@@ -211,17 +210,24 @@ window.MediaListView = function(options){
     };
 
     this.addDummyRow = function () {
-        if (this.has_dummy_row) {
+        var container = $("#media-view", this.el);
+        if ($(".dummy-row", container).length) {
             return;
         }
+        container.append('<tr class="dummy-row"><td></td></tr>');
+    };
 
-        $("#media-view", this.el).append('<tr><td></td></tr>');
-        this.has_dummy_row = true;
+    this.removeDummyRow = function () {
+        var container = $("#media-view", this.el);
+        var dummy = $(".dummy-row", container);
+        dummy.remove()
     };
 
     this.onCollectionChange = function (value) {
         if (0 == value.length){
             this.addDummyRow();
+        } else {
+            this.removeDummyRow();
         }
     };
 
@@ -237,7 +243,7 @@ window.MediaListView = function(options){
         return this.model.isNew() || this._hasChanges
     };
 
-    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'destroyView', 'deleteModel', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges');
+    _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'removeDummyRow', 'destroyView', 'deleteModel', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges');
     this.view_model.collection.subscribe(this.onCollectionChange);
     model.bind('change', this._model_change_cb);
 
