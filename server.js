@@ -5,9 +5,9 @@ var express = require('express'),
     _       = require('underscore'),
     backboneio = require('backbone.io'),
     mbc = require('mbc-common'),
-    conf = require('mbc-common').config.Caspa,
-    search_options = require('mbc-common').config.Search,
-    collections = require('mbc-common').config.Common.Collections,
+    conf = mbc.config.Caspa,
+    search_options = mbc.config.Search,
+    collections = mbc.config.Common.Collections,
     moment = require('moment'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000,
@@ -37,7 +37,7 @@ app.configure(function () {
     app.set('views', conf.Dirs.views);
     app.set('view engine', 'jade');
     app.use(express.logger('dev'));
-    app.use(express.compress('production'));
+    app.use(express.compress());
 /*    app.use('/uploads', upload({
         tmpDir:    conf.Dirs.uploads + '/incoming',
         uploadDir: conf.Dirs.upolads,
@@ -47,10 +47,10 @@ app.configure(function () {
     app.use(express.bodyParser({
             uploadDir: conf.Dirs.uploads,
             maxFieldsSize: 10 * 1024 * 1024
-    })); /* */
+    }));
     app.use(express.methodOverride());
-    app.use(express.cookieParser('your secret here'));
-    app.use(express.session());
+    app.use(express.cookieParser());
+    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: maxage }}));
     app.use(app.router);
     app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
