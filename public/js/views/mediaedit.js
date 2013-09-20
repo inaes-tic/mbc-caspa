@@ -10,7 +10,7 @@ window.EditView = PanelView.extend({
         // Parent initialize
         PanelView.prototype.initialize.apply(this, arguments);
 
-        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist');
+        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'clearSearch');
         this.render();
     },
     render: function () {
@@ -28,6 +28,8 @@ window.EditView = PanelView.extend({
             el: $("#left-pane"),
             type: 'medialist-draggable-fixed',
         });
+        this.medialist.on('dragstart', this.clearSearch);
+
 
         if (this.editList) {
             this.showPlaylist(this.editList);
@@ -170,6 +172,11 @@ window.EditView = PanelView.extend({
 
         this.editview.deleteModel();
         this.killEditList();
+    },
+    clearSearch: function() {
+        if (this.editview) {
+            this.editview.clearSearch();
+        }
     },
     canNavigateAway: function (options) {
         if (this.editview && this.editview.hasChanges()) {

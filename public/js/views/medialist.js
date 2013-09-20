@@ -175,20 +175,7 @@ window.MediaListView = function(options){
         pagination: pagination,
         facets: facets
     });
-
-    if (type.match(/playlist/)) {
-        self.search_view.on('doSearch', function(query) {
-            if (!_.isEmpty(query)) {
-                $('#media-view', self.el).sortable('disable')
-            } else {
-                $('#media-view', self.el).sortable('enable')
-            }
-        });
-
-        self.search_view.on('clearSearch', function() {
-            $('#media-view', self.el).sortable('enable')
-        });
-    }
+    this.clearSearch = this.search_view.clearSearch;
 
     this.view_model = new MediaListViewModel(model);
 
