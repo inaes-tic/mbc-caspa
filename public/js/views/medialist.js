@@ -1,5 +1,6 @@
 window.MediaListView = function(options){
     var self = this;
+    _.extend(self, Backbone.Events);
 
     options = options || {};
 
@@ -53,12 +54,21 @@ window.MediaListView = function(options){
 
     el.html(template.medialist({type: type}));
 
+    $("#media-view", el).on("dragstart", function() {
+        self.trigger('dragstart')
+    });
+
+    $("#media-view", el).on("dragstop", function() {
+        self.trigger('dragstop')
+    });
+
     var MediaListViewModel = kb.ViewModel.extend({
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var self = this;
 
             _.bindAll(this, "afterMove", "dragHandler");
+            _.extend(self, Backbone.Events);
 
             this.editingName = ko.observable(false);
             this.nameClick = function () {
@@ -72,14 +82,23 @@ window.MediaListView = function(options){
             }
 
             this.removeItem = function (item) {
+                var filters = self.filter();
+                self.filter(null);
                 self.collection.remove(item);
+                self.filter(filters);
             }
 
+
+            this.__filters = ko.observable();
             this.filter = ko.computed({
+                read: function() {
+                    return self.__filters();
+                },
                 write: function(query) {
                     filters = [];
                     if (!query) {
                         self.collection.filters(filters);
+                        self.__filters(filters);
                         return;
                     }
                     var deep_get = function(model, prop) {
@@ -110,12 +129,9 @@ window.MediaListView = function(options){
                         }
                         filters.push(flt);
                     });
+                    self.__filters(query);
                     self.collection.filters(filters);
                 },
-
-                read: function() {
-                    return {}
-                }
             });
             this.collection =  kb.collectionObservable(collection, {
                 view_model: kb.ViewModel,
@@ -145,7 +161,7 @@ window.MediaListView = function(options){
             }, model);
         },
 
-        allowDrop: allow_drop,
+        allowDrop: ko.observable(allow_drop),
 
         dragHandler: function(item, event, ui){
             // Instantiate drag element as Media.Piece
@@ -172,8 +188,12 @@ window.MediaListView = function(options){
         pagination: pagination,
         facets: facets
     });
+    this.clearSearch = this.search_view.clearSearch;
 
     this.view_model = new MediaListViewModel(model);
+
+
+    this.searchFilter = this.view_model.filter;
 
     this.editListName = function () {
         this.view_model.editingName(true);

@@ -1,4 +1,7 @@
 window.SearchView = function(options) {
+    var self = this;
+    _.extend(self, Backbone.Events);
+
     var el = options['el'];
     var type = 'type' in options ? options['type'] : 'server';
     var pagination = 'pagination' in options ? options['pagination'] : false;
@@ -68,7 +71,7 @@ window.SearchView = function(options) {
     }
 
     var searchBox = $('.visual_search', el);
-    var visualSearch = VS.init({
+    this.visualSearch = VS.init({
         container : searchBox,
         query     : '',
         showFacets: false,
@@ -80,6 +83,7 @@ window.SearchView = function(options) {
                 if (type == 'server') {
                     searchOnServer();
                 }
+                self.trigger('clearSearch');
             },
             search: function(query, searchCollection) {
                 query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
@@ -88,6 +92,7 @@ window.SearchView = function(options) {
                 } else {
                     collection.trigger('filter', query_obj);
                 }
+                self.trigger('doSearch', query_obj);
             },
             facetMatches : function(callback) {
                 callback(facets);
@@ -142,6 +147,9 @@ window.SearchView = function(options) {
         }});
     }
 
+    this.clearSearch = function() {
+        self.visualSearch.searchBox.clearSearch('');
+    };
     this.destroy = function() {
         collection.unbind("sync");
     };
