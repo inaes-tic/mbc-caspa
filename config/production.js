@@ -71,6 +71,15 @@ module.exports = {
             port: parseInt(process.env.REDISPORT),
             password: process.env.REDISPASSWORD,
         },
+        Collections: {
+            Medias: 'medias',
+            Pieces: 'pieces',
+            Lists:  'lists',
+            Scheds: 'scheds',
+            Transforms: 'transforms',
+            Status: 'status',
+            Mostomessages: 'mostomessages',
+        }
     },
     Search: {
         Medias: {
@@ -93,7 +102,7 @@ module.exports = {
             facets: [
                 'duration',
             ],
-            criteria: {},
+            criteria: { ids_in: '{ "_id": { "$in": [%value%] } }', },
             max_facets: 100
         },
         Scheds: {
@@ -101,6 +110,30 @@ module.exports = {
             facets: [],
             criteria: { in_window: '{ "end": { "$gt": %value% }, "start": { "$lt" : %value% } }' },
             max_facets: 100
-        }
+        },
+        Pieces: {
+            fulltext: [],
+            facets: [],
+            criteria: { ids_in: '{ "_id": { "$in": [%value%] } }', },
+            max_facets: 100
+        },
+        Transforms: {
+            fulltext: [],
+            facets: [],
+            criteria: {},
+            max_facets: 100
+        },
+        Status: {
+            fulltext: [],
+            facets: [],
+            criteria: {},
+            max_facets: 100
+        },
+        Mostomessages: {
+            fulltext: [],
+            facets: [],
+            criteria: {},
+            max_facets: 100
+        },
     }
 }
