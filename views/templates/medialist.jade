@@ -19,7 +19,7 @@ block content
   - inndbind = 'drag: $data, dragOptions: { cursorAt: {top: 5, left: 5 }, scroll: false, appendTo: "#content"}';
 
 - if (type.match(/sortable/))
-  - dbind = 'sortable: { data: collection , allowDrop: allowDrop, dragged: dragHandler}';
+  - dbind = 'sortable: { data: collection, allowDrop: allowDrop, dragged: dragHandler, afterMove: afterMove}';
   - inndbind = '';
   - is_playlist = true;
   - default_name= "||'" + i18n.gettext('New Playlist') + "'";

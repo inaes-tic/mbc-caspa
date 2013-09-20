@@ -107,16 +107,20 @@ window.EditView = PanelView.extend({
 
     },
     savePlaylist: function (event) {
-        var medias = this.editview.model.get('pieces');
-        var name   = this.editview.model.get('name');
-        var id     = this.editview.model.get('_id');
-        var occurrences = this.editview.model.get('occurrences');
+        var self = this;
 
-        console.log ("i want to save", this.editview.model, medias, id);
+        var col = this.editview.model;
+
+        var pieces      = col.get('pieces');
+        var name        = col.get('name');
+        var id          = col.get('_id');
+        var occurrences = col.get('occurrences');
+
+        console.log("i want to save", col, pieces, id);
         //$('.alert-empty-playlist', this.el).hide();
         //$('.alert-unnamed-playlist', this.el).hide();
-        if (! medias.length) {
-            console.log ("noooo medias");
+        if (!pieces.length) {
+            console.log("noooo pieces");
             $('.alert-empty-playlist', this.el).show();
             return;
         }
@@ -132,28 +136,37 @@ window.EditView = PanelView.extend({
             return;
         }
 
-        if (this.editview.model.isNew()) {
-            console.log ("about to feed this to the universe:", this.editview.model.attributes);
-            // this is called after we get the model just created with an id from the server,
-            // so we can update the view with the new model.
-            // WHY not just use the result of collection.create()?
-            // even if we set {wait: true} that model won't have an id, at least not after the 'sync'
-            // event fires when we get the response from the server, so calling .save() on that leads
-            // to duplicate (but different) playlist and all sorts of fun debugging time.
-            var afterSync = function(model) {
-                this.editview.save(model);
-            };
-            afterSync = _.bind(afterSync, this);
-            this.collection.create (this.editview.model, {success: afterSync});
-            console.log ('WE HAVE ADDED TO THE UNIVERSE', this.editview.model);
-        } else {
-            // if we are paginating Universe the model being edited can no longer be inside Universe
-            // so calling .save() on that fails. But, calling .create() and passing an existing model
-            // makes it to the server, updates our Universe and restores relationships. Sometimes we
-            // can have nice things after all.
-            this.collection.create(this.editview.model);
-            console.log ('universe knows of us, just saving');
-        }
+        pieces.bind("sync", function() {
+            if (_.every(pieces.pluck("_id"))) {
+                // All pieces are stored in the DB
+                pieces.off("sync");
+                if (col.isNew()) {
+                    console.log ("about to feed this to the universe:", col.attributes);
+                    self.collection.create(col, {
+                        success: function(mod) {
+                            // this is called after we get the model just created with an id from the server,
+                            // so we can update the view with the new model.
+                            // WHY not just use the result of collection.create()?
+                            // even if we set {wait: true} that model won't have an id, at least not after the 'sync'
+                            // event fires when we get the response from the server, so calling .save() on that leads
+                            // to duplicate (but different) playlist and all sorts of fun debugging time.
+                            self.editview.save(mod);
+                        },
+                    });
+                    console.log('WE HAVE ADDED TO THE UNIVERSE', col);
+                } else {
+                    // if we are paginating Universe the model being edited can no longer be inside Universe
+                    // so calling .save() on that fails. But, calling .create() and passing an existing model
+                    // makes it to the server, updates our Universe and restores relationships. Sometimes we
+                    // can have nice things after all.
+                    self.collection.create(col);
+                    console.log ('universe knows of us, just saving');
+                }
+            }
+        });
+
+        pieces.invoke("save");
+
         this.editview.clearChanges();
         this.delegateEvents();
     },

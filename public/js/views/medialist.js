@@ -3,8 +3,6 @@ window.MediaListView = function(options){
 
     options = options || {};
 
-    var pieceList = options['pieceList'] || new Media.PieceCollection();
-
     var model = options['model'];
 
     var el = options['el'] || $('#content');
@@ -59,6 +57,9 @@ window.MediaListView = function(options){
         constructor: function(model) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var self = this;
+
+            _.bindAll(this, "afterMove", "dragHandler");
+
             this.editingName = ko.observable(false);
             this.nameClick = function () {
                 this.editingName(true);
@@ -147,13 +148,20 @@ window.MediaListView = function(options){
         allowDrop: allow_drop,
 
         dragHandler: function(item, event, ui){
+            // Instantiate drag element as Media.Piece
             var attrs = _.clone(item.model().attributes);
             var piece = new Media.Piece(attrs);
             piece.set('checksum', attrs['_id']);
-            //HACK to create piece on collection  and keep checksum
             piece.unset('_id');
-            pieceList.create(piece);
             return kb.viewModel(piece)
+        },
+
+        afterMove: function(arg, event, ui) {
+            var pieces = this.model().get("pieces");
+            var model = arg.item.model();
+            if (model.isNew()) {
+                pieces.add(model, {at: arg.targetIndex});
+            }
         },
     });
 
