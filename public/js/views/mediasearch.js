@@ -147,6 +147,9 @@ window.SearchView = function(options) {
         }});
     }
 
+    this.clearSearch = function() {
+        self.visualSearch.searchBox.clearSearch('');
+    };
     this.destroy = function() {
         collection.unbind("sync");
     };
