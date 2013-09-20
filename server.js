@@ -10,7 +10,8 @@ var express = require('express'),
     collections = require('mbc-common').config.Common.Collections,
     moment = require('moment'),
     App = require("mbc-common/models/App"),
-    maxage = 365 * 24 * 60 * 60 * 1000
+    maxage = 365 * 24 * 60 * 60 * 1000,
+    uuid = require('node-uuid')
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -94,24 +95,27 @@ var listener = mbc.pubsub();
 // Override mongoStore read method with custom
 var searchWrapper = require('./searchWrapper.js');
 
+function id_middleware(req, res, next) {
+    if( req.method == 'create' && req.model._id === undefined) {
+        req.model._id = uuid.v1();
+    }
+    next();
+}
+
 var mediabackend = backboneio.createBackend();
 mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Medias, { search: search_options.Medias })));
 
 var piecebackend = backboneio.createBackend();
+piecebackend.use(id_middleware);
 piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Pieces, { search: search_options.Pieces })));
 
 var transformbackend = backboneio.createBackend();
+transformbackend.use(id_middleware);
 transformbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Transforms, { search: search_options.Transforms })));
 
 var listbackend = backboneio.createBackend();
+listbackend.use(id_middleware);
 listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, collections.Lists, { search: search_options.Lists })));
-
-function id_middleware(req, res, next) {
-    if( req.method == 'create' && req.model._id === undefined) {
-        req.model._id = moment().valueOf().toString();
-    }
-    next();
-}
 
 var schedbackend = backboneio.createBackend();
 schedbackend.use(id_middleware);
