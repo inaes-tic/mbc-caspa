@@ -1,15 +1,17 @@
 extends layout
 
 block content
+  - var mbc_url= 'https://github.com/inaes-tic/mbc-playout/';
+
   .home-hero
     h1= gettext('Welcome to ') + name
     br
     div(style="opacity: .9;")
-      a.btn.btn-large(href="#media")
-        img.pull-left(src="img/media.png", style="margin-right:6px;").
+      a.btn.btn-large(href="/media")
+        img.pull-left(src="/img/media.png", style="margin-right:6px;").
         p= gettext('Start Browsing\nMedia Cellar')
-      a.btn.btn-large(href="#")
-        img.pull-left(src="img/github.png", style="margin-right:6px").
+      a.btn.btn-large(href=mbc_url)
+        img.pull-left(src="/img/github.png", style="margin-right:6px").
         p= gettext('View Project\non Github')
   .bs-docs-social
       .container
@@ -17,4 +19,4 @@ block content
           li.follow-btn
             a.twitter-follow-button(href="https://twitter.com/mbcplayout",data-link-color="#0069D6",data-show-count="true")= gettext('Follow') + ' @mbcplayout'
           li.tweet-btn
-            a.twitter-share-button(href="https://twitter.com/share",data-url="http://localhost:3000",data-count="horizontal",data-via="mbcplayout")= gettext('Tweet')
+            a.twitter-share-button(href="https://twitter.com/share",data-url=mbc_url,data-count="horizontal",data-via="mbcplayout")= gettext('Tweet')

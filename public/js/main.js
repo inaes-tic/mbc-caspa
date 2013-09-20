@@ -159,5 +159,16 @@ $.ajax({
 
 appCollection.fetch({success: function() {
     app = new AppRouter();
-    Backbone.history.start();
+    Backbone.history.start({pushState:true});
 }});
+
+$(document).on("click", "a[href^='/']", function(event) {
+    var href, url;
+    href = $(event.currentTarget).attr('href');
+    if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+        event.preventDefault();
+        url = href.replace(/^\//, '').replace('\#\!\/', '');
+        app.navigate(url, {trigger: true});
+        return false;
+    }
+});

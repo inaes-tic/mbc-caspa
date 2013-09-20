@@ -8,6 +8,7 @@ window.ConfView = Backbone.View.extend({
     render: function () {
         $(this.el).html(template.confview({ config: this.collection.toJSON() }));
         $('.scrollable').scrollspy('refresh');
+        location.hash = location.hash+' ';
         return this;
     },
     events: {

@@ -51,7 +51,6 @@ app.configure(function () {
     app.use(express.methodOverride());
     app.use(express.cookieParser());
     app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: maxage }}));
-    app.use(app.router);
     app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
@@ -60,6 +59,7 @@ app.configure(function () {
     app.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
     app.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
     app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
+    app.use(app.router);
 });
 
 app.configure('development', function(){
@@ -75,7 +75,7 @@ app.configure('production', function(){
 });
 
 var appModel = require('./routes')(app);
-var media = require('./routes/media')(app);
+//var media = require('./routes/media')(app);
 
 function debug_backend (backend) {
         console.log ('Debugging backend: ', backend);
@@ -245,7 +245,7 @@ var utils = require('./utils');
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
         utils.scrape_files (conf.Dirs.scrape, function (model) {
-            db.collection('medias').insert(model, {safe:true}, function(err, result) {
+            db.collection(collection.Medias).insert(model, {safe:true}, function(err, result) {
                 if (err) {
                     console.error ('error','An error has occurred' + err);
                 } else {
