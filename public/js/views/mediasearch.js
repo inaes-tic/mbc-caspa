@@ -1,15 +1,35 @@
 window.SearchView = function(options) {
+    var self = this;
+    _.extend(self, Backbone.Events);
+
     var el = options['el'];
     var type = 'type' in options ? options['type'] : 'server';
     var pagination = 'pagination' in options ? options['pagination'] : false;
     var collection = options['collection'];
-    var page_size = options['page_size'] || 10;
+    var page_size = options['page_size'] || (collection instanceof PageableCollection)?collection.state.pageSize:10;
     var type = 'type' in options ? options['type'] : 'server';
     var facets = options['facets'] || [];
     var query_obj = {};
 
+    var nest = el.parents('.infinit-panel:first');
+    var scrollable = nest.find('.scrollable:first');
+    var completeList = nest.find('#playlist-table:first');
+
     var parseFacets = function (loaded_facets, facet) {
-        return _.map(_.compact(_.uniq(_.pluck(loaded_facets, facet))), function(val) { return String(val); });
+        var plucked_facet = [];
+        if (loaded_facets instanceof PageableCollection || loaded_facets instanceof Backbone.Collection) {
+            if (facet.indexOf('.') === -1) {
+                plucked_facet = loaded_facets.pluck(facet)
+            } else {
+                facets = facet.split('.');
+                first = facets.shift();
+                remainder = facets.join('.');
+                plucked_facet = _.pluck(loaded_facets.pluck(first), remainder);
+            }
+        } else {
+            plucked_facet = loaded_facets;
+        }
+        return _.map(_.uniq(_.compact(plucked_facet)), function(val) { return String(val); });
     }
 
     el.html(template.mediasearch({type: type, pagination: pagination}));
@@ -17,80 +37,92 @@ window.SearchView = function(options) {
 
     switch(pagination) {
         case 'traditional':
-            collection.switchMode('server', {fetch: false});
-            collection.setPageSize(page_size,{fetch:false, first: true});
+            // XXX WARN: changing page size breaks relations. Just Don't Do It.
+            if (page_size != collection.state.pageSize){
+                collection.setPageSize(page_size,{fetch:false});
+            }
             renderBootstrapPaginator();
             break;
         case 'endless':
             var offset = 100;
             var wait = 100;
-            collection.switchMode('endless', {fetch: false});
-            collection.setPageSize(page_size,{fetch: false, first: true});
+            // XXX WARN: changing page size breaks relations. Just Don't Do It.
+            if (page_size != collection.state.pageSize){
+                collection.setPageSize(page_size,{fetch: false, first: true});
+            }
             var scroll_callback = function () {
-                if ($(window).scrollTop() >= ( $(document).height() - $(window).height() - offset)
+                if (scrollable.scrollTop() >= (completeList.height() - scrollable.height() - offset)
                      && collection.hasNext() ){
-                    collection.getNextPage();
+                    collection.getNextPage({remove: false});
+                    $('.loading').addClass('visible');
                 }
             };
 
             var throttled = _.throttle(scroll_callback, wait);
-            $(window).scroll(throttled);
+            scrollable.scroll(throttled);
+
+            collection.bind("sync", function() {
+               $('.loading').removeClass('visible');
+            });
             break;
 
         case false: break;
         default:
     }
 
-    switch(type) {
-        case 'server':
-            var loaded_facets = {};
-            var searchBox = $('.visual_search', el);
-            var visualSearch = VS.init({
-                container : searchBox,
-                query     : '',
-                showFacets: false,
-                placeholder: '',
-                callbacks : {
-                    clearSearch: function(clear_cb) {
-                        clear_cb();
-                        query_obj = {};
-                        searchOnServer();
-                    },
-                    search: function(query, searchCollection) {
-                        query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
-                        searchOnServer();
-                    },
-                    facetMatches : function(callback) {
-                        callback(facets);
-                    },
-                    valueMatches : function(facet, searchTerm, callback) {
-                        var options = {preserveOrder: true};
-                        if (!loaded_facets.length) {
-                            Backbone.sync('read', collection, {
-                                silent: true,
-                                data: { fields: facets },
-                                success: function(res) {
-                                    loaded_facets = res[1];
-                                    var f = parseFacets(loaded_facets, facet);
-                                    callback(f, options);
-                                }
-                            });
-                        } else {
-                            var f = parseFacets(loaded_facets, facet);
+    var searchBox = $('.visual_search', el);
+    this.visualSearch = VS.init({
+        container : searchBox,
+        query     : '',
+        showFacets: false,
+        placeholder: '',
+        callbacks : {
+            clearSearch: function(clear_cb) {
+                clear_cb();
+                query_obj = {};
+                if (type == 'server') {
+                    searchOnServer();
+                }
+                self.trigger('clearSearch');
+            },
+            search: function(query, searchCollection) {
+                query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
+                if(type == 'server') {
+                    searchOnServer();
+                } else {
+                    collection.trigger('filter', query_obj);
+                }
+                self.trigger('doSearch', query_obj);
+            },
+            facetMatches : function(callback) {
+                callback(facets);
+            },
+            valueMatches : function(facet, searchTerm, callback) {
+                var options = {preserveOrder: true};
+                if (type=='server') {
+                    Backbone.sync('read', collection, {
+                        silent: true,
+                        data: {
+                            distinct: facet,
+                            query: query_obj,
+                        },
+                        success: function(res) {
+                            var f = parseFacets(res[1], facet);
                             callback(f, options);
                         }
-                    },
-                    focus: function() {
-                    },
-                    blur: function() {
-                    }
+                    });
+                } else {
+                    var f = parseFacets(collection, facet);
+                    callback(f, options);
                 }
-            });
-            searchBox.find('input').focus();
-            break;
-        case 'client': break;
-        default:
-    }
+            },
+            focus: function() {
+            },
+            blur: function() {
+            }
+        }
+    });
+    searchBox.find('input').focus();
 
     function renderBootstrapPaginator() {
         $(".pagination", el).html("");
@@ -115,6 +147,13 @@ window.SearchView = function(options) {
         }});
     }
 
-    return;
+    this.clearSearch = function() {
+        self.visualSearch.searchBox.clearSearch('');
+    };
+    this.destroy = function() {
+        collection.unbind("sync");
+    };
+
+    return this;
 }
 

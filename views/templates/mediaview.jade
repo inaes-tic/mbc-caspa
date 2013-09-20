@@ -1,9 +1,9 @@
 - if (_id)
-  - var picture= 'sc/' + _id + '.jpg'
+  - var picture= '/sc/' + _id + '.jpg'
 - if (!description)
   - var description= i18n.gettext('Notes about this media')
 - if (!picture)
-  - var picture= 'pics/generic.jpg'
+  - var picture= '/pics/generic.jpg'
 - if (!file)
   - var file= ''
 - if (!stat)
@@ -57,7 +57,7 @@
                 - if (_id)
                   p
                     video(poster=picture, controls, tabindex="0", width="100%", height="100%")
-                      source(src='media/play/' + _id)
+                      source(src='/media/play/' + _id)
                 - if (! _id)
                   p
                     img(src=picture)

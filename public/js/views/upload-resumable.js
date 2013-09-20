@@ -36,8 +36,8 @@ window.UploadView = Backbone.View.extend({
               // Show progress pabr
               $('.progress, .pending').show();
               // Show pause, hide resume
-              $('.progress .resume').hide();
-              $('.progress .pause').show();
+              $('.btn-inverse.resume').hide();
+              $('.btn-inverse.pause').show();
               // Add the file to the list
               $('.pending').append('<li class="file-'+file.uniqueIdentifier+'">Uploading <span class="file-name"></span> <div class="progress progress-striped active"><div class="bar"></div></div></li>');
               $('.file-'+file.uniqueIdentifier+' .file-name').html(file.fileName);
@@ -46,8 +46,9 @@ window.UploadView = Backbone.View.extend({
             });
           r.on('pause', function(){
               // Show resume, hide pause
-              $('.progress .resume').show();
-              $('.progress .pause').hide();
+              $('.btn-inverse.resume').show();
+              $('.btn-inverse.pause').hide();
+              $('.progress .bar').addClass("stopped");
             });
           r.on('complete', function(){
               // Hide pause/resume when the upload has completed
@@ -101,6 +102,9 @@ window.UploadView = Backbone.View.extend({
     },
     resume: function () {
         this.r.upload();
+        $('.btn-inverse.resume').hide();
+        $('.btn-inverse.pause').show();
+        $('.stopped').removeClass("stopped");
     },
 
     debug: function (event) {

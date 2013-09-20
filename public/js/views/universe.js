@@ -19,7 +19,6 @@ window.UniverseListView = function(options){
     var facets = 'facets' in options ? options['facets'] : default_facets;
 
     el.html(template.universe({draggable: draggable}));
-    console.log('UV2');
 
     var UniItemViewModel = kb.ViewModel.extend({
         constructor: function(model) {
@@ -27,7 +26,7 @@ window.UniverseListView = function(options){
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             options = options || {};
             options['keys'] = ['collection', 'name'];
-            this.medias =  kb.collectionObservable(model.get('collection'));
+            this.medias =  kb.collectionObservable(model.get('pieces'));
             this.total_time = ko.computed(function(){
 //XXX: keep this, it tells KO to update total_time when something happens to the collection
                 var x = self.medias();
@@ -56,9 +55,9 @@ window.UniverseListView = function(options){
         }
     });
 
-    new SearchView({
-        el: $('#playlist-search',el),
-        collection: this.collection,
+    this.search_view = new SearchView({
+        el: $('#media-search',el),
+        collection: collection,
         type: search_type,
         pagination: pagination,
         facets: facets
@@ -67,10 +66,13 @@ window.UniverseListView = function(options){
     this.view_model = new UniverseListViewModel(this.collection);
 
     this.destroy = function () {
+        this.search_view.destroy();
         kb.release(this.view_model);
         ko.cleanNode(this.el);
         this.el.html('');
     }
 
     ko.applyBindings(this.view_model, el[0]);
+
+    this.collection.fetch();
 }

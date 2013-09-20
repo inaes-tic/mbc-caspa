@@ -22,13 +22,13 @@ AGPL v3.
 + gettext
 
 ```shell
-   apt-get install gettext 
+   apt-get install gettext
 ```
 
 + npm
 
 ```shell
-   apt-get install npm  
+   apt-get install npm
 ```
 + node > 0.8
 
@@ -40,6 +40,12 @@ AGPL v3.
 
 ```shell
    apt-get install mongodb
+```
+Si queres soporte para mongodb Text Search necesitas mongodb = 2.4 y
+activarlo en el archivo de configuración:
+
+```
+echo "setParameter = textSearchEnabled=true" >> /etc/mongodb.conf
 ```
 
 + redis
@@ -66,4 +72,5 @@ AGPL v3.
    cd mbc-caspa
    make
 ```
-tendria que levantar la app en http://localhost:3000
+Clonando este proyecto y corriendo make deberia instalar todo lo necesario
+para correr la aplicación en http://localhost:3000

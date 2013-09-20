@@ -7,9 +7,11 @@ var express = require('express'),
     mbc = require('mbc-common'),
     conf = mbc.config.Caspa,
     search_options = mbc.config.Search,
+    collections = mbc.config.Common.Collections,
     moment = require('moment'),
     App = require("mbc-common/models/App"),
-    maxage = 365 * 24 * 60 * 60 * 1000
+    maxage = 365 * 24 * 60 * 60 * 1000,
+    uuid = require('node-uuid')
  ;
 
 /* make sure at runtime that we atempt to get the dirs we need */
@@ -35,7 +37,7 @@ app.configure(function () {
     app.set('views', conf.Dirs.views);
     app.set('view engine', 'jade');
     app.use(express.logger('dev'));
-    app.use(express.compress('production'));
+    app.use(express.compress());
 /*    app.use('/uploads', upload({
         tmpDir:    conf.Dirs.uploads + '/incoming',
         uploadDir: conf.Dirs.upolads,
@@ -45,11 +47,10 @@ app.configure(function () {
     app.use(express.bodyParser({
             uploadDir: conf.Dirs.uploads,
             maxFieldsSize: 10 * 1024 * 1024
-    })); /* */
+    }));
     app.use(express.methodOverride());
-    app.use(express.cookieParser('your secret here'));
-    app.use(express.session());
-    app.use(app.router);
+    app.use(express.cookieParser());
+    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: maxage }}));
     app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
@@ -58,6 +59,7 @@ app.configure(function () {
     app.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
     app.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
     app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
+    app.use(app.router);
 });
 
 app.configure('development', function(){
@@ -73,7 +75,7 @@ app.configure('production', function(){
 });
 
 var appModel = require('./routes')(app);
-var media = require('./routes/media')(app);
+//var media = require('./routes/media')(app);
 
 function debug_backend (backend) {
         console.log ('Debugging backend: ', backend);
@@ -90,21 +92,30 @@ var db = mbc.db();
 var publisher = mbc.pubsub();
 var listener = mbc.pubsub();
 
-var mediabackend = backboneio.createBackend();
-mediabackend.use(backboneio.middleware.mongoStore(db, 'medias', { search: search_options.Medias }));
-
-var blockbackend = backboneio.createBackend();
-blockbackend.use(backboneio.middleware.memoryStore(db, 'blocks'));
-
-var listbackend = backboneio.createBackend();
-listbackend.use(backboneio.middleware.mongoStore (db, 'lists', { search: search_options.Lists }));
+// Override mongoStore read method with custom
+var searchWrapper = require('./searchWrapper.js');
 
 function id_middleware(req, res, next) {
     if( req.method == 'create' && req.model._id === undefined) {
-        req.model._id = moment().valueOf().toString();
+        req.model._id = uuid.v1();
     }
     next();
 }
+
+var mediabackend = backboneio.createBackend();
+mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Medias, { search: search_options.Medias })));
+
+var piecebackend = backboneio.createBackend();
+piecebackend.use(id_middleware);
+piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Pieces, { search: search_options.Pieces })));
+
+var transformbackend = backboneio.createBackend();
+transformbackend.use(id_middleware);
+transformbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Transforms, { search: search_options.Transforms })));
+
+var listbackend = backboneio.createBackend();
+listbackend.use(id_middleware);
+listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, collections.Lists, { search: search_options.Lists })));
 
 var schedbackend = backboneio.createBackend();
 schedbackend.use(id_middleware);
@@ -113,7 +124,7 @@ schedbackend.use(function (req, res, next) {
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
-schedbackend.use(backboneio.middleware.mongoStore(db, 'scheds',  { search: search_options.Scheds }));
+schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Scheds, { search: search_options.Scheds })));
 
 var statusbackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, status) {
@@ -128,7 +139,7 @@ listener.on('JSONmessage', function(chan, status) {
         statusbackend.emit('updated', status)
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
-        db.collection('scheds').findEach({ _id: status.show[pos]._id }, function(err, res) {
+        db.collection(collections.Scheds).findEach({ _id: status.show[pos]._id }, function(err, res) {
             if( res ) {
                 status.show[pos] = {
                     name: res.title,
@@ -137,13 +148,15 @@ listener.on('JSONmessage', function(chan, status) {
             }
             emit();
         });
-        db.collection('lists').findEach({ "models._id": status.piece[pos]._id }, function(err, res) {
+        //db.collection('lists').findEach({ "models._id": status.piece[pos]._id }, function(err, res) {
+        db.collection(collections.Pieces).findById(status.piece[pos]._id, function(err, piece) {
             if( err ) {
                 // we still want to call emit() even if there was a DB error
                 console.error(err);
             }
 
-            if( res ) {
+            if( piece ) {
+                /*
                 var piece = _.chain(res.models).filter(function(p) {
                     return p._id == status.piece[pos]._id;
                 }).value();
@@ -160,6 +173,7 @@ listener.on('JSONmessage', function(chan, status) {
                 }
 
                 piece = piece[0];
+                */
                 status.piece[pos] = piece;
                 // default name to id
                 if( !status.piece[pos].name ) {
@@ -172,7 +186,7 @@ listener.on('JSONmessage', function(chan, status) {
     });
 });
 listener.subscribe('mostoStatus');
-statusbackend.use(backboneio.middleware.mongoStore(db, 'status', {}));
+statusbackend.use(backboneio.middleware.mongoStore(db, collections.Status, { search: search_options.Status }));
 
 var framebackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, msg) {
@@ -204,14 +218,15 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
     }
 });
 listener.psubscribe('mostoMessage*');
-mostomessagesbackend.use(backboneio.middleware.mongoStore(db, 'mostomessages', {}));
+mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
 
-_([mediabackend, listbackend, appbackend]).each (debug_backend);
+_([mediabackend, listbackend, appbackend, piecebackend, transformbackend]).each (debug_backend);
 
 var io = backboneio.listen(app.listen(app.get('port'), function(){
     console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 }), { mediabackend: mediabackend,
-      blockbackend: blockbackend,
+      piecebackend: piecebackend,
+      transformbackend: transformbackend,
       listbackend:  listbackend,
       schedbackend: schedbackend,
       statusbackend: statusbackend,
@@ -230,7 +245,7 @@ var utils = require('./utils');
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
         utils.scrape_files (conf.Dirs.scrape, function (model) {
-            db.collection('medias').insert(model, {safe:true}, function(err, result) {
+            db.collection(collection.Medias).insert(model, {safe:true}, function(err, result) {
                 if (err) {
                     console.error ('error','An error has occurred' + err);
                 } else {

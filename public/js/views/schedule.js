@@ -6,19 +6,21 @@ window.OccurrenceView = Backbone.View.extend({
       this.calendar = this.options.calendar;
     },
     deleteOcurrence: function(sth) {
+      var list = this.model.get('playlist');
       var overlapped = this.model.overlapsWith;
-      var options = {success: function() {
+      var options = {success: function(list) {
         overlapped.forEach(function(o) {
           o.save();
           });
-        }
+        list.save();
+        }.bind(this, list)
       };
       this.$el.fadeOut(400, this.model.destroy.bind(this.model, options));
       console.log("Deleting ocurrence", this.model);
     }
 });
 
-window.ScheduleView = Backbone.View.extend({
+window.ScheduleView = PanelView.extend({
     el: $("#content"),
     get_templateHTML: function () {
         return template.schedule();
@@ -84,18 +86,19 @@ window.ScheduleView = Backbone.View.extend({
         return {start: start, end: end};
     },
     initialize: function () {
-        var self = this;
-        self.collection = this.get_collection();
+        PanelView.prototype.initialize.apply(this, arguments);
 
-        $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
+        var self = this;
+
+        self.collection = new Media.Schedule();
+        self.playlists = new Media.UniversePageable();
+
         $(this.el).html(this.get_templateHTML());
 
-        new UniverseListView({
-            collection: Universe,
+        this.universe_view = new UniverseListView({
+            collection: this.playlists,
             el: $('#universe', this.el),
             draggable: true,
-            pagination: false,
-            search_type: 'client'
         });
 
         this.render();
@@ -175,15 +178,22 @@ window.ScheduleView = Backbone.View.extend({
 
         var calendarEventSources = [
             function(start, end, callback) {
-                console.log(start, end);
-                var unix_start = moment(start).valueOf();
-                var unix_end = moment(end).valueOf();
-                var events = self.get_collection().filter(function(el){
-                    return unix_start <= el.get('end') && unix_end >= el.get('start');
-                }).map(self.make_event);
-                console.log('Returning events #', events.length);
-                callback(events);
-            }
+                var query_obj = {criteria: {in_window: [moment(start).valueOf(), moment(end).valueOf()]}};
+                self.collection.fetch({
+                    success: function() {
+                        console.log("Fetched Schedule!");
+                        var events = self.collection.map(self.make_event);
+                        console.log('Returning events #', events.length);
+                        callback(events)
+                    },
+                    error: function(e) {
+                        throw new Error("Cannot fetch Schedule.");
+                    },
+                    data: {
+                        query: query_obj,
+                    }
+                });
+            },
         ].concat(self.historical_events);
 
         this.calendar.fullCalendar({
@@ -205,7 +215,7 @@ window.ScheduleView = Backbone.View.extend({
             },
             contentHeight: mainHeight,
             theme: true,
-            lazyFetching: false,
+            lazyFetching: true,
             serverTimestamp: parseInt(this.opts.timestamp, 10),
             serverTimezoneOffset: parseInt(this.opts.timezoneOffset, 10),
 
@@ -278,24 +288,26 @@ window.ScheduleView = Backbone.View.extend({
             */
             },
             dayClick: dayClick,
-            eventRender: function (event, element, view) {
-                var model = self.collection.where({list: event.list})[0];
 
+            eventRender: function (event, element, view) {
                 element.tooltip({
                     trigger: 'click',
                     placement: 'left',
-                    title: function () {
+/*                    title: function () {
                         console.log ("creating tooltip", model);
+                        var model = self.collection.get(event._id);
+                        var playlist = model.get('playlist');
                         var target = document.createElement('div');
-                        var view = new MediaListView({model: model,
-                                                      noSearch:true,
-                                                      el: target});
-                        return view.render().el;
+                        var view = new MediaListView({model: playlist, type: 'playlist-fixed', el: $(target)});
+                        return view.el.html();
                     },
+*/
                 });
 
                 eventRender(event, element, view);
+
             },
+
             eventAfterRender: function (event, element, view) {
               var ocurrence = new OccurrenceView({
                 el: element,
@@ -315,7 +327,8 @@ window.ScheduleView = Backbone.View.extend({
             },
             eventResize: eventResize,
             drop: function(date, allDay) {
-                var list  = Universe.get(this.id);
+                var list  = self.playlists.get(this.id);
+
                 console.log ('drop->', self.collection.pluck('end'));
 
                 var start = moment(date);
@@ -327,14 +340,18 @@ window.ScheduleView = Backbone.View.extend({
 
                 var event = {
                     title:  list.get('name'),
-                    list:   list.get('_id'),
                     start:  times.start.valueOf(), end: times.end.valueOf(),
+                    playlist:   list.get('_id'),
                     allDay: allDay,
                 };
 
                 console.log ('to save', event);
-                var item = self.collection.create (event);
-                console.log (this, list, event, item);
+                self.collection.create (event, {success: function(model) {
+                    console.log ('Schedule: saved OK: ', self, list, event, model);
+                    list.save();
+                    self.calendar.fullCalendar('renderEvent', self.make_event(model));
+                }
+                });
             }
         });
 
@@ -356,10 +373,38 @@ window.ScheduleView = Backbone.View.extend({
             }
                                              */
 
-        self.collection.bind('add reset remove change', this.reload, this);
-        self.collection.bind('all',   function (e, a) {console.log('got: ' + e, a);}, this);
+        self.collection.bind('all',   function (e, a) {console.log('SCHEDULE got: ' + e, a);}, this);
         self.collection.bind('overlap', this.displayOverlap, this);
 
+        self.collection.bind('backend', this.reload, this);
+        self.collection.bind('destroy',   function (model) {
+            self.calendar.fullCalendar('removeEvents', model.id);
+        });
+        self.collection.bind('change',   function (model) {
+            var fcEvent = self.calendar.fullCalendar('clientEvents', model.id)[0];
+            current = self.make_event(model);
+            if (current && fcEvent) {
+                _.extend(fcEvent, current);
+                self.calendar.fullCalendar('updateEvent', fcEvent);
+            }
+        });
+
+        // Call parent render
+        PanelView.prototype.render.apply(this, arguments);
+
         return this;
+    },
+
+    destroyView: function() {
+        PanelView.prototype.destroyView.apply(this, arguments);
+        this.universe_view.destroy();
+        this.collection.off("overlap backend destroy change");
+        this.collection.off("all");
+        this.undelegateEvents();
+    },
+
+    canNavigateAway: function(options) {
+        this.destroyView();
+        options["ok"]();
     },
 });

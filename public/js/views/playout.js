@@ -40,6 +40,8 @@ PlayoutTimeline.prototype = {
         self.layout = config.layout;
         self.shades = config.shades;
 
+        self.callbacks = config.callbacks || {};
+
         self.unique_id = config.unique_id;
         self.filter_bounds = {};
 
@@ -87,6 +89,14 @@ PlayoutTimeline.prototype = {
             actual_span += config.panels[i].span;
         }
 
+        this.start_animation();
+    },
+
+    start_animation: function() {
+        var self = this;
+
+        this.animate = true;
+
         // Configure timer for now indicator
         if (self.config.follow) {
             (function follow() {
@@ -94,19 +104,27 @@ PlayoutTimeline.prototype = {
                 if (self.config.follow) {
                     self.centerTime.call(self, now);
                 }
-                window.requestAnimationFrame(follow);
+                if (self.animate) {
+                    window.requestAnimationFrame(follow);
+                }
             })();
         } else {
             (function animate_now_indicator() {
                 self.draw_now_indicator();
-                window.requestAnimationFrame(animate_now_indicator);
+                if (self.animate) {
+                    window.requestAnimationFrame(animate_now_indicator);
+                }
             })();
         }
-
     },
 
-    update_data: function(new_data) {
+    stop_animation: function() {
+        this.animate = false;
+    },
+
+    update_data: function(new_data, fetched_bounds) {
         this.data = new_data;
+        this.fetched_bounds = fetched_bounds || this.fetched_bounds;
 
         // Filter data
         this.cache_filtered_data(true);
@@ -209,6 +227,8 @@ PlayoutTimeline.prototype = {
         for (var i = 0, li = self.panels.length; i < li; ++i) {
             self.panels[i].panTime(time, smooth);
         }
+
+        this.callback("panning", [this.get_max_bounds()]);
     },
 
     centerTime: function(time, smooth) {
@@ -220,6 +240,8 @@ PlayoutTimeline.prototype = {
         if (this.dragging_playlist !== undefined) {
             this.drag_move(this.dragging_playlist);
         }
+
+        this.callback("panning", [this.get_max_bounds()]);
     },
 
     draw_now_indicator: function() {
@@ -231,6 +253,12 @@ PlayoutTimeline.prototype = {
         }
 
         return now;
+    },
+
+    clear_now_indicator: function() {
+        for (var i = 0, li = this.panels.length; i < li; ++i) {
+            this.panels[i].clear_now_indicator();
+        }
     },
 
     configure_events: function() {
@@ -271,6 +299,8 @@ PlayoutTimeline.prototype = {
             }
             panel.centerTime(center, true, callback);
         }
+
+        this.callback("panning", [this.get_max_bounds()]);
     },
 
     resize: function(width, height, smooth) {
@@ -416,17 +446,17 @@ PlayoutTimeline.prototype = {
 
             if (event.ctrlKey) {
                 // Call external push down
-                this.update_data(this.callbacks.fix_overlap(occurrence));
+                this.update_data(this.callback("fix_overlap", [occurrence]));
                 this.redraw(this.config.smooth_drag, true);
-                this.update_data(this.callbacks.restore_overlap());
+                this.update_data(this.callback("restore_overlap"));
             } else {
                 // Call external revert
-                this.update_data(this.callbacks.restore_overlap());
+                this.update_data(this.callback("restore_overlap"));
                 this.redraw(this.config.smooth_drag, true);
             }
         } else {
             // Call external revert
-            this.update_data(this.callbacks.restore_overlap());
+            this.update_data(this.callback("restore_overlap"));
             this.redraw(this.config.smooth_drag, true);
         }
 
@@ -446,7 +476,7 @@ PlayoutTimeline.prototype = {
         this.dragging_playlist = undefined;
 
         // Call external revert
-        this.update_data(this.callbacks.restore_overlap());
+        this.update_data(this.callback("restore_overlap"));
         this.redraw(this.config.smooth_drag, true);
     },
 
@@ -458,6 +488,20 @@ PlayoutTimeline.prototype = {
         }
 
         return (create ? time : undefined);
+    },
+
+    bind_callback: function(name, callback) {
+        return this.callbacks[name] = callback;
+    },
+
+    callback: function(name, args) {
+        if (this.callbacks[name]) {
+            return this.callbacks[name].apply(this, args);
+        }
+    },
+
+    unbind_all: function() {
+        this.callbacks = {};
     },
 };
 
@@ -953,10 +997,55 @@ PlayoutTimelinePanel.prototype = {
             }
 
             var second_level = updated_set.selectAll("svg.Clip").data(function(d) {
-                return playlist_visible(d) ? Universe.get(d.get("list")).get("models") : [];
+                // FIXME: fetchRelated success callback is almost useless.
+                // This whole function could be tidier without using it.
+                var ret = [];
+                if (playlist_visible(d)) {
+                    var pl = d.get('playlist');
+                    if (!pl) {
+                        d.fetchRelated("playlist");
+                        d.fetch({
+                            success: function(def_pl) {
+                                def_pl.fetchRelated("pieces");
+                                def_pl.fetch({
+                                    success: function() {
+                                        self.redraw(smooth);
+                                    },
+                                    error: function() {
+                                        console.warn("Could not fetch related pieces.");
+                                    },
+                                });
+                            },
+                            error: function() {
+                                console.warn("Could not fetch related playlist.");
+                            },
+                        });
+                    } else {
+                        var pces = pl.get('pieces');
+                        if (!pces || !pces.length) {
+                            pl.fetchRelated("pieces");
+                            pl.fetch({
+                                success: function(def_pces) {
+                                    self.redraw(smooth);
+                                },
+                                error: function() {
+                                    console.warn("Could not fetch related pieces.");
+                                },
+                            });
+                        } else {
+                            // TODO: guess what to do in case more pieces were added since we fetchRelated them.
+                            ret = pces.models;
+                        }
+                    }
+                }
+                return ret;
             });
 
             function length_to_duration(val) {
+                if (!val) {
+                    return 0;
+                }
+
                 var tmp = val.split(".");
                 var ms = tmp[1] * 10;
                 tmp = tmp[0].split(":");
@@ -966,7 +1055,7 @@ PlayoutTimelinePanel.prototype = {
                     minutes: tmp[1],
                     seconds: tmp[2],
                     milliseconds: ms,
-                });
+                }).valueOf();
             }
 
             function playlist_length(plist) {
@@ -1004,33 +1093,37 @@ PlayoutTimelinePanel.prototype = {
                 break;
             }
 
-            var clip = second_level
-                .enter()
-                .append("svg:svg")
-                    .attr("class", "Clip")
-                    .attr(attr_sel[0], function(d, i, j) {
-                        var length = playlist_length(filtered_data[j]);
-                        var list = d.collection.models;
-                        var sum = 0;
-                        for (var k = 0; k < i; ++k) {
-                            sum += length_to_duration(list[k].get("durationraw")).valueOf();
-                        }
-                        return sum * 100 / length + "%";
-                    })
-                    .attr(attr_sel[1], "40")
-                    .attr(attr_sel[2], function(d, i, j) {
-                        var length = playlist_length(filtered_data[j]);
-                        var my_length = length_to_duration(d.get("durationraw"));
-                        return my_length * 100 / length + "%";
-                    })
+            // Setup new clips
+            var new_clips = second_level.enter();
+            var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
+            new_svg.append("svg:rect"); // Background
+            new_svg.append("text"); // Text
 
-            clip.append("svg:rect")
+            // Update new and old clips
+            second_level
+                .attr(attr_sel[0], function(d, i, j) {
+                    var length = playlist_length(filtered_data[j]);
+                    var list = d.collection.models;
+                    var sum = 0;
+                    for (var k = 0; k < i; ++k) {
+                        sum += length_to_duration(list[k].get("durationraw"));
+                    }
+                    return sum * 100 / length + "%";
+                })
+                .attr(attr_sel[1], "40")
+                .attr(attr_sel[2], function(d, i, j) {
+                    var length = playlist_length(filtered_data[j]);
+                    var my_length = length_to_duration(d.get("durationraw"));
+                    return my_length * 100 / length + "%";
+                })
+
+            second_level.select("rect")
                 .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
                 .style("opacity", function(d, i) { return i % 2 ? 0.3 : 0.2; })
                 .style("fill", "black");
 
             // Setup clip text
-            var clip_text = clip.append("text")
+            var clip_text = second_level.select("text")
                 .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
                 .attr("font-size", 14)
                 .style("stroke", "none")
@@ -1063,7 +1156,7 @@ PlayoutTimelinePanel.prototype = {
         }
 
         self.reposition_now_indicator();
-
+        self.reposition_fetch_bounds(smooth);
     },
 
     draw_playlists: function(selection, smooth, class_name, color) {
@@ -1380,40 +1473,41 @@ PlayoutTimelinePanel.prototype = {
     },
 
     draw_now_indicator: function(now) {
-        var self = this;
-
         // In case now is not defined
         if (now === undefined) {
             now = moment();
         }
 
-        var diff = now.diff(self.start);
+        var pos = Math.floor((now - this.start) / this.drawing_quota);
 
         // Adjust metrics to layout
         var line_metrics;
-        switch(self.timeline.layout) {
+        switch(this.timeline.layout) {
             case PlayoutTimeline.HORIZONTAL:
-                line_metrics = [diff / self.drawing_quota, diff / self.drawing_quota, 0, self.height - self.padding[3]];
+                line_metrics = [pos, pos, 0, this.height - this.padding[3]];
             break;
             case PlayoutTimeline.VERTICAL:
-                line_metrics = [0, self.width - self.padding[2], diff / self.drawing_quota, diff / self.drawing_quota];
+                line_metrics = [0, this.width - this.padding[2], pos, pos];
             break;
         }
 
         // Draw
-        var line = self.vis.selectAll("line#now").data([now]);
+        var line = this.vis.selectAll("line#now").data([now]);
         line.enter()
-            .append("line");
+            .append("line")
+                .attr("id", "now")
+                .attr("stroke", "red")
+                .attr("stroke-width", "1px");
 
         line
-            .attr("id", "now")
             .attr("x1", line_metrics[0])
             .attr("x2", line_metrics[1])
             .attr("y1", line_metrics[2])
-            .attr("y2", line_metrics[3])
-            .attr("stroke", "red")
-            .attr("stroke-width", "1px")
+            .attr("y2", line_metrics[3]);
+    },
 
+    clear_now_indicator: function() {
+        this.vis.selectAll("line#now").remove();
     },
 
     reposition_now_indicator: function() {
@@ -1426,6 +1520,107 @@ PlayoutTimelinePanel.prototype = {
             line.detach();
             line.appendTo(this.vis[0]);
         }
+    },
+
+    reposition_fetch_bounds: function(smooth) {
+        var self = this;
+
+        var wait_panel;
+        var bounds = this.timeline.fetched_bounds;
+        if (bounds) {
+            if (bounds.start > self.start) {
+                wait_panel = {
+                    position: "top",
+                    span: bounds.start - self.start,
+                };
+            }
+            if (bounds.end < self.end) {
+                wait_panel = {
+                    position: "bottom",
+                    span: this.end - bounds.end,
+                };
+            }
+        } else {
+            wait_panel = {
+                position: "full",
+            };
+        }
+
+        // Comparison function
+        function compare(elem) {
+            return elem.position;
+        }
+
+        var data = (wait_panel ? [wait_panel] : []);
+
+        // Metrics
+        var metrics = {};
+        switch(self.timeline.layout) {
+            case PlayoutTimeline.HORIZONTAL:
+                metrics["x"] = function(d) {
+                    if (d.position == "bottom") {
+                        return self.timeToPixels(self.end - d.span - self.start);
+                    } else {
+                        return 0;
+                    }
+                };
+                metrics["y"] = self.padding[0];
+
+                metrics["width"] = function(d) {
+                    if (d.position == "full") {
+                        return self.drawing_width;
+                    } else {
+                        return self.timeToPixels(d.span);
+                    }
+                };
+                metrics["height"] = self.drawing_height;
+            break;
+            case PlayoutTimeline.VERTICAL:
+                metrics["y"] = function(d) {
+                    if (d.position == "bottom") {
+                        return self.timeToPixels(self.end - d.span - self.start);
+                    } else {
+                        return 0;
+                    }
+                };
+                metrics["x"] = self.padding[0];
+
+                metrics["height"] = function(d) {
+                    if (d.position == "full") {
+                        return self.drawing_width;
+                    } else {
+                        return self.timeToPixels(d.span);
+                    }
+                };
+                metrics["width"] = self.drawing_height;
+            break;
+        }
+
+        var selection = this.svg.selectAll("svg.WaitPanel").data(data, compare);
+
+        // Add panel
+        var new_panel = selection.enter()
+            .append("svg:svg")
+                .attr("class", "WaitPanel")
+                .append("svg:rect")
+                    .style("fill", "#000")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .style("opacity", 0)
+                    .transition().duration(500)
+                    .style("opacity", 0.5);
+
+        // Add background to new element
+        self.smoothify(selection, smooth)
+            .attr("y", metrics["y"])
+            .attr("x", metrics["x"])
+            .attr("height", metrics["height"])
+            .attr("width", metrics["width"])
+            .style("pointer-events", "none");
+
+        selection.exit().remove();
     },
 
     pixelsToTime: function(pixels) {
@@ -1461,17 +1656,21 @@ PlayoutTimelinePanel.prototype = {
 
 
 
-window.PlayoutView = Backbone.View.extend({
+window.PlayoutView = PanelView.extend({
     el: '#content',
     initialize: function() {
+        PanelView.prototype.initialize.apply(this, arguments);
+
         var self = this;
-        self.$el.removeClass("trans container-fluid no-Pov").addClass("Pov");
         self.$el.html(template.playout());
 
-        this.svg = this.$el.find("#playout #svg");
+        this.collection = new Media.Schedule();
+        this.playlists = new Media.UniversePageable();
+
+        this.svg = this.$el.find("#playout");
 
         this.timeline = new PlayoutTimeline({
-            container: "#playout #svg",
+            container: "#playout",
             unique_id: "_id",
             width: this.svg.width(),
             height: this.svg.height(),
@@ -1500,28 +1699,27 @@ window.PlayoutView = Backbone.View.extend({
         });
 
         this.universe_view = new UniverseListView({
-            collection: Universe,
+            collection: this.playlists,
             el: $("#universe"),
             draggable: true,
-            search_type: 'client',
         });
 
         // Event listeners
-        self.collection.bind('sync', function(elem) {
-            self.render();
+        this.collection.bind('sync', function(elem) {
+            this.render();
         }, this);
 
-        Universe.bind('sync', function(elem) {
+        this.playlists.bind('sync', function(elem) {
             this.update_drag();
         }, this);
 
-        self.collection.bind('all', function (e, a) {
+        this.collection.bind('all', function (e, a) {
             console.log("PlayoutView > event:" + e + " > ", a);
         }, this);
 
         $(window).resize(function() {
             if (self.$el.hasClass("trans")) {
-                if ($("body").hasClass("Comp")) {
+                if ($("body").hasClass("folded")) {
                     self.timeline.resize(self.svg.width(), self.svg.height() + 105, true);
                 } else {
                     self.timeline.resize(self.svg.width(), self.svg.height() - 105, true);
@@ -1534,7 +1732,7 @@ window.PlayoutView = Backbone.View.extend({
             }
         });
 
-        // Config Drag Events
+        // Config overlapping handling via callbacks
         function fixOverlap(occurrence) {
             this.collection.memento.store();
             this.collection.simulateOverlap(occurrence);
@@ -1546,15 +1744,15 @@ window.PlayoutView = Backbone.View.extend({
             return this.collection.models;
         }
 
-        this.timeline.callbacks = this.timeline.callbacks || {};
-        this.timeline.callbacks.fix_overlap = _.bind(fixOverlap, this);
-        this.timeline.callbacks.restore_overlap = _.bind(restoreOverlap, this);
+        this.timeline.bind_callback("fix_overlap", _.bind(fixOverlap, this));
+        this.timeline.bind_callback("restore_overlap", _.bind(restoreOverlap, this));
 
+        // Config Drag Events
         self.external_drag = d3.behavior.drag();
         self.external_drag.on("dragstart", function() {
             self.drag_elem = $(event.target).closest("li.playlist-name");
             if (self.drag_elem.length == 1) {
-                self.drag_origin = Universe.get(self.drag_elem.attr("id"));
+                self.drag_origin = self.playlists.get(self.drag_elem.attr("id"));
             } else {
                 self.drag_elem = undefined;
                 self.drag_origin = undefined;
@@ -1570,9 +1768,9 @@ window.PlayoutView = Backbone.View.extend({
             }
 
             if (draw) {
-                self.drag_elem.siblings(".ui-draggable-dragging").css("display", "none");
+                $("#content li.ui-draggable-dragging").css("display", "none");
             } else {
-                self.drag_elem.siblings(".ui-draggable-dragging").css("display", "");
+                $("#content li.ui-draggable-dragging").css("display", "");
             }
         }).on("dragend", function() {
             var create;
@@ -1588,7 +1786,7 @@ window.PlayoutView = Backbone.View.extend({
 
                 var occurrence = {
                     title:  self.drag_origin.get('name'),
-                    list:   self.drag_origin.get('_id'),
+                    playlist:   self.drag_origin.get('_id'),
                     start:  start,
                     end: end,
                     allDay: false,
@@ -1599,23 +1797,39 @@ window.PlayoutView = Backbone.View.extend({
                 // Push down mode
                 if (event.ctrlKey) {
                     // simulateOverlap saving changes
-                    self.collection.simulateOverlap(occurrence, true);
+                    self.collection.simulateOverlap(occurrence);
+                    self.collection.forEach(function(elem) {
+                        if (elem.hasChanged()) {
+                            elem.save();
+                        }
+                    });
                     self.collection.start_memento();
                 }
 
                 // Insert new occurrence
-                self.collection.create(occurrence);
+                self.collection.create(occurrence, {
+                    success: function() {
+                        self.playlists.get(self.drag_origin.get('_id')).save();
+                    },
+                });
             }
 
             self.timeline.drag_clear();
         });
 
-        this.render();
+        // Config panning events
+        this.timeline.bind_callback("panning", _.bind(this.fetch_occurrences, this));
+
+        // Final startup
         this.update_drag();
+        this.ready_to_fetch = true;
+        this.fetch_occurrences(this.timeline.get_max_bounds());
+
+        PanelView.prototype.render.apply(this, arguments);
     },
 
     render: function() {
-        this.timeline.update_data(this.collection.models);
+        this.timeline.update_data(this.collection.models, this.fetched_bounds);
         this.timeline.redraw();
     },
 
@@ -1623,4 +1837,56 @@ window.PlayoutView = Backbone.View.extend({
         d3.selectAll("#universe ul#playlists li").call(this.external_drag);
     },
 
+    remove_drag: function() {
+        $("#universe ul#playlists li").off();
+    },
+
+    fetch_occurrences: _.throttle(function(bounds) {
+        var self = this;
+
+        // Get window size
+        var window_size = bounds.end - bounds.start;
+
+        // Expand the window both sides by it's size
+        bounds.start.subtract(window_size);
+        bounds.end.add(window_size);
+
+        // Calculate threshold
+        var threshold = window_size / 2;
+
+        // Only fetch if threshold has been passed or no fetched bounds are registered
+        if (!self.fetched_bounds || Math.abs(bounds.start - self.fetched_bounds.start) > threshold) {
+            // Fetching
+            this.collection.fetch({
+                success: function() {
+                    // Update bounds, event:sync redraw will do the work.
+                    self.fetched_bounds = bounds;
+                },
+                error: function(e) {
+                    throw new Error("Cannot fetch Schedule.");
+                },
+                data: {
+                    query: {criteria: {in_window: [bounds.start.valueOf(), bounds.end.valueOf()]}},
+                },
+            });
+        }
+    }, 1000, {leading: false}),
+
+    canNavigateAway: function(options) {
+        // Release resources before navigating away
+        PanelView.prototype.destroyView.apply(this, arguments);
+        this.universe_view.destroy();
+        this.collection.unbind("sync");
+        this.playlists.unbind("sync");
+        this.collection.unbind("all");
+        $(window).off("resize");
+        this.remove_drag() // removes effect of external_drag
+        this.timeline.unbind_all();
+        this.timeline.stop_animation();
+        this.undelegateEvents();
+
+        // Router callback
+        options["ok"]();
+    },
 });
+

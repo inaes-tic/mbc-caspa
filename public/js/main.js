@@ -1,38 +1,3 @@
-var mediaList = new Media.Collection();
-var mediaDB   = new Media.List({collection: mediaList,
-                                fixed: true,
-                                name: 'Media Database'});
-var Universe  = new Media.Universe();
-var Schedule  = new Media.Schedule();
-
-var DEBUG = false;
-if (DEBUG) {
-    var i = 0;
-    cols = [mediaList, Universe, Schedule];
-    setInterval (function () {
-        for (col in cols) {
-            c = cols[col];
-            c.create({name: i++, file: 'file' + i, duration: 293829829});
-            console.log ('hello, ' + col + ' : ', c.models.length,
-                         _.zip(c.pluck('file'), c.pluck('name'), c.pluck('_id')));
-        }
-    }, 5000);
-}
-
-Universe.bind ('all', function (arg) {
-    console.log ('UNIVERSE:' , arg);
-});
-
-Universe.bind ('add', function (arg) {
-    console.log('something happened in the universe',Universe, 'ADD', arg);
-    console.trace ();
-});
-
-Universe.bind ('create', function (arg) {
-    console.log('something happened in the universe',Universe, 'CREATE', arg);
-    console.trace ();
-});
-
 var appCollection = new App.Collection();
 
 window.appCollection = appCollection;
@@ -42,7 +7,7 @@ window.framestatus = new App.ProgressStatus();
 var AppRouter = Backbone.Router.extend({
 
     routes: {
-        "media"	: "list",
+        "media"             : "list",
         "universe"          : "universe",
         "media/add"         : "upload",
         "media/edit"        : "editMedia",
@@ -61,75 +26,61 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
+        this.currentView = null;
+        this.currentHash = Backbone.history.getHash();
+
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
+
+        this.on('route', function(route) {
+            menuItem = {
+                playout: 'playout-menu',
+                schedule: 'schedule-menu',
+                list: 'list-menu',
+                mediaDetails: 'list-menu',
+                upload: 'add-menu',
+                addMedia: 'add-menu',
+                editMedia: 'edit-menu',
+                about: 'about-menu',
+                conf: 'conf-menu'
+            }[route];
+            if (menuItem) {
+                this.headerView.selectMenuItem(menuItem)
+            }
+        });
     },
 
     playout: function() {
-        var self = this;
-        Universe.setQuery({});
-        Schedule.setQuery({});
-        Universe.fetch({success: function() {
-            Schedule.fetch({success: function() {
-                new PlayoutView({collection: Schedule});
-                self.headerView.selectMenuItem('playout-menu')
-            }});
-        }});
+        return new PlayoutView();
     },
 
     schedule: function() {
-        var self = this;
-        Universe.setQuery({});
-        Schedule.setQuery({});
-        Universe.fetch({success: function() {
-            Schedule.fetch({success: function() {
-                new ScheduleView({collection: Schedule});
-                self.headerView.selectMenuItem('schedule-menu');
-            }});
-        }});
+        return new ScheduleView();
     },
 
     list: function() {
-        var self = this;
-        mediaList.setQuery({});
-        Universe.setQuery({});
-        mediaList.fetch({success: function() {
-            Universe.fetch({success: function() {
-                new MediaListView({model: mediaDB});
-                self.headerView.selectMenuItem('list-menu');
-            }});
-        }});
+        return new MediaListView();
     },
 
     universe: function () {
-        new UniverseListView({collection: Universe});
+        var playlists = new Media.UniversePageable();
+        return new UniverseListView({collection: playlists});
     },
 
     mediaDetails: function (id) {
-        new MediaView({model: mediaList.get(id)});
-        this.headerView.selectMenuItem('list-menu');
+        return new MediaView({id: id});
     },
 
     upload: function () {
-        new UploadView ({collection: appCollection});
-        this.headerView.selectMenuItem('add-menu');
+        return new UploadView ({collection: appCollection});
     },
 
     addMedia: function() {
         var media = new Media.Model();
-        new MediaView({model: media});
-        this.headerView.selectMenuItem('add-menu');
+        return new MediaView({model: media});
     },
 
     editMedia: function() {
-        var self = this;
-        mediaList.setQuery({});
-        Universe.setQuery({});
-        mediaList.fetch({success: function() {
-            Universe.fetch({success: function() {
-                new EditView ({el: $("#content"), collection: Universe});
-                self.headerView.selectMenuItem('edit-menu');
-            }});
-        }});
+        return new EditView();
     },
 
     about: function () {
@@ -137,11 +88,55 @@ var AppRouter = Backbone.Router.extend({
             this.aboutView = new AboutView();
         }
         $('#content').html(this.aboutView.el);
-        this.headerView.selectMenuItem('about-menu');
+        return this.aboutView
     },
     conf: function () {
-        new ConfView({collection: appCollection});
-        this.headerView.selectMenuItem('conf-menu');
+        return new ConfView({collection: appCollection});
+    },
+
+    // Manually bind a single named route to a callback. For example:
+    //
+    //     this.route('search/:query/p:num', 'search', function(query, num) {
+    //       ...
+    //     });
+    //
+    route: function(route, name, callback) {
+        if (!_.isRegExp(route)) route = this._routeToRegExp(route);
+        if (_.isFunction(name)) {
+          callback = name;
+          name = '';
+        }
+        if (!callback) callback = this[name];
+        var router = this;
+        Backbone.history.route(route, function(fragment) {
+            var args = router._extractParameters(route, fragment);
+
+            var ok = function() {
+                if (callback) {
+                    router.currentView = callback.apply(router, args);
+                }
+                router.trigger.apply(router, ['route:' + name].concat(args));
+                router.trigger('route', name, args);
+                Backbone.history.trigger('route', router, name, args);
+                router.currentHash = Backbone.history.getHash();
+            };
+
+            var cancel = function() {
+                // XXX: keep this, otherwise the browser url will point somewhere else.
+                // we need to set the history fragment to the (now) previous location
+                // to avoid re-creating the current view when we change the browser url.
+                // router.currentHash is updated by us after a successfull route change.
+                Backbone.history.fragment = router.currentHash;
+                location.hash = router.currentHash;
+            };
+
+            if (router.currentView && router.currentView.canNavigateAway) {
+                router.currentView.canNavigateAway({ok: ok, cancel: cancel});
+            } else {
+                ok();
+            }
+        });
+        return this;
     },
 });
 
@@ -161,14 +156,19 @@ $.ajax({
     async: false
 });
 
-appCollection.fetch({success: function() {
-    mediaList.fetch({success: function() {
-        Universe.fetch({success: function() {
-            Schedule.fetch({success: function() {
-                app = new AppRouter();
-                Backbone.history.start();
-            }});
-        }});
-    }});
+
+appCollection.fetch({success: function() {
+    app = new AppRouter();
+    Backbone.history.start({pushState:true});
 }});
 
+$(document).on("click", "a[href^='/']", function(event) {
+    var href, url;
+    href = $(event.currentTarget).attr('href');
+    if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+        event.preventDefault();
+        url = href.replace(/^\//, '').replace('\#\!\/', '');
+        app.navigate(url, {trigger: true});
+        return false;
+    }
+});

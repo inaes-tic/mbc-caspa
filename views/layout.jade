@@ -1,5 +1,6 @@
 !!!
-html(lang='#{lang}', dir='#{lang_dir}')
+//html(lang='#{lang}', dir='#{lang_dir}')
+html(lang='#{lang}')
   head
     title= name
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
@@ -9,18 +10,19 @@ html(lang='#{lang}', dir='#{lang_dir}')
   body
     script(type='text/javascript')
       head.js(
-        "js/vendor.js",
-        "js/utils.js",
-        "js/templates.js",
-        "socket.io/socket.io.js",
-        "socket.io/backbone.io.js",
-        "js/models.js",
-        "js/views.js",
-        "js/main.js"
+        "/js/vendor.js",
+        "/js/utils.js",
+        "/js/templates.js",
+        "/socket.io/socket.io.js",
+        "/socket.io/backbone.io.js",
+        "/js/vendor_others.js",
+        "/js/models.js",
+        "/js/views.js",
+        "/js/main.js"
       );
     #Panel
 
-    #content.container-fluid
+    #content
       block content
     .delete-drop.connected-sortable(style='display:none;')
       .message.no-sort

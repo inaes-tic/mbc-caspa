@@ -18,6 +18,7 @@
         "mongoskin": "0.4.x",
         "socket.io": "0.9.x",
         "backbone": "1.0.0",
+        "backbone-relational": "git://github.com/inaes-tic/Backbone-relational.git#pageable-compat",
         "jade": "0.30.x",
         "folio": "git://github.com/inaes-tic/folio.git#newer_uglify",
         "less-middleware": "0.1.12",

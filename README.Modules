@@ -1,0 +1,4 @@
+mbc-common: backbone-relational-master
+backbone.io: search-custom-criteria from https://github.com/inaes-tic/backbone.io
+mbc-caspa: backbone-relational-master
+backbone-relational: pageable-compat from https://github.com/inaes-tic/Backbone-relational

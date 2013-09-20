@@ -6,10 +6,10 @@ window.ConfView = Backbone.View.extend({
         this.defaultModel = this.collection.findWhere({ type: 'defaults' });
     },
     render: function () {
-            $(this.el).removeClass("trans Pov").addClass("container-fluid no-Pov");
-            $(this.el).html(template.confview({ config: this.collection.toJSON() }));
-            $('body').scrollspy('refresh');
-            return this;
+        $(this.el).html(template.confview({ config: this.collection.toJSON() }));
+        $('.scrollable').scrollspy('refresh');
+        location.hash = location.hash+' ';
+        return this;
     },
     events: {
         "change"        : "change",
@@ -60,5 +60,10 @@ window.ConfView = Backbone.View.extend({
             $('input#'+selector, this.el).val(default_model[res[0]][res[1]][res[2]]);
         }
         return false;
-    }
+    },
+    canNavigateAway: function(options) {
+        $(".scrollable").unbind("scroll"); // Disables scrollspy
+        this.undelegateEvents();
+        options["ok"]();
+    },
 });

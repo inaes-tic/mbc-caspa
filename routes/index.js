@@ -16,17 +16,6 @@ module.exports = function(app) {
         });
     });
 
-    /*
-     * GET home page.
-     */
-    app.get('/',  function(req, res) {
-        res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
-    });
-
-    app.get('/app/:id', function (req, res) {
-
-    });
-
     app.get('/po/:id', function (req, res) {
         var lang = req.params.id;
         var locale = i18n.localeFrom(lang);
@@ -74,15 +63,22 @@ module.exports = function(app) {
         path.join(lib_dir, 'knockout-drag-binding.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
         require.resolve('node-uuid'),
-        require.resolve('backbone-pageable/lib/backbone-pageable.js'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
-        path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
         require.resolve('d3/d3.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
 
     app.get('/js/vendor.js', folio.serve(vendorJs));
+
+    //XXX Hack to include relational after backbone.io
+    var vendorOthersJs = new folio.Glossary([
+        path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
+        require.resolve('backbone-pageable/lib/backbone-pageable.js'),
+        require.resolve('backbone-relational/backbone-relational.js'),
+    ], {minify:app.get('minify')});
+
+    app.get('/js/vendor_others.js', folio.serve(vendorOthersJs));
 
     /**
      * Views Javascript Package
@@ -92,6 +88,8 @@ module.exports = function(app) {
                  'header',
                  'home',
                  'playbar',
+                 'masterview',
+                 'panelview',
                  'medialist',
                  'mediadetails',
                  'mediasearch',
@@ -141,6 +139,8 @@ module.exports = function(app) {
                      'item',
                      'playbar',
                      'header',
+                     'masterview',
+                     'panelview',
                      'medialist',
                      'mediaview',
                      'mediasearch',
@@ -181,6 +181,10 @@ module.exports = function(app) {
 
     // serve using express
     app.get('/js/templates.js', folio.serve(templateJs));
+
+    app.get('*',  function(req, res) {
+        res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
+    });
 
     return appCollection;
 }

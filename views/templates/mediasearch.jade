@@ -1,20 +1,5 @@
 block content
 
-- var input_txt = i18n.gettext('Search')
-
-- if (type == 'client')
-  .form-search
-    .input-prepend
-        button.btn(type="submit")
-          i.icon-search
-        input.input-large.search-query#media-search(
-          type="text",
-          data-provide="typeahead",
-          data-items="4",
-          placeholder= input_txt,
-          data-bind="value: filter, valueUpdate: 'keyup'")
-- else
-  .visual_search
-  - if (pagination == 'traditional')
-    .pagination
-
+.visual_search
+- if (pagination == 'traditional')
+  .pagination
