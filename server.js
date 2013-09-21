@@ -245,7 +245,7 @@ var utils = require('./utils');
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
         utils.scrape_files (conf.Dirs.scrape, function (model) {
-            db.collection(collection.Medias).insert(model, {safe:true}, function(err, result) {
+            db.collection(collections.Medias).insert(model, {safe:true}, function(err, result) {
                 if (err) {
                     console.error ('error','An error has occurred' + err);
                 } else {
