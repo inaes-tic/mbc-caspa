@@ -15,6 +15,12 @@ var express = require('express'),
     logger = mbc.logger().addLogger('caspa_server')
  ;
 
+var loggerStream = {
+    write: function(message, encoding) {
+        logger.info(message);
+    }
+};
+
 /* make sure at runtime that we atempt to get the dirs we need */
 for (d in conf.Dirs) {
     /* HACK: but I'm not going to waist time writing mkdir -p */
@@ -37,7 +43,7 @@ app.configure(function () {
     app.set('port', process.env.PORT || 3000);
     app.set('views', conf.Dirs.views);
     app.set('view engine', 'jade');
-    app.use(express.logger('dev'));
+    app.use(express.logger({ stream: loggerStream, format: 'dev' }));
     app.use(express.compress());
 /*    app.use('/uploads', upload({
         tmpDir:    conf.Dirs.uploads + '/incoming',
