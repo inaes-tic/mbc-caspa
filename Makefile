@@ -1,6 +1,6 @@
 export MOCHA=node_modules/mocha/bin/mocha
 export NODE_CONFIG_DIR ?= $(PWD)/node_modules/mbc-common/config
-
+export PATH+=:node_modules/phantomjs/bin
 all: update serve
 
 mos: locale/es/LC_MESSAGES/messages.mo

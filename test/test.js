@@ -10,19 +10,41 @@ chai.Assertion.includeStack = true;
 describe('Simple app lookup', function () {
     'use strict';
 
-    var browser, server;
+    var server, ph;
 
     before(function (done) {
         // get our browser and server up and running
-        phantom.create(function (ph) {
-            ph.createPage(function (tab) {
-                browser = tab;
+        phantom.create(function (res) {
+/*            ph.createPage(function (tab) {
+                browser = tab;*/
+                ph = res;
                 server = require('../server.js');
                 done();
-            });
+//            });
         });
     });
 
+
+
+
+
+    describe('Testing Server URLS', function() {
+    var browser;
+
+        beforeEach(function(done) {
+            ph.createPage(function (tab) {
+                browser = tab;
+                done();
+            });
+        });
+        afterEach(function(done) {
+//            browser.close();
+            done();
+        });
+
+
+
+    describe('GET /', function() {
     it('should return title', function (done) {
         browser.open('http://localhost:3000/', function (status) {
             if(status !== 'success') {
@@ -39,5 +61,59 @@ describe('Simple app lookup', function () {
             }
 
         });
+    });
+    });
+
+
+    describe('GET /#media/edit', function() {
+        before(function (done) {
+            browser.open('http://localhost:3000/#media/edit', function (status) {
+              console.log("1111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+                if(status !== 'success') {
+                    console.log('Unable to access the network');
+                } else {
+                    console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeesdasdjnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
+                    done();
+                }
+                });
+        });
+
+        it('should exist create playlist buttom', function (done) {
+/*
+            browser.open('http://localhost:3000/#media/edit', function (status) {
+              console.log("1111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+                if(status !== 'success') {
+                    console.log('Unable to access the network');
+                } else {
+                    console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeesdasdjnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
+
+*/
+            browser.evaluate(function inBrowser() {
+              //document.getElementById('create-playlist')
+                return document.getElementsByClassName('no-playlist-alert');
+            }, function fromBrowser(alert) {
+                expect(alert).not.equal("none");
+                done();
+            });
+  /*
+                     done();
+                }
+                });
+
+    */
+
+
+        });
+
+
+
+
+
+
+
+    });
+
+
+
     });
 });
