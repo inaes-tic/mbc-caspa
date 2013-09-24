@@ -15,33 +15,22 @@ describe('Simple app lookup', function () {
     before(function (done) {
         // get our browser and server up and running
         phantom.create(function (res) {
-/*            ph.createPage(function (tab) {
-                browser = tab;*/
-                ph = res;
-                server = require('../server.js');
-                done();
-//            });
+            ph = res;
+            server = require('../server.js');
+            done();
         });
     });
 
 
-
-
-
     describe('Testing Server URLS', function() {
-    var browser;
+    var browser=null;
 
-        beforeEach(function(done) {
+        before(function(done) {
             ph.createPage(function (tab) {
                 browser = tab;
                 done();
             });
         });
-        afterEach(function(done) {
-//            browser.close();
-            done();
-        });
-
 
 
     describe('GET /', function() {
@@ -49,15 +38,14 @@ describe('Simple app lookup', function () {
         browser.open('http://localhost:3000/', function (status) {
             if(status !== 'success') {
                 console.log('Unable to access the network');
+                throw 'Unable to access the network';
             } else {
-              setTimeout(function () {
-                    browser.evaluate(function inBrowser() {
-                        return document.getElementsByTagName('title')[0].textContent;
-                    }, function fromBrowser(title) {
-                        expect(title).to.equal(conf.Branding.name);
-                        done();
-                    });
-              }, 1000); // give time for xhr to run
+                browser.evaluate(function inBrowser() {
+                    return document.getElementsByTagName('title')[0].textContent;
+                }, function fromBrowser(title) {
+                    expect(title).to.equal(conf.Branding.name);
+                    done();
+                });
             }
 
         });
@@ -66,54 +54,29 @@ describe('Simple app lookup', function () {
 
 
     describe('GET /#media/edit', function() {
-        before(function (done) {
-            browser.open('http://localhost:3000/#media/edit', function (status) {
-              console.log("1111111111111111111111111111111111111111111111111111111111111111111111111111111111");
-                if(status !== 'success') {
-                    console.log('Unable to access the network');
-                } else {
-                    console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeesdasdjnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
-                    done();
-                }
-                });
+    it('should exist create playlist buttom', function (done) {
+        browser.open('http://localhost:3000/#media/edit', function (status) {
+            if(status !== 'success') {
+                console.log('Unable to access the network');
+                throw 'Unable to access the network';
+                done();
+            }
         });
 
-        it('should exist create playlist buttom', function (done) {
-/*
-            browser.open('http://localhost:3000/#media/edit', function (status) {
-              console.log("1111111111111111111111111111111111111111111111111111111111111111111111111111111111");
-                if(status !== 'success') {
-                    console.log('Unable to access the network');
-                } else {
-                    console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeesdasdjnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
-
-*/
+        // XXX: it may take a while to (re) render the page...
+        setTimeout(function() {
             browser.evaluate(function inBrowser() {
               //document.getElementById('create-playlist')
-                return document.getElementsByClassName('no-playlist-alert');
+                return $('.no-playlist-alert').length != 0;
             }, function fromBrowser(alert) {
-                expect(alert).not.equal("none");
+                expect(alert).equal(true);
                 done();
             });
-  /*
-                     done();
-                }
-                });
-
-    */
-
-
-        });
-
-
-
-
-
+        }, 1000);
 
 
     });
-
-
-
     });
 });
+});
+

@@ -37,7 +37,7 @@ npm:
 update: submodules npm mos
 
 test:
-	${MOCHA} --reporter spec --timeout 3000 test
+	${MOCHA} --reporter spec --timeout 5000  test
 
 test_debug:
 	${MOCHA} --debug-brk --reporter spec test
