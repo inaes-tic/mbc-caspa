@@ -241,6 +241,8 @@ io.configure('production', function(){
     io.enable('browser client gzip');          // gzip the file
 });
 
+io.set('logger', logger); // Log socket.io with custom logger
+
 var utils = require('./utils');
 
 if (process.env.MBC_SCRAPE) {
