@@ -2,38 +2,13 @@ var     _ = require('underscore')
 ,   fp    = require('functionpool')
 , ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs')
-, conf    = require('mbc-common').config.Caspa;
+,  mbc    = require('mbc-common')
+, conf    = mbc.config.Caspa;
 
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
 
-var db = require('mbc-common').db();
-
-exports.openDB = function (callback, populateCallback) {
-    db.open(function(err, db) {
-        if(!err) {
-            console.log("Connected to 'mediadb' database");
-            db.collection('medias', {safe:true}, function(err, collection) {
-                if (err) {
-                    console.log("The 'medias' collection doesn't exist. Creating it with sample data...");
-                    if (populateCallback)
-                        populateCallback()
-                } else {
-                    collection.find().toArray(function(err, items) {
-                        _(items).each (function (item) {
-                            exports.check_media (item, function (item) {
-                                callback(item);
-                            });
-                        });
-                    });
-                }
-            });
-        } else {
-            console.log("Could not connect:", err);
-            abort();
-        }
-    });
-}
+var db = mbc.db();
 
 exports.merge = function (original_filename, callback) {
     var i = 1;
