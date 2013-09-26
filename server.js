@@ -88,6 +88,8 @@ function debug_backend (backend) {
     backend.use(function(req, res, next) {
         logger.debug('Backend: ', req.backend);
         logger.debug('Method: ', req.method);
+        logger.debug('Channel: ', req.channel);
+        logger.debug('Options: ', JSON.stringify(req.options));
         logger.debug('Model: ', JSON.stringify(req.model));
         next();
     });
