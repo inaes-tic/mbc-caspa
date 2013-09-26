@@ -85,7 +85,6 @@ var appModel = require('./routes')(app);
 //var media = require('./routes/media')(app);
 
 function debug_backend (backend) {
-    logger.info("Debugging backend: ", backend);
     backend.use(function(req, res, next) {
         logger.debug('Backend: ', req.backend);
         logger.debug('Method: ', req.method);
@@ -127,7 +126,6 @@ listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, collections.
 var schedbackend = backboneio.createBackend();
 schedbackend.use(id_middleware);
 schedbackend.use(function (req, res, next) {
-    logger.trace("schedbackend handler", req);
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
