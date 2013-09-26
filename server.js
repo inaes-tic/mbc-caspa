@@ -12,7 +12,8 @@ var express = require('express'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000,
     uuid = require('node-uuid'),
-    logger = mbc.logger().addLogger('caspa_server')
+    logger = mbc.logger().addLogger('caspa_server'),
+    utils = require('./utils')
  ;
 
 var loggerStream = {
@@ -256,11 +257,11 @@ io.configure('production', function(){
 
 io.set('logger', logger); // Log socket.io with custom logger
 
-var utils = require('./utils');
+var u = new utils(db);
 
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
-        utils.scrape_files (conf.Dirs.scrape, function (model) {
+        u.scrape_files (conf.Dirs.scrape, function (model) {
             db.collection(collections.Medias).insert(model, {safe:true}, function(err, result) {
                 if (err) {
                     logger.error('error','An error has occurred' + err);
