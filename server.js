@@ -85,13 +85,13 @@ var appModel = require('./routes')(app);
 //var media = require('./routes/media')(app);
 
 function debug_backend (backend) {
-        logger.info("Debugging backend: ", backend);
-        backend.use(function(req, res, next) {
-                logger.debug('Backend: ', req.backend);
-                logger.debug('Method: ', req.method);
-                logger.debug('Model: ', JSON.stringify(req.model));
-                next();
-        });
+    logger.info("Debugging backend: ", backend);
+    backend.use(function(req, res, next) {
+        logger.debug('Backend: ', req.backend);
+        logger.debug('Method: ', req.method);
+        logger.debug('Model: ', JSON.stringify(req.model));
+        next();
+    });
 }
 
 var db = mbc.db();
