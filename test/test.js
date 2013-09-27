@@ -70,6 +70,22 @@ describe('Running Server', function () {
                     }
                 );
             });
+
+            it('should have nav links', function (done) {
+                setTimeout(function() {
+                    browser.evaluate(
+                        function inBrowser() {
+                            var nav_links = $("#nav [class*='menu'] a").map(function() { return ($(this).attr("href")); });
+                            return nav_links.toArray();
+                        },
+                        function fromBrowser(nav_links) {
+                            var urls = _.values(path);
+                            expect(nav_links).to.eql(urls);
+                            done();
+                        }
+                    );
+                }, wait_time);
+            });
         });
 
         describe('GET ' + path.media_edit, function() {
