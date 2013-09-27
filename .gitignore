@@ -4,6 +4,8 @@ Procfile
 .gitignore
 *.mo
 *.swp
+*.log
+/logs
 Session.vim
 
 public/sc
