@@ -4,13 +4,15 @@ module.exports = function(app) {
     , jade = require('jade')
     , po2json = require('po2json')
     , i18n = require('i18n-abide')
-    , conf = require('mbc-common').config.Caspa;
+    , mbc = require('mbc-common')
+    , conf = mbc.config.Caspa
+    , logger  = mbc.logger().addLogger('caspa_routes');
 
     var self = require ('mbc-common/models/App.js')
     , appCollection = new self.Collection();
 
     appCollection.bind('change', function (model) {
-        console.log("model " + 'change' + "->" + 'change', model);
+        logger.info("model " + 'change' + "->" + 'change', model);
         _.each(model.sockets, function (socket) {
             socket.broadcast.emit(model.url  + ':' + 'change', model.toJSON());
         });
@@ -24,7 +26,7 @@ module.exports = function(app) {
             jsondata = po2json.parseSync('locale/' + locale + '/LC_MESSAGES/messages.po');
             res.send (jsondata);
         } catch (e) {
-            console.log (e);
+            logger.error(e);
         }
     });
 

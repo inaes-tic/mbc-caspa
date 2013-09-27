@@ -13,7 +13,6 @@ module.exports = function(middleware) {
                 if (req.model._id) {
                     middleware(req, res, next);
                 } else {
-                    console.log ('searchWrapper READ', req);
                     var data = {
                         query: {},
                         page: 0,

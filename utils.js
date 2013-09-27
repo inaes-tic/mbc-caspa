@@ -3,7 +3,9 @@ var     _ = require('underscore')
 , ffmpeg  = require('./ffmpeg/')
 ,   fs    = require ('fs')
 ,  mbc    = require('mbc-common')
-, conf    = mbc.config.Caspa;
+, conf    = mbc.config.Caspa
+, logger  = mbc.logger().addLogger('caspa_util')
+;
 
 var _exists     = fs.exists     || require('path').exists;
 var _existsSync = fs.existsSync || require('path').existsSync;
@@ -20,14 +22,14 @@ exports.merge = function (original_filename, callback) {
         return;
 
     for (; _existsSync (source_base + i); i++)  {
-        console.log ('--->', source_base + i);
+        logger.debug('--->', source_base + i);
 
         var writter = fs.createWriteStream(dest, {'flags': 'a'});
         writter.write (fs.readFileSync (source_base +i));
     };
 
     var id = setInterval (function () {
-        console.log ('about to call merge_finish');
+        logger.info('about to call merge_finish');
         exports.merge_finish(dest, id, callback)
     }, 200);
 
@@ -44,11 +46,11 @@ exports.merge_finish = function (dest, id, callback) {
     clearInterval (id);
 
     var stat = fs.statSync (dest);
-    console.log ('all good, pasing it to parse', exports.parse_pool);
+    logger.debug('all good, pasing it to parse', exports.parse_pool);
     exports.parse_pool.task(dest, stat, function (res, err) {
         if (err)
-            return (console.error('error:', err));
-        console.log ('parsed: ' + stat.name);
+            return (logger.error('error:', err));
+        logger.debug('parsed: ' + stat.name);
         exports.sc_pool.task(res, callback, function (err, res) {return res});
     });
 }
@@ -67,7 +69,7 @@ var populateDB = function() {
 
 exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     var dest = conf.Dirs.screenshots + '/' + media._id + '.jpg';
-    console.log ('starting sc', media.file);
+    logger.info('starting sc', media.file);
 /*
     if (_existsSync('./public/sc/' + media._id)) {
         console.log ('skipping screenshot of: ' + md5 + '(file already there).');
@@ -78,11 +80,11 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     f.run (media.file, dest, {
             size: '150x100',
             onCodecData: function(metadata) {
-                console.log ('here');
+                logger.info('here');
                 if (!callback)
                     return;
 
-                console.log(metadata);
+                logger.debug('metadata: ', metadata);
                 metadata._id  = media._id;
                 metadata.file = media.file;
                 metadata.stat = media.stat;
@@ -90,14 +92,14 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
                 callback (metadata);
             }
     }, function(retcode, fds) {
-        console.log ('here0 ');
+        logger.info('here0 ');
         if (! _existsSync (dest) || retcode) {
             var error = new Error('File not created' + fds.err);
-            console.log ('ERROR', error);
+            logger.error('ERROR', error);
             return done (error);
         }
 
-        console.log('sc ok: ' + media._id);
+        logger.info('sc ok: ' + media._id);
         return done(media);
     });
 });
@@ -106,7 +108,7 @@ exports.parse_pool = new fp.Pool({size: 1}, function (file, stat, done) {
     var spawn = require('child_process').spawn,
     md5sum    = spawn('md5sum', [file]);
 
-    console.log ("looking at :" + file);
+    logger.info("looking at :" + file);
     md5sum.stdout.on('data', function (data) {
         var md5 = data.toString().split(' ')[0];
 
@@ -131,7 +133,7 @@ exports.scrape_files = function (path, callback) {
     , bs        = 10*1024*1024
     , observe   = path;
 
-    console.log ('launched obeserver on path: ' + observe);
+    logger.info('launched obeserver on path: ' + observe);
 
     /* Ok, this a bit messy, it goes like this:
        + we get the file;
@@ -153,14 +155,14 @@ exports.scrape_files = function (path, callback) {
 
         exports.parse_pool.task(file, stat, function (res, err) {
             if (err)
-                return (console.error('error:', err));
-            console.log ('parsed: ' + stat.name, res);
+                return (logger.error('error:', err));
+            logger.debug('parsed: ' + stat.name, res);
             exports.sc_pool.task(res, callback, function (err, res) {return res});
         });
 
     })
     .on('end', function () {
-        console.log ("all done");
+        logger.info("all done");
     });
 }
 
@@ -177,7 +179,7 @@ exports.check_media = function (media, cb, arg) {
             if (!e)
                 exports.sc_pool.task (media, null, function (res, err) {
                     if (err) {
-                        console.error (new Error("couldn't sc"));
+                        logger.error(new Error("couldn't sc"));
                     }
                 });
         });

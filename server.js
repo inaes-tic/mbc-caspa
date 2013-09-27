@@ -11,15 +11,22 @@ var express = require('express'),
     moment = require('moment'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000,
-    uuid = require('node-uuid')
+    uuid = require('node-uuid'),
+    logger = mbc.logger().addLogger('caspa_server')
  ;
+
+var loggerStream = {
+    write: function(message, encoding) {
+        logger.info(message);
+    }
+};
 
 /* make sure at runtime that we atempt to get the dirs we need */
 for (d in conf.Dirs) {
     /* HACK: but I'm not going to waist time writing mkdir -p */
     exec ('mkdir -p ' + conf.Dirs[d], function (error, stdout, stderr) {
         if (error !== null) {
-            console.log('exec error: ' + error);
+            logger.error('exec error: ' + error);
         }
     });
 }
@@ -36,7 +43,7 @@ app.configure(function () {
     app.set('port', process.env.PORT || 3000);
     app.set('views', conf.Dirs.views);
     app.set('view engine', 'jade');
-    app.use(express.logger('dev'));
+    app.use(express.logger({ stream: loggerStream, format: 'dev' }));
     app.use(express.compress());
 /*    app.use('/uploads', upload({
         tmpDir:    conf.Dirs.uploads + '/incoming',
@@ -77,23 +84,19 @@ app.configure('production', function(){
 var appModel = require('./routes')(app);
 //var media = require('./routes/media')(app);
 
-function debug_backend (backend) {
-        console.log ('Debugging backend: ', backend);
-        backend.use(function(req, res, next) {
-                console.log(req.backend);
-                console.log(req.method);
-                console.log(JSON.stringify(req.model));
-                next();
-        });
-}
-
-var db = mbc.db();
-
-var publisher = mbc.pubsub();
-var listener = mbc.pubsub();
-
 // Override mongoStore read method with custom
 var searchWrapper = require('./searchWrapper.js');
+
+function debug_backend (backend) {
+    backend.use(function(req, res, next) {
+        logger.debug('Backend: ', req.backend);
+        logger.debug('Method: ', req.method);
+        logger.debug('Channel: ', req.channel);
+        logger.debug('Options: ', JSON.stringify(req.options));
+        logger.debug('Model: ', JSON.stringify(req.model));
+        next();
+    });
+}
 
 function id_middleware(req, res, next) {
     if( req.method == 'create' && req.model._id === undefined) {
@@ -102,31 +105,44 @@ function id_middleware(req, res, next) {
     next();
 }
 
-var mediabackend = backboneio.createBackend();
-mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Medias, { search: search_options.Medias })));
+var db = mbc.db();
 
-var piecebackend = backboneio.createBackend();
-piecebackend.use(id_middleware);
-piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Pieces, { search: search_options.Pieces })));
+var publisher = mbc.pubsub();
+var listener = mbc.pubsub();
 
+var appbackend = backboneio.createBackend();
 var transformbackend = backboneio.createBackend();
+var mediabackend = backboneio.createBackend();
+var piecebackend = backboneio.createBackend();
+var listbackend = backboneio.createBackend();
+var schedbackend = backboneio.createBackend();
+var statusbackend = backboneio.createBackend();
+var framebackend = backboneio.createBackend();
+var mostomessagesbackend = backboneio.createBackend();
+
+var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, mostomessagesbackend ];
+_(backends).each (debug_backend);
+
+appbackend.use(backboneio.middleware.configStore());
+
 transformbackend.use(id_middleware);
 transformbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Transforms, { search: search_options.Transforms })));
 
-var listbackend = backboneio.createBackend();
+mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Medias, { search: search_options.Medias })));
+
+piecebackend.use(id_middleware);
+piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Pieces, { search: search_options.Pieces })));
+
 listbackend.use(id_middleware);
 listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, collections.Lists, { search: search_options.Lists })));
 
-var schedbackend = backboneio.createBackend();
 schedbackend.use(id_middleware);
 schedbackend.use(function (req, res, next) {
-    console.log ("schedbackend handler", req);
     publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
     next();
 });
 schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Scheds, { search: search_options.Scheds })));
 
-var statusbackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, status) {
 
     if( chan != "mostoStatus" ) // we can ignore this message
@@ -135,7 +151,7 @@ listener.on('JSONmessage', function(chan, status) {
     // This receives messages from mosto and propagates the message through
     //  backbone.io
     var emit = _.after(6, function() {
-        console.log('emitting', status);
+        logger.info('emitting', status);
         statusbackend.emit('updated', status)
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
@@ -152,7 +168,7 @@ listener.on('JSONmessage', function(chan, status) {
         db.collection(collections.Pieces).findById(status.piece[pos]._id, function(err, piece) {
             if( err ) {
                 // we still want to call emit() even if there was a DB error
-                console.error(err);
+                logger.error(err);
             }
 
             if( piece ) {
@@ -188,7 +204,6 @@ listener.on('JSONmessage', function(chan, status) {
 listener.subscribe('mostoStatus');
 statusbackend.use(backboneio.middleware.mongoStore(db, collections.Status, { search: search_options.Status }));
 
-var framebackend = backboneio.createBackend();
 listener.on('JSONmessage', function(chan, msg) {
     if( !(chan == 'mostoStatus.progress' ) )
         return;
@@ -199,14 +214,10 @@ listener.on('JSONmessage', function(chan, msg) {
 listener.subscribe('mostoStatus.progress');
 framebackend.use(backboneio.middleware.memoryStore(db, 'progress', {}));
 
-var appbackend = backboneio.createBackend();
-appbackend.use(backboneio.middleware.configStore());
-
 // there should probably be two backends or two collections or both, or something, one for
 // one-time momentary messages like warnings and such to be dismissed by the frontend,
 // and another one for "sticky" messages like long-lived status problems, like if melted died
 // or the DB has a problem
-var mostomessagesbackend = backboneio.createBackend();
 listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
         case "mostoMessage.emit":
@@ -220,18 +231,21 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
 listener.psubscribe('mostoMessage*');
 mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
 
-_([mediabackend, listbackend, appbackend, piecebackend, transformbackend]).each (debug_backend);
+_(backends).each (function(backend) {
+    logger.info("Debugging backend: ", backend);
+});
 
 var io = backboneio.listen(app.listen(app.get('port'), function(){
-    console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
-}), { mediabackend: mediabackend,
-      piecebackend: piecebackend,
+    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env);
+}), { appbackend: appbackend,
       transformbackend: transformbackend,
+      mediabackend: mediabackend,
+      piecebackend: piecebackend,
       listbackend:  listbackend,
       schedbackend: schedbackend,
       statusbackend: statusbackend,
       framebackend: framebackend,
-      appbackend: appbackend
+      mostomessagesbackend: mostomessagesbackend
     });
 
 io.configure('production', function(){
@@ -240,6 +254,8 @@ io.configure('production', function(){
     io.enable('browser client gzip');          // gzip the file
 });
 
+io.set('logger', logger); // Log socket.io with custom logger
+
 var utils = require('./utils');
 
 if (process.env.MBC_SCRAPE) {
@@ -247,7 +263,7 @@ if (process.env.MBC_SCRAPE) {
         utils.scrape_files (conf.Dirs.scrape, function (model) {
             db.collection(collections.Medias).insert(model, {safe:true}, function(err, result) {
                 if (err) {
-                    console.error ('error','An error has occurred' + err);
+                    logger.error('error','An error has occurred' + err);
                 } else {
                     mediabackend.emit('created', model);
                 }
@@ -255,5 +271,5 @@ if (process.env.MBC_SCRAPE) {
         });
     }, 300);
 } else {
-    console.log ("not scrapping");
+    logger.info ("not scrapping");
 }
