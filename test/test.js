@@ -88,6 +88,27 @@ describe('Running Server', function () {
             });
         });
 
+        describe('GET ' + path.media, function() {
+            var url_media = host + path.media;
+            open(url_media);
+            it('should show total time right', function (done) {
+                 setTimeout(function() {
+                    browser.evaluate(
+                        function inBrowser() {
+                            var durations = $('[data-bind="text: durationraw"]').map(function() { return $(this).text(); });
+                            var total_time = $('.total-time').text();
+                            var calculated_time = prettyTime(arrayDuration(durations));
+                            return { total_time: total_time, calculated_time: calculated_time };
+                        },
+                        function fromBrowser(duration) {
+                            expect(duration.total_time).to.equal(duration.calculated_time);
+                            done();
+                        }
+                    );
+                }, wait_time);
+            });
+        });
+
         describe('GET ' + path.media_edit, function() {
             var url_media_edit = host + path.media_edit;
             open(url_media_edit);
