@@ -1096,7 +1096,6 @@ PlayoutTimelinePanel.prototype = {
             // Setup new clips
             var new_clips = second_level.enter();
             var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
-            // Filmstrip
             new_svg.append("svg:rect"); // Background
             new_svg.append("text"); // Text
             new_svg.append("svg:foreignObject")
@@ -1104,7 +1103,7 @@ PlayoutTimelinePanel.prototype = {
                 .attr(attr_sel[0], "0")
                 .attr(attr_sel[2], "100%")
                 .attr(attr_sel[3], "20%")
-                .append("xhtml:canvas")
+                .append("xhtml:canvas") // Filmstrip
                     .attr("width", "0")
                     .attr("height", "0");
 
