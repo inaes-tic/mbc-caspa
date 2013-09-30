@@ -126,5 +126,10 @@ describe('Running Server', function () {
                 }, wait_time);
             });
         });
+
+        after(function(done) {
+            ph.exit();
+            done();
+        });
     });
 });
