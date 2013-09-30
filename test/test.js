@@ -1,7 +1,5 @@
 /*global require:true, describe:true, before:true, it:true, window:true, setTimeout:true*/
 
-process.env['LOG_LEVEL'] = 'error';
-
 var mbc = require('mbc-common'),
     conf = mbc.config.Caspa,
     phantom = require('phantom'),
