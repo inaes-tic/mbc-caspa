@@ -1086,18 +1086,28 @@ PlayoutTimelinePanel.prototype = {
             var attr_sel;
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
-                    attr_sel = ["x", "y", "width"];
+                    attr_sel = ["x", "y", "width", "height"];
                 break;
                 case PlayoutTimeline.VERTICAL:
-                    attr_sel = ["y", "x", "height"];
+                    attr_sel = ["y", "x", "height", "width"];
                 break;
             }
 
             // Setup new clips
             var new_clips = second_level.enter();
             var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
+            // Filmstrip
             new_svg.append("svg:rect"); // Background
             new_svg.append("text"); // Text
+            new_svg.append("svg:foreignObject")
+                .attr(attr_sel[1], "0")
+                .attr(attr_sel[0], "0")
+                .attr(attr_sel[2], "100%")
+                .attr(attr_sel[3], "20%")
+                .append("xhtml:canvas")
+                    .attr("width", "0")
+                    .attr("height", "0");
+
 
             // Update new and old clips
             second_level
@@ -1146,6 +1156,7 @@ PlayoutTimelinePanel.prototype = {
             // Remove elements that are not being showed
             second_level.exit().remove();
 
+            self.timeline.callback("after_draw");
         } else {
             new_plist
                 .append("text")
@@ -1817,6 +1828,9 @@ window.PlayoutView = PanelView.extend({
             self.timeline.drag_clear();
         });
 
+        // Config Filmstrip events
+        this.timeline.bind_callback("after_draw", _.bind(this.update_filmstrip, this));
+
         // Config panning events
         this.timeline.bind_callback("panning", _.bind(this.fetch_occurrences, this));
 
@@ -1871,6 +1885,16 @@ window.PlayoutView = PanelView.extend({
             });
         }
     }, 1000, {leading: false}),
+
+    update_filmstrip: function() {
+        $("svg#Timeline svg.Clip canvas").each(function(index, elem) {
+            elem = $(elem);
+            var par = elem.parent();
+            elem.height(par.height());
+            elem.width(par.width());
+            // Get clip data: elem.parent().parent()[0].__data__;
+        });
+    },
 
     canNavigateAway: function(options) {
         // Release resources before navigating away
