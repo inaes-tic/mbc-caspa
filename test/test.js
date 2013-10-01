@@ -15,6 +15,7 @@ describe('Running Server', function () {
     'use strict';
 
     var server, ph;
+    var resolution = { width: 1024, height: 768 };
 
     before(function (done) {
         // get our browser and server up and running
@@ -36,6 +37,7 @@ describe('Running Server', function () {
         before(function(done) {
             ph.createPage(function (tab) {
                 browser = tab;
+                browser.set('viewportSize', resolution);
                 done();
             });
         });
