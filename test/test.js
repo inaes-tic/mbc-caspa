@@ -54,6 +54,17 @@ describe('Running Server', function () {
             });
         }
 
+        var check = function ( done, f ) {
+            setTimeout( function() {
+                try {
+                    f();
+                    done();
+                } catch(e) {
+                    done(e)
+                }
+            },100);
+        };
+
         describe('GET /', function() {
             var url_root = host;
             open(url_root);
@@ -65,8 +76,9 @@ describe('Running Server', function () {
                         return title;
                     },
                     function fromBrowser(title) {
-                        expect(title).to.equal(conf.Branding.name);
-                        done();
+                        check(done, function() {
+                            expect(title).to.equal(conf.Branding.name);
+                        });
                     }
                 );
             });
@@ -79,9 +91,10 @@ describe('Running Server', function () {
                             return nav_links.toArray();
                         },
                         function fromBrowser(nav_links) {
-                            var urls = _.values(path);
-                            expect(nav_links).to.eql(urls);
-                            done();
+                            check(done, function() {
+                                var urls = _.values(path);
+                                expect(nav_links).to.eql(urls);
+                            });
                         }
                     );
                 }, wait_time);
@@ -101,8 +114,9 @@ describe('Running Server', function () {
                             return { total_time: total_time, calculated_time: calculated_time };
                         },
                         function fromBrowser(duration) {
-                            expect(duration.total_time).to.equal(duration.calculated_time);
-                            done();
+                            check(done, function() {
+                                expect(duration.total_time).to.equal(duration.calculated_time);
+                            });
                         }
                     );
                 }, wait_time);
@@ -121,8 +135,9 @@ describe('Running Server', function () {
                             return $('.no-playlist-alert').length != 0;
                         },
                         function fromBrowser(alert) {
-                            expect(alert).equal(true);
-                            done();
+                            check(done, function() {
+                                expect(alert).equal(true);
+                            });
                         }
                     );
                 }, wait_time);
