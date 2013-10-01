@@ -72,5 +72,24 @@ describe('Running Server', function () {
             });
         });
 
+        describe('GET ' + path.media_edit, function() {
+            var url_media_edit = host + path.media_edit;
+            open(url_media_edit);
+
+            it('should exist create playlist buttom', function (done) {
+                // XXX: it may take a while to (re) render the page...
+                setTimeout(function() {
+                    browser.evaluate(
+                        function inBrowser() {
+                            return $('.no-playlist-alert').length != 0;
+                        },
+                        function fromBrowser(alert) {
+                            expect(alert).equal(true);
+                            done();
+                        }
+                    );
+                }, wait_time);
+            });
+        });
     });
 });
