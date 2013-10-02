@@ -37,6 +37,11 @@ describe('Running Server', function () {
         before(function(done) {
             ph.createPage(function (tab) {
                 browser = tab;
+/*
+                browser.set('onConsoleMessage', function(msg) {
+                    logger.error("Message from Browser:" + msg);
+                });
+*/
                 browser.set('viewportSize', resolution);
                 done();
             });
