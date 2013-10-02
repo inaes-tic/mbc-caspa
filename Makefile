@@ -1,4 +1,7 @@
-export MOCHA=node_modules/mocha/bin/mocha
+export MOCHA_BIN=node_modules/mocha/bin/mocha
+export MOCHA_ARGS=--reporter spec --timeout 10000
+export MOCHA_DEBUG=${MOCHA_BIN} --debug-brk ${MOCHA_ARGS} test
+export MOCHA=${MOCHA_BIN} ${MOCHA_ARGS} test
 export NODE_CONFIG_DIR ?= $(PWD)/node_modules/mbc-common/config
 
 all: update serve
@@ -37,10 +40,10 @@ npm:
 update: submodules npm mos
 
 test:
-	@LOG_LEVEL=error ${MOCHA} --reporter spec --timeout 10000 test
+	@LOG_LEVEL=error ${MOCHA}
 
 test_debug:
-	@LOG_LEVEL=error ${MOCHA} --debug-brk --reporter spec test
+	@LOG_LEVEL=error ${MOCHA_DEBUG}
 
 serve: update
 	node server.js
