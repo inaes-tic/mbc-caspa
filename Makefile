@@ -37,10 +37,10 @@ npm:
 update: submodules npm mos
 
 test:
-	${MOCHA} --reporter spec --timeout 3000 test
+	@LOG_LEVEL=error ${MOCHA} --reporter spec --timeout 10000 test
 
 test_debug:
-	${MOCHA} --debug-brk --reporter spec test
+	@LOG_LEVEL=error ${MOCHA} --debug-brk --reporter spec test
 
 serve: update
 	node server.js

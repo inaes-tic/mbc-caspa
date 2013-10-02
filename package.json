@@ -44,10 +44,10 @@
         "d3"            : "3.2.x"
     },
     "devDependencies": {
-        "mocha"     : "1.9.x",
+        "mocha"     : "1.12.x",
         "chai"      : "1.5.x",
         "phantomjs" : "1.9.x",
-        "phantom"   : "0.4.x"
+        "phantom"   : "0.5.x"
     },
     "engines": {
         "node": "0.8.4",
