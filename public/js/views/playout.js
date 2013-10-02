@@ -1098,15 +1098,16 @@ PlayoutTimelinePanel.prototype = {
             var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
             new_svg.append("svg:rect"); // Background
             new_svg.append("text"); // Text
+
+            // Filmstrip
             new_svg.append("svg:foreignObject")
                 .attr(attr_sel[1], "0")
                 .attr(attr_sel[0], "0")
                 .attr(attr_sel[2], "100%")
                 .attr(attr_sel[3], "20%")
-                .append("xhtml:canvas") // Filmstrip
+                .append("xhtml:canvas")
                     .attr("width", "0")
                     .attr("height", "0");
-
 
             // Update new and old clips
             second_level
@@ -1665,9 +1666,11 @@ PlayoutTimelinePanel.prototype = {
 };
 
 
-
 window.PlayoutView = PanelView.extend({
     el: '#content',
+
+    filmstrips: {},
+
     initialize: function() {
         PanelView.prototype.initialize.apply(this, arguments);
 
@@ -1886,12 +1889,94 @@ window.PlayoutView = PanelView.extend({
     }, 1000, {leading: false}),
 
     update_filmstrip: function() {
+        // debug
+        //window.filmstrips = this.filmstrips;
+
+        var Filmstrip = function(video, elem) {
+
+            this.video = video;
+            this.elem = elem;
+            this.canvas = null;
+            this.context = null;
+            this.count = 0;
+            this.step = 0;
+            this.maxSteps = 0;
+            this.startAt = 5;
+            this.thumbHeight = 80;
+            this.thumbWidth = 0;
+
+            this.init = function() {
+                this.hide();
+                this.canvas = this.elem.get(0);
+                this.canvas.width = this.elem.width();
+                this.canvas.height = this.elem.height();
+                this.maxSteps = Math.ceil(this.elem.height() / this.thumbHeight);
+                this.step = Math.floor((this.video.duration - (this.startAt * 2)) / this.maxSteps);
+                this.thumbWidth = Math.ceil(this.video.videoWidth * this.thumbHeight / this.video.videoHeight);
+                this.count = 0;
+                this.video.currentTime = this.startAt;
+            };
+
+            this.draw = function() {
+                if (this.context === null) {
+                    //console.log('setting context');
+                    this.context = this.canvas.getContext('2d');
+                }
+                var y = this.thumbHeight * this.count;
+                //console.log('drawing filmstrip at ' + y);
+                this.context.drawImage(this.video, 0, y, this.thumbWidth, this.thumbHeight);
+            };
+
+            this.hide = function() {
+                this.elem.hide();
+            };
+
+            this.show = function() {
+                this.elem.show();
+            };
+        };
+
+        var self = this;
+
         $("svg#Timeline svg.Clip canvas").each(function(index, elem) {
-            elem = $(elem);
+            var elem = $(elem);
             var par = elem.parent();
-            elem.height(par.height());
-            elem.width(par.width());
-            // Get clip data: elem.parent().parent()[0].__data__;
+            var clip = elem.parent().parent()[0].__data__;
+            if (clip.attributes.file == "None") return;
+            var checksum = clip.attributes.checksum;
+            var fileExtension = clip.attributes.file.split('.').pop();
+            var src = '/sc/' + checksum + '.' + fileExtension;
+
+            if (elem.height() != par.height()) {
+                elem.height(par.height());
+                elem.width(par.width());
+                if (checksum in self.filmstrips && self.filmstrips[checksum] !== null) {
+                    self.filmstrips[checksum].init();
+                }
+            }
+
+            if ( !(checksum in self.filmstrips) ) {
+                self.filmstrips[checksum] = null;
+                var video = $('<video preload="metadata" />')
+                    .attr('src', src)
+                    .bind('loadedmetadata', function() {
+                        //console.log('loadedmetadata: ' + src);
+                        self.filmstrips[checksum] = new Filmstrip(this, elem);
+                        self.filmstrips[checksum].init();
+                    })
+                    .bind('seeked', function() {
+                        //console.log('seeked at ' + this.currentTime);
+                        var filmstrip = self.filmstrips[checksum];
+                        filmstrip.draw();
+                        if (filmstrip.count < filmstrip.maxSteps - 1) {
+                            filmstrip.count++;
+                            filmstrip.video.currentTime += filmstrip.step;
+                        } else {
+                            filmstrip.show();
+                        }
+                    });
+            }
+
         });
     },
 
@@ -1913,3 +1998,5 @@ window.PlayoutView = PanelView.extend({
     },
 });
 
+
+// vim: set foldmethod=indent foldlevel=0 foldnestmax=2 :
