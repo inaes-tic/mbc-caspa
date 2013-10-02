@@ -2,6 +2,7 @@ export MOCHA_BIN=node_modules/mocha/bin/mocha
 export MOCHA_ARGS=--reporter spec --timeout 10000
 export MOCHA_DEBUG=${MOCHA_BIN} --debug-brk ${MOCHA_ARGS} test
 export MOCHA=${MOCHA_BIN} ${MOCHA_ARGS} test
+export COVERAGE=node_modules/.bin/istanbul cover
 export NODE_CONFIG_DIR ?= $(PWD)/node_modules/mbc-common/config
 
 all: update serve
@@ -44,6 +45,9 @@ test:
 
 test_debug:
 	@LOG_LEVEL=error ${MOCHA_DEBUG}
+
+coverage:
+	@LOG_LEVEL=error ${COVERAGE} ${MOCHA_BIN} -- ${MOCHA_ARGS}
 
 serve: update
 	node server.js
