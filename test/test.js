@@ -126,6 +126,38 @@ describe('Running Server', function () {
                     );
                 }, wait_time);
             });
+
+            it('should scroll and load more medias', function (done) {
+                setTimeout(function() {
+                    browser.evaluate(
+                        function inBrowser() {
+                            var wait_time = 1000;
+                            var before = $('#playlist-table #table tr').length;
+                            var media_list_h = $('#media-list').height();
+
+                            //Scroll to the bottom
+                            $('.scrollable').scrollTop(media_list_h);
+
+                            var waitForServer = function() {
+                                var after;
+                                setTimeout(
+                                    after = $('#playlist-table #table tr').length
+                                , wait_time);
+                                return after;
+                            };
+
+                            return { before: before, after: waitForServer() };
+                        },
+                        function fromBrowser(rows) {
+                            logger.error(rows);
+                            check(done, function() {
+                                expect(rows.before).not.to.equal(rows.after);
+                            });
+                        }
+                    );
+                    browser.render("scroll.png");
+                }, wait_time);
+            });
         });
 
         describe('GET ' + path.media_edit, function() {
