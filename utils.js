@@ -73,6 +73,28 @@ utils.prototype.populateDB = function() {
     */
 }
 
+utils.prototype.filmstrip_pool = new fp.Pool({size: 1}, function (media, done) {
+    var path = require('path');
+    var ext = path.extname(media.file);
+    var dest = path.join(conf.Dirs.screenshots, media._id + ext);
+    logger.info('starting filmstrip', media.file);
+
+    var f = new ffmpeg();
+    f.run (media.file, dest, {
+        custom: [ '-an', '-r', '1', '-vf', 'scale=200:ih*200/iw', '-vcodec', 'copy' ]
+    }, function(retcode, fds) {
+        logger.info('here0 ');
+        if (! _existsSync (dest) || retcode) {
+            var error = new Error('File not created' + fds.err);
+            logger.error('ERROR', error);
+            return done (error);
+        }
+
+        logger.info('filmstrip ok: ' + dest);
+        return done(media);
+    });
+});
+
 utils.prototype.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     var dest = conf.Dirs.screenshots + '/' + media._id + '.jpg';
     logger.info('starting sc', media.file);
@@ -167,6 +189,7 @@ utils.prototype.scrape_files = function (path, callback) {
             if (err)
                 return (logger.error(err + ' ' + stat.name));
             logger.debug('parsed: ' + stat.name, res);
+            self.filmstrip_pool.task(res, function(err, res) {return res});
             self.sc_pool.task(res, callback, function (err, res) {return res});
         });
 
