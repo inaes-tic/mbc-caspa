@@ -77,7 +77,6 @@ exports.filmstrip_pool = new fp.Pool({size: 1}, function (media, done) {
     f.run (media.file, dest, {
         custom: [ '-an', '-r', '1', '-vf', 'scale=200:ih*200/iw', '-vcodec', 'copy' ]
     }, function(retcode, fds) {
-        logger.info('here0 ');
         if (! _existsSync (dest) || retcode) {
             var error = new Error('File not created' + fds.err);
             logger.error('ERROR', error);
@@ -102,7 +101,6 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
     f.run (media.file, dest, {
             size: '150x100',
             onCodecData: function(metadata) {
-                logger.info('here');
                 if (!callback)
                     return;
 
@@ -114,7 +112,6 @@ exports.sc_pool = new fp.Pool({size: 1}, function (media, callback, done) {
                 callback (metadata);
             }
     }, function(retcode, fds) {
-        logger.info('here0 ');
         if (! _existsSync (dest) || retcode) {
             var error = new Error('File not created' + fds.err);
             logger.error('ERROR', error);
