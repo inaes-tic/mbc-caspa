@@ -9,19 +9,19 @@ function FFMPEG (opts) {
     FFMPEG.prototype.run = function (orig, dest, opts, callback) {
         var stdout, stderr;
 
-        this.proc = _spawnProcess (['-i',
-                                         orig,
-                                         '-r', 1,
-                                         '-ss', 5,
-                                         '-vcodec', 'mjpeg',
-                                         '-vframes', '1',
-                                         '-an',
+        var process_opt = [];
+        var default_opt = [ '-r', 1, '-ss', 5, '-vcodec', 'mjpeg', '-vframes', '1', '-an', '-s', opts.size ||' 150x100' ];
+        var orig_opt = [ '-i', orig ];
+        var dest_opt = [ '-y', dest ];
+        var process_opts = [];
 
-                                         '-s', opts.size ||' 150x100',
-                                     '-y', dest])
-            .on('exit', function (code) {
-                callback (code, {out:stdout, err:stderr});
-            });
+        process_opts.push.apply(process_opts, orig_opt);
+        process_opts.push.apply(process_opts, opts.custom || default_opt);
+        process_opts.push.apply(process_opts ,dest_opt);
+
+        this.proc = _spawnProcess (process_opts).on('exit', function (code) {
+            callback (code, {out:stdout, err:stderr});
+        });
 
         this.proc.stdout.on('data', function (data) {
             stdout += data;
