@@ -1669,12 +1669,14 @@ window.PlayoutView = PanelView.extend({
 
         this.svg = this.$el.find("#playout");
 
+        this.conf = appCollection.findWhere({ type: 'config' }).get('Caspa').Playout;
+
         this.timeline = new PlayoutTimeline({
             container: "#playout",
             unique_id: "_id",
             width: this.svg.width(),
             height: this.svg.height(),
-            layout: PlayoutTimeline.VERTICAL,
+            layout: self.conf.horizontal=='0'?0:1,
             //smooth_drag: true,
             //follow: true,
             shades: true,
