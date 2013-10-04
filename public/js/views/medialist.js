@@ -1,5 +1,7 @@
 window.MediaListView = function(options){
     var self = this;
+    self.filmstrips = {};
+
     _.extend(self, Backbone.Events);
 
     options = options || {};
@@ -286,6 +288,7 @@ window.MediaListView = function(options){
         options["ok"]();
     };
 
+
     // Media List Filmstrip
     this.el.find("table#table").on("mousemove", "img.thumb", function(ev, elem) {
         // Filmstrip container
@@ -299,6 +302,31 @@ window.MediaListView = function(options){
             width: fsc.width(),
             height: fsc.height(),
         });
+
+        var checksum = canvas.get(0).getAttribute('video_checksum');
+        var file = canvas.get(0).getAttribute('video_file');
+        var fileExtension = file.split('.').pop();
+        var src = '/sc/' + checksum + '.' + fileExtension;
+
+        if ( !(checksum in self.filmstrips) ) {
+            self.filmstrips[checksum] = null;
+            var video = $('<video preload="metadata" />')
+                .attr('src', src)
+                .bind('loadedmetadata', function() {
+                    self.filmstrips[checksum] = new Filmstrip(this, canvas, {'layout': 0});
+                    self.filmstrips[checksum].init();
+                })
+                .bind('seeked', function() {
+                    var filmstrip = self.filmstrips[checksum];
+                    filmstrip.draw();
+                    if (filmstrip.count < filmstrip.maxSteps) {
+                        filmstrip.count++;
+                        filmstrip.video.currentTime += filmstrip.step;
+                    } else {
+                        filmstrip.show();
+                    }
+                });
+        }
     });
 
     this.el.find("table#table").on("mouseout", "div.filmstrip", function(ev, elem) {

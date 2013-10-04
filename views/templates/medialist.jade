@@ -86,7 +86,7 @@ block content
                   td.center
                     div.positioner
                       div.filmstrip(style='display: none;')
-                        canvas
+                        canvas(data-bind="attr:{ video_checksum: checksum(), video_file: file }")
                       - if (!is_playlist)
                         - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
                       a.plain(data-bind=target)
