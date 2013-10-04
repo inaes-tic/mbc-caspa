@@ -505,8 +505,8 @@ PlayoutTimeline.prototype = {
     },
 };
 
-PlayoutTimeline.HORIZONTAL = 1;
-PlayoutTimeline.VERTICAL = 0;
+PlayoutTimeline.HORIZONTAL = 0;
+PlayoutTimeline.VERTICAL = 1;
 
 PlayoutTimelinePanel = function() {
     this.init.apply(this, arguments);
