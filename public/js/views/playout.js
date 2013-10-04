@@ -1083,16 +1083,15 @@ PlayoutTimelinePanel.prototype = {
             }
 
             // Setup clip metrics
-            var attr_sel;
+            var attr_trans;
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
-                    attr_sel = ["x", "y", "width"];
+                    attr_trans = {x: "x", y: "y",  width: "width", height: "height"};
                 break;
                 case PlayoutTimeline.VERTICAL:
-                    attr_sel = ["y", "x", "height"];
+                    attr_trans = {y: "x", x: "y",  width: "height", height: "width"};
                 break;
             }
-
             // Setup new clips
             var new_clips = second_level.enter();
             var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
@@ -1101,7 +1100,7 @@ PlayoutTimelinePanel.prototype = {
 
             // Update new and old clips
             second_level
-                .attr(attr_sel[0], function(d, i, j) {
+                .attr(attr_trans.x, function(d, i, j) {
                     var length = playlist_length(filtered_data[j]);
                     var list = d.collection.models;
                     var sum = 0;
@@ -1110,8 +1109,8 @@ PlayoutTimelinePanel.prototype = {
                     }
                     return sum * 100 / length + "%";
                 })
-                .attr(attr_sel[1], "40")
-                .attr(attr_sel[2], function(d, i, j) {
+                .attr(attr_trans.y, "40")
+                .attr(attr_trans.width, function(d, i, j) {
                     var length = playlist_length(filtered_data[j]);
                     var my_length = length_to_duration(d.get("durationraw"));
                     return my_length * 100 / length + "%";
