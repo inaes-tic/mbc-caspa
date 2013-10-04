@@ -1900,21 +1900,32 @@ window.PlayoutView = PanelView.extend({
             this.context = null;
             this.count = 0;
             this.step = 0;
-            this.maxSteps = 0;
             this.startAt = 5;
-            this.thumbHeight = 80;
+            this.maxSteps = 0;
+            this.thumbHeight = 0;
             this.thumbWidth = 0;
+            this.canvasPadding = 10;
 
             this.init = function() {
                 this.hide();
+                this.count = 0;
                 this.canvas = this.elem.get(0);
                 this.canvas.width = this.elem.width();
                 this.canvas.height = this.elem.height();
-                this.maxSteps = Math.ceil(this.elem.height() / this.thumbHeight);
-                this.step = Math.floor((this.video.duration - (this.startAt * 2)) / this.maxSteps);
-                this.thumbWidth = Math.ceil(this.video.videoWidth * this.thumbHeight / this.video.videoHeight);
-                this.count = 0;
-                this.video.currentTime = this.startAt;
+                this.thumbWidth = this.canvas.width - (this.canvasPadding * 2);
+                this.thumbHeight = Math.ceil(this.video.videoHeight * this.thumbWidth / this.video.videoWidth);
+                $(this.canvas).css({ background: '#222' });
+                this.maxSteps = Math.floor(this.elem.height() / this.thumbHeight);
+                if (this.maxSteps == 1) {
+                    this.padding = 0;
+                    this.step = this.video.duration - (this.startAt * 2);
+                } else {
+                    this.padding = (this.elem.height() - (this.maxSteps * this.thumbHeight)) / (this.maxSteps - 1);
+                    this.step = (this.video.duration - (this.startAt * 2)) / (this.maxSteps - 1);
+                }
+                if (this.maxSteps) {
+                    this.video.currentTime = this.startAt;
+                }
             };
 
             this.draw = function() {
@@ -1922,9 +1933,9 @@ window.PlayoutView = PanelView.extend({
                     //console.log('setting context');
                     this.context = this.canvas.getContext('2d');
                 }
-                var y = this.thumbHeight * this.count;
+                var y = (this.thumbHeight * this.count) + (this.padding * this.count);
                 //console.log('drawing filmstrip at ' + y);
-                this.context.drawImage(this.video, 0, y, this.thumbWidth, this.thumbHeight);
+                this.context.drawImage(this.video, this.canvasPadding, y, this.thumbWidth, this.thumbHeight);
             };
 
             this.hide = function() {
@@ -1967,12 +1978,16 @@ window.PlayoutView = PanelView.extend({
                     .bind('seeked', function() {
                         //console.log('seeked at ' + this.currentTime);
                         var filmstrip = self.filmstrips[checksum];
-                        filmstrip.draw();
-                        if (filmstrip.count < filmstrip.maxSteps - 1) {
-                            filmstrip.count++;
-                            filmstrip.video.currentTime += filmstrip.step;
+                        if (filmstrip === null) {
+                            delete self.filmstrips[checksum];
                         } else {
-                            filmstrip.show();
+                            filmstrip.draw();
+                            if (filmstrip.count < filmstrip.maxSteps) {
+                                filmstrip.count++;
+                                filmstrip.video.currentTime += filmstrip.step;
+                            } else {
+                                filmstrip.show();
+                            }
                         }
                     });
             }
