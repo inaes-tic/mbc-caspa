@@ -1889,64 +1889,6 @@ window.PlayoutView = PanelView.extend({
     }, 1000, {leading: false}),
 
     update_filmstrip: function() {
-        // debug
-        //window.filmstrips = this.filmstrips;
-
-        var Filmstrip = function(video, elem) {
-
-            this.video = video;
-            this.elem = elem;
-            this.canvas = null;
-            this.context = null;
-            this.count = 0;
-            this.step = 0;
-            this.startAt = 5;
-            this.maxSteps = 0;
-            this.thumbHeight = 0;
-            this.thumbWidth = 0;
-            this.canvasPadding = 10;
-
-            this.init = function() {
-                this.hide();
-                this.count = 0;
-                this.canvas = this.elem.get(0);
-                this.canvas.width = this.elem.width();
-                this.canvas.height = this.elem.height();
-                this.thumbWidth = this.canvas.width - (this.canvasPadding * 2);
-                this.thumbHeight = Math.ceil(this.video.videoHeight * this.thumbWidth / this.video.videoWidth);
-                $(this.canvas).css({ background: '#222' });
-                this.maxSteps = Math.floor(this.elem.height() / this.thumbHeight);
-                if (this.maxSteps == 1) {
-                    this.padding = 0;
-                    this.step = this.video.duration - (this.startAt * 2);
-                } else {
-                    this.padding = (this.elem.height() - (this.maxSteps * this.thumbHeight)) / (this.maxSteps - 1);
-                    this.step = (this.video.duration - (this.startAt * 2)) / (this.maxSteps - 1);
-                }
-                if (this.maxSteps) {
-                    this.video.currentTime = this.startAt;
-                }
-            };
-
-            this.draw = function() {
-                if (this.context === null) {
-                    //console.log('setting context');
-                    this.context = this.canvas.getContext('2d');
-                }
-                var y = (this.thumbHeight * this.count) + (this.padding * this.count);
-                //console.log('drawing filmstrip at ' + y);
-                this.context.drawImage(this.video, this.canvasPadding, y, this.thumbWidth, this.thumbHeight);
-            };
-
-            this.hide = function() {
-                this.elem.hide();
-            };
-
-            this.show = function() {
-                this.elem.show();
-            };
-        };
-
         var self = this;
 
         $("svg#Timeline svg.Clip canvas").each(function(index, elem) {
@@ -1958,11 +1900,15 @@ window.PlayoutView = PanelView.extend({
             var fileExtension = clip.attributes.file.split('.').pop();
             var src = '/sc/' + checksum + '.' + fileExtension;
 
-            if (elem.height() != par.height()) {
-                elem.height(par.height());
-                elem.width(par.width());
-                if (checksum in self.filmstrips && self.filmstrips[checksum] !== null) {
-                    self.filmstrips[checksum].init();
+            if (elem.width() != par.width() || elem.height() != par.height()) {
+                if ((elem.width() == 0 || elem.height() == 0) && checksum in self.filmstrips) {
+                    elem.replaceWith(self.filmstrips[checksum].elem);
+                } else {
+                    elem.height(par.height());
+                    elem.width(par.width());
+                    if (checksum in self.filmstrips && self.filmstrips[checksum] !== null) {
+                        self.filmstrips[checksum].init();
+                    }
                 }
             }
 
@@ -1971,12 +1917,10 @@ window.PlayoutView = PanelView.extend({
                 var video = $('<video preload="metadata" />')
                     .attr('src', src)
                     .bind('loadedmetadata', function() {
-                        //console.log('loadedmetadata: ' + src);
-                        self.filmstrips[checksum] = new Filmstrip(this, elem);
+                        self.filmstrips[checksum] = new Filmstrip(this, elem, self.timeline);
                         self.filmstrips[checksum].init();
                     })
                     .bind('seeked', function() {
-                        //console.log('seeked at ' + this.currentTime);
                         var filmstrip = self.filmstrips[checksum];
                         filmstrip.draw();
                         if (filmstrip.count < filmstrip.maxSteps) {
@@ -2008,6 +1952,5 @@ window.PlayoutView = PanelView.extend({
         options["ok"]();
     },
 });
-
 
 // vim: set foldmethod=indent foldlevel=0 foldnestmax=2 :
