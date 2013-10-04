@@ -1898,7 +1898,6 @@ window.PlayoutView = PanelView.extend({
             if (clip.attributes.file == "None") return;
             var checksum = clip.attributes.checksum;
             var fileExtension = clip.attributes.file.split('.').pop();
-            var fileExtension = 'ogv';
             var src = '/sc/' + checksum + '.' + fileExtension;
 
             if (elem.width() != par.width() || elem.height() != par.height()) {
