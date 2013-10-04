@@ -1959,10 +1959,14 @@ window.PlayoutView = PanelView.extend({
             var src = '/sc/' + checksum + '.' + fileExtension;
 
             if (elem.height() != par.height()) {
-                elem.height(par.height());
-                elem.width(par.width());
-                if (checksum in self.filmstrips && self.filmstrips[checksum] !== null) {
-                    self.filmstrips[checksum].init();
+                if (elem.height() == 0 && checksum in self.filmstrips) {
+                    elem.replaceWith(self.filmstrips[checksum].elem);
+                } else {
+                    elem.height(par.height());
+                    elem.width(par.width());
+                    if (checksum in self.filmstrips && self.filmstrips[checksum] !== null) {
+                        self.filmstrips[checksum].init();
+                    }
                 }
             }
 
