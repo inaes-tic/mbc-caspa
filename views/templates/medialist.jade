@@ -84,10 +84,13 @@ block content
               tbody.tbody#media-view(data-bind=dbind,class='tbody')
                 tr(data-bind=inndbind)
                   td.center
-                    - if (!is_playlist)
-                      - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
-                    a.plain(data-bind=target)
-                      img(width="150",height="100",data-bind="attr:{ src: checksum() ?  '/sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
+                    div.positioner
+                      div.filmstrip(style='display: none;')
+                        canvas
+                      - if (!is_playlist)
+                        - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
+                      a.plain(data-bind=target)
+                        img.thumb(width="150",height="100",data-bind="attr:{ src: checksum() ?  '/sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                   td
                       - if (is_playlist)
                         button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×
