@@ -254,6 +254,13 @@ io.configure('production', function(){
     io.enable('browser client gzip');          // gzip the file
 });
 
+if (process.env.HEROKU) {
+    io.configure(function () {
+        io.set("transports", ["xhr-polling"]);
+        io.set("polling duration", 10);
+    });
+}
+
 io.set('logger', logger); // Log socket.io with custom logger
 
 var utils = require('./utils');
