@@ -1148,7 +1148,7 @@ PlayoutTimelinePanel.prototype = {
                 case PlayoutTimeline.VERTICAL:
                     clip_text
                         .attr("y", function(d) { return $(this).height(); })
-                        .attr("x", 5);
+                        .attr("x", "21%");
                 break;
             }
 
