@@ -1978,16 +1978,12 @@ window.PlayoutView = PanelView.extend({
                     .bind('seeked', function() {
                         //console.log('seeked at ' + this.currentTime);
                         var filmstrip = self.filmstrips[checksum];
-                        if (filmstrip === null) {
-                            delete self.filmstrips[checksum];
+                        filmstrip.draw();
+                        if (filmstrip.count < filmstrip.maxSteps) {
+                            filmstrip.count++;
+                            filmstrip.video.currentTime += filmstrip.step;
                         } else {
-                            filmstrip.draw();
-                            if (filmstrip.count < filmstrip.maxSteps) {
-                                filmstrip.count++;
-                                filmstrip.video.currentTime += filmstrip.step;
-                            } else {
-                                filmstrip.show();
-                            }
+                            filmstrip.show();
                         }
                     });
             }
