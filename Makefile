@@ -41,10 +41,10 @@ npm:
 update: submodules npm mos
 
 test:
-	@LOG_LEVEL=error ${MOCHA}
+	@LOG_LEVEL=error COVERAGE=true ${MOCHA}
 
 test_debug:
-	@LOG_LEVEL=error ${MOCHA_DEBUG}
+	@LOG_LEVEL=error COVERAGE=true ${MOCHA_DEBUG}
 
 coverage:
 	@LOG_LEVEL=error ${COVERAGE} ${MOCHA_BIN} -- ${MOCHA_ARGS}
@@ -53,7 +53,7 @@ serve: update
 	node server.js
 
 serve_noweb:
-	node server.js
+	@COVERAGE=true node server.js
 
 serve_debug:
 	node --debug-brk server.js

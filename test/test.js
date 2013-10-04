@@ -65,6 +65,20 @@ describe('Running Server', function () {
             },100);
         };
 
+        var download = function(url, dest, cb) {
+            var http = require('http');
+            var fs = require('fs');
+            var file = fs.createWriteStream(dest);
+            var request = http.get(url, function(response) {
+                response.pipe(file);
+                file.on('finish', function() {
+                    logger.info("Writing coverage file: " + dest);
+                    file.close();
+                    cb();
+                });
+            });
+        };
+
         describe('GET /', function() {
             var url_root = host;
             open(url_root);
@@ -73,6 +87,17 @@ describe('Running Server', function () {
                 browser.evaluate(
                     function inBrowser() {
                         var title = document.getElementsByTagName('title')[0].textContent;
+                        $.ajax('/coverage/client', {
+                            data: JSON.stringify(window.__coverage__),
+                            contentType: 'application/json',
+                            type: 'POST',
+                            complete: function (xhr, status) {
+                                console.log('POST status is:' + status);
+                                console.log(xhr.responseText);
+                                console.log(xhr.status);
+                                window.callPhantom(status === 'success' ? 0 : 1);
+                            }
+                        });
                         return title;
                     },
                     function fromBrowser(title) {
@@ -88,6 +113,17 @@ describe('Running Server', function () {
                     browser.evaluate(
                         function inBrowser() {
                             var nav_links = $("#nav [class*='menu'] a").map(function() { return ($(this).attr("href")); });
+                            $.ajax('/coverage/client', {
+                                data: JSON.stringify(window.__coverage__),
+                                contentType: 'application/json',
+                                type: 'POST',
+                                complete: function (xhr, status) {
+                                    console.log('POST status is:' + status);
+                                    console.log(xhr.responseText);
+                                    console.log(xhr.status);
+                                    window.callPhantom(status === 'success' ? 0 : 1);
+                                }
+                            });
                             return nav_links.toArray();
                         },
                         function fromBrowser(nav_links) {
@@ -111,6 +147,17 @@ describe('Running Server', function () {
                             var durations = $('[data-bind="text: durationraw"]').map(function() { return $(this).text(); });
                             var total_time = $('.total-time').text();
                             var calculated_time = prettyTime(arrayDuration(durations));
+                            $.ajax('/coverage/client', {
+                                data: JSON.stringify(window.__coverage__),
+                                contentType: 'application/json',
+                                type: 'POST',
+                                complete: function (xhr, status) {
+                                    console.log('POST status is:' + status);
+                                    console.log(xhr.responseText);
+                                    console.log(xhr.status);
+                                    window.callPhantom(status === 'success' ? 0 : 1);
+                                }
+                            });
                             return { total_time: total_time, calculated_time: calculated_time };
                         },
                         function fromBrowser(duration) {
@@ -132,6 +179,17 @@ describe('Running Server', function () {
                 setTimeout(function() {
                     browser.evaluate(
                         function inBrowser() {
+                             $.ajax('/coverage/client', {
+                                data: JSON.stringify(window.__coverage__),
+                                contentType: 'application/json',
+                                type: 'POST',
+                                complete: function (xhr, status) {
+                                    console.log('POST status is:' + status);
+                                    console.log(xhr.responseText);
+                                    console.log(xhr.status);
+                                    window.callPhantom(status === 'success' ? 0 : 1);
+                                }
+                            });
                             return $('.no-playlist-alert').length != 0;
                         },
                         function fromBrowser(alert) {
@@ -145,8 +203,8 @@ describe('Running Server', function () {
         });
 
         after(function(done) {
-            ph.exit();
-            done();
+            download( host + '/coverage/download', __dirname + '/test_coverage.zip', function() { return; } );
+            setTimeout(done, 1000);
         });
     });
 });

@@ -12,7 +12,9 @@ var express = require('express'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000,
     uuid = require('node-uuid'),
-    logger = mbc.logger().addLogger('caspa_server')
+    logger = mbc.logger().addLogger('caspa_server'),
+    im = require('istanbul-middleware'),
+    isCoverageEnabled = (process.env.COVERAGE == "true")
  ;
 
 var loggerStream = {
@@ -20,6 +22,11 @@ var loggerStream = {
         logger.info(message);
     }
 };
+
+if (isCoverageEnabled) {
+    logger.info('Hook loader for coverage');
+    im.hookLoader(__dirname, {verbose: true});
+}
 
 /* make sure at runtime that we atempt to get the dirs we need */
 for (d in conf.Dirs) {
@@ -63,6 +70,12 @@ app.configure(function () {
         dest: conf.Dirs.pub,
         compress: true}
     ));
+
+    if (isCoverageEnabled) {
+        app.use('/coverage', im.createHandler({ verbose: true, resetOnGet: true } ));
+        app.use(im.createClientHandler(conf.Dirs.pub));
+    }
+
     app.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
     app.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
     app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
