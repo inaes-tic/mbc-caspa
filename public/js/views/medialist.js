@@ -288,12 +288,17 @@ window.MediaListView = function(options){
 
     // Media List Filmstrip
     this.el.find("table#table").on("mousemove", "img.thumb", function(ev, elem) {
+        // Filmstrip container
         var fsc = $(this).parents("div.positioner").children("div.filmstrip:first");
         fsc.width($(this).parents("tr:first").width());
         fsc.show();
 
-        // This is your canvas, do your magic!
-        fsc.children("canvas:first");
+        // Filmstrip
+        var canvas = fsc.children("canvas:first");
+        canvas.css({
+            width: fsc.width(),
+            height: fsc.height(),
+        });
     });
 
     this.el.find("table#table").on("mouseout", "div.filmstrip", function(ev, elem) {
