@@ -68,7 +68,7 @@ window.HeaderView = function (options) {
         }
         $('.btn-collapse').click()
     };
-    
+
     var toggle = function(e) {
         var panel = self.el;
         var content = $('#content');
