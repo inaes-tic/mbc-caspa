@@ -1,21 +1,21 @@
 var uiUpdateInterval = 200;
 
 window.SourceInfoView = Backbone.View.extend({
-        el: $('.streams-to-air-block'),
-        initialize: function () {
-            $(this.el).html(template.sourceinfo(this.model.toJSON()));
-         }
+    el: $('.streams-to-air-block'),
+    initialize: function () {
+        $(this.el).html(template.sourceinfo(this.model.toJSON()));
+    }
 });
 
 window.TimeInfoView = Backbone.View.extend({
-        el: $('.time-info-block'),
-        initialize: function () {
-            $(this.el).html(template.timeinfo(this.model.toJSON()));
-            var self = this;
-            setInterval (function () {
-                $('#time', this.$el).html(moment().format ('HH:mm:ss'));
-            }, uiUpdateInterval)
-        }
+    el: $('.time-info-block'),
+    initialize: function () {
+        $(this.el).html(template.timeinfo(this.model.toJSON()));
+        var self = this;
+        setInterval (function () {
+            $('#time', this.$el).html(moment().format ('HH:mm:ss'));
+        }, uiUpdateInterval);
+    }
 });
 
 window.HeaderView = function (options) {
