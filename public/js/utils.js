@@ -66,7 +66,7 @@ window.Filmstrip = function(video, elem, timeline) {
     this.maxSteps = 0;
     this.thumbHeight = 0;
     this.thumbWidth = 0;
-    this.canvasPadding = 10;
+    this.canvasPadding = 15;
 
     this.init = function() {
         this.hide();
@@ -89,8 +89,6 @@ window.Filmstrip = function(video, elem, timeline) {
                 this.padding = (this.elem.height() - (this.maxSteps * this.thumbHeight)) / (this.maxSteps - 1);
                 break;
         }
-
-        $(this.canvas).css({ background: '#222' });
 
         if (this.maxSteps == 1) {
             this.padding = 0;

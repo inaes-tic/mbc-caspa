@@ -1087,23 +1087,30 @@ PlayoutTimelinePanel.prototype = {
             var attr_trans;
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
-                    pos_attrs  = {x: "0", y: "20", width: "100%",  height: "20%"};
-                    attr_trans = {x: "x", y: "y",  width: "width", height: "height"};
+                    pos_attrs  = {x: 0  , y: 0    , width: "100%" , height: "20%"};
+                    attr_trans = {x: "x", y: "y"  , width: "width", height: "height"};
+                    fs_attrs   = {x: 0  , y: "5%", width: "100%" , height: "20%", class: "FilmstripBG Horizontal",};
                 break;
                 case PlayoutTimeline.VERTICAL:
-                    pos_attrs  = {x: "0", y: "0",  width: "20%",    height: "100%"};
-                    attr_trans = {y: "x", x: "y",  width: "height", height: "width"};
+                    pos_attrs  = {x: 0    , y: 0  , width: "20%"   , height: "100%"};
+                    attr_trans = {y: "x"  , x: "y", width: "height", height: "width"};
+                    fs_attrs   = {x: "5%", y: 0  , width: "20%"   , height: "100%", class: "FilmstripBG Vertical",};
                 break;
             }
+
+            // Filmstrip Background
+            new_plist.append("svg:foreignObject").attr(fs_attrs);
+
             // Setup new clips
             var new_clips = second_level.enter();
             var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
             new_svg.append("svg:rect"); // Background
-            new_svg.append("text"); // Text
+            new_svg.append("svg:svg").append("text"); // Text
 
             // Filmstrip
             new_svg.append("svg:foreignObject")
                 .attr(pos_attrs)
+                .attr("class", "Filmstrip")
                 .append("xhtml:canvas")
                     .attr("width", "0")
                     .attr("height", "0");
@@ -1119,7 +1126,7 @@ PlayoutTimelinePanel.prototype = {
                     }
                     return sum * 100 / length + "%";
                 })
-                .attr(attr_trans.y, "40")
+                .attr(attr_trans.y, "5%")
                 .attr(attr_trans.width, function(d, i, j) {
                     var length = playlist_length(filtered_data[j]);
                     var my_length = length_to_duration(d.get("durationraw"));
@@ -1127,16 +1134,21 @@ PlayoutTimelinePanel.prototype = {
                 })
 
             second_level.select("rect")
-                .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
+                .attr("y", 0)
+                .attr(attr_trans.y, "20%")
+                .attr(attr_trans.height, "75%")
+                .attr(attr_trans.width, "100%")
                 .style("opacity", function(d, i) { return i % 2 ? 0.3 : 0.2; })
                 .style("fill", "black");
 
             // Setup clip text
-            var clip_text = second_level.select("text")
-                .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
-                .attr("font-size", 14)
-                .style("stroke", "none")
-                .style("fill", "white");
+            var clip_text = second_level.select("svg")
+                .attr(attr_trans.y, "20%")
+                .select("text")
+                    .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
+                    .attr("font-size", 14)
+                    .style("stroke", "none")
+                    .style("fill", "white");
 
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
@@ -1148,7 +1160,7 @@ PlayoutTimelinePanel.prototype = {
                 case PlayoutTimeline.VERTICAL:
                     clip_text
                         .attr("y", function(d) { return $(this).height(); })
-                        .attr("x", "21%");
+                        .attr("x", 5);
                 break;
             }
 
