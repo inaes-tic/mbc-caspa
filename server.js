@@ -12,7 +12,9 @@ var express = require('express'),
     App = require("mbc-common/models/App"),
     maxage = 365 * 24 * 60 * 60 * 1000,
     uuid = require('node-uuid'),
-    logger = mbc.logger().addLogger('caspa_server')
+    logger = mbc.logger().addLogger('caspa_server'),
+    db = mbc.db(),
+    utils = require('./utils')(db)
  ;
 
 var loggerStream = {
@@ -104,8 +106,6 @@ function id_middleware(req, res, next) {
     }
     next();
 }
-
-var db = mbc.db();
 
 var publisher = mbc.pubsub();
 var listener = mbc.pubsub();
@@ -262,8 +262,6 @@ if (process.env.HEROKU) {
 }
 
 io.set('logger', logger); // Log socket.io with custom logger
-
-var utils = require('./utils');
 
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
