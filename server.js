@@ -13,7 +13,8 @@ var express = require('express'),
     maxage = 365 * 24 * 60 * 60 * 1000,
     uuid = require('node-uuid'),
     logger = mbc.logger().addLogger('caspa_server'),
-    utils = require('./utils')
+    db = mbc.db(),
+    utils = require('./utils')(db)
  ;
 
 var loggerStream = {
@@ -105,8 +106,6 @@ function id_middleware(req, res, next) {
     }
     next();
 }
-
-var db = mbc.db();
 
 var publisher = mbc.pubsub();
 var listener = mbc.pubsub();
@@ -257,11 +256,9 @@ io.configure('production', function(){
 
 io.set('logger', logger); // Log socket.io with custom logger
 
-var u = new utils(db);
-
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
-        u.scrape_files (conf.Dirs.scrape, function (model) {
+        utils.scrape_files (conf.Dirs.scrape, function (model) {
             db.collection(collections.Medias).insert(model, {safe:true}, function(err, result) {
                 if (err) {
                     logger.error('error','An error has occurred' + err);
