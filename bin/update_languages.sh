@@ -9,7 +9,7 @@ for l in en_US es db_LB it_CH arq; do
             if test -f ./locale/${l}/LC_MESSAGES/${t}.po; then
                 msgmerge ./locale/${l}/LC_MESSAGES/${t}.po \
                     ./locale/templates/LC_MESSAGES/${t}.pot \
-                    --output-file=./locale/${l}/LC_MESSAGES/${t}.po 
+                    --output-file=./locale/${l}/LC_MESSAGES/${t}.po
             else
                 msginit --no-translator \
                     --input=./locale/templates/LC_MESSAGES/${t}.pot \

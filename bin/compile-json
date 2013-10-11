@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # syntax:
-# compile-json.sh locale-dir/ json-dir/ 
+# compile-json.sh locale-dir/ json-dir/
 
 lockfile="/tmp/browserid2012-compile-json.lock"
 
