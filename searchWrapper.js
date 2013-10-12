@@ -107,7 +107,7 @@ module.exports = function(middleware) {
                         if(!result.documents[0].textSearchEnabled && _.has(data.query,'text')) {
                             _.forEach(options.search.fulltext, function(field) {
                                 var obj= {};
-                                obj[field] = new RegExp(data.query.text);
+                                obj[field] = new RegExp(data.query.text, "i");
                                 expressions.push(obj);
                             });
                             _.extend(query, {$or: expressions})
