@@ -1913,36 +1913,45 @@ window.PlayoutView = PanelView.extend({
             var fileExtension = clip.attributes.file.split('.').pop();
             var src = '/sc/' + checksum + '.' + fileExtension;
 
-            if (elem.width() != par.width() || elem.height() != par.height()) {
-                if ((elem.width() == 0 || elem.height() == 0) && checksum in self.filmstrips) {
-                    elem.replaceWith(self.filmstrips[checksum].elem);
-                } else {
-                    elem.height(par.height());
-                    elem.width(par.width());
-                    if (checksum in self.filmstrips && self.filmstrips[checksum] !== null) {
-                        self.filmstrips[checksum].init();
-                    }
-                }
-            }
+            // Basura
+            var f = function() {
+                par.hide();
+                elem.hide();
+                elem.show()
+                par.show();
+                par.width(elem.width);
+            };
 
             if ( !(checksum in self.filmstrips) ) {
-                self.filmstrips[checksum] = null;
-                var video = $('<video preload="metadata" />')
-                    .attr('src', src)
-                    .bind('loadedmetadata', function() {
-                        self.filmstrips[checksum] = new Filmstrip(this, elem, self.timeline);
-                        self.filmstrips[checksum].init();
-                    })
-                    .bind('seeked', function() {
-                        var filmstrip = self.filmstrips[checksum];
-                        filmstrip.draw();
-                        if (filmstrip.count < filmstrip.maxSteps) {
-                            filmstrip.count++;
-                            filmstrip.video.currentTime += filmstrip.step;
-                        } else {
-                            filmstrip.show();
-                        }
-                    });
+                self.filmstrips[checksum] = new Filmstrip({src: src}, {
+                    width: par.width(),
+                    height: par.height(),
+                    drawHoles: false,
+                    bandsPadding: 15,
+                    autoOrientation: false,
+                });
+
+                self.filmstrips[checksum].load();
+
+                self.filmstrips[checksum].on('draw:started', function() {
+                });
+
+                self.filmstrips[checksum].on('draw:finished', function() {
+                    this.drawCanvas(elem);
+                    f();
+                });
+
+                self.filmstrips[checksum].on('draw:frame', function(event, args) {
+                    this.drawFrame(elem, args);
+                    f();
+                });
+            } else {
+                if (self.filmstrips[checksum].height != par.height()) {
+                    self.filmstrips[checksum].resize(par.width(), par.height());
+                } else {
+                    self.filmstrips[checksum].drawCanvas(elem);
+                    f();
+                }
             }
 
         });
