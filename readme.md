@@ -25,15 +25,18 @@ AGPL v3.
    apt-get install gettext
 ```
 
-+ npm
-
-```shell
-   apt-get install npm
-```
 + node > 0.8
 
 ```shell
    apt-get install nodejs
+```
+
+Ver en [joyent wiki](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
+
++ npm
+
+```shell
+   apt-get install npm
 ```
 
 + mongodb
