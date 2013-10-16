@@ -14,7 +14,7 @@ var express = require('express'),
     uuid = require('node-uuid'),
     logger = mbc.logger().addLogger('caspa_server'),
     db = mbc.db(),
-    utils = require('./utils')(db)
+    utils = new (require('./utils'))(db)
  ;
 
 var loggerStream = {
