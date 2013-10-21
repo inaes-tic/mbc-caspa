@@ -55,7 +55,7 @@ utils.prototype.merge_finish = function (dest, id, callback) {
     var self = this;
     this.parse_pool().task(dest, stat, function (res, err) {
         if (err)
-            return (logger.error('error:', err));
+            return (logger.error(err + ' ' + stat.name ));
         logger.debug ('parsed: ' + stat.name);
         self.sc_pool.task(res, callback, function (err, res) {return res});
     });
@@ -100,8 +100,8 @@ utils.prototype.sc_pool = new fp.Pool({size: 1}, function (media, callback, done
     }, function(retcode, fds) {
         logger.info('here0 ');
         if (! _existsSync (dest) || retcode) {
-            var error = new Error('File not created' + fds.err);
-            logger.error('ERROR', error);
+            var error = new Error('File not created: ' + fds.err + ' ' + dest );
+            logger.error(error.toString());
             return done (error);
         }
 
@@ -158,14 +158,14 @@ utils.prototype.scrape_files = function (path, callback) {
         var file = root + '/' +  stat.name;
         next();
         if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mov|mkv|ogm|ogg)$/i)) {
-            var error = new Error('file not a vid');
-            logger.error('ERROR', error);
+            var error = new Error('file not a vid : ' + stat.name);
+            logger.error(error.toString());
             return error;
         }
 
         self.parse_pool().task(file, stat, function (res, err) {
             if (err)
-                return (logger.error('error:', err));
+                return (logger.error(err + ' ' + stat.name));
             logger.debug('parsed: ' + stat.name, res);
             self.sc_pool.task(res, callback, function (err, res) {return res});
         });
@@ -190,7 +190,8 @@ utils.prototype.check_media = function (media, cb, arg) {
             if (!e)
                 self.sc_pool.task (media, null, function (res, err) {
                     if (err) {
-                        logger.error(new Error("couldn't sc"));
+                        var error = new Error("couldn't sc " + media._id);
+                        logger.error(error.toString());
                     }
                 });
         });
