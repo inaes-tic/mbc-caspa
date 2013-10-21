@@ -88,7 +88,7 @@ module.exports = function(app) {
      * Views Javascript Package
      */
 
-    var views = ['paginator',
+    var localViews = ['paginator',
                  'header',
                  'home',
                  'playbar',
@@ -108,11 +108,18 @@ module.exports = function(app) {
                  'airtime/schedule/full-calendar-functions'
                 ];
 
+    var commonViews = [ 'editor' ];
+
+    var localViewsFiles  = localViews.map( function(e) {
+        return path.join(__dirname, '..', 'public/js/views/', e + '.js');
+    });
+    var commonViewsFiles = commonViews.map( function(e) {
+        return require.resolve('mbc-common/views/js/' + e);
+    });
+
     var viewsJs = new folio.Glossary(
-        views.map (function (e) {
-            return path.join(__dirname, '..', 'public/js/views/', e + '.js');
-        })
-        ,{minify:app.get('minify')}
+        localViewsFiles.concat(commonViewsFiles),
+        { minify:app.get('minify') }
     );
 
     app.get('/js/views.js', folio.serve(viewsJs));
@@ -121,7 +128,7 @@ module.exports = function(app) {
      * Models Javascript Package
      */
 
-    var models = ['Default', 'App', 'Media'];
+    var models = ['Default', 'App', 'Media', 'Editor', 'Sketch'];
 
     var modelsJs = new folio.Glossary(
         models.map (function (e) {
@@ -139,7 +146,7 @@ module.exports = function(app) {
      * jade on the client-side.
      */
 
-    var templates = ['form',
+    var localTemplates = ['form',
                      'item',
                      'playbar',
                      'header',
@@ -161,14 +168,25 @@ module.exports = function(app) {
                      'sourceinfo'
                     ];
 
+    var commonTemplates = ['editor',
+                           'objects',
+                           'alert',
+                           'confirm',
+                           'prompt',
+                          ];
+
     var getFileName = function (e) {
-                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
-            };
+        return path.join(__dirname, '..', 'views/templates/', e + '.jade');
+    };
+
+    var getCommonFileName = function (e) {
+        return require.resolve('mbc-common/views/templates/' + e + '.jade');
+    };
 
     var templateJs = new folio.Glossary([
         require.resolve('jade/runtime.js'),
         path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            templates.map (getFileName)
+            localTemplates.map(getFileName), commonTemplates.map(getCommonFileName)
         ),
         {
         compilers: {
