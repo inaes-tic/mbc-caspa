@@ -1118,6 +1118,21 @@ PlayoutTimelinePanel.prototype = {
                     .attr("width", "0")
                     .attr("height", "0");
 
+            var tar = self.smoothify(second_level.select("canvas"), smooth)
+            tar
+                .style(attr_trans["height"], function(d) {
+                    return $(this).parent().width() - (FILMSTRIP_PADDING * 2);
+                })
+                .style(attr_trans["width"], function(d) {
+                    return length_to_duration(d.get("durationraw")) / self.drawing_quota + "px";
+                })
+
+            if (smooth) {
+                tar.each("end", function() {
+                    self.timeline.callback("after_draw");
+                });
+            }
+
             // Update new and old clips
             second_level
                 .attr(attr_trans.x, function(d, i, j) {
