@@ -2,8 +2,9 @@ window.OccurrenceView = Backbone.View.extend({
     events: {
       "click .fc-event-closebutton": "deleteOcurrence"
     },
-    initialize: function() {
-      this.calendar = this.options.calendar;
+    initialize: function(options) {
+        this.options = options;
+        this.calendar = this.options.calendar;
     },
     deleteOcurrence: function(sth) {
       var list = this.model.get('playlist');
