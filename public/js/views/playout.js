@@ -1,3 +1,5 @@
+var FILMSTRIP_PADDING = 15;
+
 // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
 // MIT license
 (function() {
@@ -1112,6 +1114,7 @@ PlayoutTimelinePanel.prototype = {
                 .attr(pos_attrs)
                 .attr("class", "Filmstrip")
                 .append("xhtml:canvas")
+                    .style("padding-left", FILMSTRIP_PADDING + "px")
                     .attr("width", "0")
                     .attr("height", "0");
 
@@ -1936,11 +1939,11 @@ window.PlayoutView = PanelView.extend({
             if ( self.filmstrips[checksum] === undefined ) {
 
                 var fs = self.filmstrips[checksum] = new Filmstrip(model, {
-                    width: par.width(),
+                    width: par.width() - (FILMSTRIP_PADDING * 2),
                     height: par.height(),
                     drawHoles: false,
-                    holesColor: '#555',
-                    bandsPadding: 15,
+                    bgColor: 'black',
+                    bandsPadding: 0,
                     autoOrientation: false,
                     orientation: orientation,
                 });
@@ -1962,9 +1965,9 @@ window.PlayoutView = PanelView.extend({
                     }
                 }
 
-                if (fs.width != par.width() || fs.height != par.height()) {
-                    elem.css({width: par.width(), height: par.height()});
-                    fs.resize(par.width(), par.height());
+                if (fs.width != par.width() - (FILMSTRIP_PADDING * 2) || fs.height != par.height()) {
+                    elem.css({width: par.width() - (FILMSTRIP_PADDING * 2), height: par.height()});
+                    fs.resize(par.width() - (FILMSTRIP_PADDING * 2), par.height());
                 } else {
                     elem.hide(); //hack
                     fs.drawCanvas(elem);
