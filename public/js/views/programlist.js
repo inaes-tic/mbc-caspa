@@ -1,7 +1,9 @@
 
 window.ProgramBlockView = Backbone.View.extend({
     tagName: "li",
-    initialize: function () {
+    initialize: function (options) {
+        // This line is needed for L103 to work, but that's commented right now, so..
+        // this.options = options;
         this.model.bind("change", this.render, this);
         this.model.bind("destroy", this.remove, this);
     },
