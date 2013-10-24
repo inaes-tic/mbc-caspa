@@ -67,11 +67,12 @@ window.HeaderView = function (options) {
     self.messages = {
         messages: kb.collectionObservable(self.messagesCollection, { view_model: kb.ViewModel})
     };
-    ko.applyBindings(self.messages, $('#messages', self.el)[0]);
+    //ko.applyBindings(self.messages, $('#messages', self.el)[0]);
 
     self.view_model = {
         Header:new HeaderViewModel(self.appstatus),
         Frame: new FrameViewModel(self.framestatus),
+        Messages: self.messages,
     };
 
     ko.applyBindings(self.view_model, self.el[0]);

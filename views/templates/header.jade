@@ -47,6 +47,6 @@ ul#nav
         li.top#messages
           a.top_link(href="#")
             span= i18n.gettext('Messages')
-          ul(data-bind='foreach: messages')
-          li
-            p(data-bind='text: message')
+          ul(data-bind='foreach: Messages.messages')
+            li
+              p(data-bind='text: message')
