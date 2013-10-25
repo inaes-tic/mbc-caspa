@@ -1929,8 +1929,7 @@ window.PlayoutView = PanelView.extend({
             var clip = elem.parent().parent()[0].__data__;
             if (clip.attributes.file == "None") return;
             var checksum = clip.attributes.checksum;
-            var fileExtension = clip.attributes.file.split('.').pop();
-            var src = '/sc/' + checksum + '.' + fileExtension;
+            var src = '/sc/' + checksum + '.mp4';
             var model = {src: src};
 
 

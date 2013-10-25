@@ -76,12 +76,12 @@ utils.prototype.populateDB = function() {
 utils.prototype.filmstrip_pool = new fp.Pool({size: 1}, function (media, done) {
     var path = require('path');
     var ext = path.extname(media.file);
-    var dest = path.join(conf.Dirs.screenshots, media._id + ext);
+    var dest = path.join(conf.Dirs.screenshots, media._id + '.mp4');
     logger.info('starting filmstrip', media.file);
 
     var f = new ffmpeg();
     f.run (media.file, dest, {
-        custom: [ '-an', '-r', '1', '-vf', 'scale=200:ih*200/iw', '-vcodec', 'copy' ]
+        custom: [ '-an', '-r', '1', '-s', '320x180', '-vcodec', 'libx264' ]
     }, function(retcode, fds) {
         if (! _existsSync (dest) || retcode) {
             var error = new Error('File not created' + fds.err);
