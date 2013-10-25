@@ -1903,6 +1903,7 @@ window.PlayoutView = PanelView.extend({
 
     update_filmstrip: function() {
         var self = this;
+        var orientation = (self.timeline.layout) ? 'vertical' : 'horizontal';
 
         $("svg#Timeline svg.Clip canvas").each(function(index, elem) {
             var elem = $(elem);
@@ -1912,46 +1913,64 @@ window.PlayoutView = PanelView.extend({
             var checksum = clip.attributes.checksum;
             var fileExtension = clip.attributes.file.split('.').pop();
             var src = '/sc/' + checksum + '.' + fileExtension;
+            var model = {src: src};
 
-            // Basura
-            var f = function() {
-                par.hide();
-                elem.hide();
-                elem.show()
-                par.show();
-                par.width(elem.width);
+
+            var add_filmstrip_events = function(fs, elem) {
+
+                fs.on('draw:finished', function() {
+                    elem.hide(); //hack
+                    this.drawCanvas(elem);
+                    elem.show(); //hack
+                });
+
+                fs.on('draw:frame', function(event, args) {
+                    elem.hide(); //hack
+                    this.drawFrame(elem, args);
+                    elem.show(); //hack
+                });
+
             };
 
-            if ( !(checksum in self.filmstrips) ) {
-                self.filmstrips[checksum] = new Filmstrip({src: src}, {
+
+            if ( self.filmstrips[checksum] === undefined ) {
+
+                var fs = self.filmstrips[checksum] = new Filmstrip(model, {
                     width: par.width(),
                     height: par.height(),
                     drawHoles: false,
+                    holesColor: '#555',
                     bandsPadding: 15,
                     autoOrientation: false,
+                    orientation: orientation,
                 });
 
-                self.filmstrips[checksum].load();
+                fs.load();
 
-                self.filmstrips[checksum].on('draw:started', function() {
-                });
+                add_filmstrip_events(fs, elem);
 
-                self.filmstrips[checksum].on('draw:finished', function() {
-                    this.drawCanvas(elem);
-                    f();
-                });
-
-                self.filmstrips[checksum].on('draw:frame', function(event, args) {
-                    this.drawFrame(elem, args);
-                    f();
-                });
             } else {
-                if (self.filmstrips[checksum].height != par.height()) {
-                    self.filmstrips[checksum].resize(par.width(), par.height());
-                } else {
-                    self.filmstrips[checksum].drawCanvas(elem);
-                    f();
+
+                var fs = self.filmstrips[checksum];
+
+                if ((elem.width() == 0 && elem.height() == 0) || fs.orientation != orientation) {
+                    // elem is new, so we need to add events
+                    add_filmstrip_events(fs, elem);
+                    if (fs.orientation != orientation) {
+                        fs.orientation = orientation;
+                        fs.clearCanvas();
+                    }
                 }
+
+                if (fs.width != par.width() || fs.height != par.height()) {
+                    elem.css({width: par.width(), height: par.height()});
+                    fs.resize(par.width(), par.height());
+                } else {
+                    elem.hide(); //hack
+                    fs.drawCanvas(elem);
+                    elem.show(); //hack
+                }
+
             }
 
         });
