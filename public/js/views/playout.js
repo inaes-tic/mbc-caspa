@@ -1110,11 +1110,12 @@ PlayoutTimelinePanel.prototype = {
             new_svg.append("svg:svg").append("text"); // Text
 
             // Filmstrip
+            var padding_style = (self.timeline.layout) ? 'padding-left' : 'padding-top';
             new_svg.append("svg:foreignObject")
                 .attr(pos_attrs)
                 .attr("class", "Filmstrip")
                 .append("xhtml:canvas")
-                    .style("padding-left", FILMSTRIP_PADDING + "px")
+                    .style(padding_style, FILMSTRIP_PADDING + "px")
                     .attr("width", "0")
                     .attr("height", "0");
 
@@ -1932,6 +1933,13 @@ window.PlayoutView = PanelView.extend({
             var src = '/sc/' + checksum + '.mp4';
             var model = {src: src};
 
+            if (orientation == 'vertical') {
+                var width = par.width() - (FILMSTRIP_PADDING * 2);
+                var height = par.height();
+            } else {
+                var width = par.width();
+                var height = par.height() - (FILMSTRIP_PADDING * 2);
+            }
 
             var add_filmstrip_events = function(fs, elem) {
 
@@ -1953,8 +1961,8 @@ window.PlayoutView = PanelView.extend({
             if ( self.filmstrips[checksum] === undefined ) {
 
                 var fs = self.filmstrips[checksum] = new Filmstrip(model, {
-                    width: par.width() - (FILMSTRIP_PADDING * 2),
-                    height: par.height(),
+                    width: width,
+                    height: height,
                     drawHoles: false,
                     bgColor: 'black',
                     bandsPadding: 0,
@@ -1977,15 +1985,18 @@ window.PlayoutView = PanelView.extend({
                         fs.orientation = orientation;
                         fs.clearCanvas();
                     }
-                }
-
-                if (fs.width != par.width() - (FILMSTRIP_PADDING * 2) || fs.height != par.height()) {
-                    elem.css({width: par.width() - (FILMSTRIP_PADDING * 2), height: par.height()});
-                    fs.resize(par.width() - (FILMSTRIP_PADDING * 2), par.height());
-                } else {
                     elem.hide(); //hack
                     fs.drawCanvas(elem);
                     elem.show(); //hack
+                }
+
+                if (fs.width != width || fs.height != height) {
+                    fs.width = width;
+                    fs.height = height;
+                    elem.css({width: fs.width, height: fs.height});
+                    fs.resize(fs.width, fs.height);
+                } else {
+                    elem.css({width: width, height: height});
                 }
 
             }
