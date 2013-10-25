@@ -41,7 +41,8 @@
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
         "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git",
-        "d3"            : "3.2.x"
+        "d3"            : "3.2.x",
+        "filmstrip"     : "0.0.1"
     },
     "devDependencies": {
         "mocha"     : "1.12.x",
