@@ -61,13 +61,10 @@ window.HeaderView = function (options) {
       }
       });
     */
-    self.messagesCollection = new Backbone.Collection([], {model: App.MostoMessage});
-    self.messagesCollection.add([{},{},{}]);
-    //self.messages = new MessagesViewModel(self.messagesCollection);
+    self.messagesCollection = new App.MessagesCollection();
     self.messages = {
         messages: kb.collectionObservable(self.messagesCollection, { view_model: kb.ViewModel})
     };
-    //ko.applyBindings(self.messages, $('#messages', self.el)[0]);
 
     self.view_model = {
         Header:new HeaderViewModel(self.appstatus),
