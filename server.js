@@ -118,9 +118,9 @@ var listbackend = backboneio.createBackend();
 var schedbackend = backboneio.createBackend();
 var statusbackend = backboneio.createBackend();
 var framebackend = backboneio.createBackend();
-var mostomessagesbackend = backboneio.createBackend();
+var messagebackend = backboneio.createBackend();
 
-var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, mostomessagesbackend ];
+var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, messagebackend ];
 _(backends).each (debug_backend);
 
 appbackend.use(backboneio.middleware.configStore());
@@ -220,16 +220,16 @@ framebackend.use(backboneio.middleware.memoryStore(db, 'progress', {}));
 // or the DB has a problem
 listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
-        case "mostoMessage.emit":
-            return mostomessagesbackend.emit('created', msg.model);
-        case "mostoMessage.create":
-            return mostomessagesbackend.emit('created', msg.model);
-        case "mostoMessage.delete":
-            return mostomessagesbackend.emit('deleted', msg.model);
+    case "mostoMessage.emit":
+        return messagebackend.emit('created', msg.model);
+    case "mostoMessage.create":
+        return messagebackend.emit('created', msg.model);
+    case "mostoMessage.delete":
+        return messagebackend.emit('deleted', msg.model);
     }
 });
 listener.psubscribe('mostoMessage*');
-mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
+messagebackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
 
 _(backends).each (function(backend) {
     logger.info("Debugging backend: ", backend);
@@ -245,7 +245,7 @@ var io = backboneio.listen(app.listen(app.get('port'), function(){
       schedbackend: schedbackend,
       statusbackend: statusbackend,
       framebackend: framebackend,
-      mostomessagesbackend: mostomessagesbackend
+      messagebackend: messagebackend
     });
 
 io.configure('production', function(){
