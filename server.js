@@ -161,7 +161,7 @@ var backends = {
     frame: {
         use: [backboneio.middleware.memoryStore(db, 'progress', {})],
     },
-    mostomessages: {
+    message: {
         mongo: {
             db: db,
             collection: collections.Mostomessages,
@@ -266,11 +266,13 @@ listener.subscribe('mostoStatus.progress');
 listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
         case "mostoMessage.emit":
-            return backends['mostomessages'].io.emit('created', msg.model);
+            return backends['message'].io.emit('created', msg.model);
         case "mostoMessage.create":
-            return backends['mostomessages'].io.emit('created', msg.model);
+            return backends['message'].io.emit('created', msg.model);
         case "mostoMessage.delete":
-            return backends['mostomessages'].io.emit('deleted', msg.model);
+            return backends['message'].io.emit('deleted', msg.model);
+        case "mostoMessage.update":
+            return backends['message'].io.emit('updated', msg.model);
     }
 });
 listener.psubscribe('mostoMessage*');
