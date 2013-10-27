@@ -119,8 +119,9 @@ var schedbackend = backboneio.createBackend();
 var statusbackend = backboneio.createBackend();
 var framebackend = backboneio.createBackend();
 var mostomessagesbackend = backboneio.createBackend();
+var sketchbackend = backboneio.createBackend();
 
-var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, mostomessagesbackend ];
+var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, mostomessagesbackend, sketchbackend ];
 _(backends).each (debug_backend);
 
 appbackend.use(backboneio.middleware.configStore());
@@ -231,6 +232,9 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
 listener.psubscribe('mostoMessage*');
 mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
 
+sketchbackend.use(id_middleware);
+sketchbackend.use(backboneio.middleware.mongoStore(db, collections.Sketchs, {}));
+
 _(backends).each (function(backend) {
     logger.info("Debugging backend: ", backend);
 });
@@ -245,7 +249,8 @@ var io = backboneio.listen(app.listen(app.get('port'), function(){
       schedbackend: schedbackend,
       statusbackend: statusbackend,
       framebackend: framebackend,
-      mostomessagesbackend: mostomessagesbackend
+      mostomessagesbackend: mostomessagesbackend,
+      sketchbackend: sketchbackend,
     });
 
 io.configure('production', function(){
