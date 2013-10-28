@@ -97,7 +97,7 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editor: function () {
-        new EditorView();
+        return new EditorView();
     },
 
     // Manually bind a single named route to a callback. For example:
