@@ -36,6 +36,7 @@ var AppRouter = Backbone.Router.extend({
             menuItem = {
                 playout: 'playout-menu',
                 schedule: 'schedule-menu',
+                editor: 'editor-menu',
                 list: 'list-menu',
                 mediaDetails: 'list-menu',
                 upload: 'add-menu',
