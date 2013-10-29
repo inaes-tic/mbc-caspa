@@ -61,15 +61,37 @@ window.HeaderView = function (options) {
       }
       });
     */
+
+    // this gets all messages
     self.messagesCollection = new App.MessagesCollection();
+
+    // this filters out the tmp messages
+    self.tmpMessagesCollection = new App.FilteredMessagesCollection([], {
+        parent: self.messagesCollection,
+        filter: function(model) {
+            return model.get('status') == 'one-shot';
+        },
+    });
+    // this filters out the perm messages
+    self.permMessagesCollection = new App.FilteredMessagesCollection([], {
+        parent: self.messagesCollection,
+        filter: function(model) {
+            return model.get('status') != 'one-shot';
+        },
+    });
+
+    self.tmpMessages = {
+        messages: kb.collectionObservable(self.tmpMessagesCollection, { view_model: kb.ViewModel}),
+    };
     self.messages = {
-        messages: kb.collectionObservable(self.messagesCollection, { view_model: kb.ViewModel})
+        messages: kb.collectionObservable(self.permMessagesCollection, { view_model: kb.ViewModel}),
     };
 
     self.view_model = {
         Header:new HeaderViewModel(self.appstatus),
         Frame: new FrameViewModel(self.framestatus),
         Messages: self.messages,
+        TmpMessages: self.tmpMessages,
     };
 
     ko.applyBindings(self.view_model, self.el[0]);
