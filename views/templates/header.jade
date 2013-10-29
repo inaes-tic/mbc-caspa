@@ -44,9 +44,15 @@ ul#nav
           a.top_link(href="/admin")
             i.icon-wrench.icon-white
             span= i18n.gettext('Configure')
+        li.top#tmpMessages
+          a.top_link(href="#")
+            span= i18n.gettext('Tmp Messages')
+          ul(data-bind='foreach: TmpMessages.messages')
+            li
+              p(data-bind='text: message')
         li.top#messages
           a.top_link(href="#")
             span= i18n.gettext('Messages')
           ul(data-bind='foreach: Messages.messages')
-            li
+            li(data-bind="attr: { 'class': status }")
               p(data-bind='text: message')
