@@ -87,6 +87,24 @@ window.HeaderView = function (options) {
         // Js Events
         $(window).resize();
     };
+
+    var compactHeader = function(e) {
+        var panel = self.el;
+        var content = $('#content');
+
+        // Make it smooth
+        content.addClass("trans");
+
+        // Compact header
+        $("body").addClass("folded");
+
+
+        // Js Events
+        $(window).resize();
+    };
+
+
     $('#toggle-header').click(toggle);
+    $('.compact').click(compactHeader);
 }
 
