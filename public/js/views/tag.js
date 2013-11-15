@@ -83,7 +83,6 @@ window.TagView = function(options){
     ko.applyBindings(new TagsViewModel(), el[0]);
 
     this.destroyView = function() {
-        this.undelegateEvents();
     };
 
 
