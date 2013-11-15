@@ -19,6 +19,7 @@ var AppRouter = Backbone.Router.extend({
         "admin"             : "conf",
         "about"             : "about",
         "editor"            : "editor",
+        "tag"               : "tag",
     },
 
     initialize: function () {
@@ -98,6 +99,9 @@ var AppRouter = Backbone.Router.extend({
 
     editor: function () {
         return new EditorView();
+    },
+    tag: function() {
+        return new TagView();
     },
 
     // Manually bind a single named route to a callback. For example:

@@ -115,7 +115,8 @@ module.exports = function(app) {
                  'universe',
                  'schedule',
                  'about',
-                 'airtime/schedule/full-calendar-functions'
+                 'airtime/schedule/full-calendar-functions',
+                 'tag',
                 ];
 
     var commonViews = [ 'editor' ];
@@ -186,7 +187,8 @@ module.exports = function(app) {
                      'emptyalert',
                      'timeinfo',
                      'nowplaying',
-                     'sourceinfo'
+                     'sourceinfo',
+                     'tag',
                     ];
 
     var commonTemplates = ['editor',
