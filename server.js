@@ -15,7 +15,8 @@ var express = require('express'),
     logger = mbc.logger().addLogger('caspa_server'),
     db = mbc.db(),
     utils = new (require('./utils'))(db)
- ;
+,   timers = require('timers')
+;
 
 var loggerStream = {
     write: function(message, encoding) {
@@ -143,6 +144,20 @@ schedbackend.use(function (req, res, next) {
 });
 schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Scheds, { search: search_options.Scheds })));
 
+var mostoAlive = true;
+var message = {};
+var mostoDied = function() {
+    mostoAlive = false;
+    message = { code: 500,
+                message: "Mosto is dead",
+                description: "MOSTO DOWN",
+                status: "failing",
+                _id: uuid() }
+    messagebackend.emit('created', message);
+};
+
+var mostoHeartbeat = setTimeout(mostoDied, 1000);
+
 listener.on('JSONmessage', function(chan, status) {
 
     if( chan != "mostoStatus" ) // we can ignore this message
@@ -207,6 +222,15 @@ statusbackend.use(backboneio.middleware.mongoStore(db, collections.Status, { sea
 listener.on('JSONmessage', function(chan, msg) {
     if( !(chan == 'mostoStatus.progress' ) )
         return;
+
+    if(!mostoAlive) {
+        message.status = 'fixed'
+        messagebackend.emit('updated', message);
+        mostoAlive = true;
+        mostoHeartbeat = setTimeout(mostoDied, 1000);
+    }
+
+    timers.active(mostoHeartbeat);
 
     var status = new App.ProgressStatus(msg);
     framebackend.emit('updated', status);
