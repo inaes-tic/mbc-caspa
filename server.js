@@ -226,6 +226,8 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
         return messagebackend.emit('created', msg.model);
     case "mostoMessage.delete":
         return messagebackend.emit('deleted', msg.model);
+    case "mostoMessage.update":
+        return messagebackend.emit('updated', msg.model);
     }
 });
 listener.psubscribe('mostoMessage*');
