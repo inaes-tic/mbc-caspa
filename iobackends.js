@@ -3,6 +3,7 @@ var    _ = require('underscore'),
     conf = mbc.config.Caspa,
     search_options = mbc.config.Search,
     collections = mbc.config.Common.Collections,
+    Media = require("mbc-common/models/Media"),
     uuid = require('node-uuid'),
     logger = mbc.logger().addLogger('caspa_backends'),
     backboneio = require('backbone.io');
@@ -32,7 +33,31 @@ var iobackends = module.exports = exports = function (db, publisher) {
         publishJSON: function (req, res, next) {
             publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
             next();
-        }
+        },
+
+        transform_id: function (key) {
+            var ret = function (req, res, next) {
+                var model = new Media.Transform();
+                if(key in model.attributes) {
+                    var id = uuid.v1();
+                    model.set('_id',  id);
+                    model.set(key, req.model._id);
+                    req.model.transform = id;
+                    db.collection(collections.Transforms).insert(model.toJSON(), {safe:true}, function(err, result) {
+                        if (err) {
+                            logger.error('error','An error has occurred ' + err);
+                        } else {
+                            logger.info('Creating transform: ', model.toJSON());
+                        }
+                    });
+                } else {
+                    logger.error('Key param is not Transform property');
+                }
+                next();
+            }
+            return ret;
+        },
+
     };
 
     this.backends = {
@@ -61,6 +86,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
             }},
         list: {
             use: [this.middleware.uuid],
+            create: [ {fn: this.middleware.transform_id, params: ['playlist']} ],
             mongo: {
                 db: db,
                 collection: collections.Lists,
@@ -96,6 +122,13 @@ var iobackends = module.exports = exports = function (db, publisher) {
                 collection: collections.Sketchs,
                 opts: { search: search_options.Sketchs },
             }},
+         tag: {
+            use: [this.middleware.uuid],
+            mongo: {
+                db: db,
+                collection: collections.Tags,
+                opts: { search: search_options.Tags },
+            }},
     };
 
     /* process the backends object to streamline code */
@@ -105,6 +138,11 @@ var iobackends = module.exports = exports = function (db, publisher) {
         if (backend.use) {
             _(backend.use).each (function (usefn) {
                 backend.io.use(usefn);
+            });
+        }
+        if (backend.create) {
+            _(backend.create).each (function (usecreate) {
+                backend.io.create( usecreate.fn.apply(null, usecreate.params) );
             });
         }
         if (backend.mongo) {
