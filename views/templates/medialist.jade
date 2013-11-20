@@ -61,6 +61,15 @@ block content
             i.icon-time.icon-white
             span= ' '
             span.total-time.label.label-inverse.format(data-bind="text: total_time")
+
+    - if (is_playlist)
+      <!-- ko foreach: tags -->
+      span.label.format(data-bind="style: {'background-color': color}")
+        span(data-bind="text: name")
+        span(data-bind="click: $parent.removeRelatedTag, text: ' ×'")
+      span=' '
+      <!-- /ko -->
+
     .table-container
         table.table.table-bordered.table-striped.table-condensed#table
             thead

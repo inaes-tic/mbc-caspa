@@ -30,7 +30,12 @@ window.MediaListView = function(options){
         if (!model.isNew()) {
             model.fetchRelated("pieces");
             model.fetchRelated("occurrences");
-            model.fetch();
+            model.fetchRelated('transform');
+            model.fetch( { success: function(m) {
+                var t = m.get("transform");
+                t.fetchRelated("tags");
+                //t.fetch();
+            } } );
         }
         collection = model.get('pieces');
     } else {
@@ -88,6 +93,22 @@ window.MediaListView = function(options){
                 self.filter(filters);
             }
 
+            var TagItemViewModel = kb.ViewModel.extend({
+                constructor: function(model) {
+                    var self = this;
+                    kb.ViewModel.prototype.constructor.apply(this, arguments);
+                }
+            });
+
+            this.tags =  kb.collectionObservable(tagCollection, {
+                view_model: TagItemViewModel,
+            });
+
+            this.removeRelatedTag =  function (m) {
+                var realModel = tagCollection.get(m._id());
+                tagCollection.remove(realModel);
+                model.get('transform').save()
+            };
 
             this.__filters = ko.observable();
             this.filter = ko.computed({
