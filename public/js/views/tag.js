@@ -5,10 +5,21 @@ window.TagView = function(options){
     var el = options['el'] || $('#content');
     this.el = el;
 
+    var default_pagination = 'endless';
+    var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
+
+    var config = 0;
+    var default_facets = appCollection.at(config).get('Search').Tags.facets;
+    var fulltext_fields = appCollection.at(config).get('Search').Tags.fulltext;
+    var facets = 'facets' in options ? options['facets'] : default_facets;
+
+    var default_search_type = 'server';
+    var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
+
     el.html(template.tag({}));
 
-//    var tagCollection = new Media.TagCollectionPageable();
-    var tagCollection = new Media.TagCollection();
+    var tagCollection = new Media.TagCollectionPageable();
+//    var tagCollection = new Media.TagCollection();
     tagCollection.fetch();
 
    var TagItemViewModel = kb.ViewModel.extend({
@@ -81,6 +92,14 @@ window.TagView = function(options){
 
 
     ko.applyBindings(new TagsViewModel(), el[0]);
+
+    this.search_view = new SearchView({
+        el: $('#tag-search', el),
+        collection: tagCollection,
+        type: search_type,
+        pagination: pagination,
+        facets: facets
+    });
 
     this.destroyView = function() {
     };
