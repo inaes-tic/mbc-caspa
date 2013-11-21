@@ -93,23 +93,6 @@ window.MediaListView = function(options){
                 self.filter(filters);
             }
 
-            var TagItemViewModel = kb.ViewModel.extend({
-                constructor: function(model) {
-                    var self = this;
-                    kb.ViewModel.prototype.constructor.apply(this, arguments);
-                }
-            });
-
-            this.tags =  kb.collectionObservable(tagCollection, {
-                view_model: TagItemViewModel,
-            });
-
-            this.removeRelatedTag =  function (m) {
-                var realModel = tagCollection.get(m._id());
-                tagCollection.remove(realModel);
-                model.get('transform').save()
-            };
-
             this.__filters = ko.observable();
             this.filter = ko.computed({
                 read: function() {
@@ -213,6 +196,9 @@ window.MediaListView = function(options){
 
     this.view_model = new MediaListViewModel(model);
 
+    if (type.match(/playlist/)) {
+        this.tag_view = new TagTransformView({ model: model, el: $('#tagview', el)});
+    }
 
     this.searchFilter = this.view_model.filter;
 
@@ -296,7 +282,7 @@ window.MediaListView = function(options){
     this.view_model.collection.subscribe(this.onCollectionChange);
     model.bind('change', this._model_change_cb);
 
-    ko.applyBindings(this.view_model, el[0]);
+    ko.applyBindings(this.view_model, $('#media-list', el)[0]);
 
     if (0 == collection.length){
         this.addDummyRow();

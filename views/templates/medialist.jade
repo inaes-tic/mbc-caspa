@@ -35,6 +35,7 @@ block content
 - var thumbnail = i18n.gettext('Thumbnail')
 - var media_info = i18n.gettext('Media info')
 
+#tagview.pp(style="top:300px; z-index:222; position:absolute")
 #media-list.infinit-panel
   - if (!fixed)
     button.close.kill-media-list(type='button', data-dismiss='alert') ×
@@ -61,14 +62,6 @@ block content
             i.icon-time.icon-white
             span= ' '
             span.total-time.label.label-inverse.format(data-bind="text: total_time")
-
-    - if (is_playlist)
-      <!-- ko foreach: tags -->
-      span.label.format(data-bind="style: {'background-color': color}")
-        span(data-bind="text: name")
-        span(data-bind="click: $parent.removeRelatedTag, text: ' ×'")
-      span=' '
-      <!-- /ko -->
 
     .table-container
         table.table.table-bordered.table-striped.table-condensed#table

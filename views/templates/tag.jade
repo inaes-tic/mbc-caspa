@@ -2,26 +2,45 @@ block content
 - var name = i18n.gettext('Edit Tags');
 - var save_button = i18n.gettext('Save');
 - var add_button = i18n.gettext('Add');
+- var tagname = i18n.gettext('Tag Name');
+- var tagcolor = i18n.gettext('Tag Color');
 
-#media-list.infinit-panel
-  .listHeader
-    h1.list-name= name
-    #tag-search
+- if (type == 'tag-transform')
+  h5=name
+  <!-- ko foreach: tags -->
+  span.label.format(data-bind="style: {'background-color': color}")
+    span(data-bind="text: name")
+    span(data-bind="click: $parent.removeRelatedTag, text: ' ×'")
+  span=' '
+  <!-- /ko -->
+  h5(data-bind="click: toggleAddForm")="Add tag"
+  .add-form(data-bind="visible: showAddForm")
+    form.form-inline
+      input.input-mini(type='text', data-bind="value: tagName", placeholder=tagname)
+      input.input-mini(type='text', data-bind="value: tagColor", placeholder=tagcolor)
+      button.btn.btn-mini(data-bind="click: addRelatedTag")= add_button
 
-  ul#tag-list(data-bind="foreach: tags")
-    li
-      span#color(data-bind="attr: { 'background-color': color }")
-      h2(data-bind="text: name, click: $parent.setTag")
-      h2(data-bind="text: color")
 
-      .edit-form(data-bind="visible: showEditForm()")
-        input(type='text', data-bind="value: tagEditName")
-        input(type='text', data-bind="value: tagEditColor")
-        button(data-bind="click: $parent.editTag")= save_button
+- if (type == 'manage')
+  #media-list.infinit-panel
+    .listHeader
+      h1.list-name= name
+      #tag-search
 
-      button.close(type='button', data-bind="click: $parent.removeTag") ×
+      ul#tag-list(data-bind="foreach: tags")
+        li
+          span#color(data-bind="attr: { 'background-color': color }")
+          h2(data-bind="text: name, click: $parent.setTag")
+          h2(data-bind="text: color")
 
-  .add-form(data-bind="visible: showAddForm()")
-    input(type='text', data-bind="value: tagName")
-    input(type='text', data-bind="value: tagColor")
-    button(data-bind="click: addTag")= add_button
+          .edit-form(data-bind="visible: showEditForm()")
+            input(type='text', data-bind="value: tagEditName")
+            input(type='text', data-bind="value: tagEditColor")
+            button(data-bind="click: $parent.editTag")= save_button
+
+          button.close(type='button', data-bind="click: $parent.removeTag") ×
+
+    .add-form(data-bind="visible: showAddForm()")
+      input(type='text', data-bind="value: tagName")
+      input(type='text', data-bind="value: tagColor")
+      button(data-bind="click: addTag")= add_button

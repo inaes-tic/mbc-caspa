@@ -101,7 +101,7 @@ var AppRouter = Backbone.Router.extend({
         return new EditorView();
     },
     tag: function() {
-        return new TagView();
+        return new TagView({ type: 'manage' });
     },
 
     // Manually bind a single named route to a callback. For example:
