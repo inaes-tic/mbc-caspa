@@ -10,10 +10,10 @@ window.TagTransformView = function (options) {
     var type = 'type' in options ? options['type'] : default_type;
 
     if(type == default_type ) {
-        var transform = model.get('transform');
-        if(transform) {
-            transform.fetchRelated('tags');
-            tagCollection = transform.get('tags');
+        var transformModel = model.get('transform');
+        if(transformModel) {
+            transformModel.fetchRelated('tags');
+            tagCollection = transformModel.get('tags');
         }
     }
 
@@ -35,11 +35,13 @@ window.TagTransformView = function (options) {
                 view_model: TagItemViewModel,
             });
 
-            this.removeRelatedTag =  function (m) {
-                if(m._id()) {
-                    var realModel = tagCollection.get(m._id());
-                    tagCollection.remove(realModel);
-                    transform.save()
+            this.removeRelatedTag =  function (vm) {
+                if(vm._id()) {
+                    var tagModel = tagCollection.get(vm._id());
+                    tagCollection.remove(tagModel);
+                    transformModel.save()
+                    tagModel.get('transforms').remove(transformModel);
+                    tagModel.save();
                 } else {
                     console.warn('Id is not valid');
                 }
@@ -51,9 +53,11 @@ window.TagTransformView = function (options) {
                     model.save(
                         {},
                         {
-                            success: function (m) {
-                                tagCollection.add(m);
-                                transform.save();
+                            success: function (tagModel) {
+                                tagCollection.add(tagModel);
+                                transformModel.save();
+                                tagModel.get('transforms').add(transformModel);
+                                tagModel.save();
                             }
                         }
                     );
