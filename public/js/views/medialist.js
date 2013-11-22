@@ -231,6 +231,14 @@ window.MediaListView = function(options){
         for( i=pieces.length-1; i>=0; i--) {
             pieces.at(i).destroy();
         }
+
+        var transform = this.model.get('transform');
+        var tags = transform.get('tags');
+        for(i=tags.length-1; i>=0; i--) {
+            tags.at(i).get('transforms').remove(transform);
+            tags.at(i).save();
+        }
+        this.model.get('transform').destroy();
         this.model.destroy();
     };
 
