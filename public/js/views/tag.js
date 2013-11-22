@@ -48,22 +48,36 @@ window.TagTransformView = function (options) {
             };
 
             this.addRelatedTag = function () {
-                if(self.tagName()) {
-                    var model = new Media.Tag({ name: self.tagName(), color: self.tagColor() });
-                    model.save(
-                        {},
-                        {
-                            success: function (tagModel) {
-                                tagCollection.add(tagModel);
-                                transformModel.save();
-                                tagModel.get('transforms').add(transformModel);
-                                tagModel.save();
-                            }
-                        }
-                    );
-                    self.clearAddForm();
+                var model;
+
+                var onSuccess = function(tagModel) {
+                    tagCollection.add(tagModel);
+                    transformModel.save();
+                    tagModel.get('transforms').add(transformModel);
+                    tagModel.save();
+                };
+
+                if(self.selectedTagId()) {
+                    if(! tagCollection.get(self.selectedTagId())) {
+                        var attr = { _id: self.selectedTagId(), name: self.tagName(), color: self.tagColor() };
+                        //XXX if i just make new Media.Tag setting id and then fetch brakes something
+                        tagCollection.create(attr, { success:  function(tagModel) {
+                            transformModel.save();
+                            tagModel.get('transforms').add(transformModel);
+                            tagModel.save();
+                        }});
+                        self.clearAddForm();
+                    } else {
+                        console.warn('Tag is already related');
+                    }
                 } else {
-                    console.warn('Tag Name is empty');
+                    if(self.tagName()) {
+                        model = new Media.Tag({ name: self.tagName(), color: self.tagColor() });
+                        model.save({}, { success: onSuccess });
+                        self.clearAddForm();
+                    } else {
+                        console.warn('Tag is empty');
+                    }
                 }
             };
 
