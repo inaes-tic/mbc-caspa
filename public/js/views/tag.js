@@ -22,12 +22,12 @@ window.TagTransformView = function (options) {
     el.html(template.tag({type: type}));
 
     var TagItemViewModel = function(id, name, color) {
-            this.id = ko.observable(id);
-            this.name = ko.observable(name);
-            this.color = ko.observable(color);
-            this.displayName = ko.dependentObservable(function() {
-                return this.name() + " [" + this.color() + "]";
-            }, this);
+        this.id = ko.observable(id);
+        this.name = ko.observable(name);
+        this.color = ko.observable(color);
+        this.displayName = ko.dependentObservable(function() {
+            return this.name() + " [" + this.color() + "]";
+        }, this);
     };
 
     var TagsViewModel = kb.ViewModel.extend({
