@@ -35,6 +35,7 @@ window.TagTransformView = function (options) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var self = this;
 
+            self.tagId = ko.observable();
             this.tags =  kb.collectionObservable(tagCollection, {
             });
 
@@ -93,6 +94,29 @@ window.TagTransformView = function (options) {
             this.toggleAddForm = function(){
                 self.showAddForm(!self.showAddForm());
             };
+
+            this.selectedTagId = ko.computed({
+                read: function() {
+                    return self.tagId();
+                },
+
+                write: function(view_model) {
+                    var _id = view_model ? view_model.id() : null;
+                    self.tagId(_id);
+                    if (!view_model) {
+                        return;
+                    }
+
+                    var m = searchTagCollection.get(_id);
+                    if (m) {
+                        self.tagColor(m.get('color'));
+                        self.tagName(m.get('name'));
+                    } else {
+                        self.tagColor(view_model.color());
+                        self.tagName(view_model.name());
+                    }
+                },
+            }, self);
         },
         tagName:  ko.observable(''),
         tagColor: ko.observable(''),
@@ -102,7 +126,6 @@ window.TagTransformView = function (options) {
             this.tagColor('');
         },
         tagsName: ko.observableArray(),
-        selectedTagId: ko.observable(),
         getServerTags:  function (searchTerm, sourceArray) {
             var result = [];
             query_obj = { text : searchTerm };
@@ -115,6 +138,9 @@ window.TagTransformView = function (options) {
                             result.push(new TagItemViewModel(model._id, model.name, model.color));
                         }
                     );
+                    if (result.length == 0) {
+                        result.push(new TagItemViewModel(null, searchTerm, ''));
+                    }
                     sourceArray(result);
                 }
             });
@@ -281,7 +307,14 @@ ko.bindingHandlers.jqAuto = {
 
         //on a selection write the proper value to the model
         options.select = function(event, ui) {
-            writeValueToModel(ui.item ? ui.item.actualValue : null);
+            var currentValue = $(element).val();
+            var matchingItem =  ko.utils.arrayFirst(unwrap(source), function(item) {
+               return unwrap(inputValueProp ? item[inputValueProp] : item) === currentValue;
+            });
+
+            if (matchingItem) {
+                writeValueToModel(matchingItem);
+            }
         };
 
         //on a change, make sure that it is a valid value or clear out the model value
@@ -291,9 +324,7 @@ ko.bindingHandlers.jqAuto = {
                return unwrap(inputValueProp ? item[inputValueProp] : item) === currentValue;
             });
 
-            if (!matchingItem) {
-               writeValueToModel(null);
-            }
+            writeValueToModel(matchingItem ? matchingItem : null);
         }
 
         //hold the autocomplete current response
@@ -370,6 +401,6 @@ ko.bindingHandlers.jqAuto = {
        }
 
        //update the element with the value that should be shown in the input
-       $(element).val(modelValue && inputValueProp !== valueProp ? unwrap(modelValue[inputValueProp]) : modelValue.toString());
+       //$(element).val(modelValue && inputValueProp !== valueProp ? unwrap(modelValue[inputValueProp]) : modelValue.toString());
     }
 };
