@@ -2,6 +2,7 @@ block content
 - var name = i18n.gettext('Edit Tags');
 - var save_button = i18n.gettext('Save');
 - var add_button = i18n.gettext('Add');
+- var addtag = i18n.gettext('Add Tag');
 - var tagname = i18n.gettext('Tag Name');
 - var tagcolor = i18n.gettext('Tag Color');
 
@@ -13,7 +14,7 @@ block content
     span(data-bind="click: $parent.removeRelatedTag, text: ' ×'")
   span=' '
   <!-- /ko -->
-  h5(data-bind="click: toggleAddForm")="Add tag"
+  h5(data-bind="click: toggleAddForm")=addtag
   .add-form(data-bind="visible: showAddForm")
     form.form-inline
       input.input-mini.tag-input(type='text', placeholder=tagname, data-bind="jqAuto: { autoFocus: true, minLength: 2, delay: 300 }, jqAutoSource: tagsName , jqAutoQuery: getServerTags, jqAutoValue: selectedTagId, jqAutoSourceLabel: 'displayName', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'id'")
