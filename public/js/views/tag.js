@@ -124,6 +124,7 @@ window.TagTransformView = function (options) {
         clearAddForm: function () {
             this.tagName('');
             this.tagColor('');
+            $('.tag-input', this.el).val('');
         },
         tagsName: ko.observableArray(),
         getServerTags:  function (searchTerm, sourceArray) {

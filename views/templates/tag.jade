@@ -16,8 +16,8 @@ block content
   h5(data-bind="click: toggleAddForm")="Add tag"
   .add-form(data-bind="visible: showAddForm")
     form.form-inline
-      input.input-mini(type='text', placeholder=tagname, data-bind="jqAuto: { autoFocus: true, minLength: 2, delay: 300 }, jqAutoSource: tagsName , jqAutoQuery: getServerTags, jqAutoValue: selectedTagId, jqAutoSourceLabel: 'displayName', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'id'")
-      input.input-mini(type='text', data-bind="value: tagColor", placeholder=tagcolor)
+      input.input-mini.tag-input(type='text', placeholder=tagname, data-bind="jqAuto: { autoFocus: true, minLength: 2, delay: 300 }, jqAutoSource: tagsName , jqAutoQuery: getServerTags, jqAutoValue: selectedTagId, jqAutoSourceLabel: 'displayName', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'id'")
+      input.input-mini.tag-input(type='text', data-bind="value: tagColor", placeholder=tagcolor)
       button.btn.btn-mini(data-bind="click: addRelatedTag")= add_button
 
 
