@@ -123,14 +123,12 @@ var backends = {
             db: db,
             collection: collections.Transforms,
             opts: { search: search_options.Transforms },
-            search_wrap: true,
         }},
     media: {
         mongo: {
             db: db,
             collection: collections.Medias,
             opts: { search: search_options.Medias },
-            search_wrap: true,
         }},
     piece: {
         use: [id_middleware],
@@ -138,7 +136,6 @@ var backends = {
             db: db,
             collection: collections.Pieces,
             opts: { search: search_options.Pieces },
-            search_wrap: true,
         }},
     list: {
         use: [id_middleware],
@@ -146,7 +143,6 @@ var backends = {
             db: db,
             collection: collections.Lists,
             opts: { search: search_options.Lists },
-            search_wrap: true,
         }},
     sched: {
         use: [id_middleware, publishJSON_middleware],
@@ -154,7 +150,6 @@ var backends = {
             db: db,
             collection: collections.Scheds,
             opts: { search: search_options.Scheds },
-            search_wrap: true,
         }},
     status: {
         use: [id_middleware],
@@ -162,7 +157,6 @@ var backends = {
             db: db,
             collection: collections.Status,
             opts: { search: search_options.Status },
-            search_wrap: true,
         }},
     frame: {
         use: [backboneio.middleware.memoryStore(db, 'progress', {})],
@@ -172,7 +166,6 @@ var backends = {
             db: db,
             collection: collections.Mostomessages,
             opts: { search: search_options.Mostomessages },
-            search_wrap: true,
         }},
 };
 
@@ -186,7 +179,7 @@ _(backends).each (function (backend) {
     if (backend.mongo) {
         var mongo = _.extend ({db: db, opts: {}}, backend.mongo);
         var fn = _.identity;
-        if (backend.mongo.search_wrap)
+        if (_.has(backend.mongo.opts, 'search'))
             fn = searchWrapper;
         backend.io.use(
             fn(backboneio.middleware.mongoStore(mongo.db,
