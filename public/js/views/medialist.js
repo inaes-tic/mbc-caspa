@@ -196,7 +196,7 @@ window.MediaListView = function(options){
 
     this.view_model = new MediaListViewModel(model);
 
-    if (type.match(/playlist/)) {
+    if (type.match(/playlist/) && !model.isNew()) {
         this.tag_view = new TagTransformView({ model: model, el: $('#tagview', el)});
     }
 
