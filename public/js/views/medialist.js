@@ -209,7 +209,7 @@ window.MediaListView = function(options){
 
     this.removeView = function() {
         // Clear element
-        ko.removeNode(this.el);
+        ko.cleanNode(this.el[0]);
         this.el.html('');
     };
 
