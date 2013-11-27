@@ -15,7 +15,8 @@ var express = require('express'),
     logger = mbc.logger().addLogger('caspa_server'),
     db = mbc.db(),
     utils = new (require('./utils'))(db)
- ;
+,   timers = require('timers')
+;
 
 var loggerStream = {
     write: function(message, encoding) {
@@ -118,9 +119,9 @@ var listbackend = backboneio.createBackend();
 var schedbackend = backboneio.createBackend();
 var statusbackend = backboneio.createBackend();
 var framebackend = backboneio.createBackend();
-var mostomessagesbackend = backboneio.createBackend();
+var messagebackend = backboneio.createBackend();
 
-var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, mostomessagesbackend ];
+var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, messagebackend ];
 _(backends).each (debug_backend);
 
 appbackend.use(backboneio.middleware.configStore());
@@ -142,6 +143,20 @@ schedbackend.use(function (req, res, next) {
     next();
 });
 schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Scheds, { search: search_options.Scheds })));
+
+var mostoAlive = true;
+var message = {};
+var mostoDied = function() {
+    mostoAlive = false;
+    message = { code: 500,
+                message: "Mosto is dead",
+                description: "MOSTO DOWN",
+                status: "failing",
+                _id: uuid() }
+    messagebackend.emit('created', message);
+};
+
+var mostoHeartbeat = setTimeout(mostoDied, 1000);
 
 listener.on('JSONmessage', function(chan, status) {
 
@@ -208,6 +223,15 @@ listener.on('JSONmessage', function(chan, msg) {
     if( !(chan == 'mostoStatus.progress' ) )
         return;
 
+    if(!mostoAlive) {
+        message.status = 'fixed'
+        messagebackend.emit('updated', message);
+        mostoAlive = true;
+        mostoHeartbeat = setTimeout(mostoDied, 1000);
+    }
+
+    timers.active(mostoHeartbeat);
+
     var status = new App.ProgressStatus(msg);
     framebackend.emit('updated', status);
 });
@@ -220,16 +244,18 @@ framebackend.use(backboneio.middleware.memoryStore(db, 'progress', {}));
 // or the DB has a problem
 listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
-        case "mostoMessage.emit":
-            return mostomessagesbackend.emit('created', msg.model);
-        case "mostoMessage.create":
-            return mostomessagesbackend.emit('created', msg.model);
-        case "mostoMessage.delete":
-            return mostomessagesbackend.emit('deleted', msg.model);
+    case "mostoMessage.emit":
+        return messagebackend.emit('created', msg.model);
+    case "mostoMessage.create":
+        return messagebackend.emit('created', msg.model);
+    case "mostoMessage.delete":
+        return messagebackend.emit('deleted', msg.model);
+    case "mostoMessage.update":
+        return messagebackend.emit('updated', msg.model);
     }
 });
 listener.psubscribe('mostoMessage*');
-mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
+messagebackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
 
 _(backends).each (function(backend) {
     logger.info("Debugging backend: ", backend);
@@ -245,7 +271,7 @@ var io = backboneio.listen(app.listen(app.get('port'), function(){
       schedbackend: schedbackend,
       statusbackend: statusbackend,
       framebackend: framebackend,
-      mostomessagesbackend: mostomessagesbackend
+      messagebackend: messagebackend
     });
 
 io.configure('production', function(){
