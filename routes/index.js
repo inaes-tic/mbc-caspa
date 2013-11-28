@@ -6,6 +6,7 @@ module.exports = function(app) {
     , i18n = require('i18n-abide')
     , mbc = require('mbc-common')
     , conf = mbc.config.Caspa
+    , confWebvfx = mbc.config.Webvfx
     , logger  = mbc.logger().addLogger('caspa_routes');
 
     var self = require ('mbc-common/models/App.js')
@@ -27,6 +28,14 @@ module.exports = function(app) {
             res.send (jsondata);
         } catch (e) {
             logger.error(e);
+        }
+    });
+
+    app.get('/live.webm', function(req, res) {
+        if(confWebvfx.Editor.stream_url) {
+            res.redirect(confWebvfx.Editor.stream_url);
+        } else {
+            res.json({});
         }
     });
 
