@@ -89,15 +89,13 @@ var appModel = require('./routes')(app);
 // Override mongoStore read method with custom
 var searchWrapper = require('./searchWrapper.js');
 
-function debug_backend (backend) {
-    backend.use(function(req, res, next) {
-        logger.debug('Backend: ', req.backend);
-        logger.debug('Method: ', req.method);
-        logger.debug('Channel: ', req.channel);
-        logger.debug('Options: ', JSON.stringify(req.options));
-        logger.debug('Model: ', JSON.stringify(req.model));
-        next();
-    });
+function debug_middleware (req, res, next) {
+    logger.debug('Backend: ', req.backend);
+    logger.debug('Method: ', req.method);
+    logger.debug('Channel: ', req.channel);
+    logger.debug('Options: ', JSON.stringify(req.options));
+    logger.debug('Model: ', JSON.stringify(req.model));
+    next();
 }
 
 function id_middleware(req, res, next) {
@@ -107,41 +105,90 @@ function id_middleware(req, res, next) {
     next();
 }
 
+function publishJSON_middleware (req, res, next) {
+    publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
+    next();
+};
+
 var publisher = mbc.pubsub();
 var listener = mbc.pubsub();
 
-var appbackend = backboneio.createBackend();
-var transformbackend = backboneio.createBackend();
-var mediabackend = backboneio.createBackend();
-var piecebackend = backboneio.createBackend();
-var listbackend = backboneio.createBackend();
-var schedbackend = backboneio.createBackend();
-var statusbackend = backboneio.createBackend();
-var framebackend = backboneio.createBackend();
-var mostomessagesbackend = backboneio.createBackend();
+var backends = {
+    app: {
+        use: [backboneio.middleware.configStore()]
+    },
+    transform: {
+        use: [id_middleware],
+        mongo: {
+            db: db,
+            collection: collections.Transforms,
+            opts: { search: search_options.Transforms },
+        }},
+    media: {
+        mongo: {
+            db: db,
+            collection: collections.Medias,
+            opts: { search: search_options.Medias },
+        }},
+    piece: {
+        use: [id_middleware],
+        mongo: {
+            db: db,
+            collection: collections.Pieces,
+            opts: { search: search_options.Pieces },
+        }},
+    list: {
+        use: [id_middleware],
+        mongo: {
+            db: db,
+            collection: collections.Lists,
+            opts: { search: search_options.Lists },
+        }},
+    sched: {
+        use: [id_middleware, publishJSON_middleware],
+        mongo: {
+            db: db,
+            collection: collections.Scheds,
+            opts: { search: search_options.Scheds },
+        }},
+    status: {
+        use: [id_middleware],
+        mongo: {
+            db: db,
+            collection: collections.Status,
+            opts: { search: search_options.Status },
+        }},
+    frame: {
+        use: [backboneio.middleware.memoryStore(db, 'progress', {})],
+    },
+    mostomessages: {
+        mongo: {
+            db: db,
+            collection: collections.Mostomessages,
+            opts: { search: search_options.Mostomessages },
+        }},
+};
 
-var backends = [ appbackend, transformbackend, mediabackend, piecebackend, listbackend, schedbackend, statusbackend, framebackend, mostomessagesbackend ];
-_(backends).each (debug_backend);
-
-appbackend.use(backboneio.middleware.configStore());
-
-transformbackend.use(id_middleware);
-transformbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Transforms, { search: search_options.Transforms })));
-
-mediabackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Medias, { search: search_options.Medias })));
-
-piecebackend.use(id_middleware);
-piecebackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Pieces, { search: search_options.Pieces })));
-
-listbackend.use(id_middleware);
-listbackend.use(searchWrapper(backboneio.middleware.mongoStore (db, collections.Lists, { search: search_options.Lists })));
-
-schedbackend.use(id_middleware);
-schedbackend.use(function (req, res, next) {
-    publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
-    next();
+/* process the backends object to streamline code */
+_(backends).each (function (backend) {
+    backend.io = backboneio.createBackend();
+    if (backend.use)
+        _(backend.use).each (function (usefn) {
+            backend.io.use(usefn);
+        });
+    if (backend.mongo) {
+        var mongo = _.extend ({db: db, opts: {}}, backend.mongo);
+        var fn = _.identity;
+        if (_.has(backend.mongo.opts, 'search'))
+            fn = searchWrapper;
+        backend.io.use(
+            fn(backboneio.middleware.mongoStore(mongo.db,
+                                             mongo.collection,
+                                             mongo.opts)));
+    }
+    backend.io.use (debug_middleware);
+    logger.info("Debugging backend: ", backend);
 });
-schedbackend.use(searchWrapper(backboneio.middleware.mongoStore(db, collections.Scheds, { search: search_options.Scheds })));
 
 listener.on('JSONmessage', function(chan, status) {
 
@@ -152,7 +199,7 @@ listener.on('JSONmessage', function(chan, status) {
     //  backbone.io
     var emit = _.after(6, function() {
         logger.info('emitting', status);
-        statusbackend.emit('updated', status)
+        backends['status'].io.emit('updated', status)
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
         db.collection(collections.Scheds).findEach({ _id: status.show[pos]._id }, function(err, res) {
@@ -202,17 +249,15 @@ listener.on('JSONmessage', function(chan, status) {
     });
 });
 listener.subscribe('mostoStatus');
-statusbackend.use(backboneio.middleware.mongoStore(db, collections.Status, { search: search_options.Status }));
 
 listener.on('JSONmessage', function(chan, msg) {
     if( !(chan == 'mostoStatus.progress' ) )
         return;
 
     var status = new App.ProgressStatus(msg);
-    framebackend.emit('updated', status);
+    backends['frame'].io.emit('updated', status);
 });
 listener.subscribe('mostoStatus.progress');
-framebackend.use(backboneio.middleware.memoryStore(db, 'progress', {}));
 
 // there should probably be two backends or two collections or both, or something, one for
 // one-time momentary messages like warnings and such to be dismissed by the frontend,
@@ -221,32 +266,23 @@ framebackend.use(backboneio.middleware.memoryStore(db, 'progress', {}));
 listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
         case "mostoMessage.emit":
-            return mostomessagesbackend.emit('created', msg.model);
+            return backends['mostomessages'].io.emit('created', msg.model);
         case "mostoMessage.create":
-            return mostomessagesbackend.emit('created', msg.model);
+            return backends['mostomessages'].io.emit('created', msg.model);
         case "mostoMessage.delete":
-            return mostomessagesbackend.emit('deleted', msg.model);
+            return backends['mostomessages'].io.emit('deleted', msg.model);
     }
 });
 listener.psubscribe('mostoMessage*');
-mostomessagesbackend.use(backboneio.middleware.mongoStore(db, collections.Mostomessages, { search: search_options.Mostomessages }));
 
-_(backends).each (function(backend) {
-    logger.info("Debugging backend: ", backend);
+var iobackends = {};
+_(_.keys(backends)).each (function (backend) {
+    iobackends[backend + 'backend'] = backends[backend].io;
 });
 
 var io = backboneio.listen(app.listen(app.get('port'), function(){
-    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env);
-}), { appbackend: appbackend,
-      transformbackend: transformbackend,
-      mediabackend: mediabackend,
-      piecebackend: piecebackend,
-      listbackend:  listbackend,
-      schedbackend: schedbackend,
-      statusbackend: statusbackend,
-      framebackend: framebackend,
-      mostomessagesbackend: mostomessagesbackend
-    });
+    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env + '\nactive backends: ' +  _.keys(iobackends));
+}), iobackends);
 
 io.configure('production', function(){
     // send minified client
@@ -273,7 +309,7 @@ if (process.env.MBC_SCRAPE) {
                 if (err) {
                     logger.error('error','An error has occurred' + err);
                 } else {
-                    mediabackend.emit('created', model);
+                    backends['media'].io.emit('created', model);
                 }
             });
         });
