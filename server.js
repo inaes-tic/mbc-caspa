@@ -200,7 +200,7 @@ var mostoDied = function() {
                 description: "MOSTO DOWN",
                 status: "failing",
                 _id: uuid() }
-    messagebackend.emit('created', message);
+    backends['message'].io.emit('created', message);
 };
 
 var mostoHeartbeat = setTimeout(mostoDied, 1000);
@@ -271,7 +271,7 @@ listener.on('JSONmessage', function(chan, msg) {
 
     if(!mostoAlive) {
         message.status = 'fixed'
-        messagebackend.emit('updated', message);
+        backends['message'].io.emit('updated', message);
         mostoAlive = true;
         mostoHeartbeat = setTimeout(mostoDied, 1000);
     }
