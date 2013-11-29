@@ -11,14 +11,6 @@ window.TagTransformView = function (options) {
     var default_type = 'tag-transform';
     var type = 'type' in options ? options['type'] : default_type;
 
-    if(type == default_type ) {
-        var transformModel = model.get('transform');
-        if(transformModel) {
-            transformModel.fetchRelated('tags');
-            tagCollection = transformModel.get('tags');
-        }
-    }
-
     el.html(template.tag({type: type}));
 
     var TagItemViewModel = function(id, name, color) {
@@ -31,7 +23,7 @@ window.TagTransformView = function (options) {
     };
 
     var TagsViewModel = kb.ViewModel.extend({
-        constructor: function() {
+        constructor: function(tagCollection, transformModel) {
             kb.ViewModel.prototype.constructor.apply(this, arguments);
             var self = this;
 
@@ -148,8 +140,6 @@ window.TagTransformView = function (options) {
         },
     });
 
-    ko.applyBindings(new TagsViewModel(), el[0]);
-
     this.destroyView = function() {
     };
 
@@ -157,6 +147,21 @@ window.TagTransformView = function (options) {
         this.destroyView();
         options["ok"]();
     };
+
+    if(type == default_type ) {
+        var def_t = model.fetchRelated('transform');
+        $.when.apply($, def_t).done(function(){
+            var transformModel = model.get('transform');
+            if(transformModel) {
+                var def = transformModel.fetchRelated('tags');
+                $.when.apply($, def).done(function(){
+                    tagCollection = transformModel.get('tags');
+                    ko.applyBindings(new TagsViewModel(tagCollection, transformModel), el[0]);
+                });
+            }
+        });
+    }
+
 };
 
 window.TagView = function(options){

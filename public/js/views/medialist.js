@@ -30,12 +30,7 @@ window.MediaListView = function(options){
         if (!model.isNew()) {
             model.fetchRelated("pieces");
             model.fetchRelated("occurrences");
-            model.fetchRelated('transform');
-            model.fetch( { success: function(m) {
-                var t = m.get("transform");
-                t.fetchRelated("tags");
-                //t.fetch();
-            } } );
+            model.fetch();
         }
         collection = model.get('pieces');
     } else {
