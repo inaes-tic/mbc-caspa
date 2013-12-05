@@ -18,6 +18,7 @@ var AppRouter = Backbone.Router.extend({
         "schedule"          : "schedule",
         "admin"             : "conf",
         "about"             : "about",
+        "editor"            : "editor",
     },
 
     initialize: function () {
@@ -35,6 +36,7 @@ var AppRouter = Backbone.Router.extend({
             menuItem = {
                 playout: 'playout-menu',
                 schedule: 'schedule-menu',
+                editor: 'editor-menu',
                 list: 'list-menu',
                 mediaDetails: 'list-menu',
                 upload: 'add-menu',
@@ -92,6 +94,10 @@ var AppRouter = Backbone.Router.extend({
     },
     conf: function () {
         return new ConfView({collection: appCollection});
+    },
+
+    editor: function () {
+        return new EditorView();
     },
 
     // Manually bind a single named route to a callback. For example:

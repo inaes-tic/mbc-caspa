@@ -10,7 +10,8 @@
 @import 'visualsearch-datauri.css';
 @import 'font-Andika.less';
 @import 'font-Arvo.less';
-
+@import 'backbone.modal.css';
+@import 'backbone.modal.theme.css';
 
 // Definitions
 
@@ -962,3 +963,329 @@ div#playout {
     }
 }
 
+/* webvfx editor*/
+
+#editor {
+    top: @header_height;
+
+    #video-container{
+        position: absolute;
+        top: 10px;
+        bottom: 28px;
+        left: 10px;
+        right: 520px;
+        #player-container{
+            .fully-expanded
+        }
+        #container{
+            .fully-expanded
+        }
+    }
+
+    #right-panels{
+        width: 510px;
+        position: absolute;
+        top: 10px;
+        bottom: 28px;
+        right: 0px;
+    }
+
+
+    input[type="text"], select{
+        margin-bottom: 9px;
+    }
+
+    select {
+        width: 100%;
+    }
+    .v-container{
+        position: absolute;
+        bottom: 2px;
+        overflow-y: auto;
+
+        #update{
+            margin-bottom:10px;
+        }
+        .tab
+        {
+            h2{
+                margin: 0;
+                text-align:left;
+                padding: 3px 7px;
+                color: #fff;
+                background: #444;
+                border-top: solid 2px #555;
+                border-bottom: solid 2px #333;
+            }
+        }
+    }
+
+    #controls{
+        padding: 0 8px;
+        left: 4px;
+        top: 36px;
+        right: 4px;
+    }
+    .v-panel{
+        position:absolute;
+        top:0px;
+        bottom:0px;
+    }
+
+    h2{
+        text-align:center;
+        border-bottom: 1px solid #e3e3e3;
+        margin: 0 10px 5px 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 10px 0 5px 0;
+        font-family: arial;
+        color: #333;
+        font-size: 11px;
+    }
+
+  color: rgb(51, 51, 51);
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    line-height: 20px;
+
+}
+
+#nav-editor{
+    margin:5px 0 10px 25px;
+    li{
+        list-style:none;
+    }
+}
+
+#player-container {
+    position: absolute;
+}
+
+#container {
+    position: absolute;
+}
+
+.container-background {
+    background-image: url('img/bg.png');
+}
+
+.bbm-modal{
+    fieldset{
+        margin:0;
+        border:none;
+    }
+
+    .bbm-modal__title {
+        padding: 14px 0 10px;
+    }
+}
+
+.round-panel{
+    background-color: white;
+    border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    box-shadow: rgba(0, 0, 0, 0.34902) 1px 1px 7px 0px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.34902) 1px 1px 7px 0px;
+    background-color: #fff;
+}
+
+#webvfx-collection-container {
+    color: rgb(51, 51, 51);
+    bottom: 30px;
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    right: 284px !important;
+    left:0px;
+    line-height: 20px;
+    position: absolute;
+    top: 20px;
+    width: 227px;
+
+    #webvfx-collection{
+        left: 4px;
+        top: 135px;
+        right: 4px;
+
+        h3{
+            font-weight:bold;
+        }
+    }
+
+    fieldset {
+        margin:0;
+        border:none;
+    }
+
+    #clear-all{
+        padding:0;
+    }
+
+    input[type="text"]{
+        padding:0 3px;
+    }
+
+    input[type="file"] {
+        margin-bottom: 4px;
+        width: 126px;
+        float:left;
+        height: 20px;
+        line-height: 20px;
+    }
+
+    legend{
+        font-family: Arial,Helvetica,sans-serif;
+        font-size: 1.2em;
+        margin-bottom: 12px;
+    }
+
+    tbody tr th {
+        background:none;
+        border:none;
+    }
+
+    h3{
+        &.editor{
+            float:left;
+            font-weight: bold;
+        }
+        font-size:1.2em;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+}
+
+#main-controls {
+    position: absolute;
+    top:20px;
+    right:0px;
+    width: 260px !important;
+    background: #fff;
+    margin: 0 10px;
+
+    td{
+        padding:0px;
+    }
+
+    fieldset{
+        margin: 0 0px 10px 0px;
+        input[type="checkbox"]{
+           float:left;
+           margin-right: 1px;
+        }
+
+        input[type="text"]{
+            padding:2px 3px;
+        }
+
+        &.storage button{
+           margin: 0 3px;
+           line-height: 17px;
+           height: auto;
+        }
+
+        &.options label{
+        }
+    }
+
+    input[type=file]{
+        line-height:20px;
+        height:auto;
+    }
+
+    h3{
+        font-size: 1em;
+    }
+}
+
+#main-controls.foldedcp {
+    bottom: 0px;
+    -webkit-transition: bottom 400ms ease-in-out;
+    transition: bottom 400ms ease-in-out;
+}
+
+#status-bar {
+    text-align: center;
+    background: white;
+    width: 100%;
+    position: absolute;
+    text-align: center;
+    bottom: 0px;
+    height:20px;
+}
+
+h3 {
+    margin: 0;
+    padding: 3px;
+    color: #222;
+}
+
+fieldset {
+    border-radius: 4px;
+    font-weight: bold;
+    color: #999;
+    margin: 10px;
+    border: dashed 1px #555;
+}
+
+input, select, button {
+    border-radius: 4px;
+    color: #fff;
+    border: solid 1px #333;
+    background: #555;
+    font-size: 10px;
+    padding: 3px;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    top: 3px;
+}
+
+td {
+    vertical-align: top;
+}
+
+.webvfx-obj {
+    margin: 0 5px;
+    font-size: .9em;
+}
+
+.webvfx-obj h3 {
+    color: #aaa;
+    background: #444;
+    border-top: solid 2px #555;
+    border-bottom: solid 2px #333;
+}
+
+.webvfx-obj label {
+}
+
+.webvfx-obj table {
+    width: 100%;
+    font-weight: normal;
+    color: #888;
+}
+
+.webvfx-obj input {
+    width: 60px;
+}
+
+.webvfx-obj select {
+    width: 70px;
+}
+
+.webvfx-obj th {
+    width: 50px;
+    font-weight: normal;
+    text-align: left;
+}
+
+.webvfx-obj .button {
+    text-align: right;
+}
+
+.disabled {
+    color: #333;
+}

@@ -167,6 +167,13 @@ var backends = {
             collection: collections.Mostomessages,
             opts: { search: search_options.Mostomessages },
         }},
+    sketch: {
+        use: [id_middleware],
+        mongo: {
+            db: db,
+            collection: collections.Sketchs,
+            opts: { search: search_options.Sketchs },
+        }},
 };
 
 /* process the backends object to streamline code */

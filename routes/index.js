@@ -6,6 +6,7 @@ module.exports = function(app) {
     , i18n = require('i18n-abide')
     , mbc = require('mbc-common')
     , conf = mbc.config.Caspa
+    , confWebvfx = mbc.config.Webvfx
     , logger  = mbc.logger().addLogger('caspa_routes');
 
     var self = require ('mbc-common/models/App.js')
@@ -27,6 +28,14 @@ module.exports = function(app) {
             res.send (jsondata);
         } catch (e) {
             logger.error(e);
+        }
+    });
+
+    app.get('/live.webm', function(req, res) {
+        if(confWebvfx.Editor.stream_url) {
+            res.redirect(confWebvfx.Editor.stream_url);
+        } else {
+            res.json({});
         }
     });
 
@@ -67,6 +76,8 @@ module.exports = function(app) {
         require.resolve('node-uuid'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
         require.resolve('d3/d3.js'),
+        path.join(lib_dir, 'backbone.modal-min.js'),
+        path.join(lib_dir, 'kinetic-v4.5.2.min.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
@@ -86,7 +97,7 @@ module.exports = function(app) {
      * Views Javascript Package
      */
 
-    var views = ['paginator',
+    var localViews = ['paginator',
                  'header',
                  'home',
                  'playbar',
@@ -106,11 +117,18 @@ module.exports = function(app) {
                  'airtime/schedule/full-calendar-functions'
                 ];
 
+    var commonViews = [ 'editor' ];
+
+    var localViewsFiles  = localViews.map( function(e) {
+        return path.join(__dirname, '..', 'public/js/views/', e + '.js');
+    });
+    var commonViewsFiles = commonViews.map( function(e) {
+        return require.resolve('mbc-common/views/js/' + e);
+    });
+
     var viewsJs = new folio.Glossary(
-        views.map (function (e) {
-            return path.join(__dirname, '..', 'public/js/views/', e + '.js');
-        })
-        ,{minify:app.get('minify')}
+        localViewsFiles.concat(commonViewsFiles),
+        { minify:app.get('minify') }
     );
 
     app.get('/js/views.js', folio.serve(viewsJs));
@@ -119,7 +137,7 @@ module.exports = function(app) {
      * Models Javascript Package
      */
 
-    var models = ['Default', 'App', 'Media'];
+    var models = ['Default', 'App', 'Media', 'Editor', 'Sketch'];
 
     var modelsJs = new folio.Glossary(
         models.map (function (e) {
@@ -137,7 +155,7 @@ module.exports = function(app) {
      * jade on the client-side.
      */
 
-    var templates = ['form',
+    var localTemplates = ['form',
                      'item',
                      'playbar',
                      'header',
@@ -159,14 +177,25 @@ module.exports = function(app) {
                      'sourceinfo'
                     ];
 
+    var commonTemplates = ['editor',
+                           'objects',
+                           'alert',
+                           'confirm',
+                           'prompt',
+                          ];
+
     var getFileName = function (e) {
-                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
-            };
+        return path.join(__dirname, '..', 'views/templates/', e + '.jade');
+    };
+
+    var getCommonFileName = function (e) {
+        return require.resolve('mbc-common/views/templates/' + e + '.jade');
+    };
 
     var templateJs = new folio.Glossary([
         require.resolve('jade/runtime.js'),
         path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            templates.map (getFileName)
+            localTemplates.map(getFileName), commonTemplates.map(getCommonFileName)
         ),
         {
         compilers: {
