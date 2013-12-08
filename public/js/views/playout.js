@@ -1658,14 +1658,19 @@ PlayoutTimelinePanel.prototype = {
 
 window.PlayoutView = PanelView.extend({
     el: '#content',
-    initialize: function() {
+    initialize: function(state) {
         PanelView.prototype.initialize.apply(this, arguments);
 
         var self = this;
+        self.state = state;
+
         self.$el.html(template.playout());
 
-        this.collection = new Media.Schedule();
-        this.playlists = new Media.UniversePageable();
+        self.collection = state.collection || new Media.Schedule();
+        state.collection = self.collection;
+
+        self.playlists = state.playlists || new Media.UniversePageable();
+        state.playlists = self.playlists;
 
         this.svg = this.$el.find("#playout");
 
