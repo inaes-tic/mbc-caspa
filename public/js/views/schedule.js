@@ -86,13 +86,17 @@ window.ScheduleView = PanelView.extend({
         }
         return {start: start, end: end};
     },
-    initialize: function () {
+    initialize: function (state) {
         PanelView.prototype.initialize.apply(this, arguments);
 
         var self = this;
+        self.state = state
 
-        self.collection = new Media.Schedule();
-        self.playlists = new Media.UniversePageable();
+        self.collection = state.collection || new Media.Schedule();
+        state.collection = self.collection;
+
+        self.playlists = state.playlists || new Media.UniversePageable();
+        state.playlists = self.playlists;
 
         $(this.el).html(this.get_templateHTML());
 
