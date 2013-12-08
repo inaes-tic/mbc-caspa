@@ -24,8 +24,6 @@ window.UniverseListView = function(options){
         constructor: function(model) {
             var self = this;
             kb.ViewModel.prototype.constructor.apply(this, arguments);
-            options = options || {};
-            options['keys'] = ['collection', 'name'];
             this.medias =  kb.collectionObservable(model.get('pieces'));
             this.duration = kb.observable(model, 'duration');
 
@@ -81,5 +79,7 @@ window.UniverseListView = function(options){
 
     ko.applyBindings(this.view_model, el[0]);
 
-    this.collection.fetch();
+    if (!this.collection.models.length) {
+        this.collection.fetch();
+    }
 }
