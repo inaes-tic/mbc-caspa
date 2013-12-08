@@ -6,33 +6,48 @@ window.EditView = PanelView.extend({
         "click #right-pane .kill-media-list"  : "killEditList",
         "click #right-pane .hide-alert"  : "hideAlert",
     },
-    initialize: function () {
+    initialize: function (options) {
         // Parent initialize
         PanelView.prototype.initialize.apply(this, arguments);
+        this.options = options || {};
 
-        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'clearSearch');
+        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'clearSearch', 'showPlaylist', 'switchPlaylist', 'onBackendEvent');
         this.render();
     },
     render: function () {
         $(this.el).html(template.mediaedit());
 
-        this.collection = new Media.UniversePageable();
+        var state = this.options['state'] || new utils.StateTracker();
+        this.state = state;
+        this.options.state = state;
+        this.state.on('changed', this.onBackendEvent);
+
+        this.collection = state.collection || new Media.UniversePageable();
+        state.collection = this.collection;
+
         this.universe_view = new UniverseListView({
             collection: this.collection,
-            el: $("#universe"),
+            el: $("#universe", this.el),
         });
 
-        this.mediacollection = new Media.CollectionPageable();
+        this.mediacollection = state.mediacollection || new Media.CollectionPageable();
+        state.mediacollection = this.mediacollection;
+
         this.medialist = new MediaListView({
             model: this.mediacollection,
-            el: $("#left-pane"),
+            el: $("#left-pane", this.el),
             type: 'medialist-draggable-fixed',
         });
         this.medialist.on('dragstart', this.clearSearch);
 
-
-        if (this.editList) {
-            this.showPlaylist(this.editList);
+        var resp = state.enterView();
+        if (resp.model) {
+            if (resp.changed) {
+                $('.alert-other-client-changed', this.el).show();
+                this.showPlaylist(resp.model);
+            } else {
+                this.showPlaylist(resp.model, {'dont-fetch':true});
+            }
         }
 
         // Parent render
@@ -44,13 +59,13 @@ window.EditView = PanelView.extend({
         // Just in case
         this.killEditList();
 
-        console.log ("re-instanciating editList");
         // Setting the _id here enables us to have sane relationships for new playlists.
         // On the server we turn the 'update' event to a 'create' when we find
         // the '_tmpid' so other clients are properly synchronized.
-        this.editList = new Media.Playlist({published: false, _tmpid: true, _id: uuid.v4()});
+        var list = new Media.Playlist({published: false, _tmpid: true, _id: uuid.v4()});
+        this.state.trackModel(list);
 
-        this.showPlaylist(this.editList)
+        this.showPlaylist(list)
     },
     killEditList: function () {
         if (this.editview) {
@@ -67,31 +82,57 @@ window.EditView = PanelView.extend({
         $(".playlist-button-array .save").unbind("click");
         $(".playlist-button-array .delete").unbind("click");
     },
-    hideAlert: function () {
+    hideAlert: function (ev) {
+        // we can get the div with something like $(ev.target.parentElement)
+        // but sometimes there is the need to hide more than only one.
         $('.alert-empty-playlist', this.el).hide();
         $('.alert-unnamed-playlist', this.el).hide();
         $('.alert-has-occurrences', this.el).hide();
+        $('.alert-other-client-changed', this.el).hide();
+    },
+    onBackendEvent: function () {
+        // This is called when other client changes the playlist
+        // we are editing.
+        if (!this.editList) {
+            return;
+        }
+
+        // XXX: this is required to show the elements on the correct order.
+        var ps = this.editList.get('pieces').models;
+        this.editList.get('pieces').reset(ps);
+
+        $('.alert-other-client-changed', this.el).show();
     },
     switchPlaylistEvent: function (event, a) {
         return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
     },
-    switchPlaylist: function (id) {
-        this.killEditList();
+    switchPlaylist: function (id, options) {
+        if (this.editList && id == this.editList.id) {
+            return;
+        }
+        var list = this.collection.get(id);
 
-        var plid = this.collection.get(id);
-        this.showPlaylist(plid);
+        this.showPlaylist(list, options);
     },
-    showPlaylist: function (list) {
+    showPlaylist: function (list, options) {
         var self = this;
 
-        self.editview = new MediaListView({
+        if (list === self.editList) {
+            return;
+        }
+
+        self.state.trackModel(list);
+
+        self.editList = list;
+
+        self.editview = new MediaListView(_.extend({
             sortable: true,
             model: list,
-            el: $("#new-playlist"),
+            el: $("#new-playlist", self.el),
             type: 'playlist-sortable',
             pagination: false,
             search_type: 'client',
-        });
+        }, options));
 
         // Bind save and delete buttons
         $(".playlist-button-array .save").bind("click", _.bind(self.savePlaylist, self));
@@ -149,6 +190,7 @@ window.EditView = PanelView.extend({
                             // event fires when we get the response from the server, so calling .save() on that leads
                             // to duplicate (but different) playlist and all sorts of fun debugging time.
                             self.editview.save(mod);
+                            self.state.trackModel(mod);
                         },
                     });
                     console.log('WE HAVE ADDED TO THE UNIVERSE', col);
@@ -158,6 +200,7 @@ window.EditView = PanelView.extend({
                     // makes it to the server, updates our Universe and restores relationships. Sometimes we
                     // can have nice things after all.
                     self.collection.create(col);
+                    self.state.commitChanges();
                     console.log ('universe knows of us, just saving');
                 }
             }
@@ -188,13 +231,10 @@ window.EditView = PanelView.extend({
         }
     },
     canNavigateAway: function (options) {
-        if (this.editview && this.editview.hasChanges()) {
-            this.alert_dialog.dialog("open");
-            options['cancel']();
-        } else {
-            this.viewCleanup();
-            options['ok']();
-        }
+        this.state.leaveView()
+        this.viewCleanup();
+        options['ok']();
+        return;
     },
     viewCleanup: function() {
         PanelView.prototype.destroyView.apply(this, arguments);
