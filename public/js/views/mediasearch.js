@@ -2,6 +2,8 @@ window.SearchView = function(options) {
     var self = this;
     _.extend(self, Backbone.Events);
 
+    self.options = options;
+
     var el = options['el'];
     var pagination = 'pagination' in options ? options['pagination'] : false;
     var collection = options['collection'];
@@ -9,6 +11,7 @@ window.SearchView = function(options) {
     var type = 'type' in options ? options['type'] : 'server';
     var facets = options['facets'] || [];
     var query_obj = {};
+    var query = options['query'] || '';
 
     var nest = el.parents('.infinit-panel:first');
     var scrollable = nest.find('.scrollable:first');
@@ -33,46 +36,10 @@ window.SearchView = function(options) {
 
     el.html(template.mediasearch({type: type, pagination: pagination}));
     console.log('Render: SearchView');
-
-    switch(pagination) {
-        case 'traditional':
-            // XXX WARN: changing page size breaks relations. Just Don't Do It.
-            if (page_size != collection.state.pageSize){
-                collection.setPageSize(page_size,{fetch:false});
-            }
-            renderBootstrapPaginator();
-            break;
-        case 'endless':
-            var offset = 100;
-            var wait = 100;
-            // XXX WARN: changing page size breaks relations. Just Don't Do It.
-            if (page_size != collection.state.pageSize){
-                collection.setPageSize(page_size,{fetch: false, first: true});
-            }
-            var scroll_callback = function () {
-                if (scrollable.scrollTop() >= (completeList.height() - scrollable.height() - offset)
-                     && collection.hasNext() ){
-                    collection.getNextPage({remove: false});
-                    $('.loading').addClass('visible');
-                }
-            };
-
-            var throttled = _.throttle(scroll_callback, wait);
-            scrollable.scroll(throttled);
-
-            collection.bind("sync", function() {
-               $('.loading').removeClass('visible');
-            });
-            break;
-
-        case false: break;
-        default:
-    }
-
     var searchBox = $('.visual_search', el);
     this.visualSearch = VS.init({
         container : searchBox,
-        query     : '',
+        query     : query,
         showFacets: false,
         placeholder: '',
         callbacks : {
@@ -85,6 +52,7 @@ window.SearchView = function(options) {
                 self.trigger('clearSearch');
             },
             search: function(query, searchCollection) {
+                self.options['query'] = self.visualSearch.searchBox.currentQuery;
                 query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
                 if(type == 'server') {
                     searchOnServer();
@@ -146,12 +114,52 @@ window.SearchView = function(options) {
         }});
     }
 
+    this.hideLoading = function() {
+        $('.loading').removeClass('visible');
+    };
+
     this.clearSearch = function() {
         self.visualSearch.searchBox.clearSearch('');
     };
+
     this.destroy = function() {
-        collection.unbind("sync");
+        collection.unbind("sync", this.hideLoading);
     };
+
+    switch(pagination) {
+        case 'traditional':
+            // XXX WARN: changing page size breaks relations. Just Don't Do It.
+            if (page_size != collection.state.pageSize){
+                collection.setPageSize(page_size,{fetch:false});
+            }
+            renderBootstrapPaginator();
+            break;
+        case 'endless':
+            var offset = 100;
+            var wait = 100;
+            // XXX WARN: changing page size breaks relations. Just Don't Do It.
+            if (page_size != collection.state.pageSize){
+                collection.setPageSize(page_size,{fetch: false, first: true});
+            }
+            var scroll_callback = function () {
+                if (scrollable.scrollTop() >= (completeList.height() - scrollable.height() - offset)
+                     && collection.hasNext() ){
+                    collection.getNextPage({remove: false});
+                    $('.loading').addClass('visible');
+                }
+            };
+
+            var throttled = _.throttle(scroll_callback, wait);
+            scrollable.scroll(throttled);
+
+            // I thought that hoisting would work here but self.hideLoading is undefined otherwise,
+            // so I moved this whole block to the end.
+            collection.bind("sync", self.hideLoading, self);
+            break;
+
+        case false: break;
+        default:
+    }
 
     return this;
 }
