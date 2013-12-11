@@ -17,8 +17,7 @@ var _              = require('underscore'),
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
     iobackends     = new (require ('./iobackends'))(db, pubsub.publisher),
-    App            = require("mbc-common/models/App"),
-    maxage = 365 * 24 * 60 * 60 * 1000
+    App            = require("mbc-common/models/App")
  ;
 
 
@@ -64,15 +63,15 @@ app.configure(function () {
     }));
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: maxage }}));
+    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: conf.Others.maxage }}));
     app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
         compress: true}
     ));
-    app.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
-    app.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
-    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
+    app.use(express.static(conf.Dirs.pub, {maxAge: conf.Others.maxage}));
+    app.use('/models', express.static(conf.Dirs.models, {maxAge: conf.Others.maxage}));
+    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: conf.Others.maxage}));
     app.use(app.router);
 });
 
