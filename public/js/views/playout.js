@@ -1,3 +1,5 @@
+var FILMSTRIP_PADDING = 15;
+
 // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
 // MIT license
 (function() {
@@ -1084,20 +1086,54 @@ PlayoutTimelinePanel.prototype = {
 
             // Setup clip metrics
             var attr_sel;
+            var pos_attrs;
+            var fs_attrs;
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
-                    attr_sel = ["x", "y", "width"];
+                    attr_sel  = ["x", "y", "width", "height"];
+                    pos_attrs = {x: 0, y: 0, width: "100%" , height: "20%"};
+                    fs_attrs  = {x: 0, y: "5%", width: "100%", height: "20%", class: "FilmstripBG Horizontal"};
                 break;
                 case PlayoutTimeline.VERTICAL:
-                    attr_sel = ["y", "x", "height"];
+                    attr_sel  = ["y", "x", "height", "width"];
+                    pos_attrs = {x: 0, y: 0, width: "20%", height: "100%"};
+                    fs_attrs  = {x: "5%", y: 0, width: "20%", height: "100%", class: "FilmstripBG Vertical"};
                 break;
             }
+
+            // Filmstrip Background
+            new_plist.append("svg:foreignObject").attr(fs_attrs);
 
             // Setup new clips
             var new_clips = second_level.enter();
             var new_svg = new_clips.append("svg:svg").attr("class", "Clip"); // Svg Object
             new_svg.append("svg:rect"); // Background
-            new_svg.append("text"); // Text
+            new_svg.append("svg:svg").append("text"); // Text
+
+            // Filmstrip
+            var padding_style = (self.timeline.layout) ? 'padding-left' : 'padding-top';
+            new_svg.append("svg:foreignObject")
+                .attr(pos_attrs)
+                .attr("class", "Filmstrip")
+                .append("xhtml:canvas")
+                    .style(padding_style, FILMSTRIP_PADDING + "px")
+                    .attr("width", "0")
+                    .attr("height", "0");
+
+            var tar = self.smoothify(second_level.select("canvas"), smooth)
+            tar
+                .style(attr_sel[3], function(d) {
+                    return $(this).parent()[attr_sel[2]]() - (FILMSTRIP_PADDING * 2);
+                })
+                .style(attr_sel[2], function(d) {
+                    return length_to_duration(d.get("durationraw")) / self.drawing_quota + "px";
+                })
+
+            if (smooth) {
+                tar.each("end", function() {
+                    self.timeline.callback("after_draw");
+                });
+            }
 
             // Update new and old clips
             second_level
@@ -1110,7 +1146,7 @@ PlayoutTimelinePanel.prototype = {
                     }
                     return sum * 100 / length + "%";
                 })
-                .attr(attr_sel[1], "40")
+                .attr(attr_sel[1], "5%")
                 .attr(attr_sel[2], function(d, i, j) {
                     var length = playlist_length(filtered_data[j]);
                     var my_length = length_to_duration(d.get("durationraw"));
@@ -1118,16 +1154,21 @@ PlayoutTimelinePanel.prototype = {
                 })
 
             second_level.select("rect")
-                .attr("y", 0).attr("x", 0).attr("height", "100%").attr("width", "100%")
+                .attr("y", 0)
+                .attr("x", 0)
+                .attr("height", "100%")
+                .attr("width", "100%")
                 .style("opacity", function(d, i) { return i % 2 ? 0.3 : 0.2; })
                 .style("fill", "black");
 
             // Setup clip text
-            var clip_text = second_level.select("text")
-                .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
-                .attr("font-size", 14)
-                .style("stroke", "none")
-                .style("fill", "white");
+            var clip_text = second_level.select("svg")
+                .attr(attr_sel[1], "20%")
+                .select("text")
+                    .text(function(d) { return d.get("file").substr(d.get("file").lastIndexOf("/") + 1); })
+                    .attr("font-size", 14)
+                    .style("stroke", "none")
+                    .style("fill", "white");
 
             switch(self.timeline.layout) {
                 case PlayoutTimeline.HORIZONTAL:
@@ -1146,6 +1187,7 @@ PlayoutTimelinePanel.prototype = {
             // Remove elements that are not being showed
             second_level.exit().remove();
 
+            self.timeline.callback("after_draw");
         } else {
             new_plist
                 .append("text")
@@ -1655,9 +1697,11 @@ PlayoutTimelinePanel.prototype = {
 };
 
 
-
 window.PlayoutView = PanelView.extend({
     el: '#content',
+
+    filmstrips: {},
+
     initialize: function() {
         PanelView.prototype.initialize.apply(this, arguments);
 
@@ -1669,12 +1713,14 @@ window.PlayoutView = PanelView.extend({
 
         this.svg = this.$el.find("#playout");
 
+        this.conf = appCollection.findWhere({ type: 'config' }).get('Caspa').Playout;
+
         this.timeline = new PlayoutTimeline({
             container: "#playout",
             unique_id: "_id",
             width: this.svg.width(),
             height: this.svg.height(),
-            layout: PlayoutTimeline.VERTICAL,
+            layout: self.conf.horizontal == '0' ? 0 : 1,
             //smooth_drag: true,
             //follow: true,
             shades: true,
@@ -1817,6 +1863,9 @@ window.PlayoutView = PanelView.extend({
             self.timeline.drag_clear();
         });
 
+        // Config Filmstrip events
+        this.timeline.bind_callback("after_draw", _.bind(this.update_filmstrip, this));
+
         // Config panning events
         this.timeline.bind_callback("panning", _.bind(this.fetch_occurrences, this));
 
@@ -1871,6 +1920,86 @@ window.PlayoutView = PanelView.extend({
             });
         }
     }, 1000, {leading: false}),
+
+    update_filmstrip: function() {
+        var self = this;
+        var orientation = (self.timeline.layout) ? 'vertical' : 'horizontal';
+
+        $("svg#Timeline svg.Clip canvas").each(function(index, elem) {
+            var elem = $(elem);
+            var par = elem.parent();
+            var clip = elem.parent().parent()[0].__data__;
+            if (clip.attributes.file == "None") return;
+            var checksum = clip.attributes.checksum;
+            var src = '/sc/' + checksum + '.mp4';
+            var model = {src: src};
+
+            if (orientation == 'vertical') {
+                var width = par.width() - (FILMSTRIP_PADDING * 2);
+                var height = par.height();
+            } else {
+                var width = par.width();
+                var height = par.height() - (FILMSTRIP_PADDING * 2);
+            }
+
+
+            var addFilmstripEvents = function(fs, elem) {
+
+                fs.on('draw:finished', function() {
+                    this.resizing = false;
+                    elem.hide(); //hack
+                    this.drawCanvas(elem);
+                    elem.show(); //hack
+                });
+
+                fs.on('draw:frame', function(event, args) {
+                    elem.hide(); //hack
+                    this.drawFrame(elem, args);
+                    elem.show(); //hack
+                });
+
+            };
+
+            if ( self.filmstrips[checksum] === undefined ) {
+
+                var fs = self.filmstrips[checksum] = new Filmstrip(model, {
+                    width: width,
+                    height: height,
+                    drawHoles: false,
+                    bgColor: 'black',
+                    bandsPadding: 0,
+                    autoOrientation: false,
+                    orientation: orientation,
+                });
+
+                addFilmstripEvents(fs, elem);
+                fs.load();
+
+            } else {
+
+                var fs = self.filmstrips[checksum];
+                addFilmstripEvents(fs, elem);
+
+                if (fs.orientation != orientation) {
+                    fs.orientation = orientation;
+                    fs.clearCanvas();
+                } else {
+                    if (fs.width != width || fs.height != height) {
+                        fs.resizing = true;
+                        fs.resize(width, height);
+                    }
+                    else {
+                        if (!fs.resizing) {
+                            elem.hide(); //hack
+                            fs.drawCanvas(elem);
+                            elem.show(); //hack
+                        }
+                    }
+                }
+            }
+
+        });
+    },
 
     canNavigateAway: function(options) {
         // Release resources before navigating away
