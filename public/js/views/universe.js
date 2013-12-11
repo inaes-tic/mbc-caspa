@@ -60,7 +60,8 @@ window.UniverseListView = function(options){
         collection: collection,
         type: search_type,
         pagination: pagination,
-        facets: facets
+        facets: facets,
+        joins: [ {collection: 'Tags', field: 'name'} ],
     });
 
     this.view_model = new UniverseListViewModel(this.collection);

@@ -185,7 +185,8 @@ window.MediaListView = function(options){
         collection: collection,
         type: search_type,
         pagination: pagination,
-        facets: facets
+        facets: facets,
+        joins: []
     });
     this.clearSearch = this.search_view.clearSearch;
 

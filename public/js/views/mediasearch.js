@@ -9,7 +9,11 @@ window.SearchView = function(options) {
     var page_size = options['page_size'] || (collection instanceof PageableCollection)?collection.state.pageSize:10;
     var type = 'type' in options ? options['type'] : 'server';
     var facets = options['facets'] || [];
+    var joins = options['joins'] || [];
+    var joins_collections = _.pluck(joins, 'collection');
+    var collections = appCollection.models[0].get('Common')['Collections'];
     var query_obj = {};
+    var sync = {};
 
     var nest = el.parents('.infinit-panel:first');
     var scrollable = nest.find('.scrollable:first');
@@ -30,6 +34,14 @@ window.SearchView = function(options) {
             plucked_facet = loaded_facets;
         }
         return _.map(_.uniq(_.compact(plucked_facet)), function(val) { return String(val); });
+    }
+
+    var getJoinCollection = function(facet) {
+        var col;
+        switch(facet) {
+            case 'Tags':  col = 'Media.TagCollectionPageable'; break;
+        }
+        return col;
     }
 
     el.html(template.mediasearch({type: type, pagination: pagination}));
@@ -95,16 +107,27 @@ window.SearchView = function(options) {
                 self.trigger('doSearch', query_obj);
             },
             facetMatches : function(callback) {
-                callback(facets);
+                callback(facets.concat(joins_collections));
             },
             valueMatches : function(facet, searchTerm, callback) {
                 var options = {preserveOrder: true};
                 if (type=='server') {
-                    Backbone.sync('read', collection, {
+
+                    if(joins_collections.indexOf(facet) != -1 && collections[facet]) {
+                        /* Getting join class string and creating a new instance */
+                        var str_class = getJoinCollection(facet);
+                        var col_class = _.reduce( str_class.split("."), function(memo, prop) { return (memo[prop] || window[prop]); }, '');
+                        var field = _.findWhere(joins, { collection: facet })['field'];
+                        sync = { col: new col_class(), distinct: field, query: {} };
+                    } else {
+                        sync = { col: collection, distinct: facet, query: query_obj };
+                    }
+
+                    Backbone.sync('read', sync.col, {
                         silent: true,
                         data: {
-                            distinct: facet,
-                            query: query_obj,
+                            distinct: sync.distinct,
+                            query: sync.query,
                         },
                         success: function(res) {
                             var f = parseFacets(res[1], facet);
