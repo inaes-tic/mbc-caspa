@@ -77,6 +77,7 @@ module.exports = function(app) {
         require.resolve('node-uuid'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
         require.resolve('d3/d3.js'),
+        require.resolve('filmstrip/filmstrip.js'),
         path.join(lib_dir, 'backbone.modal-min.js'),
         path.join(lib_dir, 'kinetic-v4.5.2.min.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
