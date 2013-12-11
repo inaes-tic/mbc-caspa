@@ -6,6 +6,7 @@ module.exports = function(app) {
     , i18n = require('i18n-abide')
     , mbc = require('mbc-common')
     , conf = mbc.config.Caspa
+    , commonConf = mbc.config.Common
     , confWebvfx = mbc.config.Webvfx
     , logger  = mbc.logger().addLogger('caspa_routes');
 
@@ -147,6 +148,17 @@ module.exports = function(app) {
 
     app.get('/js/models.js', folio.serve(modelsJs));
 
+
+    commonConf.Widgets.Files.forEach(function(widget) {
+        app.get(
+            '/js/widgets/' + widget + '.js',
+            folio.serve(
+                new folio.Glossary([
+                    require.resolve('mbc-common/widgets/' + widget)
+                ])
+            )
+        );
+    });
 
     /**
      * Template Javascript Package
