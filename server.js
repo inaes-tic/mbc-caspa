@@ -1,23 +1,24 @@
-var express = require('express'),
-    path    = require('path'),
-    exec    = require('child_process').exec,
-    i18n    = require('i18n-abide'),
-    _       = require('underscore'),
-    backboneio = require('backbone.io'),
-    mbc = require('mbc-common'),
-    conf = mbc.config.Caspa,
+/* require all the libs we use */
+var _              = require('underscore'),
+    express        = require('express'),
+    path           = require('path'),
+    exec           = require('child_process').exec,
+    i18n           = require('i18n-abide'),
+    backboneio     = require('backbone.io'),
+    moment         = require('moment'),
+    uuid           = require('node-uuid'),
+/* shared mbc code */
+    mbc            = require('mbc-common'),
+    conf           = mbc.config.Caspa,
     search_options = mbc.config.Search,
-    collections = mbc.config.Common.Collections,
-    moment = require('moment'),
-    App = require("mbc-common/models/App"),
-    maxage = 365 * 24 * 60 * 60 * 1000,
-    uuid = require('node-uuid'),
-    logger = mbc.logger().addLogger('caspa_server'),
-    db = mbc.db(),
-    utils = new (require('./utils'))(db),
-    publisher = mbc.pubsub(),
-    listener  = mbc.pubsub(),
-    iobackends = new (require ('./iobackends'))(db, publisher)
+    collections    = mbc.config.Common.Collections,
+    db             = mbc.db(),
+    logger         = mbc.logger().addLogger('caspa_server'),
+    pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
+    utils          = new (require('./utils'))(db),
+    iobackends     = new (require ('./iobackends'))(db, pubsub.publisher),
+    App            = require("mbc-common/models/App"),
+    maxage = 365 * 24 * 60 * 60 * 1000
  ;
 
 
@@ -90,7 +91,7 @@ app.configure('production', function(){
 var appModel = require('./routes')(app);
 //var media = require('./routes/media')(app);
 
-listener.on('JSONmessage', function(chan, status) {
+pubsub.listener.on('JSONmessage', function(chan, status) {
 
     if( chan != "mostoStatus" ) // we can ignore this message
         return;
@@ -148,22 +149,23 @@ listener.on('JSONmessage', function(chan, status) {
         });
     });
 });
-listener.subscribe('mostoStatus');
+pubsub.listener.subscribe('mostoStatus');
 
-listener.on('JSONmessage', function(chan, msg) {
+pubsub.listener.on('JSONmessage', function(chan, msg) {
     if( !(chan == 'mostoStatus.progress' ) )
         return;
 
     var status = new App.ProgressStatus(msg);
     iobackends.emit ('frame', ['updated', status]);
 });
-listener.subscribe('mostoStatus.progress');
+
+pubsub.listener.subscribe('mostoStatus.progress');
 
 // there should probably be two backends or two collections or both, or something, one for
 // one-time momentary messages like warnings and such to be dismissed by the frontend,
 // and another one for "sticky" messages like long-lived status problems, like if melted died
 // or the DB has a problem
-listener.on('JSONpmessage', function(pattern, chan, msg) {
+pubsub.listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
         case "mostoMessage.emit":
             return iobackends.emit('mostomessages', ['created', msg.model]);
@@ -173,7 +175,7 @@ listener.on('JSONpmessage', function(pattern, chan, msg) {
             return iobackends.emit('mostomessages', ['deleted', msg.model]);
     }
 });
-listener.psubscribe('mostoMessage*');
+pubsub.listener.psubscribe('mostoMessage*');
 
 var ios = iobackends.get_ios();
 var io = backboneio.listen(app.listen(app.get('port'), function(){
