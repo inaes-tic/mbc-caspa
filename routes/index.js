@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = function(app, everyauth) {
     var path = require('path')
     , folio = require('folio')
     , jade = require('jade')
@@ -226,7 +226,12 @@ module.exports = function(app) {
     app.get('/js/templates.js', folio.serve(templateJs));
 
     app.get('*',  function(req, res) {
-        res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
+        if(req.session.auth && req.session.auth.loggedIn){
+            res.render('index', { name: conf.Branding.name,
+                                  description: conf.Branding.description });
+        } else {
+            res.redirect ('/login');
+        }
     });
 
     return appCollection;

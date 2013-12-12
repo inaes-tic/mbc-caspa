@@ -1,0 +1,63 @@
+!!!
+//html(lang='#{lang}', dir='#{lang_dir}')
+html(lang='#{lang}')
+  head
+    - if (!name)
+      - var name= 'undefined'
+    title= name
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(charset="utf-8")
+    link(rel='stylesheet', href='/css/main.css')
+    script(src='/lib/head.min.js')
+  body
+    script(type='text/javascript')
+      head.js(
+        "/js/vendor.js",
+        "/js/utils.js",
+        "/js/templates.js",
+        "/socket.io/socket.io.js",
+        "/socket.io/backbone.io.js",
+        "/js/vendor_others.js",
+        "/js/models.js",
+        "/js/views.js"
+      );
+    #Panel
+    - if (everyauth.user)
+      .personal-block.solo
+        ul
+          li
+            span logged in as:
+            span.name= everyauth.user.login
+            |
+            a(href="/logout") logout
+
+    #content
+          .home-hero
+            div(style="opacity: .9;")
+              - if ('undefined' !== typeof errors && errors.length)
+                .row
+                  ul#errors
+                    - each error in errors
+                      li.error
+                        .alert.alert-error.alert-dismissable
+                          b= error
+              .row
+                #left-pane
+                  h1 Login
+                    form(action='/login', method='post')
+                      #login
+                        input(type='text', name=everyauth.password.loginFormFieldName,  placeholder="user name")
+                      #password
+                        input(type='password', name=everyauth.password.passwordFormFieldName, placeholder="password")
+                      #submit
+                        input(type='submit').btn.btn-primary.btn-lg Login
+                 #right-pane
+                   h1 Register
+                    form(action='/register', method='post')
+                      #login
+                        input(type='text', name=everyauth.password.loginFormFieldName, placeholder='user name')
+                      #password
+                        input(type='password', name=everyauth.password.passwordFormFieldName, placeholder='password')
+                      #submit
+                        input(type='submit').btn.btn-primary.btn-lg Register
+

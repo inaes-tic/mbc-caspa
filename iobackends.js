@@ -96,6 +96,11 @@ var iobackends = module.exports = exports = function (db, publisher) {
                 collection: collections.Sketchs,
                 opts: { search: search_options.Sketchs },
             }},
+        user: {
+            mongo: {
+                db: db,
+                collection: collections.Auth,
+            }},
     };
 
     /* process the backends object to streamline code */
@@ -126,16 +131,37 @@ var iobackends = module.exports = exports = function (db, publisher) {
 };
 
 iobackends.prototype.register_sync = function (collection, name) {
-    var backend = this.get_io (name);
-    function sync (method, model, options) {
+    logger.info ('binding sync on', name);
+    var backend = this.get(name).io;
+
+    function backend_emit (method, model) {
         var event = {create: 'created', read: 'updated', update: 'updated', delete: 'removed'};
 
-        logger.warn ('in sync for backend', name, method, event[method]);
-
-        backend.emit (event[method], model.toJSON());
+        logger.warn ('emmiting', method);
+        backend.emit (event[method], model);
     };
 
-    collection.osync = sync;
+    function backend_sync (method, model, options) {
+        var success = options.success || function (item) {logger.info  ('info:'  + item)};
+        var error   = options.error   || function (err)  {logger.error ('error:' + err )};
+
+        var res = {end: success, error: error};
+        var req = {method: method, model: model.toJSON(), options: options};
+
+        backend.handle (req, res, function(err, result) {
+            if (err)
+                logger.error ('while sync: ' + err);
+            else
+                backend_emit (method, result || model.toJSON());
+        });
+    }
+
+    collection.osync = backend_sync;
+
+    if (collection.delayed)
+        while (p = collection.delayed.pop()) {
+            backend_sync.apply(p);
+        }
 };
 
 iobackends.prototype.emit = function (name, args) {
