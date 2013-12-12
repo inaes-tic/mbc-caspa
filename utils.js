@@ -4,6 +4,7 @@ var     _ = require('underscore')
 ,   fs    = require ('fs')
 ,  mbc    = require('mbc-common')
 , conf    = mbc.config.Caspa
+, data    = mbc.config.Data
 , logger  = mbc.logger().addLogger('caspa_util')
 , collections = mbc.config.Common.Collections
 ;
@@ -120,7 +121,7 @@ utils.prototype.parse_pool = function () {
         md5sum.stdout.on('data', function (data) {
             var md5 = data.toString().split(' ')[0];
 
-            self.db.collection(collections.Medias).findOne(md5, function(err, item) {
+            self.db.collection(data.Medias.collection_db).findOne(md5, function(err, item) {
                 if (!err && item) {
                     if (stat === item.stat) return (done(item));
                     else item.stat = stat;

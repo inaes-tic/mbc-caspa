@@ -11,7 +11,7 @@ var _              = require('underscore'),
     mbc            = require('mbc-common'),
     conf           = mbc.config.Caspa,
     search_options = mbc.config.Search,
-    collections    = mbc.config.Common.Collections,
+    data           = mbc.config.Data,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('caspa_server'),
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
@@ -167,11 +167,11 @@ pubsub.listener.subscribe('mostoStatus.progress');
 pubsub.listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
         case "mostoMessage.emit":
-            return iobackends.emit('mostomessages', ['created', msg.model]);
+            return iobackends.emit('Mostomessages', ['created', msg.model]);
         case "mostoMessage.create":
-            return iobackends.emit('mostomessages', ['created', msg.model]);
+            return iobackends.emit('Mostomessages', ['created', msg.model]);
         case "mostoMessage.delete":
-            return iobackends.emit('mostomessages', ['deleted', msg.model]);
+            return iobackends.emit('Mostomessages', ['deleted', msg.model]);
     }
 });
 pubsub.listener.psubscribe('mostoMessage*');
@@ -204,11 +204,11 @@ io.set('logger', logger); // Log socket.io with custom logger
 if (process.env.MBC_SCRAPE) {
     setTimeout(function () {
         utils.scrape_files (conf.Dirs.scrape, function (model) {
-            db.collection(collections.Medias).insert(model, {safe:true}, function(err, result) {
+            db.collection(data.Medias.collection_db).insert(model, {safe:true}, function(err, result) {
                 if (err) {
                     logger.error('error','An error has occurred' + err);
                 } else {
-                    iobackends.emit('media', ['created', model]);
+                    iobackends.emit('Medias', ['created', model]);
                 }
             });
         });

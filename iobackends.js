@@ -2,7 +2,7 @@ var    _ = require('underscore'),
      mbc = require('mbc-common'),
     conf = mbc.config.Caspa,
     search_options = mbc.config.Search,
-    collections = mbc.config.Common.Collections,
+    data = mbc.config.Data,
     uuid = require('node-uuid'),
     logger = mbc.logger().addLogger('caspa_backends'),
     backboneio = require('backbone.io');
@@ -39,61 +39,61 @@ var iobackends = module.exports = exports = function (db, publisher) {
         app: {
             use: [backboneio.middleware.configStore()]
         },
-        transform: {
+        Transforms: {
             use: [this.middlewares.id],
             mongo: {
                 db: db,
-                collection: collections.Transforms,
+                collection: data.Transforms.collection_db,
                 opts: { search: search_options.Transforms },
             }},
-        media: {
+        Medias: {
             mongo: {
                 db: db,
-                collection: collections.Medias,
+                collection: data.Medias.collection_db,
                 opts: { search: search_options.Medias },
             }},
-        piece: {
+        Pieces: {
             use: [this.middlewares.id],
             mongo: {
                 db: db,
-                collection: collections.Pieces,
+                collection: data.Pieces.collection_db,
                 opts: { search: search_options.Pieces },
             }},
-        list: {
+        Lists: {
             use: [this.middlewares.id],
             mongo: {
                 db: db,
-                collection: collections.Lists,
+                collection: data.Lists.collection_db,
                 opts: { search: search_options.Lists },
             }},
-        sched: {
+        Scheds: {
             use: [this.middlewares.id, this.middlewares.publishJSON],
             mongo: {
                 db: db,
-                collection: collections.Scheds,
+                collection: data.Scheds.collection_db,
                 opts: { search: search_options.Scheds },
             }},
-        status: {
+        Status: {
             use: [this.middlewares.id],
             mongo: {
                 db: db,
-                collection: collections.Status,
+                collection: data.Status.collection_db,
                 opts: { search: search_options.Status },
             }},
         frame: {
             use: [backboneio.middleware.memoryStore(db, 'progress', {})],
         },
-        mostomessages: {
+        Mostomessages: {
             mongo: {
                 db: db,
-                collection: collections.Mostomessages,
+                collection: data.Mostomessages.collection_db,
                 opts: { search: search_options.Mostomessages },
             }},
-        sketch: {
+        Sketchs: {
             use: [this.middlewares.id],
             mongo: {
                 db: db,
-                collection: collections.Sketchs,
+                collection: data.Sketchs.collection_db,
                 opts: { search: search_options.Sketchs },
             }},
     };
@@ -146,7 +146,8 @@ iobackends.prototype.get_ios = function () {
     var ret = {};
     var self = this;
     _(_.keys(this.backends)).each (function (backend) {
-        ret[backend + 'backend'] = self.backends[backend].io;
+        var key = (_.has(data, backend))? data[backend]['backend'] : backend + 'backend';
+        ret[key] = self.backends[backend].io;
     });
     return ret;
 };
