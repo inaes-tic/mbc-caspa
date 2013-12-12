@@ -22,7 +22,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
             next();
         },
 
-        id: function (req, res, next) {
+        uuid: function (req, res, next) {
             if( req.method == 'create' && req.model._id === undefined) {
                 req.model._id = uuid.v1();
             }
@@ -40,7 +40,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
             use: [backboneio.middleware.configStore()]
         },
         transform: {
-            use: [this.middleware.id],
+            use: [this.middleware.uuid],
             mongo: {
                 db: db,
                 collection: collections.Transforms,
@@ -53,28 +53,28 @@ var iobackends = module.exports = exports = function (db, publisher) {
                 opts: { search: search_options.Medias },
             }},
         piece: {
-            use: [this.middleware.id],
+            use: [this.middleware.uuid],
             mongo: {
                 db: db,
                 collection: collections.Pieces,
                 opts: { search: search_options.Pieces },
             }},
         list: {
-            use: [this.middleware.id],
+            use: [this.middleware.uuid],
             mongo: {
                 db: db,
                 collection: collections.Lists,
                 opts: { search: search_options.Lists },
             }},
         sched: {
-            use: [this.middleware.id, this.middleware.publishJSON],
+            use: [this.middleware.uuid, this.middleware.publishJSON],
             mongo: {
                 db: db,
                 collection: collections.Scheds,
                 opts: { search: search_options.Scheds },
             }},
         status: {
-            use: [this.middleware.id],
+            use: [this.middleware.uuid],
             mongo: {
                 db: db,
                 collection: collections.Status,
@@ -90,7 +90,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
                 opts: { search: search_options.Mostomessages },
             }},
         sketch: {
-            use: [this.middleware.id],
+            use: [this.middleware.uuid],
             mongo: {
                 db: db,
                 collection: collections.Sketchs,
