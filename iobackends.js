@@ -12,7 +12,7 @@ var searchWrapper = require('./searchWrapper.js');
 
 var iobackends = module.exports = exports = function (db, publisher) {
     var self = this;
-    this.middlewares = {
+    this.middleware = {
         debug: function (req, res, next) {
             logger.debug('Backend:', req.backend);
             logger.debug('Method: ', req.method);
@@ -40,7 +40,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
             use: [backboneio.middleware.configStore()]
         },
         transform: {
-            use: [this.middlewares.id],
+            use: [this.middleware.id],
             mongo: {
                 db: db,
                 collection: collections.Transforms,
@@ -53,28 +53,28 @@ var iobackends = module.exports = exports = function (db, publisher) {
                 opts: { search: search_options.Medias },
             }},
         piece: {
-            use: [this.middlewares.id],
+            use: [this.middleware.id],
             mongo: {
                 db: db,
                 collection: collections.Pieces,
                 opts: { search: search_options.Pieces },
             }},
         list: {
-            use: [this.middlewares.id],
+            use: [this.middleware.id],
             mongo: {
                 db: db,
                 collection: collections.Lists,
                 opts: { search: search_options.Lists },
             }},
         sched: {
-            use: [this.middlewares.id, this.middlewares.publishJSON],
+            use: [this.middleware.id, this.middleware.publishJSON],
             mongo: {
                 db: db,
                 collection: collections.Scheds,
                 opts: { search: search_options.Scheds },
             }},
         status: {
-            use: [this.middlewares.id],
+            use: [this.middleware.id],
             mongo: {
                 db: db,
                 collection: collections.Status,
@@ -90,7 +90,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
                 opts: { search: search_options.Mostomessages },
             }},
         sketch: {
-            use: [this.middlewares.id],
+            use: [this.middleware.id],
             mongo: {
                 db: db,
                 collection: collections.Sketchs,
@@ -119,7 +119,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
                                                     mongo.collection,
                                                     mongo.opts)));
         }
-        backend.io.use (self.middlewares.debug);
+        backend.io.use (self.middleware.debug);
     });
 
     logger.info ('binding to mongo collections:', binded.join(', ') + '.');
