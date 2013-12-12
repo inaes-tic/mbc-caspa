@@ -1,21 +1,25 @@
-var express = require('express'),
-    path    = require('path'),
-    exec    = require('child_process').exec,
-    i18n    = require('i18n-abide'),
-    _       = require('underscore'),
-    backboneio = require('backbone.io'),
-    mbc = require('mbc-common'),
-    conf = mbc.config.Caspa,
+/* require all the libs we use */
+var _              = require('underscore'),
+    express        = require('express'),
+    path           = require('path'),
+    exec           = require('child_process').exec,
+    i18n           = require('i18n-abide'),
+    backboneio     = require('backbone.io'),
+    moment         = require('moment'),
+    uuid           = require('node-uuid'),
+/* shared mbc code */
+    mbc            = require('mbc-common'),
+    conf           = mbc.config.Caspa,
     search_options = mbc.config.Search,
-    collections = mbc.config.Common.Collections,
-    moment = require('moment'),
-    App = require("mbc-common/models/App"),
-    maxage = 365 * 24 * 60 * 60 * 1000,
-    uuid = require('node-uuid'),
-    logger = mbc.logger().addLogger('caspa_server'),
-    db = mbc.db(),
-    utils = new (require('./utils'))(db)
+    collections    = mbc.config.Common.Collections,
+    db             = mbc.db(),
+    logger         = mbc.logger().addLogger('caspa_server'),
+    pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
+    utils          = new (require('./utils'))(db),
+    iobackends     = new (require ('./iobackends'))(db, pubsub.publisher),
+    App            = require("mbc-common/models/App")
  ;
+
 
 var loggerStream = {
     write: function(message, encoding) {
@@ -59,15 +63,15 @@ app.configure(function () {
     }));
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: maxage }}));
+    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: conf.Others.maxage }}));
     app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
         compress: true}
     ));
-    app.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
-    app.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
-    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
+    app.use(express.static(conf.Dirs.pub, {maxAge: conf.Others.maxage}));
+    app.use('/models', express.static(conf.Dirs.models, {maxAge: conf.Others.maxage}));
+    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: conf.Others.maxage}));
     app.use(app.router);
 });
 
@@ -86,118 +90,7 @@ app.configure('production', function(){
 var appModel = require('./routes')(app);
 //var media = require('./routes/media')(app);
 
-// Override mongoStore read method with custom
-var searchWrapper = require('./searchWrapper.js');
-
-function debug_middleware (req, res, next) {
-    logger.debug('Backend: ', req.backend);
-    logger.debug('Method: ', req.method);
-    logger.debug('Channel: ', req.channel);
-    logger.debug('Options: ', JSON.stringify(req.options));
-    logger.debug('Model: ', JSON.stringify(req.model));
-    next();
-}
-
-function id_middleware(req, res, next) {
-    if( req.method == 'create' && req.model._id === undefined) {
-        req.model._id = uuid.v1();
-    }
-    next();
-}
-
-function publishJSON_middleware (req, res, next) {
-    publisher.publishJSON([req.backend, req.method].join('.'), { model: req.model });
-    next();
-};
-
-var publisher = mbc.pubsub();
-var listener = mbc.pubsub();
-
-var backends = {
-    app: {
-        use: [backboneio.middleware.configStore()]
-    },
-    transform: {
-        use: [id_middleware],
-        mongo: {
-            db: db,
-            collection: collections.Transforms,
-            opts: { search: search_options.Transforms },
-        }},
-    media: {
-        mongo: {
-            db: db,
-            collection: collections.Medias,
-            opts: { search: search_options.Medias },
-        }},
-    piece: {
-        use: [id_middleware],
-        mongo: {
-            db: db,
-            collection: collections.Pieces,
-            opts: { search: search_options.Pieces },
-        }},
-    list: {
-        use: [id_middleware],
-        mongo: {
-            db: db,
-            collection: collections.Lists,
-            opts: { search: search_options.Lists },
-        }},
-    sched: {
-        use: [id_middleware, publishJSON_middleware],
-        mongo: {
-            db: db,
-            collection: collections.Scheds,
-            opts: { search: search_options.Scheds },
-        }},
-    status: {
-        use: [id_middleware],
-        mongo: {
-            db: db,
-            collection: collections.Status,
-            opts: { search: search_options.Status },
-        }},
-    frame: {
-        use: [backboneio.middleware.memoryStore(db, 'progress', {})],
-    },
-    mostomessages: {
-        mongo: {
-            db: db,
-            collection: collections.Mostomessages,
-            opts: { search: search_options.Mostomessages },
-        }},
-    sketch: {
-        use: [id_middleware],
-        mongo: {
-            db: db,
-            collection: collections.Sketchs,
-            opts: { search: search_options.Sketchs },
-        }},
-};
-
-/* process the backends object to streamline code */
-_(backends).each (function (backend) {
-    backend.io = backboneio.createBackend();
-    if (backend.use)
-        _(backend.use).each (function (usefn) {
-            backend.io.use(usefn);
-        });
-    if (backend.mongo) {
-        var mongo = _.extend ({db: db, opts: {}}, backend.mongo);
-        var fn = _.identity;
-        if (_.has(backend.mongo.opts, 'search'))
-            fn = searchWrapper;
-        backend.io.use(
-            fn(backboneio.middleware.mongoStore(mongo.db,
-                                             mongo.collection,
-                                             mongo.opts)));
-    }
-    backend.io.use (debug_middleware);
-    logger.info("Debugging backend: ", backend);
-});
-
-listener.on('JSONmessage', function(chan, status) {
+pubsub.listener.on('JSONmessage', function(chan, status) {
 
     if( chan != "mostoStatus" ) // we can ignore this message
         return;
@@ -206,7 +99,7 @@ listener.on('JSONmessage', function(chan, status) {
     //  backbone.io
     var emit = _.after(6, function() {
         logger.info('emitting', status);
-        backends['status'].io.emit('updated', status)
+        iobackends.emit('status', ['updated', status]);
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
         db.collection(collections.Scheds).findEach({ _id: status.show[pos]._id }, function(err, res) {
@@ -255,41 +148,40 @@ listener.on('JSONmessage', function(chan, status) {
         });
     });
 });
-listener.subscribe('mostoStatus');
+pubsub.listener.subscribe('mostoStatus');
 
-listener.on('JSONmessage', function(chan, msg) {
+pubsub.listener.on('JSONmessage', function(chan, msg) {
     if( !(chan == 'mostoStatus.progress' ) )
         return;
 
     var status = new App.ProgressStatus(msg);
-    backends['frame'].io.emit('updated', status);
+    iobackends.emit ('frame', ['updated', status]);
 });
-listener.subscribe('mostoStatus.progress');
+
+pubsub.listener.subscribe('mostoStatus.progress');
 
 // there should probably be two backends or two collections or both, or something, one for
 // one-time momentary messages like warnings and such to be dismissed by the frontend,
 // and another one for "sticky" messages like long-lived status problems, like if melted died
 // or the DB has a problem
-listener.on('JSONpmessage', function(pattern, chan, msg) {
+pubsub.listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
         case "mostoMessage.emit":
-            return backends['mostomessages'].io.emit('created', msg.model);
+            return iobackends.emit('mostomessages', ['created', msg.model]);
         case "mostoMessage.create":
-            return backends['mostomessages'].io.emit('created', msg.model);
+            return iobackends.emit('mostomessages', ['created', msg.model]);
         case "mostoMessage.delete":
-            return backends['mostomessages'].io.emit('deleted', msg.model);
+            return iobackends.emit('mostomessages', ['deleted', msg.model]);
     }
 });
-listener.psubscribe('mostoMessage*');
+pubsub.listener.psubscribe('mostoMessage*');
 
-var iobackends = {};
-_(_.keys(backends)).each (function (backend) {
-    iobackends[backend + 'backend'] = backends[backend].io;
-});
-
+var ios = iobackends.get_ios();
 var io = backboneio.listen(app.listen(app.get('port'), function(){
-    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env + '\nactive backends: ' +  _.keys(iobackends));
-}), iobackends);
+    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env + '\nactive backends: ' +  _.keys(ios));
+}), ios);
+
+
 
 io.configure('production', function(){
     // send minified client
@@ -316,7 +208,7 @@ if (process.env.MBC_SCRAPE) {
                 if (err) {
                     logger.error('error','An error has occurred' + err);
                 } else {
-                    backends['media'].io.emit('created', model);
+                    iobackends.emit('media', ['created', model]);
                 }
             });
         });
