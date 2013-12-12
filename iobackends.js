@@ -155,6 +155,3 @@ iobackends.prototype.get = function (name) {
     return this.backends[name];
 };
 
-iobackends.prototype.get_io = function (name) {
-    return this.get(name).io;
-};
