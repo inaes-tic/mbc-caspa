@@ -1925,6 +1925,10 @@ window.PlayoutView = PanelView.extend({
         var self = this;
         var orientation = (self.timeline.layout) ? 'vertical' : 'horizontal';
 
+        for (i in this.filmstrips) {
+            $(this.filmstrips[i]).unbind();
+        }
+
         $("svg#Timeline svg.Clip canvas").each(function(index, elem) {
             var elem = $(elem);
             var par = elem.parent();
