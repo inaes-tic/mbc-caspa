@@ -226,12 +226,8 @@ module.exports = function(app, everyauth) {
     app.get('/js/templates.js', folio.serve(templateJs));
 
     app.get('*',  function(req, res) {
-        if(req.session.auth && req.session.auth.loggedIn){
-            res.render('index', { name: conf.Branding.name,
-                                  description: conf.Branding.description });
-        } else {
-            res.redirect ('/login');
-        }
+        res.render('index', { name: conf.Branding.name,
+                              description: conf.Branding.description });
     });
 
     return appCollection;
