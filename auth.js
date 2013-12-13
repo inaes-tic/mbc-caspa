@@ -64,7 +64,9 @@ var auth = module.exports = exports = function (backends) {
                     errors.push('Wrong password.');
                     return promise.fulfill(errors);
                 }
-                if (didSucceed) return promise.fulfill(user);
+                if (didSucceed) {
+                    return promise.fulfill(user.toJSON());
+                }
                 errors.push('Wrong password.');
                 return promise.fulfill(errors);
             });
