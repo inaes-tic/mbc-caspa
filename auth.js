@@ -1,5 +1,6 @@
 var _           = require('underscore'),
     everyauth   = require ('everyauth'),
+    bcrypt      = require('bcrypt'),
     mbc         = require('mbc-common'),
     Auth        = require("mbc-common/models/Auth"),
     collections = mbc.config.Common.Collections,
@@ -44,35 +45,56 @@ var auth = module.exports = exports = function (backends) {
             }, 200);
         })
         .authenticate( function (login, password) {
-            var errors = [];
-            logger.info ('authing', login, password);
-            if (!login) errors.push('Missing login');
-            if (!password) errors.push('Missing password');
+            var promise
+            , errors = [];
+            if (!login) errors.push('Missing login.');
+            if (!password) errors.push('Missing password.');
             if (errors.length) return errors;
-            var user = self.collection.findWhere ({login: login});
-            logger.info ('auth ok: returning user id:', user, login);
-            if (!user) return ['Login failed'];
-            if (user.get('password') !== password) return ['Login failed'];
-            return user.attributes;
-        })
 
+            var user = self.collection.findWhere ({login: login});
+            if (!user) {
+                errors.push('User with login ' + login + ' does not exist.');
+                return errors;
+            }
+
+            promise = this.Promise();
+            bcrypt.compare(password, user.get('hash'), function (err, didSucceed) {
+                if (err) {
+                    return promise.fail(err);
+                    errors.push('Wrong password.');
+                    return promise.fulfill(errors);
+                }
+                if (didSucceed) return promise.fulfill(user);
+                errors.push('Wrong password.');
+                return promise.fulfill(errors);
+            });
+
+            return promise;
+        })
         .getRegisterPath('/register')
         .postRegisterPath('/register')
         .registerView('login.jade')
         .registerLocals({
             title: 'Register',
             name: 'Register',
-
         })
-        .validateRegistration( function (newUserAttrs, errors) {
-            var login = newUserAttrs.login;
+        .validateRegistration( function (attrs, errors) {
+            var login = attrs.login;
             var user = self.collection.findWhere ({login: login});
             if (user) errors.push('Login already taken');
             return errors;
         })
-        .registerUser( function (newUserAttrs) {
-            var user =  self.collection.create (newUserAttrs);
-            console.log ('user is: ', user);
+        .registerUser( function (attrs) {
+            var password = attrs.password;
+
+            delete attrs['password']; // Don't store password
+            var salt = bcrypt.genSaltSync(10);
+            attrs.hash = bcrypt.hashSync(password, salt);
+
+            var user = self.collection.create (attrs, {wait: true});
+            if (!user)
+                return user;
+
             return user.toJSON();
         })
 
