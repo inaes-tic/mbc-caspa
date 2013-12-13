@@ -8,29 +8,7 @@ html(lang='#{lang}')
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     meta(charset="utf-8")
     link(rel='stylesheet', href='/css/main.css')
-    script(src='/lib/head.min.js')
   body
-    script(type='text/javascript')
-      head.js(
-        "/js/vendor.js",
-        "/js/utils.js",
-        "/js/templates.js",
-        "/socket.io/socket.io.js",
-        "/socket.io/backbone.io.js",
-        "/js/vendor_others.js",
-        "/js/models.js",
-        "/js/views.js"
-      );
-    #Panel
-    - if (everyauth.user)
-      .personal-block.solo
-        ul
-          li
-            span logged in as:
-            span.name= everyauth.user.login
-            |
-            a(href="/logout") logout
-
     #content
           .home-hero
             div(style="opacity: .9;")
