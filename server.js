@@ -14,6 +14,7 @@ var _              = require('underscore'),
     collections    = mbc.config.Common.Collections,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('caspa_server'),
+/* utilities */
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
     iobackends     = new (require ('./iobackends'))(db, pubsub.publisher),
