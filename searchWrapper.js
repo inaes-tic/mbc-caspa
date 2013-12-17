@@ -1,5 +1,8 @@
 module.exports = function(middleware) {
     var _ = require('underscore');
+    var mbc            = require('mbc-common');
+    var collections    = mbc.config.Common.Collections;
+    var MongoJoin = require('mongo-fast-join');
 
     // cache up all this, it's just syntactical
     var collection = middleware.collection;
@@ -24,7 +27,8 @@ module.exports = function(middleware) {
                         fields: {},
                         criteria: {},
                         distinct: '',
-                        max_items: 100
+                        max_items: 100,
+                        joins: []
                     };
                     var query = {};
                     var expressions = [];
@@ -37,6 +41,20 @@ module.exports = function(middleware) {
 
                     // validations
                     if(options.search) {
+
+                        if(_.has(options.search, 'joins')) {
+                            var join_cols  = _.pluck(options.search.joins, 'collection') || [];
+                            var joins = _.intersection(join_cols, _.keys(query));
+                            if(joins) {
+                                data.joins = _.map(joins, function(join) {
+                                    var conf_join = _.findWhere(options.search.joins, {collection: join});
+                                    _.extend(conf_join, { value: query[join] } );
+                                    return conf_join;
+                                });
+                                query = _.omit(query, joins);
+                            }
+                        }
+
                         if(data.fields) {
                             _.map(data.fields, function(field) {
                                 var ok = _.contains(options.search.facets, field);
@@ -150,20 +168,66 @@ module.exports = function(middleware) {
                                 res.end([ { total_entries: items.length }, items]);
                             });
                         } else {
-                            var q = collection.find(query, fields).limit(limit).skip(skip).sort(sort);
-                            q.count(function(err, total) {
-                                if (err) {
-                                    res.end({'error':'An error has occurred on count - read ' + err});
-                                } else {
-                                    q.toArray(function (err, items) {
-                                        if (err) {
-                                            res.end({'error':'An error has occurred on read ' + err});
-                                        } else {
-                                            res.end([ { total_entries: total }, items]);
-                                        }
+                            var q;
+                            if(data.joins.length) {
+                                var mongo_join= new MongoJoin();
+                                q = mongo_join.query(
+                                        collection,
+                                        query,
+                                        fields,
+                                        { limit: limit, skip: skip, sort: sort }
+                                );
+
+                                var pivot_new_key;
+                                if(_.has(options.search, 'pivot') && options.search.pivot) {
+                                    pivot_new_key = options.search.pivot.new_key;
+                                    var join_collection = db.collection(collections[options.search.pivot.collection]);
+                                    q.join({
+                                        joinCollection: join_collection,
+                                        leftKeys: [ options.search.pivot.key ],
+                                        rightKeys: ["_id"],
+                                        newKey: pivot_new_key
                                     });
                                 }
-                            });
+
+                                q = _.reduce(data.joins, function(memo, join) {
+                                    var join_collection = db.collection(collections[join.collection]);
+                                    var join_query = {};
+                                    join_query[join.field] = join.value;
+                                    var join_key = (pivot_new_key) ? pivot_new_key + '.' + join.key : join.key;
+                                    return memo.join({
+                                        joinCollection: join_collection,
+                                        joinQuery: join_query,
+                                        leftKeys: [ join_key ],
+                                        rightKeys: ["_id"],
+                                        newKey: join.new_key,
+                                        joinType: "inner"
+                                    });
+                                }, q);
+
+                                q.exec(function(err, items) {
+                                    if (err) {
+                                        res.end({'error':'An error has occurred on read ' + err});
+                                    } else {
+                                        res.end([ { total_entries: items.length }, items]);
+                                    }
+                                });
+                            } else {
+                                q = collection.find(query, fields).limit(limit).skip(skip).sort(sort);
+                                q.count(function(err, total) {
+                                    if (err) {
+                                        res.end({'error':'An error has occurred on count - read ' + err});
+                                    } else {
+                                        q.toArray(function (err, items) {
+                                            if (err) {
+                                                res.end({'error':'An error has occurred on read ' + err});
+                                            } else {
+                                                res.end([ { total_entries: total }, items]);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
                         }
                     });
                 }
