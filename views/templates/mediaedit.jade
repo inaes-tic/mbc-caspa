@@ -30,4 +30,8 @@ block flexible-content
             h4= i18n.gettext('Oops!')
             p=  i18n.gettext('It looks like you have no playlist to show here')
             button.btn.btn-block.btn-large.btn-primary#create-playlist= i18n.gettext('Create New Playlist')
+        .alert.alert-block.alert-other-client-deleted(style='display:none')
+            button.close.hide-alert(type='button') ×
+            h4= i18n.gettext('Oops!')
+            p=  i18n.gettext('Somebody else deleted this playlist.')
 

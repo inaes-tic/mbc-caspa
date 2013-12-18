@@ -11,7 +11,7 @@ window.EditView = PanelView.extend({
         PanelView.prototype.initialize.apply(this, arguments);
         this.options = options || {};
 
-        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'clearSearch', 'showPlaylist', 'switchPlaylist', 'onBackendEvent');
+        _.bindAll(this, 'createPlaylist', 'savePlaylist', 'delPlaylist', 'clearSearch', 'showPlaylist', 'switchPlaylist', 'onBackendEvent', 'onBackendDeleteEvent');
         this.render();
     },
     render: function () {
@@ -21,6 +21,7 @@ window.EditView = PanelView.extend({
         this.state = state;
         this.options.state = state;
         this.state.on('changed', this.onBackendEvent);
+        this.state.on('deleted', this.onBackendDeleteEvent);
 
         this.collection = state.collection || new Media.UniversePageable();
         state.collection = this.collection;
@@ -85,10 +86,12 @@ window.EditView = PanelView.extend({
     hideAlert: function (ev) {
         // we can get the div with something like $(ev.target.parentElement)
         // but sometimes there is the need to hide more than only one.
+        $('.no-playlist-alert', this.el).hide();
         $('.alert-empty-playlist', this.el).hide();
         $('.alert-unnamed-playlist', this.el).hide();
         $('.alert-has-occurrences', this.el).hide();
         $('.alert-other-client-changed', this.el).hide();
+        $('.alert-other-client-deleted', this.el).hide();
     },
     onBackendEvent: function () {
         // This is called when other client changes the playlist
@@ -102,6 +105,17 @@ window.EditView = PanelView.extend({
         this.editList.get('pieces').reset(ps);
 
         $('.alert-other-client-changed', this.el).show();
+    },
+    onBackendDeleteEvent: function () {
+        // This is called when other client deletes the playlist
+        // we are editing.
+        if (!this.editList) {
+            return;
+        }
+
+        this.killEditList();
+        this.hideAlert();
+        $('.alert-other-client-deleted', this.el).show();
     },
     switchPlaylistEvent: function (event, a) {
         return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
