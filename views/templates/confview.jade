@@ -1,48 +1,61 @@
-- var data = 0
-- var defaults = 1
-- var descriptions = 2
 #configure
   #menu
     .listHeader
-      ul.nav.nav-list
-        each v, k in config[data]
-          - if (k!= 'type' && k!='Search') {
+        ul.nav.nav-list(data-bind="foreach: config")
+          <!-- ko if: $index() === 0 -->
+          <!-- ko foreach: { data: Object.keys($data) } -->
+          <!-- ko if: ($data !== "__kb" && $data !== "model" && $data !== "Search" && $data !== "type") -->
           li
-            a(href='#' + k)
+            a(data-bind=" attr: { href: '#' + $data }")
               i.icon-cheveron-right
-              span= k
-          - }
-        .form-actions
-          a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
-          a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
+              span(data-bind="text: $data")
+          <!-- /ko -->
+          <!-- /ko -->
+          <!-- /ko -->
+          .form-actions
+            a.btn.btn-primary.save_conf(data-bind="click: $root.save" )= i18n.gettext('Save')
+            a.btn.delete_conf(data-bind="click: $root.cancel")= i18n.gettext('Cancel')
   #info
     .scrollable
       form.form-horizontal
-        each v, k in config[data]
-            - if (k!='type' && k!='Search') {
-            .page-header
-              a(id=k)
-              - var k_desc = config[descriptions]['properties'][k]
-              h1= k_desc['title']
-              h2= k_desc['description']
-              each v0, k0 in v
-               - if (typeof(v0) != 'string') {
-                 - var k0_desc = k_desc['properties'][k0]
-                 h3=k0_desc['title']
-                 p= k0_desc['description']
-                 each v1, k1 in v0
-                   - var label=  k+'.'+k0+'.'+k1
-                   - var value= v1
-                   - var k1_desc = k0_desc['properties'][k1]
-                   - var title = k1_desc['title']
-                   - var desc = k1_desc['description']
-                   - var default_value = config[defaults][k][k0][k1]
-                   .control-group
-                     label.control-label(for=label)= title + ' : '
-                     .controls
-                       input.span5(id=label, type='text', name=label, placeholder=label, value=value, title=desc)
-                       - if (v1 != default_value) {
-                         button.set_default.btn.btn-primary(name=label)= i18n.gettext('Default')
-                       -}
-               - }
-            - }
+        .page-header(data-bind="foreach: config")
+          <!-- ko if: $index() === 0 -->
+          <!-- ko foreach: { data: Object.keys($data) } -->
+
+          <!-- ko if: ($data !== "__kb" && $data !== "model" && $data !== "Search" && $data !== "type") -->
+          a(data-bind="attr: { id: $data }")
+
+          <!-- ko with: $parents[1]['config']()[2]['properties']()[$data] -->
+          h1(data-bind="text: title")
+          h2(data-bind="text: description")
+
+          <!-- ko foreach: { data: Object.keys(properties) } -->
+          h3(data-bind="text: $parent['properties'][$data]['title']")
+          p(data-bind="text: $parent['properties'][$data]['description']")
+
+          <!-- ko foreach: { data: Object.keys($parent['properties'][$data]['properties']) } -->
+          - var label = "$parents[2]+'.'+$parent+'.'+$data"
+          - var title = "$parents[1]['properties'][$parent]['properties'][$data]['title']"
+          - var description = "$parents[1]['properties'][$parent]['properties'][$data]['description']"
+          - var default_value = "$parents[4]['config']()[0][$parents[2]]()[$parent][$data]"
+          - var value = "$parents[4]['config']()[1][$parents[2]]()[$parent][$data]"
+          - var label_bind = "text: " + title + ", attr: { for: "+ label  +" }"
+          - var input_bind = "attr: { id: " + label + " , type: 'text', name: " + label + ", placeholder: " + label + ", title: " + title + ", description: " + description + "}, value: " + default_value
+          .control-group
+            label.control-label(data-bind=label_bind)
+            .controls
+              input.span5(data-bind=input_bind)
+              - var cond = "<!-- ko if : " + value + " !== " + default_value + " -->"
+              !{cond}
+              button.set_default.btn.btn-primary(name=label, data-bind="click: function(data, event) { $root.setDefault($parents[2], $parent, $data) }")= i18n.gettext('Default')
+              <!-- /ko -->
+
+          <!-- /ko -->
+
+          <!-- /ko -->
+          <!-- /ko -->
+
+          <!-- /ko -->
+          <!-- /ko -->
+
+          <!-- /ko -->
