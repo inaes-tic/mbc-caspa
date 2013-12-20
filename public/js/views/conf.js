@@ -1,88 +1,51 @@
-window.ConfView = Backbone.View.extend({
-    el: $("#content"),
-    initialize: function () {
-        this.render();
-        this.configModel  = this.collection.findWhere({ type: 'config' });
-        this.defaultModel = this.collection.findWhere({ type: 'defaults' });
-    },
-    render: function () {
-        $(this.el).html(template.confview({ config: this.collection.toJSON() }));
-        $('.scrollable').scrollspy('refresh');
-        location.hash = location.hash+' ';
+window.ConfView = function(options){
+    var self = this;
+    _.extend(self, Backbone.Events);
 
-        var self = this;
-        this.view_model = {
-            change: function(event, ui) {
-                console.log('change de KO');
-                self.change(event);
-            },
-        };
-        _.extend( this.view_model, utils.widgetsViewModel);
-        ko.applyBindings(this.view_model, $('#info', this.el)[0]);
+    options = options || {};
+    var el = options['el'] || $('#content');
+    this.el = el;
 
-        return this;
-    },
-    events: {
-        "change"        : "change",
-        "click .save_conf"   : "save",
-        "click .abort_conf"  : "abort",
-        "click .set_default"    : "setDefault",
-    },
+    var collection = options['collection'];
 
-    change: function (event) {
-        // Remove any existing alert message
-        utils.hideAlert();
+    el.html(template.confview({}));
+    $('.scrollable').scrollspy('refresh');
+    location.hash = location.hash+' ';
 
-        // Some racy initialization code, protect us against.
-        if (!this.configModel) {
-            return;
-        }
+    var ConfViewModel = kb.ViewModel.extend({
+        constructor: function(collection) {
+            kb.ViewModel.prototype.constructor.apply(this, arguments);
+            var self = this;
 
-        var config_model = this.configModel.attributes;
+            _.extend(self, Backbone.Events);
 
-        // Apply the change to the model
-        var target = event.target;
+            this.config =  kb.collectionObservable(collection, {
+                view_model: kb.ViewModel,
+            });
 
-        if(target.name) {
-            var res = target.name.split(".");
-            /* XXX FIXME backbone problems setting with nested models. try backbone-deep-models? */
-            switch(res.length) {
-                case 1: config_model[target.name] = target.value; break;
-                case 2: config_model[res[0]][res[1]] = target.value; break;
-                case 3: config_model[res[0]][res[1]][res[2]] = target.value; break;
-                default:
+            this.save = function(item) {
+                collection.models[0].save()
             }
-        }
-    },
-    abort: function () {
-        app.navigate('/', false);
-    },
-    save: function () {
-        var self = this;
-        this.configModel.save(null, {
-            success: function (model) {
-                self.render();
-            },
-            error: function () {
-                utils.showAlert('Error', 'An error occurred while trying to change this item', 'alert-error');
+
+            this.cancel = function() {
             }
-        });
-    },
-    setDefault: function(event) {
-        var config_model = this.configModel.attributes;
-        var default_model = this.defaultModel.attributes;
-        var target = event.target;
-        var res = target.name.split(".");
-        if(res.length == 3) {
-            config_model[res[0]][res[1]][res[2]] = default_model[res[0]][res[1]][res[2]];
-            var selector = target.name.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\\\$1');
-            $('input#'+selector, this.el).val(default_model[res[0]][res[1]][res[2]]);
-        }
-        return false;
-    },
-    canNavigateAway: function(options) {
+
+            this.setDefault = function(idx1, idx2, idx3) {
+                var m = collection.models[0].get(idx1);
+                m[idx2][idx3] = collection.models[1].get(idx1)[idx2][idx3];
+                collection.models[0].set(idx1, m);
+                //collection.trigger('change', collection.models[0]);
+            }
+        },
+    });
+
+    this.view_model = new ConfViewModel(collection);
+    _.extend( this.view_model, utils.widgetsViewModel);
+
+    ko.applyBindings(this.view_model, $("#configure", el)[0]);
+
+    this.canNavigateAway = function(options) {
         $(".scrollable").unbind("scroll"); // Disables scrollspy
-        this.undelegateEvents();
         options["ok"]();
-    },
-});
+    }
+};
