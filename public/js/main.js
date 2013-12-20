@@ -5,6 +5,9 @@ window.appstatus = new App.Status();
 window.framestatus = new App.ProgressStatus();
 
 var AppRouter = Backbone.Router.extend({
+    currentView: null,
+    currentHash: Backbone.history.getHash(),
+    promises:    [],
 
     routes: {
         "media"             : "list",
@@ -27,7 +30,6 @@ var AppRouter = Backbone.Router.extend({
             console.log ('got medias:moved from server', move);
         });
 
-        this.currentView = null;
         this.currentHash = Backbone.history.getHash();
 
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
@@ -118,13 +120,21 @@ var AppRouter = Backbone.Router.extend({
             var args = router._extractParameters(route, fragment);
 
             var ok = function() {
-                if (callback) {
-                    router.currentView = callback.apply(router, args);
-                }
-                router.trigger.apply(router, ['route:' + name].concat(args));
-                router.trigger('route', name, args);
-                Backbone.history.trigger('route', router, name, args);
-                router.currentHash = Backbone.history.getHash();
+                router.trigger('preroute', name, args);
+                var inner = function() {
+                    if (callback) {
+                        router.currentView = callback.apply(router, args);
+                    }
+                    router.trigger.apply(router, ['route:' + name].concat(args));
+                    router.trigger('route', name, args);
+                    Backbone.history.trigger('route', router, name, args);
+                    router.currentHash = Backbone.history.getHash();
+                    router.trigger('postroute', name, args);
+
+                    router.promises.splice(0, router.promises.length);
+                };
+
+                $.when.apply($, this.promises).done(inner);
             };
 
             var cancel = function() {
