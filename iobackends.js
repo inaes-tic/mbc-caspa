@@ -97,6 +97,7 @@ var iobackends = module.exports = exports = function (db, publisher) {
                 opts: { search: search_options.Sketchs },
             }},
         user: {
+            use: [this.middleware.uuid],
             mongo: {
                 db: db,
                 collection: collections.Auth,
