@@ -2,6 +2,8 @@
 //html(lang='#{lang}', dir='#{lang_dir}')
 html(lang='#{lang}')
   head
+    - if (!name)
+      - var name= 'undefined'
     title= name
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     meta(charset="utf-8")
@@ -24,6 +26,14 @@ html(lang='#{lang}')
         "/js/widgets/fonts/ShareBold.js"
       );
     #Panel
+    - if (everyauth.user)
+      .personal-block.solo
+        ul
+          li
+            span logged in as:
+            span.name= everyauth.user.login
+            |
+            a(href="/logout") logout
 
     #content
       block content
