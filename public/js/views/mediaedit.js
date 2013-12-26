@@ -50,22 +50,15 @@ window.EditView = PanelView.extend({
         this.showPlaylist(this.editList)
     },
     killEditList: function () {
-        this.releaseEditList();
-
         if (this.editview) {
-            this.editview.removeView();
+            this.editview.destroyView();
             this.editview = null;
         }
 
-        $('.playlist-button-array', this.el).hide();
-        $('.no-playlist-alert', this.el).show();
-    },
-    releaseEditList: function() {
         this.editList = null;
 
-        if (this.editview) {
-            this.editview.releaseView();
-        }
+        $('.playlist-button-array', this.el).hide();
+        $('.no-playlist-alert', this.el).show();
 
         // Unbind save and delete buttons
         $(".playlist-button-array .save").unbind("click");
@@ -80,7 +73,7 @@ window.EditView = PanelView.extend({
         return this.switchPlaylist( ko.dataFor(event.currentTarget).model().id );
     },
     switchPlaylist: function (id) {
-        this.releaseEditList();
+        this.killEditList();
 
         var plid = this.collection.get(id);
         this.showPlaylist(plid);
