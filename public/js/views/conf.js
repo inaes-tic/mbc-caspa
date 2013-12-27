@@ -22,17 +22,25 @@ window.ConfView = Backbone.View.extend({
         // Remove any existing alert message
         utils.hideAlert();
 
+        // Some racy initialization code, protect us against.
+        if (!this.configModel) {
+            return;
+        }
+
         var config_model = this.configModel.attributes;
 
         // Apply the change to the model
         var target = event.target;
-        var res = target.name.split(".");
-        /* XXX FIXME backbone problems setting with nested models. try backbone-deep-models? */
-        switch(res.length) {
-            case 1: config_model[target.name] = target.value; break;
-            case 2: config_model[res[0]][res[1]] = target.value; break;
-            case 3: config_model[res[0]][res[1]][res[2]] = target.value; break;
-            default:
+
+        if(target.name) {
+            var res = target.name.split(".");
+            /* XXX FIXME backbone problems setting with nested models. try backbone-deep-models? */
+            switch(res.length) {
+                case 1: config_model[target.name] = target.value; break;
+                case 2: config_model[res[0]][res[1]] = target.value; break;
+                case 3: config_model[res[0]][res[1]][res[2]] = target.value; break;
+                default:
+            }
         }
     },
     abort: function () {
