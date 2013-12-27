@@ -50,5 +50,13 @@ window.utils = {
         $('.alert').hide();
     },
 
-    color_scale: d3.scale.category10()
+    color_scale: d3.scale.category10(),
+
+    widgetsViewModel: {
+        renderWidget: function(type) {
+            var types = ['string', 'boolean', 'spinner'];
+            var ret =  (types.indexOf(type) != -1)? type : 'string';
+            return ret;
+        },
+    },
 };
