@@ -57,6 +57,7 @@ module.exports = function(app, everyauth) {
     var vendorJs = new folio.Glossary([
         require.resolve('jquery-browser/lib/jquery.js'),
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
+        path.join(lib_dir, 'jquery-ui.toggleSwitch.js'),
         require.resolve('underscore/underscore.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('resumable.js/resumable.js'),
