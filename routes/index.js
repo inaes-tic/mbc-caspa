@@ -64,7 +64,7 @@ module.exports = function(app, everyauth) {
         require.resolve('moment'),
         require.resolve('jed'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
-        path.join(lib_dir, 'bootstrap.min.js'),
+        path.join(lib_dir, 'bootstrap/docs/assets/js/bootstrap.min.js'),
         path.join(lib_dir, 'sprintf/sprintf.js'),
         path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
         path.join(lib_dir, 'airtime/common.js'),
