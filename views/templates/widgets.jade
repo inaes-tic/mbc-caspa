@@ -1,0 +1,6 @@
+script(id="boolean", type="text/html")
+  select(data-bind="options: ['0','1'], value: value, attr: { placeholder: description, title: description }, jqSwitch: { value: value }")
+script(id="string", type="text/html")
+  input.span5(type='text', data-bind="attr: { placeholder: description, title: description}, value: value")
+script(id="spinner", type="text/html")
+  input.span5(type='text', data-bind="spinner: {value: value }, attr: { placeholder: description, title: description}")
