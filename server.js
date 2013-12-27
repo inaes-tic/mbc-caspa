@@ -19,7 +19,7 @@ var _              = require('underscore'),
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
     iobackends     = new (require('./iobackends'))(db, pubsub.publisher),
-    auth           = new (require('./auth'))(iobackends);
+    auth           = new (require('./auth'))(iobackends)
  ;
 
 
@@ -198,8 +198,6 @@ var ios = iobackends.get_ios();
 var io = backboneio.listen(app.listen(app.get('port'), function(){
     logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env + '\nactive backends: ' +  _.keys(ios));
 }), ios);
-
-
 
 io.configure('production', function(){
     // send minified client
