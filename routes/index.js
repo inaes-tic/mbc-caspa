@@ -74,6 +74,7 @@ module.exports = function(app, everyauth) {
         require.resolve('knockback/knockback-core.js'),
         path.join(lib_dir, 'knockout-sortable/build/knockout-sortable.js'),
         path.join(lib_dir, 'knockout-drag-binding.js'),
+        path.join(lib_dir, 'knockout-jqueryui.min.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
         require.resolve('node-uuid'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
