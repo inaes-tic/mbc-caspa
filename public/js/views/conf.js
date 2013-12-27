@@ -9,6 +9,17 @@ window.ConfView = Backbone.View.extend({
         $(this.el).html(template.confview({ config: this.collection.toJSON() }));
         $('.scrollable').scrollspy('refresh');
         location.hash = location.hash+' ';
+
+        var self = this;
+        this.view_model = {
+            change: function(event, ui) {
+                console.log('change de KO');
+                self.change(event);
+            },
+        };
+        _.extend( this.view_model, utils.widgetsViewModel);
+        ko.applyBindings(this.view_model, $('#info', this.el)[0]);
+
         return this;
     },
     events: {
