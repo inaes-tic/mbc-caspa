@@ -1,6 +1,8 @@
 - var data = 0
 - var defaults = 1
 - var descriptions = 2
+
+include widgets
 #configure
   #menu
     .listHeader
@@ -40,9 +42,14 @@
                    .control-group
                      label.control-label(for=label)= title + ' : '
                      .controls
-                       input.span5(id=label, type='text', name=label, placeholder=label, value=value, title=desc)
+                       - var label_quoted = label.replace(/'/g, "\\'")
+                       - var desc_quoted =  desc.replace(/'/g, "\\'")
+                       - var value_quoted = (typeof value == "string" || value instanceof String) ? value.replace(/'/g, "\\'"):value
+                       - var data = "{ change: change, label: '" + label_quoted + "', value: '" + value_quoted + "', desc: '" + desc_quoted  +"' }";
+                       - var render_widget = "template: { name: renderWidget('" + k1_desc['type'] +  "'), data: " + data + " }";
+                       #widget(id=label, data-bind=render_widget)
                        - if (v1 != default_value) {
                          button.set_default.btn.btn-primary(name=label)= i18n.gettext('Default')
-                       -}
+                       - }
                - }
             - }
