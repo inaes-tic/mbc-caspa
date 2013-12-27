@@ -27,9 +27,16 @@ window.UniverseListView = function(options){
             options = options || {};
             options['keys'] = ['collection', 'name'];
             this.medias =  kb.collectionObservable(model.get('pieces'));
+            this.duration = kb.observable(model, 'duration');
+
             this.total_time = ko.computed(function(){
-//XXX: keep this, it tells KO to update total_time when something happens to the collection
-                var x = self.medias();
+                /*
+                 * XXX: keep this, it tells KO to update total_time when something happens to the model.
+                 * For Media.Playlist we look for changes in the duration field, as the pieces may arrive with incomplete
+                 * information when we do a fetchRelated(). We take care of that inside the model and update duration when
+                 * everything is ready.
+                */
+                var x = self.duration();
                 return model.pretty_duration();
             }, model);
             this.id = ko.observable(model.id);
