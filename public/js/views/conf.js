@@ -24,7 +24,7 @@ window.ConfView = function(options){
             });
 
             this.save = function(item) {
-                collection.models[0].save()
+                self.config()[0].model().save();
             }
 
             this.cancel = function() {
@@ -41,7 +41,6 @@ window.ConfView = function(options){
 
     this.view_model = new ConfViewModel(collection);
     _.extend( this.view_model, utils.widgetsViewModel);
-
     ko.applyBindings(this.view_model, $("#configure", el)[0]);
 
     this.canNavigateAway = function(options) {

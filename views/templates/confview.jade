@@ -39,14 +39,15 @@ include widgets
           - var label = "$parents[2]+'.'+$parent+'.'+$data"
           - var title = "$parents[1]['properties'][$parent]['properties'][$data]['title']"
           - var description = "$parents[1]['properties'][$parent]['properties'][$data]['description']"
-          - var default_value = "$parents[4]['config']()[0][$parents[2]]()[$parent][$data]"
-          - var value = "$parents[4]['config']()[1][$parents[2]]()[$parent][$data]"
+          - var type = "$parents[1]['properties'][$parent]['properties'][$data]['type']"
+          - var default_value = "$parents[4]['config']()[1][$parents[2]]()[$parent][$data]"
+          - var value = "$parents[4]['config']()[0][$parents[2]]()[$parent][$data]"
           - var label_bind = "text: " + title + ", attr: { for: "+ label  +" }"
           - var label_quoted = label.replace(/'/g, "\\'")
-          - var desc_quoted =  desc.replace(/'/g, "\\'")
-          - var value_quoted = (typeof value == "string" || value instanceof String) ? value.replace(/'/g, "\\'"):value
-          - var data = "{ change: change, label: '" + label_quoted + "', value: '" + value_quoted + "', desc: '" + desc_quoted  +"' }";
-          - var render_widget = "template: { name: renderWidget('" + k1_desc['type'] +  "'), data: " + data + " }";
+          - var desc_quoted =  description.replace(/'/g, "\\'")
+          - var value_quoted = (typeof value == "string" || value instanceof String) ? value.replace(/'/g, "\\'"):value;
+          - var data = "{ label: " + label + ", value: " + value + ", desc: " + description  +" }";
+          - var render_widget = "template: { name: $root.renderWidget(" + type +  "), data: " + data + " }";
           .control-group
             label.control-label(data-bind=label_bind)
             .controls
