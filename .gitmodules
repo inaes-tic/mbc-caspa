@@ -15,4 +15,4 @@
 	url = https://github.com/inaes-tic/visualsearch.git
 [submodule "vendor/backbone.memento"]
 	path = vendor/backbone.memento
-	url = https://github.com/derickbailey/backbone.memento
+	url = https://github.com/inaes-tic/backbone.memento
