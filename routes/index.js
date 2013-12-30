@@ -56,7 +56,9 @@ module.exports = function(app, everyauth) {
 
     var vendorJs = new folio.Glossary([
         require.resolve('jquery-browser/lib/jquery.js'),
+        path.join(lib_dir, 'bootstrap/docs/assets/js/bootstrap.min.js'),
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
+        path.join(lib_dir, 'jquery-ui.toggleSwitch.js'),
         require.resolve('underscore/underscore.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('resumable.js/resumable.js'),
@@ -64,7 +66,6 @@ module.exports = function(app, everyauth) {
         require.resolve('moment'),
         require.resolve('jed'),
         path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
-        path.join(lib_dir, 'bootstrap/docs/assets/js/bootstrap.min.js'),
         path.join(lib_dir, 'sprintf/sprintf.js'),
         path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
         path.join(lib_dir, 'airtime/common.js'),
@@ -73,6 +74,7 @@ module.exports = function(app, everyauth) {
         require.resolve('knockback/knockback-core.js'),
         path.join(lib_dir, 'knockout-sortable/build/knockout-sortable.js'),
         path.join(lib_dir, 'knockout-drag-binding.js'),
+        path.join(lib_dir, 'knockout-jqueryui.min.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
         require.resolve('node-uuid'),
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
