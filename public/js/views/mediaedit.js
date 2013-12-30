@@ -135,6 +135,8 @@ window.EditView = PanelView.extend({
             return;
         }
 
+        self.killEditList();
+
         self.state.trackModel(list);
 
         self.editList = list;
