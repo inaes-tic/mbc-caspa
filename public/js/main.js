@@ -39,6 +39,8 @@ var AppRouter = Backbone.Router.extend({
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
 
         this.on('preroute', function(route, oldidx, newidx, args) {
+            // XXX: change this to .finish() when we upgrade jQuery to 1.9
+            $('#content').stop(true, true);
             if (newidx > oldidx) {
                 this.promises.push($('#content').toggle('slide', {direction: 'left'}).promise());
             } else {
