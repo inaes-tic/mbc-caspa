@@ -8,11 +8,17 @@ function FFMPEG (opts) {
 
     FFMPEG.prototype.run = function (orig, dest, opts, callback) {
         var stdout, stderr;
+        
+        var seconds;
+        if (opts.seconds === undefined)
+            seconds = 5;
+        else
+            seconds = opts.seconds;
 
         this.proc = _spawnProcess (['-i',
                                          orig,
                                          '-r', 1,
-                                         '-ss', 5,
+                                         '-ss', seconds,
                                          '-vcodec', 'mjpeg',
                                          '-vframes', '1',
                                          '-an',
