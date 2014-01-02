@@ -8,6 +8,7 @@ var     _ = require('underscore')
 , collections = mbc.config.Common.Collections
 , timers  = require('timers')
 , Backbone = require('backbone')
+, media_types = require('./media_types.js')
 ;
 
 var _exists     = fs.exists     || require('path').exists;
@@ -87,6 +88,7 @@ utils.prototype.sc_pool = new fp.Pool({size: 1}, function (media, callback, done
     var f = new ffmpeg();
     f.run (media.file, dest, {
             size: '150x100',
+            seconds: media_types.getSeconds(media.type),
             onCodecData: function(metadata) {
                 logger.info('here');
                 if (!callback)
@@ -97,6 +99,7 @@ utils.prototype.sc_pool = new fp.Pool({size: 1}, function (media, callback, done
                 metadata.file = media.file;
                 metadata.stat = media.stat;
                 metadata.checksum = media._id;
+                metadata.type = media.type;
                 callback (metadata);
             }
     }, function(retcode, fds) {
@@ -127,7 +130,7 @@ utils.prototype.parse_pool = function () {
                     if (stat === item.stat) return (done(item));
                     else item.stat = stat;
                 } else {
-                    item = { _id: md5 , file: file, stat: stat};
+                    item = { _id: md5 , file: file, stat: stat, type: media_types.getType(file).type};
                 }
 
                 return done(item);
@@ -159,8 +162,9 @@ utils.prototype.scrape_files = function (path, callback) {
     .on('file', function (root, stat, next) {
         var file = root + '/' +  stat.name;
         next();
-        if (! stat.name.match(/\.(webm|mp4|flv|avi|mpeg|mpeg2|mpg|mov|mkv|ogm|ogg)$/i)) {
-            var error = new Error('file not a vid : ' + stat.name);
+
+        if (!media_types.isMedia(stat.name)) {
+            var error = new Error('file type not supported: ' + stat.name);
             logger.error(error.toString());
             return error;
         }
@@ -171,7 +175,6 @@ utils.prototype.scrape_files = function (path, callback) {
             logger.debug('parsed: ' + stat.name, res);
             self.sc_pool.task(res, callback, function (err, res) {return res});
         });
-
     })
     .on('end', function () {
         logger.info("all done");
