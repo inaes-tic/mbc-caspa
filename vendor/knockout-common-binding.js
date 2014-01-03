@@ -40,3 +40,34 @@ ko.bindingHandlers.jqSwitch = {
         $(element)[0].val(currentValue);
     }
 };
+
+ko.bindingHandlers.renderWidget = {
+   init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var type;
+
+        // Available widget templates
+        var available_types = ['string', 'boolean', 'spinner'];
+        var default_type = 'string';
+
+        // use value sent or type from viewmodel
+        var value = valueAccessor();
+        var valueUnwrapped = ko.unwrap(value);
+
+        if(!_.isEmpty(valueUnwrapped)) {
+            type = valueUnwrapped;
+        } else if(bindingContext.$data.type()) {
+            type = bindingContext.$data.type();
+        } else {
+            console.error("Error on binding: didnt get any widget type");
+            return;
+        }
+
+        //validate template
+        var tpl_name =  (available_types.indexOf(type) != -1)? type : default_type;
+
+        // render tpl to element and pass all the binding context
+        ko.renderTemplate(tpl_name, bindingContext, {}, element, 'replaceNode');
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+    }
+};
