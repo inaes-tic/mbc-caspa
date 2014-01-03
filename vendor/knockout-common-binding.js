@@ -16,24 +16,27 @@ ko.bindingHandlers.addOnEnter = {
 
 ko.bindingHandlers.jqSwitch = {
     init: function(element, valueAccessor, allBindingsAccessor) {
-        var currentValue = valueAccessor();
         var bindings = allBindingsAccessor();
-        var value = bindings.value;
+        var value = valueAccessor();
+        var currentValue = ko.utils.unwrapObservable(value.value);
+
         if(bindings.options==undefined){
             $(element).toggleSwitch(currentValue);
         } else {
             var called=0;
             bindings.optionsAfterRender = function(option, item){
-                if(item == value) {
-                    $(element).val(value);
-                }
                 called++;
                 if(called == 2) {
-                   $(element).toggleSwitch(currentValue);
+                   $(element).val(currentValue);
+                   $(element).toggleSwitch();
                 }
             };
         }
+
     },
-    update: function(element) {
+    update: function(element, valueAccessor, allBindingsAccessor) {
+        var value = valueAccessor();
+        var currentValue = ko.utils.unwrapObservable(value.value);
+        $(element)[0].val(currentValue);
     }
 };
