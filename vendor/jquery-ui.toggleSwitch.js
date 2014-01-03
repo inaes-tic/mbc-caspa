@@ -10,8 +10,24 @@ jQuery.fn.toggleSwitch = function (params) {
     var options = $.extend({}, defaults, params);
 
     return $(this).each(function (i, item) {
+        item.val = _val(item);
         generateToggle(item);
     });
+
+    function _val(item) {
+        var slideContain = $(item).parent();
+        return function (index) {
+            toggleValue(slideContain, index);
+        }
+    }
+
+    function toggleValue(slideContain, index) {
+        var $slideContain = $(slideContain), $parent = $slideContain.parent();
+        $slideContain.find("label").eq(index).addClass("ui-state-active").siblings("label").removeClass("ui-state-active");
+        $parent.find("option").prop("selected", false).eq(index).prop("selected", true);
+        $parent.find("select").trigger("change");
+        $slideContain.find(".ui-slider").slider("value", index * 100);
+    }
 
     function generateToggle(selectObj) {
 
@@ -56,14 +72,6 @@ jQuery.fn.toggleSwitch = function (params) {
             var labelIndex = ($(this).is(":first-child")) ? 0 : 1;
             toggleValue(this.parentNode, labelIndex);
         });
-
-        function toggleValue(slideContain, index) {
-            var $slideContain = $(slideContain), $parent = $slideContain.parent();
-            $slideContain.find("label").eq(index).addClass("ui-state-active").siblings("label").removeClass("ui-state-active");
-            $parent.find("option").prop("selected", false).eq(index).prop("selected", true);
-            $parent.find("select").trigger("change");
-            $slideContain.find(".ui-slider").slider("value", index * 100);
-        }
 
         // initialise selected option
         $contain.find("label").eq(selectObj.selectedIndex).click();
