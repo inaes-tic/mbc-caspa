@@ -4,7 +4,7 @@ include widgets
 #configure
   #menu
     .listHeader
-        ul.nav.nav-list(data-bind="{template: 'confignav'}")
+      ul.nav.nav-list(data-bind="{template: 'confignav'}")
 
     .form-actions
       a.btn.btn-primary.save_conf(data-bind="click: $root.save" )= i18n.gettext('Save')
