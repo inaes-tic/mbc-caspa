@@ -13,7 +13,6 @@ window.ConfView = function(options){
     collection = new App.RelationalConfig(flatten_conf(models[0], models[1], models[2]));
 
     el.html(template.confview({}));
-    $('.scrollable').scrollspy('refresh');
     location.hash = location.hash+' ';
 
     var ConfViewModel = kb.ViewModel.extend({
@@ -46,6 +45,8 @@ window.ConfView = function(options){
 
     this.view_model = new ConfViewModel(collection);
     ko.applyBindings(this.view_model, $("#configure", el)[0]);
+
+    $('.scrollable').scrollspy('refresh');
 
     this._save = function() {
         var js = relational_to_server_conf(collection.toJSON());
