@@ -46,8 +46,8 @@ ko.bindingHandlers.renderWidget = {
         var type;
 
         // Available widget templates
-        var available_types = ['string', 'boolean', 'spinner'];
-        var default_type = 'string';
+        var available_types = ['input', 'switch', 'spinner'];
+        var default_type = 'input';
 
         // use value sent or type from viewmodel
         var value = valueAccessor();
@@ -55,8 +55,8 @@ ko.bindingHandlers.renderWidget = {
 
         if(!_.isEmpty(valueUnwrapped)) {
             type = valueUnwrapped;
-        } else if(bindingContext.$data.type()) {
-            type = bindingContext.$data.type();
+        } else if(bindingContext.$data.widget()) {
+            type = bindingContext.$data.widget();
         } else {
             console.error("Error on binding: didnt get any widget type");
             return;
