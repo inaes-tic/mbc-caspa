@@ -10,8 +10,9 @@ var _              = require('underscore'),
 /* shared mbc code */
     mbc            = require('mbc-common'),
     conf           = mbc.config.Caspa,
+    common_conf    = mbc.config.Common,
     search_options = mbc.config.Search,
-    collections    = mbc.config.Common.Collections,
+    collections    = common_conf.Collections,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('caspa_server'),
     App            = require("mbc-common/models/App"),
@@ -65,7 +66,7 @@ app.configure(function () {
     }));
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: conf.Others.maxage }}));
+    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: common_conf.Others.maxage }}));
     app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
@@ -87,9 +88,9 @@ app.configure(function () {
         return res.redirect ('/login');
     });
 
-    app.use(express.static(conf.Dirs.pub, {maxAge: conf.Others.maxage}));
-    app.use('/models', express.static(conf.Dirs.models, {maxAge: conf.Others.maxage}));
-    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: conf.Others.maxage}));
+    app.use(express.static(conf.Dirs.pub, {maxAge: common_conf.Others.maxage}));
+    app.use('/models', express.static(conf.Dirs.models, {maxAge: common_conf.Others.maxage}));
+    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: common_conf.Others.maxage}));
     app.use(app.router);
 });
 
