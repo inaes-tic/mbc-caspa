@@ -18,8 +18,9 @@ window.MediaListView  = MasterView.extend({
         if (type.match(/playlist/)) {
             // In case of playlist, fetch related
             if (!model.isNew() && !options['dont-fetch']) {
-                model.fetchRelated("pieces");
-                model.fetchRelated("occurrences");
+                _.each(model.getRelations(), function(rel) {
+                    model.fetchRelated(rel.key);
+                });
                 model.fetch();
             }
             collection = model.get('pieces');
