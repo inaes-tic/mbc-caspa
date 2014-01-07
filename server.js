@@ -10,7 +10,6 @@ var _              = require('underscore'),
 /* shared mbc code */
     mbc            = require('mbc-common'),
     conf           = mbc.config.Caspa,
-    search_options = mbc.config.Search,
     collections    = mbc.config.Common.Collections,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('caspa_server'),
@@ -18,8 +17,9 @@ var _              = require('underscore'),
 /* utilities */
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
-    iobackends     = new (require('./iobackends'))(db, pubsub.publisher),
-    auth           = new (require('./auth'))(iobackends)
+    backends       = require('./backends')(db),
+    iobindings     = new mbc.iobindings(db, backends, pubsub.publisher),
+    auth           = new (require('./auth'))(iobindings)
  ;
 
 
