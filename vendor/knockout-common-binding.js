@@ -46,7 +46,7 @@ ko.bindingHandlers.renderWidget = {
         var type;
 
         // Available widget templates
-        var available_types = ['input', 'switch', 'spinner'];
+        var available_types = ['input', 'switch', 'spinner', 'list'];
         var default_type = 'input';
 
         // use value sent or type from viewmodel
@@ -67,6 +67,40 @@ ko.bindingHandlers.renderWidget = {
 
         // render tpl to element and pass all the binding context
         ko.renderTemplate(tpl_name, bindingContext, {}, element, 'replaceNode');
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+    }
+};
+
+ko.bindingHandlers.listWidget = {
+   init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var self = bindingContext;
+        var value = valueAccessor();
+
+        self.itemToAdd = ko.observable("");
+        self.selectedItems = ko.observableArray([]);
+        self.addItem = function () {
+            var valueUnwrapped = ko.unwrap(value);
+            if ((self.itemToAdd() != "") && (valueUnwrapped.indexOf(self.itemToAdd()) < 0)) {
+                valueUnwrapped.push(self.itemToAdd());
+                value(valueUnwrapped);
+                value.notifySubscribers();
+            }
+            self.itemToAdd("");
+        };
+
+        self.removeSelected = function () {
+            var valueUnwrapped = ko.unwrap(value);
+            value(_.difference(valueUnwrapped, self.selectedItems()));
+            self.selectedItems([]);
+        };
+
+        var addValueAccessor = function() {
+            return self.addItem;
+        }
+
+        //This makes the widget add an element after pressing enter as we have button with type=submit
+        ko.bindingHandlers.submit.init(element, addValueAccessor, allBindings, viewModel, bindingContext);
     },
     update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
     }
