@@ -195,9 +195,17 @@ pubsub.listener.on('JSONpmessage', function(pattern, chan, msg) {
 pubsub.listener.psubscribe('mostoMessage*');
 
 var ios = iobackends.get_ios();
-var io = backboneio.listen(app.listen(app.get('port'), function(){
-    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env + '\nactive backends: ' +  _.keys(ios));
-}), ios);
+var server = app.listen(app.get('port'), function(){
+    logger.info("Express server");
+    logger.info("listening on port: " + app.get('port'));
+    logger.info("--------- in mode: " + app.settings.env);
+    logger.info("  active backends: " + _.keys(ios));
+});
+server.on ('error', function (err) {
+    logger.error ('Fatal Error starting Express Server:', err.message);
+    process.exit(1);
+});
+var io = backboneio.listen(server, ios);
 
 io.configure('production', function(){
     // send minified client
