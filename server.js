@@ -10,7 +10,6 @@ var _              = require('underscore'),
 /* shared mbc code */
     mbc            = require('mbc-common'),
     conf           = mbc.config.Caspa,
-    search_options = mbc.config.Search,
     collections    = mbc.config.Common.Collections,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('caspa_server'),
@@ -18,8 +17,9 @@ var _              = require('underscore'),
 /* utilities */
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
-    iobackends     = new (require('./iobackends'))(db, pubsub.publisher),
-    auth           = new (require('./auth'))(iobackends)
+    backends       = require('./backends')(db),
+    iobindings     = new mbc.iobindings(db, backends, pubsub.publisher),
+    auth           = new (require('./auth'))(iobindings)
  ;
 
 
@@ -117,7 +117,7 @@ pubsub.listener.on('JSONmessage', function(chan, status) {
     //  backbone.io
     var emit = _.after(6, function() {
         logger.info('emitting', status);
-        iobackends.emit('status', ['updated', status]);
+        iobindings.emit('status', ['updated', status]);
     });
     ['previous', 'current', 'next'].forEach(function(pos) {
         db.collection(collections.Scheds).findEach({ _id: status.show[pos]._id }, function(err, res) {
@@ -173,7 +173,7 @@ pubsub.listener.on('JSONmessage', function(chan, msg) {
         return;
 
     var status = new App.ProgressStatus(msg);
-    iobackends.emit ('frame', ['updated', status]);
+    iobindings.emit ('frame', ['updated', status]);
 });
 
 pubsub.listener.subscribe('mostoStatus.progress');
@@ -185,16 +185,16 @@ pubsub.listener.subscribe('mostoStatus.progress');
 pubsub.listener.on('JSONpmessage', function(pattern, chan, msg) {
     switch( chan ) {
         case "mostoMessage.emit":
-            return iobackends.emit('mostomessages', ['created', msg.model]);
+            return iobindings.emit('mostomessages', ['created', msg.model]);
         case "mostoMessage.create":
-            return iobackends.emit('mostomessages', ['created', msg.model]);
+            return iobindings.emit('mostomessages', ['created', msg.model]);
         case "mostoMessage.delete":
-            return iobackends.emit('mostomessages', ['deleted', msg.model]);
+            return iobindings.emit('mostomessages', ['deleted', msg.model]);
     }
 });
 pubsub.listener.psubscribe('mostoMessage*');
 
-var ios = iobackends.get_ios();
+var ios = iobindings.get_ios();
 var io = backboneio.listen(app.listen(app.get('port'), function(){
     logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env + '\nactive backends: ' +  _.keys(ios));
 }), ios);
@@ -224,7 +224,7 @@ if (process.env.MBC_SCRAPE) {
                 if (err) {
                     logger.error('error','An error has occurred' + err);
                 } else {
-                    iobackends.emit('media', ['created', model]);
+                    iobindings.emit('media', ['created', model]);
                 }
             });
         });
