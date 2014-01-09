@@ -179,6 +179,31 @@ window.MediaListView = function(options){
                 pieces.add(model, {at: arg.targetIndex});
             }
         },
+                
+        editImage: function(item) {
+            var self = this;
+
+            var title = i18n.gettext('Image Edit');
+            var duration = i18n.gettext('Duration (HH:mm:ss):');
+            var prompt = new ImageEditPrompt(
+                    { title: title, 
+                    duration: duration, 
+                    submitCallback: function (length) {
+                        console.log("Selected YES");
+                        if(length) {
+                            console.log("Changing length: ", length);
+                            item.durationraw(length);
+                        } else {
+                            var description = i18n.gettext('You must enter length');
+                            self.alert(description);
+                        }
+                    },
+                    cancelCallback: function() {
+                        return;
+                    } }).render().el;
+            $('#modal').html(prompt);
+            window.scrollTo(0,0);
+        }
     });
 
     this.search_view = new SearchView({
