@@ -287,3 +287,29 @@ window.MediaListView = function(options){
     };
 }
 
+var ImageEditPrompt = Backbone.Modal.extend({
+     initialize: function (options) {
+        this.options = options || {};
+    },
+    template: function() {
+        var parse_tpl = template.imagepieceedit(this.options);
+        return _.template(parse_tpl);
+    },
+    submitEl: '.submit',
+    cancelEl: '.cancel',
+    events: {
+        "click .submit"              : "save",
+        "keypress input[id=textkey]" : "saveOnEnter",
+        "click .cancel"              : "cancel"
+    },
+    save: function () {
+        this.options.submitCallback($('#duration').val());
+    },
+    saveOnEnter: function (e) {
+        if (e.keyCode != 13) return;
+        this.save();
+    },
+    cancel: function() {
+        this.options.cancelCallback();
+    }
+});
