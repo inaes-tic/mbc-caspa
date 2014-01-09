@@ -166,7 +166,11 @@ iobackends.prototype.register_sync = function (collection, name) {
 };
 
 iobackends.prototype.emit = function (name, args) {
-    _.apply(this.backends[name].emit, args);
+    var backend = this.backends[name];
+    if (backend) {
+        var _io = backend.io;
+        _io.emit.apply(_io, args);
+    }
 };
 
 iobackends.prototype.get_ios = function () {
