@@ -36,7 +36,7 @@
         .row
           .span6
             .control-group
-              - var items = {md5: _id, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
+              - var items = {md5: _id, 'Type': type, 'File Name': file, Duration: durationraw, Format: video.container, Audio: audio.codec, Video:video.codec}
               each v, k in items
                 - var Item = k.charAt(0).toUpperCase() + k.slice(1)
 
