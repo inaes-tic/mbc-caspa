@@ -186,7 +186,8 @@ module.exports = function(app, everyauth) {
                      'emptyalert',
                      'timeinfo',
                      'nowplaying',
-                     'sourceinfo'
+                     'sourceinfo',
+                     'imagepieceedit'
                     ];
 
     var commonTemplates = ['editor',
