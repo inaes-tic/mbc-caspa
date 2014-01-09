@@ -87,7 +87,13 @@ window.MediaListView = function(options){
                 self.collection.remove(item);
                 self.filter(filters);
             }
-
+            
+            this.editItem = function(item) {
+                console.log('Editing Piece', item);
+                /* TODO: Use it this way--> if (item.type() === 'image')*/
+                if (item.model().attributes.type === 'image')
+                    self.editImage(item);
+            }
 
             this.__filters = ko.observable();
             this.filter = ko.computed({
