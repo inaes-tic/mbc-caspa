@@ -95,6 +95,12 @@ block content
                         button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×
                       h5(data-bind="text: name")
                       h5(data-bind="text: stat().name ? stat().name : file")
+
+                      span.label.type
+                          <!-- TODO: Use type attr from piece -->
+                          span(data-bind="text: 'TIPO'")
+                      span='  '
+
                       span.label.label-warning.format
                           i.icon-time.icon-white
                           span(data-bind="text: durationraw")
