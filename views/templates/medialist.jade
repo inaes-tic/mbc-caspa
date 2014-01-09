@@ -86,6 +86,8 @@ block content
                   td.center
                     - if (!is_playlist)
                       - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
+                    - else
+                      - var target = "attr:{href: '#'}, click: $root.editItem, clickBubble: false";
                     a.plain(data-bind=target)
                       img(width="150",height="100",data-bind="attr:{ src: checksum() ?  '/sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                   td
