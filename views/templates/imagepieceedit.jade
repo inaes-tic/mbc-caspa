@@ -1,0 +1,12 @@
+- var submit = i18n.gettext("Submit")
+- var cancel = i18n.gettext("Cancel")
+
+.bbm-modal__topbar
+    h3.bbm-modal__title= title
+.bbm-modal__section
+    fieldset
+        legend.editor= duration
+        input#duration(type="text", style="width:200px")
+.bbm-modal__bottombar
+    a.bbm-button.submit(href="#")= submit
+    a.bbm-button.cancel(href="#")= cancel
