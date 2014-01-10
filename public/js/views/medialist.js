@@ -90,8 +90,7 @@ window.MediaListView = function(options){
             
             this.editItem = function(item) {
                 console.log('Editing Piece', item);
-                /* TODO: Use it this way--> if (item.type() === 'image')*/
-                if (item.model().attributes.type === 'image')
+                if (item.type() === 'image')
                     self.editImage(item);
             }
 
