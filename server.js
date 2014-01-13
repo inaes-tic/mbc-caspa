@@ -19,7 +19,8 @@ var _              = require('underscore'),
 /* utilities */
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
-    iobackends     = new (require('./iobackends'))(db, pubsub.publisher),
+    backends_conf  = require('./backends')(db),
+    iobackends     = new mbc.iobackends(db, backends_conf),
     auth           = new (require('./auth'))(iobackends)
  ;
 
