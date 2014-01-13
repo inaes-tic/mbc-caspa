@@ -198,8 +198,16 @@ window.MediaListView = function(options){
                     submitCallback: function (length) {
                         console.log("Selected YES");
                         if(length) {
-                            console.log("Changing length: ", length);
-                            item.durationraw(length);
+                            var l = length.match(/(\d{2}):(\d{2}):(\d{2})/);
+                            if (l === null) {
+                                var description = i18n.gettext('Wrong duration format');
+                                self.alert(description);
+                            } else {
+                                l.shift();
+                                var fmt_length = l[0] + ':' + l[1] + ':' + l[2] + '.00';
+                                console.log("Changing length: ", fmt_length);
+                                item.durationraw(fmt_length);
+                            }
                         } else {
                             var description = i18n.gettext('You must enter length');
                             self.alert(description);
