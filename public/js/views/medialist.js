@@ -210,7 +210,13 @@ window.MediaListView = function(options){
                     } }).render().el;
             $('#modal').html(prompt);
             window.scrollTo(0,0);
-        }
+        }, 
+        alert: function(description) {
+            var title = i18n.gettext('Alert');
+            var description = description || i18n.gettext('Wait there was a problem');
+            $('#modal').html(new ModalAlert({ title: title, description: description }).render().el);
+            window.scrollTo(0,0);
+        },
     });
 
     this.search_view = new SearchView({
@@ -345,3 +351,14 @@ var ImageEditPrompt = Backbone.Modal.extend({
         this.options.cancelCallback();
     }
 });
+var ModalAlert = Backbone.Modal.extend({
+    initialize: function (options) {
+        this.options = options || {};
+    },
+    template: function() {
+        var parse_tpl = template.alert(this.options);
+        return _.template(parse_tpl);
+    },
+    cancelEl: '.bbm-button'
+});
+
