@@ -190,9 +190,11 @@ window.MediaListView = function(options){
 
             var title = i18n.gettext('Image Edit');
             var duration = i18n.gettext('Duration (HH:mm:ss):');
+            var duration_value = moment(item.durationraw(), 'HH:mm:ss.SSS').format('HH:mm:ss');
             var prompt = new ImageEditPrompt(
                     { title: title, 
                     duration: duration, 
+                    duration_value: duration_value,
                     submitCallback: function (length) {
                         console.log("Selected YES");
                         if(length) {
