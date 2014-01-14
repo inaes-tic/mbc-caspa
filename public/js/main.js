@@ -12,17 +12,19 @@ var AppRouter = Backbone.Router.extend({
 
     routes: {
         "media"             : "list",
-        "universe"          : "universe",
-        "media/add"         : "upload",
         "media/edit"        : "editMedia",
-        "media/:id"         : "mediaDetails",
-        "program/:id"       : "listProgram",
-
         "playout"           : "playout",
         "schedule"          : "schedule",
-        "admin"             : "conf",
-        "about"             : "about",
         "editor"            : "editor",
+        "admin"             : "conf",
+
+        "media/:id"         : "mediaDetails",
+
+        "universe"          : "universe",
+        "media/add"         : "upload",
+        "program/:id"       : "listProgram",
+
+        "about"             : "about",
     },
 
     initialize: function () {
