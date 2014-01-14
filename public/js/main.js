@@ -36,6 +36,22 @@ var AppRouter = Backbone.Router.extend({
 
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
 
+        this.on('preroute', function(route, oldidx, newidx, args) {
+            if (newidx > oldidx) {
+                this.promises.push($('#content').toggle('slide', {direction: 'left'}).promise());
+            } else {
+                this.promises.push($('#content').toggle('slide', {direction: 'right'}).promise());
+            }
+        });
+
+        this.on('postroute', function(route, oldidx, newidx, args) {
+            if (newidx > oldidx) {
+                $('#content').toggle('slide', {direction: 'right'});
+            } else {
+                $('#content').toggle('slide', {direction: 'left'});
+            }
+        });
+
         this.on('route', function(route) {
             menuItem = {
                 playout: 'playout-menu',
