@@ -7,6 +7,7 @@ window.framestatus = new App.ProgressStatus();
 var AppRouter = Backbone.Router.extend({
     currentView: null,
     currentHash: Backbone.history.getHash(),
+    viewNames:   [],
     promises:    [],
 
     routes: {
@@ -31,6 +32,7 @@ var AppRouter = Backbone.Router.extend({
         });
 
         this.currentHash = Backbone.history.getHash();
+        this.viewNames = _.toArray(this.routes);
 
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
 
@@ -119,17 +121,23 @@ var AppRouter = Backbone.Router.extend({
         Backbone.history.route(route, function(fragment) {
             var args = router._extractParameters(route, fragment);
 
+            var oldidx = router.currentView && router.currentView.idx || 0;
+            var newidx = router.viewNames.indexOf(name);
+
             var ok = function() {
-                router.trigger('preroute', name, args);
+                router.trigger('preroute', name, oldidx, newidx, args);
                 var inner = function() {
                     if (callback) {
                         router.currentView = callback.apply(router, args);
+                        if (router.currentView) {
+                            router.currentView.idx = newidx;
+                        }
                     }
                     router.trigger.apply(router, ['route:' + name].concat(args));
                     router.trigger('route', name, args);
                     Backbone.history.trigger('route', router, name, args);
                     router.currentHash = Backbone.history.getHash();
-                    router.trigger('postroute', name, args);
+                    router.trigger('postroute', name, oldidx, newidx, args);
 
                     router.promises.splice(0, router.promises.length);
                 };
