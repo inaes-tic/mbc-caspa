@@ -15,15 +15,18 @@ var _              = require('underscore'),
     collections    = common_conf.Collections,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('caspa_server'),
-    App            = require("mbc-common/models/App"),
 /* utilities */
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
     backends_conf  = require('./backends')(db),
-    iobackends     = new mbc.iobackends(db, backends_conf),
-    auth           = new (require('./auth'))(iobackends)
+    iobackends     = new mbc.iobackends(db, backends_conf)
  ;
 
+iobackends.patchBackbone();
+    var auth           = new (require('./auth'))(iobackends);
+
+
+var     App            = require("mbc-common/models/App");
 
 var loggerStream = {
     write: function(message, encoding) {
@@ -242,3 +245,17 @@ if (process.env.MBC_SCRAPE) {
 } else {
     logger.info ("not scrapping");
 }
+
+var Auth = require("mbc-common/models/Auth");
+// var Media = require("mbc-common/models/Media");
+// 
+// var ac = new Auth.UserList();
+// 
+// //iobackends.register_sync(ac, 'user');
+// 
+// //ac.fetch();
+// //var m1 = ac.models[1];
+// //ac.models;
+// 
+// var frame = new App.ProgressStatus();
+// frame.fetch();

@@ -32,6 +32,7 @@ module.exports = function (db) {
             }},
         list: {
             use: [middleware.uuid],
+            redisSync: true,
             mongo: {
                 db: db,
                 collection: collections.Lists,
@@ -53,6 +54,8 @@ module.exports = function (db) {
             }},
         frame: {
             use: [backboneio.middleware.memoryStore(db, 'progress', {})],
+            redisSync: true,
+            redisChain: true,
         },
         mostomessages: {
             mongo: {
@@ -69,6 +72,8 @@ module.exports = function (db) {
             }},
         user: {
             use: [middleware.uuid],
+            //redisSync: true,
+            //redisChain: true,
             mongo: {
                 db: db,
                 collection: collections.Auth,
