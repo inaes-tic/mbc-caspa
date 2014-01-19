@@ -32,14 +32,15 @@ block content
               td.center
                   h5(data-bind="text: filename")
               td
-                  h5(data-bind="text: stage")
+                  <!-- ko if: progress -->
+                  .progress.progress-striped.active
+                      .progress-bar.bar(data-bind=progress_dbind)
+                  h5.progress-label(data-bind="text: stage")
+                  <!-- /ko -->
+
                   ul.messages(data-bind="foreach: message")
                       li(data-bind="text: $data")
 
-                  <!-- ko if: progress -->
-                  .progressbar
-                      .progress-song(data-bind=progress_dbind)
-                  <!-- /ko -->
 
     #queued-table
       .table-container

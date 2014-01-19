@@ -652,6 +652,15 @@ legend {
     border: 1px solid @color_dark;
 }
 
+.alert-transcode {
+    padding: 8px 35px 2px 14px;
+    margin-bottom: 12px;
+
+    p {
+        margin-bottom:7px;
+    }
+}
+
 .form-actions {
     border: none;
     background-color:transparent;
@@ -702,49 +711,17 @@ legend {
     padding: 7px 3px 6px 7px!important;
 }
 
-/*: Add medias :*/
+/*: Ingest medias :*/
 
-#add-media {
-    position: absolute;
-    top: 15px;
-    bottom: 15px;
-    right: 15px;
-    left: 15px;
-
-    background-color:#FFF;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
-    box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
-
-    -webkit-transition: left 400ms ease-in-out;
-    transition: left 400ms ease-in-out;
-
-    .listHeader {
-        position: fixed;
-        left:15px;
-        right:15px;
-        height:@height_listHeader+50;
-        padding: 15px 12px;
-    }
-    .scrollable {
-        position: absolute;
-        top:@height_listHeader+50;
-        left:0px;
-        bottom:12px;
-        overflow: scroll;
-        overflow-x:hidden;
-        right:0px;
-        left:0px;
-        padding: 0px 0px 0px 12px;
-    }
-
-    .pending {
-        margin: 0 0 10px 14px;
-    }
-
+#processing-table {
     .progress {
+        background-image: -webkit-gradient(linear,0 0,0 100%,from(#E0E0E0),to(#E2E2E2));
+        background-image: -webkit-linear-gradient(top,#CECECE,#E2E2E2);
+        margin: 7px 0px 0px 0px;
+
         .bar {
+            background-color:#601869;
+
             &.stopped {
                 background-color:#949494;
                 &#main-progress {
@@ -755,8 +732,21 @@ legend {
             }
         }
     }
-}
 
+		.progress-label {
+				margin: -18px 0px 0px 0px;
+				font-size: 14px;
+				font-weight: 100;
+				color: #FFF;
+				text-shadow: 0px 0px 4px #555;
+				text-align: center;
+    } 
+
+		.messages {
+				margin: 5px 0px 0px 0px;
+				list-style-type:none;
+		}
+}
 /*: Playout :*/
 div#playout {
     .fully-expanded;
