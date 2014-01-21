@@ -25,27 +25,61 @@ block content
 
   .scrollable
     #processing-table
+      .page-header
+        h2 Currently processing:
       .table-container
         table.table.table-bordered.table-striped.table-condensed#table
           tbody.tbody#media-view(data-bind='foreach: Working.collection', class='tbody')
-            tr
+            tr(data-toggle="collapse", data-bind="attr: {'data-target': '#'+$data._id()}", style="cursor: pointer;")
               td.center
                   h5(data-bind="text: filename")
               td
                   <!-- ko if: progress -->
                   .progress.progress-striped.active
-                      .progress-bar.bar(data-bind=progress_dbind)
-                  h5.progress-label(data-bind="text: stage")
+                      .progress-bar.bar(data-toggle="collapse", data-bind=progress_dbind)
+                  h5.progress-label(data-bind="text: stage() + ' (' + tasks()[tasks().length-1].name + ')'")
                   <!-- /ko -->
 
-                  ul.messages(data-bind="foreach: message")
-                      li(data-bind="text: $data")
-
+                  ul.messages.collapse(data-bind="foreach: tasks, attr: {'id': _id()}")
+                    li(data-bind="text: $data.name")
+                    //status: processing , failed , done.
+                    //message: nada o si error el mensaje de error.
+                    // no tienen por que estar. solo ahora para debugging.
+                    p(data-bind="text: 'status:  ' + $data.status")
+                    img(data-bind="attr: { 'class': $data.status }")
+                    <!-- ko if: message -->
+                    p(data-bind="text: 'message: ' + $data.message")
+                    <!-- /ko -->
 
     #queued-table
+      .page-header
+        h2 Queued for transcoding:
       .table-container
         table.table.table-bordered.table-striped.table-condensed#table
           tbody.tbody#media-view(data-bind='foreach: Queued.collection', class='tbody')
             tr
               td.left
                   h5(data-bind="text: filename")
+
+    #failed-table.alert
+      .page-header
+        h2 Failed:
+      .table-container
+        table.table.table-bordered.table-striped.table-condensed#table
+          tbody.tbody#media-view(data-bind='foreach: Failed.collection', class='tbody')
+            tr(data-toggle="collapse", data-bind="attr: {'data-target': '#'+$data._id()}", style="cursor: pointer;")
+              td.center
+                  h5(data-bind="text: filename")
+              td
+
+                  ul.messages.collapse(data-bind="foreach: tasks, attr: {'id': _id()}")
+                    li(data-bind="text: $data.name")
+                    //status: processing , failed , done.
+                    //message: nada o si error el mensaje de error.
+                    // no tienen por que estar. solo ahora para debugging.
+                    p(data-bind="text: 'status:  ' + $data.status")
+                    img(data-bind="attr: { 'class': $data.status }")
+                    <!-- ko if: message -->
+                    p(data-bind="text: 'message: ' + $data.message")
+                    <!-- /ko -->
+
