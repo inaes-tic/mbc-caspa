@@ -23,6 +23,7 @@ var _              = require('underscore'),
  ;
 
 iobackends.patchBackbone();
+
     var auth           = new (require('./auth'))(iobackends);
 
 
@@ -247,7 +248,7 @@ if (process.env.MBC_SCRAPE) {
 }
 
 var Auth = require("mbc-common/models/Auth");
-// var Media = require("mbc-common/models/Media");
+var Media = require("mbc-common/models/Media");
 // 
 // var ac = new Auth.UserList();
 // 

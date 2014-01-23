@@ -25,6 +25,7 @@ module.exports = function (db) {
             }},
         piece: {
             use: [middleware.uuid],
+            redis: true,
             mongo: {
                 db: db,
                 collection: collections.Pieces,
@@ -32,7 +33,7 @@ module.exports = function (db) {
             }},
         list: {
             use: [middleware.uuid],
-            redisSync: true,
+            redis: true,
             mongo: {
                 db: db,
                 collection: collections.Lists,

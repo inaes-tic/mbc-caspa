@@ -11,10 +11,10 @@ var auth = module.exports = exports = function (backends) {
     this.everyauth = everyauth;
 
     this.collection = new Auth.UserList();
-    this.collection.fetch();
+    //this.collection.fetch();
 
     //backends.register_sync (this.collection, 'user');
-    //this.collection.fetch();
+    this.collection.fetch();
 
     everyauth.debug = true;
 
