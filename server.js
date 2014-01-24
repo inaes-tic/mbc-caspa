@@ -247,16 +247,3 @@ if (process.env.MBC_SCRAPE) {
     logger.info ("not scrapping");
 }
 
-var Auth = require("mbc-common/models/Auth");
-var Media = require("mbc-common/models/Media");
-// 
-// var ac = new Auth.UserList();
-// 
-// //iobackends.register_sync(ac, 'user');
-// 
-// //ac.fetch();
-// //var m1 = ac.models[1];
-// //ac.models;
-// 
-// var frame = new App.ProgressStatus();
-// frame.fetch();

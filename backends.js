@@ -54,9 +54,10 @@ module.exports = function (db) {
                 opts: { search: search_options.Status },
             }},
         frame: {
-            use: [backboneio.middleware.memoryStore(db, 'progress', {})],
-            redisSync: true,
-            redisChain: true,
+            store: backboneio.middleware.memoryStore(db, 'progress', {}),
+            redis: {
+                chain: true,
+            },
         },
         mostomessages: {
             mongo: {
@@ -73,8 +74,6 @@ module.exports = function (db) {
             }},
         user: {
             use: [middleware.uuid],
-            //redisSync: true,
-            //redisChain: true,
             mongo: {
                 db: db,
                 collection: collections.Auth,

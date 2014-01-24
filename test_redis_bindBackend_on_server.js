@@ -35,15 +35,18 @@ logger.error('AL MODELS: ', al.models[0]);
 
 var Media = require("mbc-common/models/Media");
 
-// 
-// var ac = new Auth.UserList();
-// 
-// //iobackends.register_sync(ac, 'user');
-// 
-// //ac.fetch();
-// //var m1 = ac.models[1];
-// //ac.models;
-// 
-// var frame = new App.ProgressStatus();
-// frame.fetch();
+var Universe = new Media.Universe();
+var pl0;
+Universe.fetch({ success: function() {
+    pl0 = Universe.models[0];
+
+    _.each(pl0.getRelations(), function(rel) {
+        pl0.fetchRelated(rel.keySource);
+    });
+    pl0.fetch();
+
+    pl0.on('all', function() {
+        console.log('PL0: ', arguments);
+    });
+}});
 
