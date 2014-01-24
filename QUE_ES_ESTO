@@ -1,0 +1,20 @@
+test de sincronizacion con redis y bindBackend también en server.
+Precisa mbc-common en rama redis-sync-clean-2-demo
+
+Cosas para probar:
+    correr dos caspa en puertos distintos, cambios en la playlist de uno van al otro:
+    en dos terminales:
+        PORT=1234 make serve_noweb
+        PORT=7777 make serve_noweb
+
+    correr un caspa y otro server, tocar modelos ahi:
+    en una terminal:
+        make serve_noweb
+
+    en otra:
+        export NODE_CONFIG_DIR=$(pwd)/node_modules/mbc-common/config
+        node
+        .load ./test_redis_bindBackend_on_server.js
+        (se carga ese script, ya instancio un Universe y la primer playlist, se queda escuchando eventos.
+        cambios hechos a la playlist despues de un .save() van al browser. cambios del browser llegan aca
+        y salen en el log.)
