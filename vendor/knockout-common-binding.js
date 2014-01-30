@@ -1,3 +1,10 @@
+ko.bindingHandlers.stopBinding = {
+    init: function() {
+            return { controlsDescendantBindings: true };
+       }
+};
+ko.virtualElements.allowedBindings.stopBinding = true;
+
 ko.bindingHandlers.addOnEnter = {
     init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
         var value = valueAccessor();
