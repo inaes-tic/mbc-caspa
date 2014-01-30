@@ -9,7 +9,6 @@ html(lang='#{lang}')
     meta(charset="utf-8")
     link(rel='stylesheet', href='/css/main.css')
     script(src='/lib/head.min.js')
-  body
     script(type='text/javascript')
       head.js(
         "/js/vendor.js",
@@ -25,6 +24,7 @@ html(lang='#{lang}')
         "/js/widgets/fonts/ShareRegular.js",
         "/js/widgets/fonts/ShareBold.js"
       );
+  body
     #Panel
     - if (everyauth.user)
       .personal-block.solo
