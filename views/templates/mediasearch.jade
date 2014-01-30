@@ -1,5 +1,13 @@
 block content
 
-.visual_search
 - if (pagination == 'traditional')
   .pagination
+
+<!-- ko stopBinding: true -->
+#search
+
+
+  <!-- ko foreach: facets -->
+  select(data-bind='options: values(), optionsText: name(), optionsCaption: "Select " + name() , value: selected()')
+  <!-- /ko -->
+<!-- /ko -->
