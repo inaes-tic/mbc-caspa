@@ -87,7 +87,7 @@ module.exports = function(app, everyauth) {
 
     //XXX Hack to include relational after backbone.io
     var vendorOthersJs = new folio.Glossary([
-        path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
+        path.join(lib_dir, 'visualsearch/build/visualsearch.js'),
         require.resolve('backbone-pageable/lib/backbone-pageable.js'),
         require.resolve('backbone-relational/backbone-relational.js'),
     ], {minify:app.get('minify')});
