@@ -8,7 +8,7 @@ window.SearchView = function(options) {
     var collection = options['collection'];
     var page_size = options['page_size'] || (collection instanceof PageableCollection)?collection.state.pageSize:10;
     var type = 'type' in options ? options['type'] : 'server';
-    var facets = options['facets'] || [];
+    var facets_avail = options['facets'] || [];
     var query_obj = {};
 
     var nest = el.parents('.infinit-panel:first');
@@ -75,15 +75,21 @@ window.SearchView = function(options) {
         container : searchBox,
         query     : '',
         showFacets: false,
-        placeholder: '',
+        placeholder: 'Search Media',
+        facets:  facets_avail,
         callbacks : {
+            facets_used: [],
             clearSearch: function(clear_cb) {
                 clear_cb();
                 query_obj = {};
                 if (type == 'server') {
                     searchOnServer();
                 }
+                this.facets_used = [];
                 self.trigger('clearSearch');
+            },
+            removedFacet: function(facet, query, options) {
+                this.facets_used = _.without(this.facets_used, facet.get('category'));
             },
             search: function(query, searchCollection) {
                 query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
@@ -94,23 +100,65 @@ window.SearchView = function(options) {
                 }
                 self.trigger('doSearch', query_obj);
             },
-            facetMatches : function(callback) {
-                callback(facets);
-            },
-            valueMatches : function(facet, searchTerm, callback) {
+            facetMatches : function(searchTerm, callback) {
+                console.log("aca:",this);
+                var self = this;
                 var options = {preserveOrder: true};
+                if(searchTerm && searchTerm.length >= 1) {
+                    query_obj['text'] = searchTerm[0];
+                    console.log("facetMatches-----", query_obj);
+                    collection.setQuery(query_obj, page_size);
+                    collection.fetch({ success: function(res) {
+                        var f = parseFacets(res, 'stat.name');
+                        var f1 = f.concat(facets_avail);
+                        var d = _.difference(f1, self.facets_used);
+                        console.log("f: ",f, " f1:  ",f1, " d: ", d);
+                        callback(d, options);
+                    }});
+                } else {
+                    callback(_.difference(facets_avail, self.facets_used), options);
+                }
+            },
+            valueMatches : function(facet, searchTerm, query, callback) {
+                var self = this;
+                var options = {preserveOrder: true};
+
+                if(this.facets_used.indexOf(facet) == -1) {
+                    this.facets_used.push(facet);
+                }
+                var current_facets = query.pluck('category');
+                if(current_facets.indexOf('text') == -1) {
+                    delete query_obj['text'];
+                    this.facets_used = _.without(this.facets_used, 'text');
+                }
+
+                if(this.facets_used.indexOf(facet) == -1) {
+                    this.facets_used.push(facet);
+                }
+
                 if (type=='server') {
-                    Backbone.sync('read', collection, {
-                        silent: true,
-                        data: {
-                            distinct: facet,
-                            query: query_obj,
-                        },
-                        success: function(res) {
-                            var f = parseFacets(res[1], facet);
-                            callback(f, options);
+                    if(facet != 'text') {
+                        Backbone.sync('read', collection, {
+                                silent: true,
+                            data: {
+                                distinct: facet,
+                                query: query_obj,
+                            },
+                            success: function(res) {
+                                var f = parseFacets(res[1], facet);
+                                callback(f, options);
+                            }
+                        });
+                    } else {
+                        if(searchTerm.length >= 1) {
+                            query_obj['text'] = searchTerm;
+                            collection.setQuery(query_obj, page_size);
+                            collection.fetch({ success: function(res) {
+                            var f = parseFacets(res, 'stat.name');
+                                callback(f, {preserveOrder: true});
+                            }});
                         }
-                    });
+                    }
                 } else {
                     var f = parseFacets(collection, facet);
                     callback(f, options);
