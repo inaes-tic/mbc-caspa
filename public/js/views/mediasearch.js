@@ -15,26 +15,6 @@ window.SearchView = function(options) {
     var scrollable = nest.find('.scrollable:first');
     var completeList = nest.find('#playlist-table:first');
 
-    var parseFacets = function (loaded_facets, facet) {
-        var plucked_facet = [];
-        if (loaded_facets instanceof PageableCollection || loaded_facets instanceof Backbone.Collection) {
-            if (facet.indexOf('.') === -1) {
-                plucked_facet = loaded_facets.pluck(facet)
-            } else {
-                facets = facet.split('.');
-                first = facets.shift();
-                remainder = facets.join('.');
-                plucked_facet = _.pluck(loaded_facets.pluck(first), remainder);
-            }
-        } else {
-            plucked_facet = loaded_facets;
-        }
-        return _.map(_.uniq(_.compact(plucked_facet)), function(val) { return String(val); });
-    }
-
-    el.html(template.mediasearch({type: type, pagination: pagination}));
-    console.log('Render: SearchView');
-
     switch(pagination) {
         case 'traditional':
             // XXX WARN: changing page size breaks relations. Just Don't Do It.
@@ -70,60 +50,6 @@ window.SearchView = function(options) {
         default:
     }
 
-    var searchBox = $('.visual_search', el);
-    this.visualSearch = VS.init({
-        container : searchBox,
-        query     : '',
-        showFacets: false,
-        placeholder: '',
-        callbacks : {
-            clearSearch: function(clear_cb) {
-                clear_cb();
-                query_obj = {};
-                if (type == 'server') {
-                    searchOnServer();
-                }
-                self.trigger('clearSearch');
-            },
-            search: function(query, searchCollection) {
-                query_obj = _.object(searchCollection.pluck('category'), searchCollection.pluck('value'));
-                if(type == 'server') {
-                    searchOnServer();
-                } else {
-                    collection.trigger('filter', query_obj);
-                }
-                self.trigger('doSearch', query_obj);
-            },
-            facetMatches : function(callback) {
-                callback(facets);
-            },
-            valueMatches : function(facet, searchTerm, callback) {
-                var options = {preserveOrder: true};
-                if (type=='server') {
-                    Backbone.sync('read', collection, {
-                        silent: true,
-                        data: {
-                            distinct: facet,
-                            query: query_obj,
-                        },
-                        success: function(res) {
-                            var f = parseFacets(res[1], facet);
-                            callback(f, options);
-                        }
-                    });
-                } else {
-                    var f = parseFacets(collection, facet);
-                    callback(f, options);
-                }
-            },
-            focus: function() {
-            },
-            blur: function() {
-            }
-        }
-    });
-    searchBox.find('input').focus();
-
     function renderBootstrapPaginator() {
         $(".pagination", el).html("");
         if(collection.state.totalPages > 1) {
@@ -147,12 +73,76 @@ window.SearchView = function(options) {
         }});
     }
 
-    this.clearSearch = function() {
-        self.visualSearch.searchBox.clearSearch('');
-    };
     this.destroy = function() {
         collection.unbind("sync");
     };
+
+
+    var SearchModel = function(collection, facets) {
+
+        this.medias = kb.collectionObservable(collection);
+
+        this.facets = ko.observableArray(
+            ko.utils.arrayMap( facets, function(facet) {
+                return {
+                    name: ko.observable(facet),
+                    values: ko.observableArray(),
+                    selected: ko.observable()
+                }
+            })
+        );
+
+        this.query_obj = ko.observableArray(
+                /*ko.utils.arrayMap( facets, function(facet) {
+                    return {
+                        key: ko.observable(facet),
+                        value: ko.observable(),
+                    }
+                })*/
+        );
+
+
+        this.load_facet = function(facet) {
+            Backbone.sync('read', collection, {
+                silent: true,
+                data: {
+                    distinct: facet,
+                    query: self.query_obj,
+                },
+                success: function(res) {
+                    var val = this._parseFacets(res, facet);
+                    this.facets[facet].push(val);
+                }
+            });
+
+        };
+
+        this._parseFacets = function (col, facet) {
+            return col.pluck(facet);
+        };
+
+        this._set_query_obj = function (key, value) {
+            this.query_obj[key] = value;
+        };
+
+        this.search = function () {
+            collection.setQuery(this.query_obj, page_size);
+            collection.fetch({ success: function() {
+                if( pagination == 'traditional') {
+                    renderBootstrapPaginator();
+                }
+            }})
+        };
+
+
+
+    }
+
+    el.html(template.mediasearch({type: type, pagination: pagination}));
+    console.log('Render: SearchView');
+
+    var domNode =  $('#search', el)[0];
+    ko.applyBindings(new SearchModel(collection, facets), domNode);
 
     return this;
 }
