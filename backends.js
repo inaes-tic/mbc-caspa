@@ -31,7 +31,7 @@ module.exports = function (db) {
                 opts: { search: search_options.Pieces },
             }},
         list: {
-            use: [middleware.uuid],
+            use: [middleware.uuid, middleware.tmpId],
             mongo: {
                 db: db,
                 collection: collections.Lists,
