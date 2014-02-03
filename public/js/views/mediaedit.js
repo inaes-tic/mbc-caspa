@@ -45,7 +45,10 @@ window.EditView = PanelView.extend({
         this.killEditList();
 
         console.log ("re-instanciating editList");
-        this.editList = new Media.Playlist({published: false});
+        // Setting the _id here enables us to have sane relationships for new playlists.
+        // On the server we turn the 'update' event to a 'create' when we find
+        // the '_tmpid' so other clients are properly synchronized.
+        this.editList = new Media.Playlist({published: false, _tmpid: true, _id: uuid.v4()});
 
         this.showPlaylist(this.editList)
     },
