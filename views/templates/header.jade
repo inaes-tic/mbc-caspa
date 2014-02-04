@@ -42,3 +42,12 @@ ul#nav
           a.top_link(href="/admin")
             i.icon-wrench.icon-white
             span= i18n.gettext('Configure')
+#Panel
+  .personal-block.solo
+    ul
+      li
+        span logged in as:
+        span.name= UserLogin
+        |
+        a(href="/logout") logout
+

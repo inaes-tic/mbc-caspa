@@ -25,15 +25,12 @@ html(lang='#{lang}')
         "/js/widgets/fonts/ShareRegular.js",
         "/js/widgets/fonts/ShareBold.js"
       );
-    #Panel
     - if (everyauth.user)
-      .personal-block.solo
-        ul
-          li
-            span logged in as:
-            span.name= everyauth.user.login
-            |
-            a(href="/logout") logout
+      script.
+        // We use this instead of a plain assignment to cope if someone puts
+        // funny stuff in their login. Like, " and '.
+        window.UserLogin = !{JSON.stringify(everyauth.user.login)};
+    #Panel
 
     #content
       block content
