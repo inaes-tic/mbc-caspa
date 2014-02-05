@@ -27,5 +27,13 @@ window.MediaView = function (options) {
             success: this.render,
         });
     }
+
+    this.canNavigateAway = function (options) {
+        kb.release(self.view_model);
+        // Clear element
+        ko.cleanNode(self.el[0]);
+        self.el.html('');
+        options['ok']();
+    };
 }
 
