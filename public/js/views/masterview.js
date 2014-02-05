@@ -6,6 +6,18 @@ window.MasterView = Backbone.View.extend({
     initialize: function() {
         var self = this;
 
+        _.extend(this, Backbone.Events);
+
+        // This allows us to hook before and after rendering happens.
+        // XXX: keep the _.bindAll, otherwise 'this' will point to the
+        // global object inside render()
+        _.bindAll(this, 'render');
+        this.render = _.wrap(this.render, function(render) {
+                this.trigger('prerender');
+                render();
+                this.trigger('postrender');
+        });
+
         // This allows the view to be extended without losing bindings
         this.events = _.extend({}, this.events, this.genericEvents);
         this.delegateEvents();
