@@ -1,10 +1,26 @@
-window.MediaView = function (options) {
-    var self = this;
-    options = options || {};
+window.MediaView = MasterView.extend({
+    el: "#content",
+    initialize: function (options) {
+        // Parent initialize
+        MasterView.prototype.initialize.apply(this, arguments);
 
-    this.el = $('#content');
+        this.options = options || {};
+        this.el = options.el || $('#content');
+        _.bindAll(this, 'render', 'canNavigateAway');
 
-    this.render = function() {
+        this.model = options.model;
+        if (this.model !== undefined) {
+            this.render();
+        } else {
+            this.model = Media.Model.findOrCreate({ _id: options.id });
+            this.model.fetch({
+                success: this.render,
+            });
+        }
+    },
+
+    render: function() {
+        var self = this;
         self.el.html(template.mediaview(self.model.toJSON()));
 
         self.view_model = kb.viewModel(self.model);
@@ -16,16 +32,14 @@ window.MediaView = function (options) {
         };
 
         ko.applyBindings(self.view_model, self.el[0]);
-    }
+    },
 
-    this.model = options['model'];
-    if (this.model !== undefined) {
-        this.render();
-    } else {
-        this.model = Media.Model.findOrCreate({ _id: options["id"], });
-        this.model.fetch({
-            success: this.render,
-        });
-    }
-}
-
+    canNavigateAway: function (options) {
+        var self = this;
+        kb.release(self.view_model);
+        // Clear element
+        ko.cleanNode(self.el[0]);
+        self.el.html('');
+        options['ok']();
+    },
+});
