@@ -8,6 +8,6 @@ block content
 
 
   <!-- ko foreach: facets -->
-  select(data-bind='options: values(), optionsText: name(), optionsCaption: "Select " + name() , value: selected()')
+  select(data-bind='options: values, optionsCaption: "Select " + name(), value: selected')
   <!-- /ko -->
 <!-- /ko -->

@@ -79,6 +79,7 @@ window.SearchView = function(options) {
 
 
     var SearchModel = function(collection, facets) {
+        var self = this;
 
         this.medias = kb.collectionObservable(collection);
 
@@ -102,23 +103,32 @@ window.SearchView = function(options) {
         );
 
 
-        this.load_facet = function(facet) {
+        this.load_facet = function(facet_name) {
             Backbone.sync('read', collection, {
                 silent: true,
                 data: {
-                    distinct: facet,
+                    distinct: facet_name,
                     query: self.query_obj,
                 },
                 success: function(res) {
-                    var val = this._parseFacets(res, facet);
-                    this.facets[facet].push(val);
+                    //var val = self._parseFacets(res, facet);
+                    var facet = _.find(self.facets(), function(f) {
+                        return f.name() == facet_name;
+                    });
+                    if (facet) {
+                        // searchWrapper returns [{total_entries: N}, [values]]
+                        facet.values(res[1]);
+                        facet.values.sort();
+                    } else {
+                        console.log('ERROR: facet ', facet_name, ' not found in our collection');
+                    }
                 }
             });
 
         };
 
         this._parseFacets = function (col, facet) {
-            return col.pluck(facet);
+            return _.pluck(col, facet);
         };
 
         this._set_query_obj = function (key, value) {
@@ -142,8 +152,11 @@ window.SearchView = function(options) {
     console.log('Render: SearchView');
 
     var domNode =  $('#search', el)[0];
-    ko.applyBindings(new SearchModel(collection, facets), domNode);
+    var vm = new SearchModel(collection, facets);
+    ko.applyBindings(vm, domNode);
+    this.vm = vm;
 
+    window.svm = vm;
     return this;
 }
 
