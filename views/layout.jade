@@ -30,6 +30,9 @@ html(lang='#{lang}')
         // We use this instead of a plain assignment to cope if someone puts
         // funny stuff in their login. Like, " and '.
         window.UserLogin = !{JSON.stringify(everyauth.user.login)};
+    - else
+      script.
+        window.UserLogin = ''
     #Panel
 
     #content
