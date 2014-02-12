@@ -87,7 +87,12 @@ window.MediaListView = function(options){
                 self.collection.remove(item);
                 self.filter(filters);
             }
-
+            
+            this.editItem = function(item) {
+                console.log('Editing Piece', item);
+                if (item.type() === 'image')
+                    self.editImage(item);
+            }
 
             this.__filters = ko.observable();
             this.filter = ko.computed({
@@ -178,6 +183,47 @@ window.MediaListView = function(options){
             if (model.isNew()) {
                 pieces.add(model, {at: arg.targetIndex});
             }
+        },
+                
+        editImage: function(item) {
+            var self = this;
+
+            var title = i18n.gettext('Image Edit');
+            var duration = i18n.gettext('Duration (HH:mm:ss):');
+            var duration_value = moment(item.durationraw(), 'HH:mm:ss.SSS').format('HH:mm:ss');
+            var prompt = new ImageEditPrompt(
+                    { title: title, 
+                    duration: duration, 
+                    duration_value: duration_value,
+                    submitCallback: function (length) {
+                        console.log("Selected YES");
+                        if(length) {
+                            var l = length.match(/(\d{2}):(\d{2}):(\d{2})/);
+                            if (l === null) {
+                                var description = i18n.gettext('Wrong duration format');
+                                self.alert(description);
+                            } else {
+                                l.shift();
+                                var fmt_length = l[0] + ':' + l[1] + ':' + l[2] + '.00';
+                                console.log("Changing length: ", fmt_length);
+                                item.durationraw(fmt_length);
+                            }
+                        } else {
+                            var description = i18n.gettext('You must enter length');
+                            self.alert(description);
+                        }
+                    },
+                    cancelCallback: function() {
+                        return;
+                    } }).render().el;
+            $('#modal').html(prompt);
+            window.scrollTo(0,0);
+        }, 
+        alert: function(description) {
+            var title = i18n.gettext('Alert');
+            var description = description || i18n.gettext('Wait there was a problem');
+            $('#modal').html(new ModalAlert({ title: title, description: description }).render().el);
+            window.scrollTo(0,0);
         },
     });
 
@@ -286,4 +332,41 @@ window.MediaListView = function(options){
         options["ok"]();
     };
 }
+
+var ImageEditPrompt = Backbone.Modal.extend({
+     initialize: function (options) {
+        this.options = options || {};
+    },
+    template: function() {
+        var parse_tpl = template.imagepieceedit(this.options);
+        return _.template(parse_tpl);
+    },
+    submitEl: '.submit',
+    cancelEl: '.cancel',
+    events: {
+        "click .submit"              : "save",
+        "keypress input[id=textkey]" : "saveOnEnter",
+        "click .cancel"              : "cancel"
+    },
+    save: function () {
+        this.options.submitCallback($('#duration').val());
+    },
+    saveOnEnter: function (e) {
+        if (e.keyCode != 13) return;
+        this.save();
+    },
+    cancel: function() {
+        this.options.cancelCallback();
+    }
+});
+var ModalAlert = Backbone.Modal.extend({
+    initialize: function (options) {
+        this.options = options || {};
+    },
+    template: function() {
+        var parse_tpl = template.alert(this.options);
+        return _.template(parse_tpl);
+    },
+    cancelEl: '.bbm-button'
+});
 

@@ -35,6 +35,8 @@ block content
 - var thumbnail = i18n.gettext('Thumbnail')
 - var media_info = i18n.gettext('Media info')
 
+#modal
+
 #media-list.infinit-panel
   - if (!fixed)
     button.close.kill-media-list(type='button', data-dismiss='alert') ×
@@ -86,6 +88,8 @@ block content
                   td.center
                     - if (!is_playlist)
                       - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
+                    - else
+                      - var target = "attr:{href: '#'}, click: $root.editItem, clickBubble: false";
                     a.plain(data-bind=target)
                       img(width="150",height="100",data-bind="attr:{ src: checksum() ?  '/sc/'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }")
                   td
@@ -93,6 +97,12 @@ block content
                         button.close.remove-media(type='button', data-bind='click: $root.removeItem, clickBubble: false') ×
                       h5(data-bind="text: name")
                       h5(data-bind="text: stat().name ? stat().name : file")
+
+                      span.label.type
+                          <!-- TODO: Use type attr from piece -->
+                          span(data-bind="text: type")
+                      span='  '
+
                       span.label.label-warning.format
                           i.icon-time.icon-white
                           span(data-bind="text: durationraw")
