@@ -21,7 +21,8 @@ var _              = require('underscore'),
     utils          = new (require('./utils'))(db),
     backends_conf  = require('./backends')(db),
     iobackends     = new mbc.iobackends(db, backends_conf),
-    auth           = new (require('./auth'))(iobackends)
+    auth           = new (require('./auth'))(iobackends),
+    avahi          = new mbc.avahi()
  ;
 
 
@@ -198,6 +199,7 @@ pubsub.listener.psubscribe('mostoMessage*');
 
 var ios = iobackends.get_ios();
 var server = app.listen(app.get('port'), function(){
+    avahi.announce('Caspa', app.get('port'));
     logger.info("Express server");
     logger.info("listening on port: " + app.get('port'));
     logger.info("--------- in mode: " + app.settings.env);

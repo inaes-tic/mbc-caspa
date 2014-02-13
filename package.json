@@ -40,7 +40,7 @@
         "backbone.io"   : "git://github.com/inaes-tic/backbone.io",
         "resumable.js"  : "git://github.com/inaes-tic/resumable.js",
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
-        "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git",
+        "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git#mdns-announce",
         "d3"            : "3.2.x",
         "everyauth"     : "0.4.x",
         "bcrypt"        : "0.7.x"
