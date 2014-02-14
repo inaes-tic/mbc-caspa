@@ -308,6 +308,11 @@
 	height:auto;
 	margin:0;
 }
+.personal-block.solo ul li {
+	display: inline;
+	padding-right: 10px;
+}
+
 .time-info-block.pull-right {
 	margin-right:0;
 	text-align:right !important;
@@ -352,3 +357,141 @@
 }
 
 */
+
+/**
+ * mosto messages
+ */
+#mosto-messages-count {
+	position: relative;
+	font-size: 10px;
+	top: -5px;
+	left: -5px;
+	padding: 1px 2px;
+	color: white;
+	background: #6db3f2;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+}
+#mosto-messages-count.error {
+	background: #ef4747;
+}
+#mosto-messages {
+	border-top: none;
+	background: #e5e5e5;
+	width: 300px;
+	left: -280px;
+	top: 22px;
+	text-align: left;
+	min-height: 100px;
+	-webkit-border-radius: 0 0 4px 4px;
+	-moz-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
+}
+#mosto-messages .collection {
+	max-height: 400px;
+	overflow-y: auto;
+}
+#mosto-messages .collection::-webkit-scrollbar {
+	width: 12px;
+}
+#mosto-messages .collection::-webkit-scrollbar-thumb {
+	background-color: #aaa;
+}
+#mosto-messages .collection::-webkit-scrollbar-thumb:hover {
+	background-color: #888;
+}
+#mosto-messages .arrow-up {
+	position: absolute;
+	left: 281px;
+	top: -5px;
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid #e5e5e5;
+}
+#mosto-messages h5 {
+	font-size: 13px;
+	margin: 10px 0;
+}
+#mosto-messages h5,
+#mosto-messages .remove-all a {
+	padding: 0;
+	color: #939393;
+	text-align: center;
+}
+#mosto-messages .remove-all {
+	margin: 5px 0 10px 0;
+}
+#mosto-messages label {
+	display: inline-block;
+	padding: 2px 10px;
+}
+#mosto-messages label.disabled {
+	background: #ccc;
+	color: #aaa;
+}
+#mosto-messages label#all:hover,
+#mosto-messages label.all-enabled {
+	background: #888;
+	color: #eee;
+}
+#mosto-messages label#notifications:hover,
+#mosto-messages label.notifications-enabled {
+	background: #6db3f2;
+	color: #eee;
+}
+#mosto-messages label#errors:hover,
+#mosto-messages label.errors-enabled {
+	background: #ef4747;
+	color: #eee;
+}
+#mosto-messages input[type="radio"] {
+	display: none;
+}
+#mosto-messages .remove-all a:hover {
+	color: #737373;
+}
+#mosto-messages .msg {
+	color: #737373;
+	background: #f1f1f1;
+	margin: 10px;
+	padding: 4px 4px 4px 25px;
+	min-height: 40px;
+	font-size: 12px;
+	border-radius: 2px;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	box-shadow: 1px 1px 0px 1px #ccc;
+	-moz-box-shadow: 1px 1px 0px 1px #ccc;
+	-webkit-box-shadow: 1px 1px 0px 1px #ccc;
+}
+#mosto-messages .notification {
+	background: -webkit-linear-gradient(left, #6db3f2 0px, #6db3f2 15px, #f1f1f1 15px, #f1f1f1 100%);
+}
+#mosto-messages .error {
+	background: -webkit-linear-gradient(left, #ef4747 0px, #ef4747 15px, #f1f1f1 15px, #f1f1f1 100%);
+}
+#mosto-messages .remove {
+	float: right;
+	padding: 0;
+}
+#mosto-messages .icon-remove {
+	opacity: .3;
+}
+#mosto-messages .msg:hover,
+#mosto-messages label:hover {
+	cursor: pointer;
+}
+#mosto-messages .msg:hover .icon-remove {
+	opacity: .6;
+}
+#mosto-messages .title {
+	font-weight: bold;
+	font-size: 14px;
+}
+#mosto-messages .empty {
+	text-align: center;
+	margin-top: 10px;
+}
