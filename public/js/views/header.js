@@ -18,20 +18,29 @@ window.TimeInfoView = Backbone.View.extend({
     }
 });
 
+window.MostoMessageViewModel = function(model) {
+    this.model   = ko.observable(model);
+    this.type    = kb.observable(model, 'type');
+    this.title   = kb.observable(model, 'title');
+    this.message = kb.observable(model, 'message');
+    this.time    = ko.computed(function() {
+        return model.get('time').format('MMM Do, h:mm a');
+    });
+}
+
 window.MostoMessagesViewModel = function(collection) {
     var self = this;
-
     this.radioValue = ko.observable("");
-
     this._collection = collection;
 
     this.collection = kb.collectionObservable(collection, {
+        view_model: MostoMessageViewModel,
         filters: function(model) {
             return model.get('type') === self.radioValue();
         }
     });
 
-    //-----
+    //-----fix this
     this.collectionNoFilter = kb.collectionObservable(collection);
 
     this.count = ko.computed(function() {
@@ -84,14 +93,14 @@ window.MostoMessagesViewModel = function(collection) {
             }
         })
     };
-}
+};
 
 window.mostoMessages = new App.MostoMessages([
     // for testing
-    new App.MostoMessage({title: 'Title for notification', message: 'Text body notification text'}),
-    new App.MostoMessage({title: 'Notification title', message: 'Sample notification text'}),
-    new App.MostoMessage({title: 'Example error title', message: 'Description error sample', type: 'error'}),
-    new App.MostoMessage({title: 'Sample notification', message: 'Text sample notification'})
+    new App.MostoMessage({title: 'Title for notification', message: 'Message for notification'}),
+    new App.MostoMessage({title: 'Title for notification', message: 'Message for notification'}),
+    new App.MostoMessage({title: 'Title for error',        message: 'Message for error',      type: 'error'}),
+    new App.MostoMessage({title: 'Title for notification', message: 'Message for notification'})
 ]);
 
 window.mostoMessagesViewModel = new MostoMessagesViewModel(mostoMessages);
@@ -100,9 +109,9 @@ window.mostoMessagesViewModel = new MostoMessagesViewModel(mostoMessages);
 window.addMostoMessage = function(type) {
     mostoMessages.add(new App.MostoMessage({
         type: type,
-        title: "Title for new " + type,
-        message: "message at " + (new Date()).toLocaleString()}
-    ));
+        title: "Title for " + type,
+        message: "Message for " + type,
+    }));
 };
 
 // for testing
