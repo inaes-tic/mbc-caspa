@@ -68,13 +68,14 @@ ul#nav
                 input(type="radio", value="notification", data-bind="checked: Messages.radioValue")
                 span= i18n.gettext('errors')
           div.collection(data-bind='foreach: Messages.collection')
-            div(data-bind='attr: {class: "msg " + type()}')
+            div(data-bind='attr: {class: "mosto-message " + type()}')
               <!-- ko if: model().isNotification() -->
               a.remove(href="#", data-bind="click: function(vm,e){$root.Messages.remove(vm);e.stopPropagation()}")
                 i.icon-remove
               <!-- /ko -->
+              .time(data-bind='text: time')
               .title(data-bind='text: title')
-              .body(data-bind='text: message')
+              .message(data-bind='text: message')
           <!-- ko if: Messages.hasNotifications -->
           div.remove-all
             a(href="#", data-bind="click: function(vm,e){$root.Messages.removeAll();e.stopPropagation()}")= i18n.gettext('Remove all notifications')
