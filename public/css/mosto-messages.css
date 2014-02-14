@@ -13,7 +13,7 @@
 	-moz-border-radius: 2px;
 	border-radius: 2px;
 }
-#mosto-messages-count .error {
+#mosto-messages-count.error {
 	background: #ef4747;
 }
 #mosto-messages {
