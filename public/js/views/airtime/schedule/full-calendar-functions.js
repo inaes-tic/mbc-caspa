@@ -203,7 +203,7 @@ function eventRender(event, element, view) {
                         .find(".fc-event-time")
                         .before('<span id="'+event.id+'" title="Show is empty" class="small-icon show-empty"></span>');
                 } else if (event.soundcloud_id > 0) {
-                    
+
                 } else if (event.soundcloud_id === -2) {
 
                 } else if (event.soundcloud_id === -3) {
@@ -235,7 +235,7 @@ function eventRender(event, element, view) {
     if(view.name === 'month' && event.rebroadcast === 1) {
         $(element).find(".fc-event-title").after('<span id="'+event.id+'" class="small-icon rebroadcast"></span>');
     }
-    
+
     // Add delete button
     var closeButton = $('<button type="button" class="close fc-event-closebutton">×</button>');
     $(element).find('.fc-event-head').append(closeButton);
@@ -296,21 +296,21 @@ function getCurrentShow(){
                 /* Need to remove now-playing class because if user
                  * is switching from week view to day view (and vice versa)
                  * the icon may already be there from previous view
-                 */ 
+                 */
                 $el.siblings().remove("span[class=small-icon now-playing]");
                 if (!$el.siblings().hasClass("small-icon now-playing")) {
                     if ($el.siblings().hasClass("small-icon recording")) {
 
                         /* Without removing recording icon, the now playing
                          * icon will overwrite it.
-                         */  
+                         */
                         $el.siblings().remove("span[class=small-icon recording]");
                         $el.before('<span id="'+json.si_id+'" class="small-icon now-playing"></span><span id="'+json.si_id+'" class="small-icon recording"></span>');
                     } else if ($el.siblings().hasClass("small-icon rebroadcast")) {
 
                         /* Without removing rebroadcast icon, the now playing
                          * icon will overwrite it.
-                         */ 
+                         */
                         $el.siblings().remove("span[class=small-icon rebroadcast]");
                         $el.before('<span id="'+json.si_id+'" class="small-icon now-playing"></span><span id="'+json.si_id+'" class="small-icon rebroadcast"></span>');
                     } else {
@@ -327,10 +327,10 @@ function getCurrentShow(){
         $(".now-playing").each(function(){
             id = $(this).attr("id");
                 if (id != json.si_id) {
-                    $(this).remove("span[small-icon now-playing]");	
-                }    	
+                    $(this).remove("span[small-icon now-playing]");
+                }
             });
-    }); 	
+    });
 }
 
 function addQtipToSCIcons(ele){
@@ -438,10 +438,10 @@ function addQtipToSCIcons(ele){
 function checkEmptyShowStatus(e) {
     var currDate = new Date();
     var endTime;
-    
+
     if (e === undefined) {
         var events = $('#schedule_calendar').fullCalendar('clientEvents');
-        
+
         $.each(events, function(i, event){
             endTime = event.end;
             $emptyIcon = $("span[id="+event.id+"][class='small-icon show-empty']");
