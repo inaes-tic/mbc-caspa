@@ -23,7 +23,7 @@
         "folio": "git://github.com/inaes-tic/folio.git#newer_uglify",
         "less-middleware": "0.1.12",
         "underscore": "1.4.x",
-        "jquery-browser": "1.8.x",
+        "jquery-browser": "1.9.x",
         "jqueryui-browser": "1.9.x",
         "po2json" : "0.0.6",
         "jed" : "0.5.x",
