@@ -4,4 +4,43 @@ block foldable-content
     #universe.infinit-panel
 
 block flexible-content
-    #playout
+    #playout(style="margin-left: 200px")
+
+    div#pruebita
+        div.Visualization(data-bind="foreach: ocurrences")
+            div.Occurrence Occurrence:
+                div(style="margin-left: 20px;")
+                    div
+                        span Id:
+                        span.Id(data-bind="text:playlist()._id")
+                    div
+                        span Name:
+                        span.Id(data-bind="text: playlist().name")
+                    div.Duration(data-bin="text: playlist().computed_duration")
+                    div.Pieces(data-bind="foreach: playlist().pieces") Piece:
+                        div(style="margin-left: 20px;")
+                            div.Piece
+                                span File:
+                                span(data-bind="text: filename")
+                            div.Duration
+                                span Duration:
+                                span(data-bind="text: duration_part")
+
+    //svg#occurrences-zoomable-template
+        g.Visualization(data-attr="foreach: occurrences", transform="translate(65, 0)")
+            svg.Playlist(x="0", width="100%", y="", height="")
+                rect.Background
+                text.Name(data-attr="text: playlist().name")
+                foreignobject.FilmstripBG(x="5%", y="0%", width="20%", height="100%")
+                g(data-attr="foreach: playlist().pieces()")
+                    svg.Clip
+                        rect.Background
+                        svg
+                            text.Name
+                        foreignobject.Filmstrip
+
+    //svg#occurrences-template
+        g.Visualization(data-attr="foreach: occurrences")
+            svg.Playlist
+                rect.Background
+                text.Name(data-attr="text: playlist().name")

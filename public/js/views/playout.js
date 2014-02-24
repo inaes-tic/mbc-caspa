@@ -168,6 +168,90 @@ window.PlayoutView = PanelView.extend({
         this.ready_to_fetch = true;
         this.fetch_occurrences(this.timeline.get_max_bounds());
 
+
+        var PieceViewModel = kb.ViewModel.extend({
+            constructor: function(model) {
+                var self = this;
+                kb.ViewModel.prototype.constructor.apply(this, arguments);
+
+                // Filename without path
+                self.filename = ko.computed(function() {
+                    return self.file().substring(self.file().lastIndexOf("/") + 1);
+                });
+
+                // Duration percentage
+                self.duration_part = ko.computed({
+                    read: function() {
+                        if (self.parentPlaylist().duration) {
+                            return self.model().toMilliseconds(self.durationraw()) * 100 / self.parentPlaylist().duration();
+                        }
+                    },
+                    deferEvaluation: true,
+                });
+
+                /*
+                self.removePiece = function() {
+                    self.model().remove();
+                    //console.log(self.parentPlaylist().pieces());
+                };
+                */
+            },
+        });
+
+        var PlaylistViewModel = kb.ViewModel.extend({
+            constructor: function(model) {
+                var self = this;
+                kb.ViewModel.prototype.constructor.apply(this, arguments);
+
+                /*
+                self.computed_duration = ko.computed({
+                    read: function() {
+                        var sum = 0;
+                        if (self.pieces) {
+                            ko.utils.arrayForEach(self.pieces(), function(piece) {
+                                sum += piece.model().toMilliseconds(piece.durationraw());
+                            });
+                        }
+                        if (self.duration) {
+                            self.duration(sum);
+                        }
+                        return sum;
+                    },
+                    //deferEvaluation: true,
+                });
+                */
+
+            }
+        });
+
+        var OccurrenceViewModel = kb.ViewModel.extend({
+            constructor: function(model, options) {
+                var self = this;
+                kb.ViewModel.prototype.constructor.apply(this, arguments);
+
+                $.when.apply(null, self.model().fetchRelated("playlist")).done(function() {
+                    $.when.apply(null, self.model().get("playlist").fetchRelated("pieces")).done(function() {
+                        //console.log("Everything loaded!");
+                    });
+                });
+            },
+        });
+
+        var view_model = {
+            ocurrences: kb.collectionObservable(this.collection, {
+                factories: {
+                    "models": OccurrenceViewModel,
+                    "models.playlist": PlaylistViewModel,
+                    "models.playlist.pieces.models": PieceViewModel,
+                },
+            }),
+        };
+
+        this.view_model = view_model;
+        this.pvm = PlaylistViewModel;
+
+        ko.applyBindings(view_model, $("#pruebita").get(0));
+
         PanelView.prototype.render.apply(this, arguments);
     },
 
