@@ -243,7 +243,7 @@ function eventRender(event, element, view) {
 
 function eventAfterRender( event, element, view ) {
 
-    $(element).find(".small-icon").live('mouseover',function(){
+    $(element).on('mouseover', '.small-icon', function(){
         addQtipToSCIcons($(this));
     });
 }
