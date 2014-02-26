@@ -78,7 +78,7 @@ module.exports = function(app, everyauth) {
         path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
         require.resolve('d3/d3.js'),
         path.join(lib_dir, 'backbone.modal-min.js'),
-        path.join(lib_dir, 'kinetic-v4.5.2.min.js'),
+        require.resolve('mbc-common/vendor/kinetic-v4.5.2.min.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
