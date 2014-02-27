@@ -25,7 +25,10 @@ var _              = require('underscore'),
 
 iobackends.patchBackbone();
 /* from now on imported models have a working bindBackend() here too */
+/* custom heartbeats require patched backbone to work properly. */
 var App            = require("mbc-common/models/App");
+var heartbeats     = require("mbc-common/heartbeats");
+var phb = new heartbeats.PateroHeartBeat();
 
 var loggerStream = {
     write: function(message, encoding) {

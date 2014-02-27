@@ -18,6 +18,7 @@ module.exports = function (db) {
                 opts: { search: search_options.Transforms },
             }},
         media: {
+            redis: true,
             mongo: {
                 db: db,
                 collection: collections.Medias,
@@ -72,6 +73,18 @@ module.exports = function (db) {
             mongo: {
                 db: db,
                 collection: collections.Auth,
+            }},
+        transcodestatus: {
+            use: [middleware.debug],
+            redis: true,
+            store: backboneio.middleware.memoryStore(db, 'transcode_status', {}),
+        },
+        transcode: {
+            use: [middleware.debug],
+            redis: true,
+            mongo: {
+                db: db,
+                collection: collections.Transcoding,
             }},
     };
 
