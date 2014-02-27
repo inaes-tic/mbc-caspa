@@ -15,7 +15,6 @@ var _              = require('underscore'),
     collections    = common_conf.Collections,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('caspa_server'),
-    App            = require("mbc-common/models/App"),
 /* utilities */
     pubsub         = {publisher: mbc.pubsub(), listener: mbc.pubsub()},
     utils          = new (require('./utils'))(db),
@@ -24,6 +23,9 @@ var _              = require('underscore'),
     auth           = new (require('./auth'))(iobackends)
  ;
 
+iobackends.patchBackbone();
+/* from now on imported models have a working bindBackend() here too */
+var App            = require("mbc-common/models/App");
 
 var loggerStream = {
     write: function(message, encoding) {
