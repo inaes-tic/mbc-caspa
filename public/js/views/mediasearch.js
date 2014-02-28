@@ -3,7 +3,6 @@ window.SearchView = function(options) {
     _.extend(self, Backbone.Events);
 
     var el = options['el'];
-    var type = 'type' in options ? options['type'] : 'server';
     var pagination = 'pagination' in options ? options['pagination'] : false;
     var collection = options['collection'];
     var page_size = options['page_size'] || (collection instanceof PageableCollection)?collection.state.pageSize:10;
