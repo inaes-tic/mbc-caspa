@@ -37,7 +37,8 @@
         "mubsub"        : "git://github.com/inaes-tic/mubsub.git",
         "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git",
         "everyauth"     : "0.4.x",
-        "bcrypt"        : "0.7.x"
+        "bcrypt"        : "0.7.x",
+        "typeahead.js"  : "git://github.com/inaes-tic/typeahead.js.git"
     },
     "devDependencies": {
         "mocha"     : "1.12.x",

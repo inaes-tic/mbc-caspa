@@ -96,6 +96,7 @@ module.exports = function(app, everyauth) {
         .concat(addPath(common_lib_dir, vendorCommonLibDir))
         .concat([
             require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
+            require.resolve('typeahead.js/dist/typeahead.bundle.min.js'),
         ])
     , {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
