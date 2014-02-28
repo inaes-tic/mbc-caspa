@@ -208,7 +208,11 @@ module.exports = function(app, everyauth) {
                      'emptyalert',
                      'timeinfo',
                      'nowplaying',
-                     'sourceinfo'
+                     'sourceinfo',
+                     'typeahead_suggestion',
+                     'typeahead_header',
+                     'typeahead_footer',
+                     'typeahead_empty',
                     ];
 
     var commonTemplates = ['editor',
