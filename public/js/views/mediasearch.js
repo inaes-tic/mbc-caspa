@@ -5,6 +5,7 @@ window.SearchView = function(options) {
     self.options = options;
 
     var el = options['el'];
+    var title = 'title' in options ? options['title'] : i18n.gettext('Search');
     var pagination = 'pagination' in options ? options['pagination'] : false;
     var collection = options['collection'];
     var page_size = options['page_size'] || (collection instanceof PageableCollection)?collection.state.pageSize:10;

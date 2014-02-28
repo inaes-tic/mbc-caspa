@@ -17,6 +17,7 @@ window.UniverseListView = function(options){
     var config = 0;
     var default_facets = appCollection.at(config).get('Search').Lists.facets;
     var facets = 'facets' in options ? options['facets'] : default_facets;
+    var search_title = i18n.gettext('Playlists');
 
     el.html(template.universe({draggable: draggable}));
 
@@ -62,6 +63,7 @@ window.UniverseListView = function(options){
 
     this.search_view = new SearchView({
         el: $('#media-search',el),
+        title: search_title,
         collection: collection,
         type: search_type,
         pagination: pagination,

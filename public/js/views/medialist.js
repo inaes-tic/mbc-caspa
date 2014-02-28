@@ -62,10 +62,12 @@ window.MediaListView  = MasterView.extend({
         self.options.pagination = pagination;
 
         var config = 0;
-        var default_facets = appCollection.at(config).get('Search').Medias.facets;
-        var fulltext_fields = appCollection.at(config).get('Search').Medias.fulltext;
+        var config_search = appCollection.at(config).get('Search').Medias;
+        var default_facets = config_search.facets;
+        var fulltext_fields = config_search.fulltext;
         var facets = 'facets' in options ? options['facets'] : default_facets;
         self.options.facets = facets;
+        var search_title = i18n.gettext('Medias');
 
         var default_search_type = 'server';
         var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
@@ -114,7 +116,6 @@ window.MediaListView  = MasterView.extend({
                     self.collection.remove(item);
                     self.filter(filters);
                 }
-
 
                 this.__filters = ko.observable();
                 this.filter = ko.computed({
@@ -209,6 +210,7 @@ window.MediaListView  = MasterView.extend({
         });
 
         search_options = {
+            title: search_title,
             collection: collection,
             type: search_type,
             pagination: pagination,
