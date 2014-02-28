@@ -10,21 +10,13 @@ locale/es/LC_MESSAGES/messages.mo:
 	./bin/update_languages.sh
 	./bin/compile-json locale locale
 
-submodules: visualsearch
-	git submodule update
-
-visualsearch: vendor/visualsearch/build/visualsearch.js
-
-vendor/visualsearch/build/visualsearch.js:
-	git submodule update --init
-
 node_modules:
 	mkdir -p $@
 
 npm:
 	npm install
 
-update: submodules npm mos
+update: npm mos
 
 test:
 	@LOG_LEVEL=error CASPA_NOAUTH=true ${MOCHA} --reporter spec --timeout 10000 test
@@ -41,4 +33,4 @@ serve_noweb:
 serve_debug:
 	node --debug-brk server.js
 
-.PHONY: npm submodules serve visualsearch test test_debug serve_noweb serve_debug
+.PHONY: npm serve test test_debug serve_noweb serve_debug
