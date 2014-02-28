@@ -50,7 +50,14 @@ window.utils = {
         $('.alert').hide();
     },
 
-    color_scale: d3.scale.category10()
+    color_scale: d3.scale.category10(),
+
+    deep: function(obj, path) {
+        for (var i = 0, path = path.split("."), len = path.length; i < len; i++) {
+            obj = obj[path[i]];
+        }
+        return obj;
+    },
 };
 
 window.utils.StateTracker = function() {
