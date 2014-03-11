@@ -42,9 +42,9 @@ block content
 
                   ul.messages.collapse(data-bind="foreach: tasks, attr: {'id': _id()}")
                     li(data-bind="text: $data.name")
-                    //status: processing , failed , done.
-                    //message: nada o si error el mensaje de error.
-                    // no tienen por que estar. solo ahora para debugging.
+                    // status: processing , failed , done.
+                    // message: empty or if error message.
+                    // now just for debugging.
                     p(data-bind="text: 'status:  ' + $data.status")
                     img(data-bind="attr: { 'class': $data.status }")
                     <!-- ko if: message -->
@@ -74,9 +74,9 @@ block content
 
                   ul.messages.collapse(data-bind="foreach: tasks, attr: {'id': _id()}")
                     li(data-bind="text: $data.name")
-                    //status: processing , failed , done.
-                    //message: nada o si error el mensaje de error.
-                    // no tienen por que estar. solo ahora para debugging.
+                    // status: processing , failed , done.
+                    // message: empty or if error message.
+                    // now just for debugging.
                     p(data-bind="text: 'status:  ' + $data.status")
                     img(data-bind="attr: { 'class': $data.status }")
                     <!-- ko if: message -->
