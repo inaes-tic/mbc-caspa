@@ -61,6 +61,7 @@ block content
               td.left
                   h5(data-bind="text: filename")
 
+    <!-- ko if: Failed.collection().length -->
     #failed-table.alert
       .page-header
         h2 Failed:
@@ -82,4 +83,4 @@ block content
                     <!-- ko if: message -->
                     p(data-bind="text: 'message: ' + $data.message")
                     <!-- /ko -->
-
+    <!-- /ko -->
