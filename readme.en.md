@@ -63,10 +63,16 @@ echo "setParameter = textSearchEnabled=true" >> /etc/mongodb.conf
    apt-get install ffmpeg
 ```
 
++ avahi/dnssd (required by mdns)
+
+```shell
+   apt-get install libavahi-compat-libdnssd-dev
+```
+
 + alltoogethernow
 
 ```shell
-   sudo apt-get install gettext npm nodejs mongodb redis-server ffmpeg
+   sudo apt-get install gettext npm nodejs mongodb redis-server ffmpeg libavahi-compat-libdnssd-dev
 ```
 
 # Installing #
