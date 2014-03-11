@@ -7,6 +7,7 @@ window.framestatus = new App.ProgressStatus();
 var AppRouter = Backbone.Router.extend({
 
     routes: {
+        "transcoding"       : "transcoding",
         "media"             : "list",
         "universe"          : "universe",
         "media/add"         : "upload",
@@ -37,6 +38,7 @@ var AppRouter = Backbone.Router.extend({
                 playout: 'playout-menu',
                 schedule: 'schedule-menu',
                 editor: 'editor-menu',
+                transcoding: 'transcoding-menu',
                 list: 'list-menu',
                 mediaDetails: 'list-menu',
                 upload: 'add-menu',
@@ -57,6 +59,10 @@ var AppRouter = Backbone.Router.extend({
 
     schedule: function() {
         return new ScheduleView();
+    },
+
+    transcoding: function() {
+        return new TranscodeView();
     },
 
     list: function() {

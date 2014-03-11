@@ -1,0 +1,86 @@
+block content
+- if (!name)
+  - var name = i18n.gettext('Transcoding queue');
+
+- var readonly = false;
+
+- var file_name = i18n.gettext('Filename')
+- var stage = i18n.gettext('Stage')
+- var progress = i18n.gettext('Progress')
+- var progress_dbind = '{attr: {style:"width: "+progress()+"%;" }}';
+
+#media-list.infinit-panel
+  .listHeader
+    .fixed
+      h1.list-name= name
+    .alert.alert-transcode
+      h4= i18n.gettext('Need to transcode videos ?')
+      p=  i18n.gettext('Put them into your incomming directory to ingest.')
+    .table-container
+      table.table.table-bordered.table-striped.table-condensed#table
+        thead
+          tr
+            th.file_name= file_name
+            th.stage= stage
+
+  .scrollable
+    #processing-table
+      .page-header
+        h2 Currently processing:
+      .table-container
+        table.table.table-bordered.table-striped.table-condensed#table
+          tbody.tbody#media-view(data-bind='foreach: Working.collection', class='tbody')
+            tr(data-toggle="collapse", data-bind="attr: {'data-target': '#'+$data._id()}", style="cursor: pointer;")
+              td.center
+                  h5(data-bind="text: filename")
+              td
+                  <!-- ko if: progress -->
+                  .progress.progress-striped.active
+                      .progress-bar.bar(data-toggle="collapse", data-bind=progress_dbind)
+                  h5.progress-label(data-bind="text: stage() + ' (' + tasks()[tasks().length-1].name + ')'")
+                  <!-- /ko -->
+
+                  ul.messages.collapse(data-bind="foreach: tasks, attr: {'id': _id()}")
+                    li(data-bind="text: $data.name")
+                    // status: processing , failed , done.
+                    // message: empty or if error message.
+                    // now just for debugging.
+                    p(data-bind="text: 'status:  ' + $data.status")
+                    img(data-bind="attr: { 'class': $data.status }")
+                    <!-- ko if: message -->
+                    p(data-bind="text: 'message: ' + $data.message")
+                    <!-- /ko -->
+
+    #queued-table
+      .page-header
+        h2 Queued for transcoding:
+      .table-container
+        table.table.table-bordered.table-striped.table-condensed#table
+          tbody.tbody#media-view(data-bind='foreach: Queued.collection', class='tbody')
+            tr
+              td.left
+                  h5(data-bind="text: filename")
+
+    <!-- ko if: Failed.collection().length -->
+    #failed-table.alert
+      .page-header
+        h2 Failed:
+      .table-container
+        table.table.table-bordered.table-striped.table-condensed#table
+          tbody.tbody#media-view(data-bind='foreach: Failed.collection', class='tbody')
+            tr(data-toggle="collapse", data-bind="attr: {'data-target': '#'+$data._id()}", style="cursor: pointer;")
+              td.center
+                  h5(data-bind="text: filename")
+              td
+
+                  ul.messages.collapse(data-bind="foreach: tasks, attr: {'id': _id()}")
+                    li(data-bind="text: $data.name")
+                    // status: processing , failed , done.
+                    // message: empty or if error message.
+                    // now just for debugging.
+                    p(data-bind="text: 'status:  ' + $data.status")
+                    img(data-bind="attr: { 'class': $data.status }")
+                    <!-- ko if: message -->
+                    p(data-bind="text: 'message: ' + $data.message")
+                    <!-- /ko -->
+    <!-- /ko -->
