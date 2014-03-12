@@ -17,9 +17,10 @@ window.MediaListView  = MasterView.extend({
         var collection;
         if (type.match(/playlist/)) {
             // In case of playlist, fetch related
-            if (!model.isNew()) {
-                model.fetchRelated("pieces");
-                model.fetchRelated("occurrences");
+            if (!model.isNew() && !options['dont-fetch']) {
+                _.each(model.getRelations(), function(rel) {
+                    model.fetchRelated(rel.key);
+                });
                 model.fetch();
             }
             collection = model.get('pieces');
@@ -32,10 +33,14 @@ window.MediaListView  = MasterView.extend({
                 collection = new Media.CollectionPageable();
                 model = collection;
             }
-            collection.fetch();
+
+            if (!collection.models.length) {
+                collection.fetch();
+            }
         }
 
         this.model = model;
+        this.options.model = model;
         this.collection = collection;
 
         this.render();
@@ -54,15 +59,20 @@ window.MediaListView  = MasterView.extend({
 
         var default_pagination = 'endless';
         var pagination = 'pagination' in options ? options['pagination'] : default_pagination;
+        self.options.pagination = pagination;
 
         var config = 0;
         var default_facets = appCollection.at(config).get('Search').Medias.facets;
         var fulltext_fields = appCollection.at(config).get('Search').Medias.fulltext;
         var facets = 'facets' in options ? options['facets'] : default_facets;
+        self.options.facets = facets;
 
         var default_search_type = 'server';
         var search_type = 'search_type' in options ? options['search_type'] : default_search_type;
         var type = 'type' in options ? options['type'] : 'medialist-searchable-fixed';
+
+        self.options.search_type = search_type;
+        self.options.type = type;
 
         if (type.match(/sortable/)){
             allow_drop = true;
@@ -198,13 +208,19 @@ window.MediaListView  = MasterView.extend({
             },
         });
 
-        this.search_view = new SearchView({
-            el: $('#media-search',el),
+        search_options = {
             collection: collection,
             type: search_type,
             pagination: pagination,
-            facets: facets
-        });
+            facets: facets,
+            query: '',
+        };
+
+        this.options['search_options'] = search_options;
+        search_options.el = $('#media-search',el);
+
+
+        this.search_view = new SearchView(search_options);
 
         this.view_model = new MediaListViewModel(model);
 
@@ -250,9 +266,9 @@ window.MediaListView  = MasterView.extend({
             this._hasChanges = true;
         };
 
-        _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'removeDummyRow', 'destroyView', 'deleteModel', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges');
+        _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'removeDummyRow', 'destroyView', 'deleteModel', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges', '_bindModel', '_unbindModel');
         this.view_model.collection.subscribe(this.onCollectionChange);
-        model.bind('change', this._model_change_cb);
+        this._bindModel(model);
 
         ko.applyBindings(this.view_model, el[0]);
 
@@ -266,6 +282,18 @@ window.MediaListView  = MasterView.extend({
         this.search_view.clearSearch();
     },
 
+    _unbindModel: function(model) {
+        model.off('change', this._model_change_cb);
+        model.off('reset:pieces', this._model_change_cb);
+        model.off('backend', this.clearChanges);
+    },
+
+    _bindModel: function(model) {
+        model.on('change', this._model_change_cb);
+        model.on('reset:pieces', this._model_change_cb);
+        model.on('backend', this.clearChanges);
+    },
+
     clearChanges: function () {
         this._hasChanges = false;
     },
@@ -276,18 +304,19 @@ window.MediaListView  = MasterView.extend({
 
     save: function (newmodel) {
         if (newmodel) {
+            self._unbindModel(this.model);
             this.view_model.model(newmodel);
             this.model = newmodel;
-            newmodel.bind('change', this._model_change_cb);
+            self._bindModel(newmodel);
         }
         this.model.save();
-        this._hasChanges = false;
+        this.clearChanges();
     },
 
     releaseView: function() {
         // Release resources
         this.collection.off("filter");
-        this.model.off("change");
+        this._unbindModel(this.model);
         this.search_view.destroy();
         kb.release(this.view_model);
     },

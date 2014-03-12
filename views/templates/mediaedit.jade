@@ -20,9 +20,18 @@ block flexible-content
                 button.close.hide-alert(type='button') ×
                 h4= i18n.gettext('Can\'t delete or change Playlist!')
                 p=  i18n.gettext('You are currently editing a scheduled playlist. Create a new one.')
+            .alert.alert-block.alert-other-client-changed(style='display:none')
+                button.close.hide-alert(type='button') ×
+                h4= i18n.gettext('Oops!')
+                p=  i18n.gettext('Somebody else edited this playlist. Showing the most recent version.')
             .btn.btn-block.btn-primary.save= i18n.gettext('Save')
             .btn.btn-block.btn-danger.delete= i18n.gettext('Delete')
         .alert.alert-block.no-playlist-alert
             h4= i18n.gettext('Oops!')
             p=  i18n.gettext('It looks like you have no playlist to show here')
             button.btn.btn-block.btn-large.btn-primary#create-playlist= i18n.gettext('Create New Playlist')
+        .alert.alert-block.alert-other-client-deleted(style='display:none')
+            button.close.hide-alert(type='button') ×
+            h4= i18n.gettext('Oops!')
+            p=  i18n.gettext('Somebody else deleted this playlist.')
+

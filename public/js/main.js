@@ -30,11 +30,12 @@ var AppRouter = Backbone.Router.extend({
 
         this.currentView = null;
         this.currentHash = Backbone.history.getHash();
+        this.viewStates = {};
 
         this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
 
         this.on('route', function(route) {
-            menuItem = {
+            var menuItem = {
                 playout: 'playout-menu',
                 schedule: 'schedule-menu',
                 editor: 'editor-menu',
@@ -54,11 +55,15 @@ var AppRouter = Backbone.Router.extend({
     },
 
     playout: function() {
-        return new PlayoutView();
+        var state = this.viewStates['playout'] || {};
+        this.viewStates['playout'] = state;
+        return new PlayoutView(state);
     },
 
     schedule: function() {
-        return new ScheduleView();
+        var state = this.viewStates['schedule'] || {};
+        this.viewStates['schedule'] = state;
+        return new ScheduleView(state);
     },
 
     transcoding: function() {
@@ -66,7 +71,9 @@ var AppRouter = Backbone.Router.extend({
     },
 
     list: function() {
-        return new MediaListView();
+        var state = this.viewStates['list'] || {};
+        this.viewStates['list'] = state;
+        return new MediaListView(state);
     },
 
     universe: function () {
@@ -88,7 +95,9 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editMedia: function() {
-        return new EditView();
+        var state = this.viewStates['editMedia'] || {};
+        this.viewStates['editMedia'] = state;
+        return new EditView(state);
     },
 
     about: function () {
