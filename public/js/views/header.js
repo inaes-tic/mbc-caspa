@@ -24,8 +24,19 @@ window.MostoMessageViewModel = kb.ViewModel.extend({
         kb.ViewModel.prototype.constructor.apply(this, arguments);
         var self = this;
 
-        self.time = ko.computed(function() {
+        self.starttime = ko.computed(function() {
             return moment(self.start()).format('MMM Do, h:mm a');
+        });
+        self.endtime = ko.computed(function() {
+            var end = self.end();
+            if (self.type() == 'notification') {
+                return '';
+            }
+            if (end) {
+                return moment(end).format('MMM Do, h:mm a');
+            } else {
+                return '';
+            }
         });
         self.isNotification = ko.computed(function() {
             return self.type() == 'notification';

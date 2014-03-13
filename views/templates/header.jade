@@ -77,7 +77,10 @@ ul#nav
               a.remove(href="#", data-bind="click: function(vm,e){$root.Messages.remove(vm);e.stopPropagation()}")
                 i.icon-remove
               <!-- /ko -->
-              .time(data-bind='text: time')
+              .time(data-bind='text: starttime')
+              <!-- ko if: endtime() -->
+              .time.endtime(data-bind='text: "Fixed on: " + endtime()')
+              <!-- /ko -->
               .title(data-bind='text: description')
               .message(data-bind='text: message')
           <!-- ko if: Messages.hasNotifications -->
