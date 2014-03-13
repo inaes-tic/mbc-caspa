@@ -44,6 +44,14 @@ window.MostoMessageViewModel = kb.ViewModel.extend({
         self.isError = ko.computed(function() {
             return self.type() == 'error';
         });
+        self.canDelete = ko.computed(function() {
+            if (self.isNotification()) {
+                return true;
+            }
+            if (self.end() || (self.status() == 'fixed')) {
+                return true;
+            }
+        });
     }
 });
 

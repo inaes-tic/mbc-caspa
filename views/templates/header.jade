@@ -73,7 +73,7 @@ ul#nav
                 span= i18n.gettext('errors')
           div.collection(data-bind='foreach: Messages.collection')
             div(data-bind='attr: {class: "mosto-message " + type()}')
-              <!-- ko if: isNotification() -->
+              <!-- ko if: canDelete() -->
               a.remove(href="#", data-bind="click: function(vm,e){$root.Messages.remove(vm);e.stopPropagation()}")
                 i.icon-remove
               <!-- /ko -->
