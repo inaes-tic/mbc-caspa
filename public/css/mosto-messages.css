@@ -129,9 +129,14 @@
 }
 #mosto-messages .mosto-message .time {
 	font-size: 10px;
+    display: inline-block;
     margin: 0;
+    margin-right: 2px;
     width: inherit;
     color: #999;
+}
+#mosto-messages .mosto-message .endtime {
+    color: #737373;
 }
 #mosto-messages .mosto-message .title {
 	font-weight: bold;
