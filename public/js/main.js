@@ -67,7 +67,9 @@ var AppRouter = Backbone.Router.extend({
     },
 
     transcoding: function() {
-        return new TranscodeView();
+        var state = this.viewStates['transcode'] || {};
+        this.viewStates['transcode'] = state;
+        return new TranscodeView(state);
     },
 
     list: function() {

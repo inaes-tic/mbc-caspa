@@ -9,6 +9,7 @@ window.TranscodeView = MasterView.extend({
         _.bindAll(this, 'render', 'releaseView', 'removeView', 'destroyView', 'canNavigateAway');
 
         options = options || {};
+        this.options = options;
 
         var el = options['el'] || $('#content');
         this.el = el;
@@ -18,8 +19,11 @@ window.TranscodeView = MasterView.extend({
 
     render: function () {
         var collection;
-        collection = new App.TranscodeProgressCollection();
-        collection.fetch();
+        collection = this.options.collection || new App.TranscodeProgressCollection();
+        if (!this.options.collection) {
+            collection.fetch();
+            this.options.collection = collection;
+        }
         this.collection = collection;
 
         this.el.html(template.transcode());
