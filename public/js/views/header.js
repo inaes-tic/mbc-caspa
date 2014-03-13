@@ -106,11 +106,6 @@ window.MostoMessagesViewModel = function(collection) {
     };
 };
 
-window.mostoMessages = new App.MostoMessagesCollection();
-window.mostoMessages.fetch();
-
-window.mostoMessagesViewModel = new MostoMessagesViewModel(mostoMessages);
-
 // for testing
 window.addMostoMessage = function(type) {
     mostoMessages.add(new App.MostoMessage({
@@ -137,6 +132,7 @@ window.HeaderView = function (options) {
 
     self.appstatus = options['appstatus'];
     self.framestatus = options['framestatus'];
+    self.mostoMessages = options['mostoMessages'];
 
     self.el = 'el' in options ? options['el'] : $('#Panel');
 
@@ -169,7 +165,7 @@ window.HeaderView = function (options) {
     self.view_model = {
         Header:new HeaderViewModel(self.appstatus),
         Frame: new FrameViewModel(self.framestatus),
-        Messages: mostoMessagesViewModel,
+        Messages: new MostoMessagesViewModel(self.mostoMessages),
     };
 
     ko.applyBindings(self.view_model, self.el[0]);
