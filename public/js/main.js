@@ -4,6 +4,9 @@ window.appCollection = appCollection;
 window.appstatus = new App.Status();
 window.framestatus = new App.ProgressStatus();
 
+window.appstatus.fetch();
+window.framestatus.fetch();
+
 var AppRouter = Backbone.Router.extend({
 
     routes: {
