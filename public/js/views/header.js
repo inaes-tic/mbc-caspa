@@ -112,14 +112,14 @@ window.MostoMessagesViewModel = function(collection) {
 
     this.remove = function(viewModel) {
         var model = viewModel.model();
-        this._collection.remove(model);
+        model.destroy();
     };
 
     this.removeAll = function() {
         var models = $.extend({}, self._collection.models);
         _.each(models, function(model) {
             if (model.isNotification()) {
-                self._collection.remove(model);
+                model.destroy();
             }
         })
     };
