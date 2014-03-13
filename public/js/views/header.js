@@ -44,6 +44,9 @@ window.MostoMessagesViewModel = function(collection) {
     this.collection = kb.collectionObservable(collection, {
         view_model: MostoMessageViewModel,
         filters: function(model) {
+            if (self.radioValue() == '') {
+                return true;
+            }
             return model.get('type') === self.radioValue();
         }
     });
@@ -71,11 +74,11 @@ window.MostoMessagesViewModel = function(collection) {
     });
 
     this.notificationsClass = ko.computed(function() {
-        return self.radioValue() == 'error' ? 'notifications-enabled' : 'disabled';
+        return self.radioValue() == 'notification' ? 'notifications-enabled' : 'disabled';
     });
 
     this.errorsClass = ko.computed(function() {
-        return self.radioValue() == 'notification' ? 'errors-enabled' : 'disabled';
+        return self.radioValue() == 'error' ? 'errors-enabled' : 'disabled';
     });
 
     this.hasNotifications = ko.computed(function() {
