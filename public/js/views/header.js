@@ -110,13 +110,8 @@ window.MostoMessagesViewModel = function(collection) {
     };
 };
 
-window.mostoMessages = new App.MostoMessages([
-    // for testing
-    new App.MostoMessage({title: 'Title for notification', message: 'Message for notification'}),
-    new App.MostoMessage({title: 'Title for notification', message: 'Message for notification'}),
-    new App.MostoMessage({title: 'Title for error',        message: 'Message for error',      type: 'error'}),
-    new App.MostoMessage({title: 'Title for notification', message: 'Message for notification'})
-]);
+window.mostoMessages = new App.MostoMessagesCollection();
+window.mostoMessages.fetch();
 
 window.mostoMessagesViewModel = new MostoMessagesViewModel(mostoMessages);
 
