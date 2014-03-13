@@ -13,3 +13,13 @@ script(id="list", type="text/html")
   select(multiple="multiple", height="5", data-bind="options:value, selectedOptions:selectedItems")
   div
    button(data-bind="click: removeSelected, enable: selectedItems().length > 0")="Remove"
+
+script(id="object", type="text/html")
+  ul(data-bind="objectWidget: value")
+    <!-- ko foreach: dict.items -->
+    li
+      input(data-bind="value: key")
+      input(data-bind="value: val, addOnEnter: function() { dict.addItem($data) }")
+      button(data-bind="click: function() { dict.removeItem($data) }")='Remove'
+    <!-- /ko -->
+  button(data-bind="click: function() { dict.addItem() }")='Add'

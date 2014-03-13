@@ -46,7 +46,7 @@ ko.bindingHandlers.renderWidget = {
         var type;
 
         // Available widget templates
-        var available_types = ['input', 'switch', 'spinner', 'list'];
+        var available_types = ['input', 'switch', 'spinner', 'list', 'object'];
         var default_type = 'input';
 
         // use value sent or type from viewmodel
@@ -76,7 +76,6 @@ ko.bindingHandlers.listWidget = {
    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         var self = bindingContext;
         var value = valueAccessor();
-
         self.itemToAdd = ko.observable("");
         self.selectedItems = ko.observableArray([]);
         self.addItem = function () {
@@ -105,3 +104,50 @@ ko.bindingHandlers.listWidget = {
     update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
     }
 };
+
+ko.bindingHandlers.objectWidget = {
+    createObj :  function(prop) {
+        var  o = {};
+        for(f in prop) {
+            var k = prop[f].key();
+            var v = prop[f].val();
+            if(k && v) {
+                o[k] = v;
+            }
+        }
+        return o;
+    },
+
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var value = valueAccessor();
+        var valueUnwrapped = ko.unwrap(value);
+        bindingContext.dict = new Dictionary(valueUnwrapped);
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var value = valueAccessor();
+        var o = ko.bindingHandlers.objectWidget.createObj(bindingContext.dict.items());
+        value(o);
+    }
+};
+
+function DictionaryItem(key, val) {
+    this.key = ko.observable(key);
+    this.val = ko.observable(val);
+}
+
+function Dictionary(data) {
+    this.items = ko.observableArray([]);
+    for (field in data) {
+        if (data.hasOwnProperty(field)) {
+            this.items.push(new DictionaryItem(field, data[field]));
+        }
+    }
+
+    this.addItem = function(item) {
+        this.items.push(new DictionaryItem(item));
+    }.bind(this);
+
+    this.removeItem = function(item) {
+            this.items.remove(item);
+    }.bind(this);
+}
