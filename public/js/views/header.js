@@ -51,7 +51,7 @@ window.MostoMessagesViewModel = function(collection) {
     this.collection = kb.collectionObservable(collection, {
         view_model: MostoMessageViewModel,
         filters: function(model) {
-            return model.get('type') === self.radioValue();
+            return model.type() === self.radioValue();
         }
     });
 
