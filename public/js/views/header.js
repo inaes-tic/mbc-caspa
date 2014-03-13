@@ -18,15 +18,30 @@ window.TimeInfoView = Backbone.View.extend({
     }
 });
 
-window.MostoMessageViewModel = function(model) {
-    this.model   = ko.observable(model);
-    this.type    = kb.observable(model, 'type');
-    this.title   = kb.observable(model, 'title');
-    this.message = kb.observable(model, 'message');
-    this.time    = ko.computed(function() {
-        return model.get('time').format('MMM Do, h:mm a');
-    });
-}
+
+window.MostoMessageViewModel = kb.ViewModel.extend({
+    constructor: function(model) {
+        kb.ViewModel.prototype.constructor.apply(this, arguments);
+        var self = this;
+
+        self.type    = ko.computed(function() {
+            if (self.status() == 'failing') {
+                return 'error';
+            } else {
+                return 'notification';
+            }
+        }, self);
+        self.time = ko.computed(function() {
+            return moment(self.start()).format('MMM Do, h:mm a');
+        });
+        self.isNotification = ko.computed(function() {
+            return self.type() == 'notification';
+        });
+        self.isError = ko.computed(function() {
+            return self.type() == 'error';
+        });
+    }
+});
 
 window.MostoMessagesViewModel = function(collection) {
     var self = this;
