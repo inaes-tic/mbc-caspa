@@ -24,13 +24,6 @@ window.MostoMessageViewModel = kb.ViewModel.extend({
         kb.ViewModel.prototype.constructor.apply(this, arguments);
         var self = this;
 
-        self.type    = ko.computed(function() {
-            if (self.status() == 'failing') {
-                return 'error';
-            } else {
-                return 'notification';
-            }
-        }, self);
         self.time = ko.computed(function() {
             return moment(self.start()).format('MMM Do, h:mm a');
         });
@@ -51,7 +44,7 @@ window.MostoMessagesViewModel = function(collection) {
     this.collection = kb.collectionObservable(collection, {
         view_model: MostoMessageViewModel,
         filters: function(model) {
-            return model.type() === self.radioValue();
+            return model.get('type') === self.radioValue();
         }
     });
 
@@ -88,14 +81,14 @@ window.MostoMessagesViewModel = function(collection) {
     this.hasNotifications = ko.computed(function() {
         var found = false;
         _.each(self.collection(), function(viewModel) {
-            if (viewModel.model().isNotification()) {
+            if (viewModel.isNotification()) {
                 found = true;
             }
         });
         return found;
     });
 
-    this.remove = function(viewModel) { 
+    this.remove = function(viewModel) {
         var model = viewModel.model();
         this._collection.remove(model);
     };
