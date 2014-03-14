@@ -183,7 +183,8 @@ window.SearchView = function(options) {
                 collection.trigger('filter', {});
             }
          }
-    });
+    })
+    .val(self.options.query);
 
     function renderBootstrapPaginator() {
         $(".pagination", el).html("");
@@ -219,6 +220,7 @@ window.SearchView = function(options) {
     this.destroy = function() {
         collection.unbind("sync", this.hideLoading);
         searchBox.typeahead('destroy');
+        self.options.query = searchBox.val();
     };
 
     switch(pagination) {

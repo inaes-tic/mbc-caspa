@@ -1,4 +1,5 @@
 window.UniverseListView = function(options){
+    this.options = options;
     var draggable = 'draggable' in options ? options['draggable'] : false;
     var collection = options['collection'];
     var el = $('#content');
@@ -61,14 +62,18 @@ window.UniverseListView = function(options){
         }
     });
 
-    this.search_view = new SearchView({
-        el: $('#media-search',el),
+    var search_options = this.options.search_options || {
         title: search_title,
         collection: collection,
         type: search_type,
         pagination: pagination,
-        facets: facets
-    });
+        facets: facets,
+        query: '',
+    };
+
+    this.options['search_options'] = search_options;
+    search_options.el = $('#media-search', el);
+    this.search_view = new SearchView(search_options);
 
     this.view_model = new UniverseListViewModel(this.collection);
 

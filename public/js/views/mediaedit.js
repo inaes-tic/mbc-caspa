@@ -26,19 +26,25 @@ window.EditView = PanelView.extend({
         this.collection = state.collection || new Media.UniversePageable();
         state.collection = this.collection;
 
-        this.universe_view = new UniverseListView({
-            collection: this.collection,
-            el: $("#universe", this.el),
-        });
+        var universe_state = this.options.state.universe_state || {
+             collection: this.collection,
+        };
+        state.universe_state = universe_state;
+        universe_state.el = $("#universe", this.el);
+        this.universe_view = new UniverseListView(universe_state);
 
         this.mediacollection = state.mediacollection || new Media.CollectionPageable();
         state.mediacollection = this.mediacollection;
 
-        this.medialist = new MediaListView({
+        var media_state = this.options.state.media_state || {
             model: this.mediacollection,
             el: $("#left-pane", this.el),
             type: 'medialist-draggable-fixed',
-        });
+        };
+
+        state.media_state = media_state;
+        media_state.el = $('#left-pane', this.el);
+        this.medialist = new MediaListView(media_state);
         this.medialist.on('dragstart', this.clearSearch);
 
         var resp = state.enterView();

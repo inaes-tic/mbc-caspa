@@ -209,7 +209,7 @@ window.MediaListView  = MasterView.extend({
             },
         });
 
-        search_options = {
+        var search_options = this.options.search_options || {
             title: search_title,
             collection: collection,
             type: search_type,
