@@ -1,0 +1,44 @@
+script(id="confignav", type="text/html")
+  //- 0 is the root of all config, an empty object that
+  //- only serves as a container to simplify the structure.
+  <!-- ko if: type() == null  && 1 == $parents.length -->
+  <!-- ko if: name() -->
+  li
+    a(data-bind=" attr: { href: '#' + name() }")
+      i.icon-cheveron-right
+      span(data-bind="text: name()")
+  <!-- /ko -->
+  <!-- /ko -->
+
+  <!-- ko template: {foreach: properties(), name:"confignav" } -->
+  <!-- /ko -->
+
+script(id="config", type="text/html")
+  <!-- ko if: type() == null -->
+  //- 0 is the root of all config, an empty object that
+  //- only serves as a container to simplify the structure.
+  <!-- ko if: 1 == $parents.length -->
+  a(data-bind="attr: { id: name }")
+  h1(data-bind="text: title() ? title() : name()")
+  h2(data-bind="text: description")
+  <!-- /ko -->
+
+  <!-- ko if: $parents.length > 1 -->
+  h3(data-bind="text: title() ? title() : name()")
+  p(data-bind="text: description")
+  <!-- /ko -->
+
+  <!-- /ko -->
+
+  <!-- ko if: type() != null -->
+  .control-group
+    label.control-label(data-bind="text: title() ? title() : name()")
+    .controls
+      #widget(data-bind="renderWidget: {}")
+      //- 'default' is a reserved keyword.
+      button.set_default.btn.btn-primary(data-bind="click: $root.setDefault , visible: !_.isEqual(value(), $data.default())")= i18n.gettext('Default')
+
+  <!-- /ko -->
+
+  <!-- ko template: {foreach: properties(), name:"config" } -->
+  <!-- /ko -->

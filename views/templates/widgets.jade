@@ -1,0 +1,25 @@
+script(id="switch", type="text/html")
+  #switch
+    select(data-bind="options: $data.enum, value: value, attr: { placeholder: description, title: description }, jqSwitch: { value: value }")
+script(id="input", type="text/html")
+  input.span5(type='text', data-bind="attr: { placeholder: description, title: description}, value: value, valueUpdate: 'afterkeydown' ")
+script(id="spinner", type="text/html")
+  input.span5(type='text', data-bind="spinner: {value: value }, attr: { placeholder: description, title: description}, valueUpdate: 'afterkeydown' ")
+
+script(id="list", type="text/html")
+  form(data-bind="listWidget: value")
+    input(type="text", data-bind='value:itemToAdd, valueUpdate: "afterkeydown"')
+    button(type="submit", data-bind="enable: itemToAdd().length > 0")='Add'
+  select(multiple="multiple", height="5", data-bind="options:value, selectedOptions:selectedItems")
+  div
+   button(data-bind="click: removeSelected, enable: selectedItems().length > 0")="Remove"
+
+script(id="object", type="text/html")
+  ul(data-bind="objectWidget: value")
+    <!-- ko foreach: dict.items -->
+    li
+      input(data-bind="value: key")
+      input(data-bind="value: val, addOnEnter: function() { dict.addItem($data) }")
+      button(data-bind="click: function() { dict.removeItem($data) }")='Remove'
+    <!-- /ko -->
+  button(data-bind="click: function() { dict.addItem() }")='Add'

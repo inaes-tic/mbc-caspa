@@ -1,69 +1,63 @@
-window.ConfView = Backbone.View.extend({
-    el: $("#content"),
-    initialize: function () {
-        this.render();
-        this.configModel  = this.collection.findWhere({ type: 'config' });
-        this.defaultModel = this.collection.findWhere({ type: 'defaults' });
-    },
-    render: function () {
-        $(this.el).html(template.confview({ config: this.collection.toJSON() }));
-        $('.scrollable').scrollspy('refresh');
-        location.hash = location.hash+' ';
-        return this;
-    },
-    events: {
-        "change"        : "change",
-        "click .save_conf"   : "save",
-        "click .abort_conf"  : "abort",
-        "click .set_default"    : "setDefault",
-    },
+window.ConfView = function(options){
+    var self = this;
+    _.extend(self, Backbone.Events);
 
-    change: function (event) {
-        // Remove any existing alert message
-        utils.hideAlert();
+    options = options || {};
+    var el = options['el'] || $('#content');
+    this.el = el;
 
-        var config_model = this.configModel.attributes;
+    var orig_collection = options['collection'];
+    var collection;
 
-        // Apply the change to the model
-        var target = event.target;
-        var res = target.name.split(".");
-        /* XXX FIXME backbone problems setting with nested models. try backbone-deep-models? */
-        switch(res.length) {
-            case 1: config_model[target.name] = target.value; break;
-            case 2: config_model[res[0]][res[1]] = target.value; break;
-            case 3: config_model[res[0]][res[1]][res[2]] = target.value; break;
-            default:
-        }
-    },
-    abort: function () {
-        app.navigate('/', false);
-    },
-    save: function () {
-        var self = this;
-        this.configModel.save(null, {
-            success: function (model) {
-                self.render();
+    var models = _.pluck(orig_collection.models, 'attributes');
+    collection = new App.RelationalConfig(flatten_conf(models[0], models[1], models[2]));
+
+    el.html(template.confview({}));
+    location.hash = location.hash+' ';
+
+    var ConfViewModel = kb.ViewModel.extend({
+        constructor: function(collection) {
+            kb.ViewModel.prototype.constructor.apply(this, arguments);
+            var self = this;
+
+            _.extend(self, Backbone.Events);
+
+            this.setDefault = function(vm, jqe) {
+                vm.value(vm.default())
             },
-            error: function () {
-                utils.showAlert('Error', 'An error occurred while trying to change this item', 'alert-error');
+
+            this.save = function(item) {
+                self.trigger('save');
             }
-        });
-    },
-    setDefault: function(event) {
-        var config_model = this.configModel.attributes;
-        var default_model = this.defaultModel.attributes;
-        var target = event.target;
-        var res = target.name.split(".");
-        if(res.length == 3) {
-            config_model[res[0]][res[1]][res[2]] = default_model[res[0]][res[1]][res[2]];
-            var selector = target.name.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\\\$1');
-            $('input#'+selector, this.el).val(default_model[res[0]][res[1]][res[2]]);
-        }
-        return false;
-    },
-    canNavigateAway: function(options) {
+
+            this.cancel = function() {
+                // FIXME: implement undo here. memento?
+                // we can also save the result of flatten_conf() and do a .set() with that,
+                // which is basically what would memento do.
+                console.log('[STUBBED] CONF: cancel() args: ', arguments);
+            }
+
+        },
+        factories: {
+            'properties.models': ConfViewModel,
+        },
+    });
+
+    this.view_model = new ConfViewModel(collection);
+    ko.applyBindings(this.view_model, $("#configure", el)[0]);
+
+    $('.scrollable').scrollspy('refresh');
+
+    this._save = function() {
+        var js = relational_to_server_conf(collection.toJSON());
+        orig_collection.models[0].set(js);
+        orig_collection.models[0].save();
+    };
+    this.view_model.on('save', this._save);
+
+    this.canNavigateAway = function(options) {
         $(".scrollable").unbind("scroll"); // Disables scrollspy
-        this.undelegateEvents();
         options["ok"]();
-    },
-});
+    };
+};
+

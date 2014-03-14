@@ -1,48 +1,16 @@
-- var data = 0
-- var defaults = 1
-- var descriptions = 2
+include conftemplates
+include widgets
+
 #configure
   #menu
     .listHeader
-      ul.nav.nav-list
-        each v, k in config[data]
-          - if (k!= 'type' && k!='Search') {
-          li
-            a(href='#' + k)
-              i.icon-cheveron-right
-              span= k
-          - }
-        .form-actions
-          a.btn.btn-primary.save_conf(href="#")= i18n.gettext('Save')
-          a.btn.delete_conf(href="#")= i18n.gettext('Cancel')
+      ul.nav.nav-list(data-bind="{template: 'confignav'}")
+
+    .form-actions
+      a.btn.btn-primary.save_conf(data-bind="click: $root.save" )= i18n.gettext('Save')
+      a.btn.delete_conf(data-bind="click: $root.cancel")= i18n.gettext('Cancel')
+
   #info
     .scrollable
       form.form-horizontal
-        each v, k in config[data]
-            - if (k!='type' && k!='Search') {
-            .page-header
-              a(id=k)
-              - var k_desc = config[descriptions]['properties'][k]
-              h1= k_desc['title']
-              h2= k_desc['description']
-              each v0, k0 in v
-               - if (typeof(v0) != 'string') {
-                 - var k0_desc = k_desc['properties'][k0]
-                 h3=k0_desc['title']
-                 p= k0_desc['description']
-                 each v1, k1 in v0
-                   - var label=  k+'.'+k0+'.'+k1
-                   - var value= v1
-                   - var k1_desc = k0_desc['properties'][k1]
-                   - var title = k1_desc['title']
-                   - var desc = k1_desc['description']
-                   - var default_value = config[defaults][k][k0][k1]
-                   .control-group
-                     label.control-label(for=label)= title + ' : '
-                     .controls
-                       input.span5(id=label, type='text', name=label, placeholder=label, value=value, title=desc)
-                       - if (v1 != default_value) {
-                         button.set_default.btn.btn-primary(name=label)= i18n.gettext('Default')
-                       -}
-               - }
-            - }
+        .page-header(data-bind="{template: 'config'}")
