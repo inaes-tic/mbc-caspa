@@ -1755,7 +1755,7 @@ window.PlayoutView = PanelView.extend({
         // Config Drag Events
         self.external_drag = d3.behavior.drag();
         self.external_drag.on("dragstart", function() {
-            self.drag_elem = $(event.target).closest("li.playlist-name");
+            self.drag_elem = $(event.target).closest($("li.playlist-name", self.el));
             if (self.drag_elem.length == 1) {
                 self.drag_origin = self.playlists.get(self.drag_elem.attr("id"));
             } else {
@@ -1765,7 +1765,7 @@ window.PlayoutView = PanelView.extend({
         }).on("drag", function() {
             var draw = false;
 
-            var maybe_panel = $(event.target).closest("svg.Panel");
+            var maybe_panel = $(event.target).closest($("svg.Panel", self.el));
             if (maybe_panel.length == 1) {
                 draw = self.timeline.drag_move(self.drag_origin, maybe_panel.attr("id").split("-")[1]);
             } else {
@@ -1780,7 +1780,7 @@ window.PlayoutView = PanelView.extend({
         }).on("dragend", function() {
             var create;
 
-            var maybe_panel = $(event.target).closest("svg.Panel");
+            var maybe_panel = $(event.target).closest($("svg.Panel", self.el));
             if (maybe_panel.length == 1) {
                 create = self.timeline.drag_end(self.drag_origin, maybe_panel.attr("id").split("-")[1], event);
             }
