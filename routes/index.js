@@ -42,14 +42,6 @@ module.exports = function(app, everyauth) {
 
     /**
      * Vendor Javascript Package
-     *
-     * jquery
-     * underscore
-     * backbone
-     * backbone.iosync
-     * backbone.iobind
-     * knockout
-     * knockback
      */
 
     var lib_dir = path.join(__dirname, '..', 'vendor')
