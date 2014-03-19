@@ -10,22 +10,14 @@ locale/es/LC_MESSAGES/messages.mo:
 	./bin/update_languages.sh
 	./bin/compile-json locale locale
 
-submodules: sparkmd5 bootstrap knockout-sortable visualsearch bootstrap-paginator backbone.memento
+submodules: visualsearch backbone.memento
 	git submodule update
-
-sparkmd5: vendor/sparkmd5/spark-md5.js
-
-bootstrap: vendor/bootstrap/js/bootstrap-typeahead.js
-
-knockout-sortable: vendor/knockout-sortable/build/knockout-sortable.js
 
 visualsearch: vendor/visualsearch/build/visualsearch.js
 
-bootstrap-paginator: vendor/bootstrap-paginator/build/bootstrap-paginator.min.js
-
 backbone.memento: vendor/backbone.memento/backbone.memento.js
 
-vendor/bootstrap/js/bootstrap-typeahead.js vendor/sparkmd5/spark-md5.js vendor/knockout-sortable/build/knockout-sortable.js vendor/visualsearch/build/visualsearch.js vendor/bootstrap-paginator/build/bootstrap-paginator.min.js vendor/backbone.memento/backbone.memento.js:
+vendor/visualsearch/build/visualsearch.js vendor/backbone.memento/backbone.memento.js:
 	git submodule update --init
 
 node_modules:
@@ -51,4 +43,4 @@ serve_noweb:
 serve_debug:
 	node --debug-brk server.js
 
-.PHONY: npm submodules serve sparkmd5 bootstrap knockout-sortable visualsearch bootstrap-paginator backbone.memento test test_debug serve_noweb serve_debug
+.PHONY: npm submodules serve visualsearch backbone.memento test test_debug serve_noweb serve_debug

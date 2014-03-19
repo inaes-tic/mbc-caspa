@@ -58,32 +58,32 @@ module.exports = function(app, everyauth) {
 
     var vendorBower = [
         'jquery/jquery.min.js',
+        'bootstrap/docs/assets/js/bootstrap.min.js',
+        'jqueryui/ui/minified/jquery-ui.min.js',
         'underscore/underscore.js',
         'backbone/backbone-min.js',
-        'knockoutjs/build/output/knockout-latest.js',
+        'knockout.js/knockout.js',
         'knockback/knockback-core.min.js',
-        'jqueryui/ui/minified/jquery-ui.min.js',
         'node-uuid/uuid.js',
         'moment/moment.js',
         'jed/jed.js',
         'backbone-modal/backbone.modal-min.js',
-        'bootstrap/docs/assets/js/bootstrap.min.js',
         'spark-md5/spark-md5.min.js',
         'sprintf/src/sprintf.js',
         'resumablejs/resumable.js',
-        'd3/d3.js'
+        'd3/d3.js',
+        'knockout-sortable/build/knockout-sortable.js',
+        'bootstrap-paginator/build/bootstrap-paginator.min.js',
     ];
 
     var vendorLibDir = [
-         'jquery-ui.toggleSwitch.js',
-         'stickyPanel/jquery.stickyPanel.js',
-         'airtime/common.js',
-         'backbone.memento/backbone.memento.js',
-         'knockout-sortable/build/knockout-sortable.js',
-         'knockout-drag-binding.js',
-         'knockout-jqueryui.min.js',
-         'knockout-common-binding.js',
-         'bootstrap-paginator/build/bootstrap-paginator.min.js',
+        'jquery-ui.toggleSwitch.js',
+        'stickyPanel/jquery.stickyPanel.js',
+        'airtime/common.js',
+        'backbone.memento/backbone.memento.js',
+        'knockout-drag-binding.js',
+        'knockout-jqueryui.min.js',
+        'knockout-common-binding.js',
     ];
 
     var vendorCommonLibDir = [
@@ -93,6 +93,7 @@ module.exports = function(app, everyauth) {
     var vendorJs = new folio.Glossary(
         addPath(bower_common_lib_dir, vendorBower)
         .concat(addPath(lib_dir, vendorLibDir))
+        .concat(addPath(common_lib_dir, vendorCommonLibDir))
         .concat([
             require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
         ])

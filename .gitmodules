@@ -1,15 +1,3 @@
-[submodule "vendor/sparkmd5"]
-	path = vendor/sparkmd5
-	url = git://github.com/satazor/SparkMD5.git
-[submodule "vendor/bootstrap"]
-	path = vendor/bootstrap
-	url = git://github.com/twbs/bootstrap.git
-[submodule "vendor/knockout-sortable"]
-	path = vendor/knockout-sortable
-	url = git://github.com/rniemeyer/knockout-sortable.git
-[submodule "vendor/bootstrap-paginator"]
-	path = vendor/bootstrap-paginator
-	url = https://github.com/lyonlai/bootstrap-paginator
 [submodule "vendor/visualsearch"]
 	path = vendor/visualsearch
 	url = https://github.com/inaes-tic/visualsearch.git
