@@ -80,19 +80,21 @@ app.configure(function () {
     ));
 
     app.use(auth.everyauth.middleware(app));
-    app.use(function (req, res, next) {
-        if (req.url.match ('^/css/.*') ||
-            req.url.match ('^/img/.*') ||
-            req.url.match ('/favicon.ico')) {
-            return next();
-        } else if(req.session.auth && req.session.auth.loggedIn){
-            logger.warn ('logged in ', req.url, req.session.auth);
-            return next();
-        }
+    if ( ! process.env.CASPA_NOAUTH ) {
+        app.use(function (req, res, next) {
+            if (req.url.match ('^/css/.*') ||
+                req.url.match ('^/img/.*') ||
+                req.url.match ('/favicon.ico')) {
+                return next();
+            } else if(req.session.auth && req.session.auth.loggedIn){
+                logger.warn ('logged in ', req.url, req.session.auth);
+                return next();
+            }
 
-        logger.error ('not logged in', req.url);
-        return res.redirect ('/login');
-    });
+            logger.error ('not logged in', req.url);
+            return res.redirect ('/login');
+        });
+    }
 
     app.use(express.static(conf.Dirs.pub, {maxAge: common_conf.Others.maxage}));
     app.use('/models', express.static(conf.Dirs.models, {maxAge: common_conf.Others.maxage}));
