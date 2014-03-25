@@ -30,7 +30,7 @@ describe('Running Server', function () {
     describe('Testing Server URLS', function() {
         var browser = null;
         var host = url.format({ protocol: 'http', hostname: 'localhost', port: 3000 });
-        var path = { media: '/media', media_edit: '/media/edit', playout: '/playout', schedule: '/schedule', conf: '/admin' };
+        var path = { transcoding: '/transcoding', media: '/media', media_edit: '/media/edit', playout: '/playout', schedule: '/schedule', editor: '/editor', conf: '/admin' };
         var msg_network_problem = 'Unable to access the network';
         var wait_time = 1000;
 
