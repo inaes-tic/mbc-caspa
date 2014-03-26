@@ -74,6 +74,7 @@ module.exports = function(app, everyauth) {
         'd3/d3.js',
         'knockout-sortable/build/knockout-sortable.js',
         'bootstrap-paginator/build/bootstrap-paginator.min.js',
+        'kineticjs/kinetic.min.js',
     ];
 
     var vendorLibDir = [
@@ -87,7 +88,6 @@ module.exports = function(app, everyauth) {
     ];
 
     var vendorCommonLibDir = [
-        'kinetic-v4.5.2.min.js'
     ];
 
     var vendorJs = new folio.Glossary(
