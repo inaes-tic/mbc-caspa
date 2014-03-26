@@ -77,17 +77,17 @@ module.exports = function(app, everyauth) {
     ];
 
     var vendorLibDir = [
-        'jquery-ui.toggleSwitch.js',
         'stickyPanel/jquery.stickyPanel.js',
         'airtime/common.js',
         'backbone.memento/backbone.memento.js',
         'knockout-drag-binding.js',
-        'knockout-jqueryui.min.js',
-        'knockout-common-binding.js',
     ];
 
     var vendorCommonLibDir = [
-        'kinetic-v4.5.2.min.js'
+        'kinetic-v4.5.2.min.js',
+        'jquery-ui.toggleSwitch.js',
+        'knockout-jqueryui.min.js',
+        'knockout-common-binding.js',
     ];
 
     var vendorJs = new folio.Glossary(
@@ -128,7 +128,6 @@ module.exports = function(app, everyauth) {
                  'mediaedit',
                  'playout',
                  'programlist',
-                 'conf',
                  'transcode',
                  'upload-resumable',
                  'universe',
@@ -137,7 +136,7 @@ module.exports = function(app, everyauth) {
                  'airtime/schedule/full-calendar-functions'
                 ];
 
-    var commonViews = [ 'editor' ];
+    var commonViews = [ 'editor', 'conf' ];
 
     var localViewsFiles  = localViews.map( function(e) {
         return path.join(__dirname, '..', 'public/js/views/', e + '.js');
@@ -197,7 +196,6 @@ module.exports = function(app, everyauth) {
                      'mediasearch',
                      'mediaedit',
                      'playout',
-                     'confview',
                      'upload',
                      'transcode',
                      'universe',
@@ -214,6 +212,7 @@ module.exports = function(app, everyauth) {
                            'alert',
                            'confirm',
                            'prompt',
+                           'confview'
                           ];
 
     var getFileName = function (e) {
@@ -234,7 +233,7 @@ module.exports = function(app, everyauth) {
             jade: function (name, source) {
                 return 'template[\'' + name + '\'] = ' +
                     jade.compile(source, {
-                        filename: getFileName(name),
+                        filename: (localTemplates.indexOf(name) != -1) ? getFileName(name) : getCommonFileName(name),
                         client: true,
                         compileDebug: false
                     }) + ';';
