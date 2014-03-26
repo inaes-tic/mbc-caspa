@@ -1,5 +1,6 @@
 module.exports = function(app, everyauth) {
     var path = require('path')
+    , _ = require('underscore')
     , folio = require('folio')
     , jade = require('jade')
     , po2json = require('po2json')
@@ -42,47 +43,61 @@ module.exports = function(app, everyauth) {
 
     /**
      * Vendor Javascript Package
-     *
-     * jquery
-     * underscore
-     * backbone
-     * backbone.iosync
-     * backbone.iobind
-     * knockout
-     * knockback
      */
 
-    var lib_dir = path.join(__dirname, '..', 'vendor')
-    var common_lib_dir = path.join(__dirname, '..', 'node_modules/mbc-common/vendor')
+    var lib_dir                 = path.join(__dirname, '..', 'vendor');
+    var common_dir              = path.join('node_modules','mbc-common');
+    var common_lib_dir          = path.join(__dirname, '..', common_dir, 'vendor');
+    var bower_common_lib_dir    = path.join(__dirname, '..', common_dir, 'bower_components');
 
-    var vendorJs = new folio.Glossary([
-        require.resolve('jquery-browser/lib/jquery.js'),
-        path.join(lib_dir, 'bootstrap/docs/assets/js/bootstrap.min.js'),
-        require.resolve('jqueryui-browser/ui/jquery-ui.js'),
-        path.join(lib_dir, 'jquery-ui.toggleSwitch.js'),
-        require.resolve('underscore/underscore.js'),
-        require.resolve('backbone/backbone.js'),
-        require.resolve('resumable.js/resumable.js'),
-        require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
-        require.resolve('moment'),
-        require.resolve('jed'),
-        path.join(lib_dir, 'sparkmd5/spark-md5.min.js'),
-        path.join(lib_dir, 'sprintf/sprintf.js'),
-        path.join(lib_dir, 'stickyPanel/jquery.stickyPanel.js'),
-        path.join(lib_dir, 'airtime/common.js'),
-        path.join(lib_dir, 'backbone.memento/backbone.memento.js'),
-        require.resolve('knockout/build/output/knockout-latest.js'),
-        require.resolve('knockback/knockback-core.js'),
-        path.join(lib_dir, 'knockout-sortable/build/knockout-sortable.js'),
-        path.join(lib_dir, 'knockout-drag-binding.js'),
-        path.join(lib_dir, 'knockout-jqueryui.min.js'),
-        path.join(lib_dir, 'knockout-common-binding.js'),
-        require.resolve('node-uuid'),
-        path.join(lib_dir, 'bootstrap-paginator/build/bootstrap-paginator.min.js'),
-        require.resolve('d3/d3.js'),
-        path.join(common_lib_dir, 'backbone.modal-min.js'),
-        path.join(common_lib_dir, 'kinetic-v4.5.2.min.js'),
-    ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
+    var addPath = function (dir, libs) {
+        return _.map(libs, function(lib) {
+            return path.join(dir, lib);
+        });
+    }
+
+    var vendorBower = [
+        'jquery/jquery.min.js',
+        'bootstrap/docs/assets/js/bootstrap.min.js',
+        'jqueryui/ui/minified/jquery-ui.min.js',
+        'underscore/underscore.js',
+        'backbone/backbone-min.js',
+        'knockout.js/knockout.js',
+        'knockback/knockback-core.min.js',
+        'node-uuid/uuid.js',
+        'moment/moment.js',
+        'jed/jed.js',
+        'backbone-modal/backbone.modal-min.js',
+        'spark-md5/spark-md5.min.js',
+        'sprintf/src/sprintf.js',
+        'resumablejs/resumable.js',
+        'd3/d3.js',
+        'knockout-sortable/build/knockout-sortable.js',
+        'bootstrap-paginator/build/bootstrap-paginator.min.js',
+    ];
+
+    var vendorLibDir = [
+        'jquery-ui.toggleSwitch.js',
+        'stickyPanel/jquery.stickyPanel.js',
+        'airtime/common.js',
+        'backbone.memento/backbone.memento.js',
+        'knockout-drag-binding.js',
+        'knockout-jqueryui.min.js',
+        'knockout-common-binding.js',
+    ];
+
+    var vendorCommonLibDir = [
+        'kinetic-v4.5.2.min.js'
+    ];
+
+    var vendorJs = new folio.Glossary(
+        addPath(bower_common_lib_dir, vendorBower)
+        .concat(addPath(lib_dir, vendorLibDir))
+        .concat(addPath(common_lib_dir, vendorCommonLibDir))
+        .concat([
+            require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
+        ])
+    , {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
 
