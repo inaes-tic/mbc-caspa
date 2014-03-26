@@ -75,6 +75,7 @@ module.exports = function(app, everyauth) {
         'knockout-sortable/build/knockout-sortable.js',
         'bootstrap-paginator/build/bootstrap-paginator.min.js',
         'backbone.memento/backbone.memento.js',
+        'kineticjs/kinetic.min.js',
     ];
 
     var vendorLibDir = [
@@ -84,7 +85,6 @@ module.exports = function(app, everyauth) {
     ];
 
     var vendorCommonLibDir = [
-        'kinetic-v4.5.2.min.js',
         'jquery-ui.toggleSwitch.js',
         'knockout-jqueryui.min.js',
         'knockout-common-binding.js',
