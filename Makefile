@@ -10,14 +10,12 @@ locale/es/LC_MESSAGES/messages.mo:
 	./bin/update_languages.sh
 	./bin/compile-json locale locale
 
-submodules: visualsearch backbone.memento
+submodules: visualsearch
 	git submodule update
 
 visualsearch: vendor/visualsearch/build/visualsearch.js
 
-backbone.memento: vendor/backbone.memento/backbone.memento.js
-
-vendor/visualsearch/build/visualsearch.js vendor/backbone.memento/backbone.memento.js:
+vendor/visualsearch/build/visualsearch.js:
 	git submodule update --init
 
 node_modules:
@@ -43,4 +41,4 @@ serve_noweb:
 serve_debug:
 	node --debug-brk server.js
 
-.PHONY: npm submodules serve visualsearch backbone.memento test test_debug serve_noweb serve_debug
+.PHONY: npm submodules serve visualsearch test test_debug serve_noweb serve_debug
