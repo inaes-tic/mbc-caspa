@@ -37,7 +37,7 @@ npm:
 update: submodules npm mos
 
 test:
-	@LOG_LEVEL=error ${MOCHA} --reporter spec --timeout 10000 test
+	@LOG_LEVEL=error CASPA_NOAUTH=true ${MOCHA} --reporter spec --timeout 10000 test
 
 test_debug:
 	@LOG_LEVEL=error ${MOCHA} --debug-brk --reporter spec test
