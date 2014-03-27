@@ -103,12 +103,18 @@ module.exports = function(app, everyauth) {
 
     app.get('/js/vendor.js', folio.serve(vendorJs));
 
+    var vendorOtherBower = [
+        'backbone-pageable/lib/backbone-pageable.js',
+        'backbone-relational/backbone-relational.js',
+    ];
+
     //XXX Hack to include relational after backbone.io
-    var vendorOthersJs = new folio.Glossary([
-        path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
-        require.resolve('backbone-pageable/lib/backbone-pageable.js'),
-        require.resolve('backbone-relational/backbone-relational.js'),
-    ], {minify:app.get('minify')});
+    var vendorOthersJs = new folio.Glossary(
+        addPath(bower_common_lib_dir, vendorOtherBower)
+        .concat([
+            path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
+        ])
+    , {minify:app.get('minify')});
 
     app.get('/js/vendor_others.js', folio.serve(vendorOthersJs));
 
