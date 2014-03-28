@@ -74,12 +74,12 @@ module.exports = function(app, everyauth) {
         'd3/d3.js',
         'knockout-sortable/build/knockout-sortable.js',
         'bootstrap-paginator/build/bootstrap-paginator.min.js',
+        'backbone.memento/backbone.memento.js',
     ];
 
     var vendorLibDir = [
         'stickyPanel/jquery.stickyPanel.js',
         'airtime/common.js',
-        'backbone.memento/backbone.memento.js',
         'knockout-drag-binding.js',
     ];
 
