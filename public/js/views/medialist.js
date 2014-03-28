@@ -331,6 +331,11 @@ window.MediaListView  = MasterView.extend({
         this.trigger('mediadoubleclick', viewmodel);
     },
 
+    addMedia: function (media) {
+        var piece = utils.pieceFromMedia(media);
+        this.model.get('pieces').add(piece);
+    },
+
     releaseView: function() {
         // Release resources
         this.collection.off("filter");
