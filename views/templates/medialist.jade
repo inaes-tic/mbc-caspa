@@ -88,7 +88,8 @@ block content
                 tr(data-bind=inndbind)
                   td.center
                     - if (!is_playlist)
-                      - var target = "attr:{href: '/media/'+checksum().split('-')[0]}";
+                      - var target = "click: $root.mediaClick, event:{ dblclick: $root.mediaDoubleClick }";
+
                     - var thumbnail_target = "attr:{ src: checksum() ?  '" + thumbnail_dir  + "'+checksum().split('-')[0]+'.jpg' : '/pics/generic.jpg' }"
                     a.plain(data-bind=target)
                       img(width="150",height="100",data-bind=thumbnail_target)

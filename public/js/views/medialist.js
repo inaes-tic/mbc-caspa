@@ -186,6 +186,15 @@ window.MediaListView  = MasterView.extend({
                     }
                     return model.pretty_duration();
                 }, model);
+
+                this.mediaClick = function (viewmodel) {
+                    self.trigger('mediaclick', viewmodel.model());
+                };
+
+                this.mediaDoubleClick = function (viewmodel) {
+                    self.trigger('mediadoubleclick', viewmodel.model());
+                };
+
             },
 
             allowDrop: ko.observable(allow_drop),
@@ -267,7 +276,11 @@ window.MediaListView  = MasterView.extend({
         };
 
         _.bindAll(this, 'onCollectionChange', 'addDummyRow', 'removeDummyRow', 'destroyView', 'deleteModel', 'save', 'editListName', '_model_change_cb', 'clearChanges', 'hasChanges', '_bindModel', '_unbindModel');
+        _.bindAll(this, 'mediaClick', 'mediaDoubleClick');
+
         this.view_model.collection.subscribe(this.onCollectionChange);
+        this.view_model.on('mediaclick', this.mediaClick);
+        this.view_model.on('mediadoubleclick', this.mediaDoubleClick);
         this._bindModel(model);
 
         ko.applyBindings(this.view_model, el[0]);
@@ -313,10 +326,23 @@ window.MediaListView  = MasterView.extend({
         this.clearChanges();
     },
 
+    mediaClick: function (viewmodel) {
+        this.trigger('mediaclick', viewmodel);
+    },
+
+    mediaDoubleClick: function (viewmodel) {
+        this.trigger('mediadoubleclick', viewmodel);
+    },
+
     releaseView: function() {
         // Release resources
         this.collection.off("filter");
         this._unbindModel(this.model);
+        this.view_model.off('mediaclick');
+        this.view_model.off('mediadoubleclick');
+        this.off('mediaclick');
+        this.off('mediadoubleclick');
+
         this.search_view.destroy();
         kb.release(this.view_model);
     },
