@@ -15,6 +15,8 @@ window.EditView = PanelView.extend({
         this.render();
     },
     render: function () {
+        var self = this;
+
         $(this.el).html(template.mediaedit());
 
         var state = this.options['state'] || new utils.StateTracker();
@@ -40,6 +42,15 @@ window.EditView = PanelView.extend({
             type: 'medialist-draggable-fixed',
         });
         this.medialist.on('dragstart', this.clearSearch);
+
+        // automatically unbound when we close this view.
+        this.medialist.on('mediadoubleclick', function(media) {
+            if (!self.editview) {
+                return;
+            }
+            self.editview.addMedia(media);
+        });
+
 
         var resp = state.enterView();
         if (resp.model) {
