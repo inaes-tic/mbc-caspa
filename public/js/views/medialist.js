@@ -201,10 +201,7 @@ window.MediaListView  = MasterView.extend({
 
             dragHandler: function(item, event, ui){
                 // Instantiate drag element as Media.Piece
-                var attrs = _.clone(item.model().attributes);
-                var piece = new Media.Piece(attrs);
-                piece.set('checksum', attrs['_id']);
-                piece.unset('_id');
+                var piece = utils.pieceFromMedia(item.model());
                 return kb.viewModel(piece)
             },
 

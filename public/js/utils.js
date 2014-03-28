@@ -185,3 +185,15 @@ window.utils.StateTracker = function() {
         self.off('deleted');
     };
 };
+
+window.utils.pieceFromMedia = function (media) {
+    /* For pieces created from a Media we want them to still have an unique id
+     * but a 'checksum' that points to the original Media.*/
+    var attrs = _.clone(media.attributes);
+    var piece = new Media.Piece(attrs);
+    piece.set('checksum', attrs['_id']);
+    /* XXX: keep this */
+    piece.unset('_id');
+    return piece;
+};
+
