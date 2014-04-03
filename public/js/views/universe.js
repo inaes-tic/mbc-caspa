@@ -51,9 +51,9 @@ window.UniverseListView = function(options){
                filters: function(model) {
                    var filter;
                    filter = self.filter();
-                   if (!filter) return false;
+                   if (!filter) return true;
                    var re = new RegExp(filter,"i");
-                   return model.get('name').search(re) < 0;
+                   return model.get('name').search(re) != -1;
                },
 
             });
