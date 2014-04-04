@@ -96,6 +96,7 @@ module.exports = function(app, everyauth) {
         .concat(addPath(common_lib_dir, vendorCommonLibDir))
         .concat([
             require.resolve('fullcalendar-browser/fullcalendar/fullcalendar.js'),
+            require.resolve('typeahead.js/dist/typeahead.bundle.min.js'),
         ])
     , {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
@@ -111,9 +112,6 @@ module.exports = function(app, everyauth) {
     //XXX Hack to include relational after backbone.io
     var vendorOthersJs = new folio.Glossary(
         addPath(bower_common_lib_dir, vendorOtherBower)
-        .concat([
-            path.join(lib_dir, 'visualsearch/build-min/visualsearch.js'),
-        ])
     , {minify:app.get('minify')});
 
     app.get('/js/vendor_others.js', folio.serve(vendorOthersJs));
@@ -210,7 +208,11 @@ module.exports = function(app, everyauth) {
                      'emptyalert',
                      'timeinfo',
                      'nowplaying',
-                     'sourceinfo'
+                     'sourceinfo',
+                     'typeahead_suggestion',
+                     'typeahead_header',
+                     'typeahead_footer',
+                     'typeahead_empty',
                     ];
 
     var commonTemplates = ['editor',
