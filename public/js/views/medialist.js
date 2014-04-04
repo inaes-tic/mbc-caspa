@@ -142,16 +142,15 @@ window.MediaListView  = MasterView.extend({
                                 var re = new RegExp(target, "i");
                                 if (prop != "text") {
                                     value = deep_get(model, prop);
-                                    // returning true here tells KO to skip that model from the display list.
-                                    return String(value).search(re) < 0;
+                                    return String(value).search(re) != -1;
                                 } else {
                                     var fields = _.clone(fulltext_fields);
                                     var results = [];
                                     while (fields.length) {
                                         value = deep_get(model, fields.shift());
-                                        results.push( String(value).search(re) < 0 );
+                                        results.push( String(value).search(re) != -1 );
                                     }
-                                    return _.every(results);
+                                    return _.some(results);
                                 }
                             }
                             filters.push(flt);
