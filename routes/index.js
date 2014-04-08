@@ -140,55 +140,6 @@ module.exports = function(app, everyauth) {
                  'airtime/schedule/full-calendar-functions'
                 ];
 
-    var commonViews = [ 'editor', 'conf' ];
-
-    var localViewsFiles  = localViews.map( function(e) {
-        return path.join(__dirname, '..', 'public/js/views/', e + '.js');
-    });
-    var commonViewsFiles = commonViews.map( function(e) {
-        return require.resolve('mbc-common/views/js/' + e);
-    });
-
-    var viewsJs = new folio.Glossary(
-        localViewsFiles.concat(commonViewsFiles),
-        { minify:app.get('minify') }
-    );
-
-    app.get('/js/views.js', folio.serve(viewsJs));
-
-    /**
-     * Models Javascript Package
-     */
-
-    var models = ['Default', 'App', 'Media', 'Editor', 'Sketch'];
-
-    var modelsJs = new folio.Glossary(
-        models.map (function (e) {
-            return require.resolve('mbc-common/models/' + e);
-        })
-    );
-
-    app.get('/js/models.js', folio.serve(modelsJs));
-
-
-    commonConf.Widgets.Files.forEach(function(widget) {
-        app.get(
-            '/js/widgets/' + widget + '.js',
-            folio.serve(
-                new folio.Glossary([
-                    require.resolve('mbc-common/widgets/' + widget)
-                ])
-            )
-        );
-    });
-
-    /**
-     * Template Javascript Package
-     *
-     * We are going to use pre-compiled
-     * jade on the client-side.
-     */
-
     var localTemplates = ['form',
                      'item',
                      'playbar',
@@ -215,42 +166,35 @@ module.exports = function(app, everyauth) {
                      'typeahead_empty',
                     ];
 
-    var commonTemplates = ['editor',
-                           'objects',
-                           'alert',
-                           'confirm',
-                           'prompt',
-                           'confview'
-                          ];
-
-    var getFileName = function (e) {
+    var localTemplatesFiles =  localTemplates.map( function (e) {
         return path.join(__dirname, '..', 'views/templates/', e + '.jade');
-    };
-
-    var getCommonFileName = function (e) {
-        return require.resolve('mbc-common/views/templates/' + e + '.jade');
-    };
-
-    var templateJs = new folio.Glossary([
-        require.resolve('jade/runtime.js'),
-        path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            localTemplates.map(getFileName), commonTemplates.map(getCommonFileName)
-        ),
-        {
-        compilers: {
-            jade: function (name, source) {
-                return 'template[\'' + name + '\'] = ' +
-                    jade.compile(source, {
-                        filename: (localTemplates.indexOf(name) != -1) ? getFileName(name) : getCommonFileName(name),
-                        client: true,
-                        compileDebug: false
-                    }) + ';';
-            }
-        }
     });
 
-    // serve using express
-    app.get('/js/templates.js', folio.serve(templateJs));
+    var localViewsFiles  = localViews.map( function(e) {
+        return path.join(__dirname, '..', 'public/js/views/', e + '.js');
+    });
+
+    var views = {
+        caspa: {
+            js:         localViewsFiles,
+            templates:  localTemplatesFiles,
+            styles:     [],
+            images:     [],
+            models:     ['Default', 'App', 'Media', 'Editor', 'Sketch'],
+            widgets:    ['WebvfxSimpleWidget', 'WebvfxAnimationWidget'],
+        },
+    };
+
+    _.extend(mbc.views.views, views);
+
+    mbc.views.views.caspa = mbc.views.setupView(mbc.views.views.caspa);
+    var merge = mbc.views.mergeViews('editor','config','caspa');
+    var folios = mbc.views.makeViewFolios(merge);
+
+    app.get('/js/views.js', folio.serve(folios.js));
+    app.get('/js/models.js', folio.serve(folios.models));
+    app.get('/js/templates.js', folio.serve(folios.templates));
+    app.get('/js/widgets.js', folio.serve(folios.widgets));
 
     app.get('*',  function(req, res) {
         res.render('index', { name: conf.Branding.name,
