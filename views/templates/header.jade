@@ -54,4 +54,40 @@ ul#nav
         span.name= UserLogin
         |
         a(href="/logout") logout
+      li.dropdown
+        a.dropdown-toggle(data-toggle="dropdown", href="#")
+          i.icon-bell.icon-white
+        span#mosto-messages-count(data-bind="text: Messages.count, attr: {class: Messages.countClass}")
+        #mosto-messages.dropdown-menu
+          .arrow-up
+          h5= i18n.gettext('Mosto messages')
+          div(style="text-align:center")
+            label#all(data-bind="attr: {class: Messages.allClass}")
+                input(type="radio", value="", data-bind="checked: Messages.radioValue")
+                span= i18n.gettext('all')
+            label#notifications(data-bind="attr: {class: Messages.notificationsClass}")
+                input(type="radio", value="notification", data-bind="checked: Messages.radioValue")
+                span= i18n.gettext('notifications')
+            label#errors(data-bind="attr: {class: Messages.errorsClass}")
+                input(type="radio", value="error", data-bind="checked: Messages.radioValue")
+                span= i18n.gettext('errors')
+          div.collection(data-bind='foreach: Messages.collection')
+            div(data-bind='attr: {class: "mosto-message " + type()}')
+              <!-- ko if: canDelete() -->
+              a.remove(href="#", data-bind="click: function(vm,e){$root.Messages.remove(vm);e.stopPropagation()}")
+                i.icon-remove
+              <!-- /ko -->
+              .time(data-bind='text: starttime')
+              <!-- ko if: endtime() -->
+              .time.endtime(data-bind='text: "Fixed on: " + endtime()')
+              <!-- /ko -->
+              .title(data-bind='text: description')
+              .message(data-bind='text: message')
+          <!-- ko if: Messages.hasNotifications -->
+          div.remove-all
+            a(href="#", data-bind="click: function(vm,e){$root.Messages.removeAll();e.stopPropagation()}")= i18n.gettext('Remove all notifications')
+          <!-- /ko -->
+          <!-- ko ifnot: Messages.collection().length -->
+          div.empty= i18n.gettext('no messages')
+          <!-- /ko -->
 

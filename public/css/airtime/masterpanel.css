@@ -308,6 +308,11 @@
 	height:auto;
 	margin:0;
 }
+.personal-block.solo ul li {
+	display: inline;
+	padding-right: 10px;
+}
+
 .time-info-block.pull-right {
 	margin-right:0;
 	text-align:right !important;
@@ -352,3 +357,4 @@
 }
 
 */
+

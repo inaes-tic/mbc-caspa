@@ -3,6 +3,11 @@ var appCollection = new App.Collection();
 window.appCollection = appCollection;
 window.appstatus = new App.Status();
 window.framestatus = new App.ProgressStatus();
+window.mostoMessages = new App.MostoMessagesCollection();
+
+window.appstatus.fetch();
+window.framestatus.fetch();
+window.mostoMessages.fetch();
 
 var AppRouter = Backbone.Router.extend({
 
@@ -32,7 +37,7 @@ var AppRouter = Backbone.Router.extend({
         this.currentHash = Backbone.history.getHash();
         this.viewStates = {};
 
-        this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus});
+        this.headerView = new HeaderView({appstatus: window.appstatus, framestatus: window.framestatus, mostoMessages: window.mostoMessages});
 
         this.on('route', function(route) {
             var menuItem = {

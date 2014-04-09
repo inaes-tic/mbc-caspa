@@ -47,15 +47,18 @@ module.exports = function (db) {
             }},
         status: {
             use: [middleware.uuid],
+            redis: true,
             mongo: {
                 db: db,
                 collection: collections.Status,
                 opts: { search: search_options.Status },
             }},
         frame: {
-            use: [backboneio.middleware.memoryStore(db, 'progress', {})],
+            redis: true,
+            store: backboneio.middleware.memoryStore(db, 'progress', {}),
         },
         mostomessages: {
+            redis: true,
             mongo: {
                 db: db,
                 collection: collections.Mostomessages,
