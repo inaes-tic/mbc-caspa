@@ -7,35 +7,64 @@ html(lang='#{lang}')
     title= name
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     meta(charset="utf-8")
-    link(rel='stylesheet', href='/css/main.css')
+    script(src='/js/vendor.js')
+    script(src='/js/login.js')
+    link(rel='stylesheet', href='/css/login.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css')
   body
-    #content
-          .home-hero
-            div(style="opacity: .9;")
-              - if ('undefined' !== typeof errors && errors.length)
-                .row
-                  ul#errors
-                    - each error in errors
-                      li.error
-                        .alert.alert-error.alert-dismissable
-                          b= error
-              .row
-                #left-pane
-                  h1 Login
-                    form(action='/login', method='post')
-                      #login
-                        input(type='text', name=everyauth.password.loginFormFieldName,  placeholder="user name")
-                      #password
-                        input(type='password', name=everyauth.password.passwordFormFieldName, placeholder="password")
-                      #submit
-                        input(type='submit').btn.btn-primary.btn-lg Login
-                 #right-pane
-                   h1 Register
-                    form(action='/register', method='post')
-                      #login
-                        input(type='text', name=everyauth.password.loginFormFieldName, placeholder='user name')
-                      #password
-                        input(type='password', name=everyauth.password.passwordFormFieldName, placeholder='password')
-                      #submit
-                        input(type='submit').btn.btn-primary.btn-lg Register
+    .body-container
+       header.body-block
+       .body-block.body-push
+        .auth-page-container
 
+          .main-form.front
+            .main-form-inner
+              .engine-name
+              form(method="post", action="/login").adm-form.login-form
+                h1 login
+                input(type="hidden", name="action", value="registration")
+                - if ('undefined' !== typeof errors && errors.length)
+                   .adm-login-row
+                     ul#errors
+                       - each error in errors
+                         .error
+                             b= error
+                .adm-login-row
+                  .adm-form-icon
+                    i.fa.fa-user
+                    input(type="text", placeholder="username", id="login", name=everyauth.password.loginFormFieldName).login-input
+                .adm-login-row
+                  .adm-form-icon
+                    i.fa.fa-key
+                    input(type="password", placeholder="password", id="pwd", name=everyauth.password.passwordFormFieldName).login-input
+                .adm-login-row.adm-clearfix.adm-margin
+                  button(type="button").adm-button-reverse.adm-float-left.toggler.adm-button-small
+                    i.fa.fa-plus 
+                    |  register
+                  button(type="submit").adm-button-action.adm-float-right Sign in 
+                    i.fa.fa-sign-in
+          .main-form.back
+            .main-form-inner
+              .engine-name
+              form(method="post", action="/register").adm-form.login-form
+                h1 register
+                input(type="hidden", name="action", value="registration")
+                .adm-login-row
+                  .adm-form-icon
+                    i.fa.fa-user
+                    input(type="text", placeholder="username", id="login", name=everyauth.password.loginFormFieldName).login-input
+                .adm-login-row
+                  .adm-form-icon
+                    i.fa.fa-key
+                    input(type="password", placeholder="password", id="pwd", name=everyauth.password.passwordFormFieldName).login-input
+                .adm-login-row
+                  .adm-form-icon
+                    i.fa.fa-key
+                    input(type="password", placeholder="verify password", id="pwd", name="pwd").login-input
+                .adm-login-row.adm-clearfix.adm-margin
+                  button(type="button").adm-button-reverse.adm-float-left.toggler.adm-button-small
+                    i.fa.fa-angle-left
+                    |  back
+                  button(type="submit").adm-button-action.adm-float-right send 
+                    i.fa.fa-sign-in
+          footer.body-block

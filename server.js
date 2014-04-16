@@ -84,6 +84,7 @@ app.configure(function () {
         app.use(function (req, res, next) {
             if (req.url.match ('^/css/.*') ||
                 req.url.match ('^/img/.*') ||
+                req.url.match ('^/js/.*') ||
                 req.url.match ('/favicon.ico')) {
                 return next();
             } else if(req.session.auth && req.session.auth.loggedIn){
