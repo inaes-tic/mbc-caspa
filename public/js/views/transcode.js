@@ -47,15 +47,15 @@ window.TranscodeView = MasterView.extend({
         this.failed = new TranscodeQueueViewModel(this.collection);
 
         this.working.collection.filters(function(model) {
-            return ! model.get('stage').match('^processing$|moving');
+            return model.get('stage').match('^processing$|moving');
         });
 
         this.queued.collection.filters(function(model) {
-            return ! model.get('stage').match('queued');
+            return model.get('stage').match('queued');
         });
 
         this.failed.collection.filters(function(model) {
-            return ! model.get('stage').match('processing-error');
+            return model.get('stage').match('processing-error');
         });
 
         this.view_model = {
