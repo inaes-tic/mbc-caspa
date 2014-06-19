@@ -78,9 +78,17 @@ var AppRouter = Backbone.Router.extend({
     },
 
     list: function() {
+        var self = this;
         var state = this.viewStates['list'] || {};
         this.viewStates['list'] = state;
-        return new MediaListView(state);
+
+        var view = new MediaListView(state);
+        // it is automatically unbound when we destroy the view
+        view.on('mediaclick', function(media) {
+            self.navigate('/media/' + media.id, {trigger: true});
+        });
+
+        return view;
     },
 
     universe: function () {
